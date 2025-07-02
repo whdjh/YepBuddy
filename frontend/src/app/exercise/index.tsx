@@ -1,3 +1,4 @@
+import { Audio } from 'expo-av'
 import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
@@ -25,6 +26,53 @@ export default function ExercisePage() {
   const [startTime, setStartTime] = useState<Date | null>(null)
   const logsRef = useRef<string[]>([])
   const exerciseStartTimeRef = useRef<number>(0)
+  const pikSoundRef = useRef<Audio.Sound | null>(null)
+  const pipSoundRef = useRef<Audio.Sound | null>(null)
+
+  // 소리 초기화
+  useEffect(() => {
+    const loadSounds = async () => {
+      try {
+        // PIK 소리 (높은 톤)
+        const { sound: pikSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/pik.mp3')
+        )
+        pikSoundRef.current = pikSound
+
+        // PIP 소리 (낮은 톤)
+        const { sound: pipSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/pip.mp3')
+        )
+        pipSoundRef.current = pipSound
+      } catch (error) {
+        console.log('소리 로드 실패:', error)
+      }
+    }
+
+    loadSounds()
+
+    // 컴포넌트 언마운트 시 소리 정리
+    return () => {
+      if (pikSoundRef.current) {
+        pikSoundRef.current.unloadAsync()
+      }
+      if (pipSoundRef.current) {
+        pipSoundRef.current.unloadAsync()
+      }
+    }
+  }, [])
+
+  // 소리 재생 함수
+  const playSound = async (type: 'pik' | 'pip') => {
+    try {
+      const sound = type === 'pik' ? pikSoundRef.current : pipSoundRef.current
+      if (sound) {
+        await sound.replayAsync()
+      }
+    } catch (error) {
+      console.log('소리 재생 실패:', error)
+    }
+  }
 
   // 로그 추가 함수
   const addLog = (message: string) => {
@@ -141,6 +189,9 @@ export default function ExercisePage() {
 
         if (phase === 0) {
           // 첫 번째 페이즈 (PIK 또는 PIP)
+          // 매 초마다 소리 재생
+          const soundType = firstPhase === 'PIK' ? 'pik' : 'pip'
+          playSound(soundType)
           addLog(`${firstPhase} (${rep + 1}회차 - ${time + 1}/${firstTime})`)
           time++
           currentStep++
@@ -151,6 +202,9 @@ export default function ExercisePage() {
           }
         } else {
           // 두 번째 페이즈 (PIP 또는 PIK)
+          // 매 초마다 소리 재생
+          const soundType = secondPhase === 'PIK' ? 'pik' : 'pip'
+          playSound(soundType)
           addLog(`${secondPhase} (${rep + 1}회차 - ${time + 1}/${secondTime})`)
           time++
           currentStep++
