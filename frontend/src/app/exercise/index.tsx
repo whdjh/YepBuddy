@@ -1,7 +1,7 @@
 import { Audio } from 'expo-av'
-import { useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { ScrollView, Text, View } from 'react-native'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 
 // 한국어 숫자 매핑
 const koreanNumbers: { [key: number]: string } = {
@@ -89,6 +89,10 @@ export default function ExercisePage() {
     reps,
     restTime,
     setCount,
+    tempos,
+    currentExerciseIndex,
+    isFirstExercise,
+    exerciseStartTime,
   } = useLocalSearchParams<{
     startWith: 'concentric' | 'eccentric'
     concentricTime: string
@@ -96,16 +100,22 @@ export default function ExercisePage() {
     reps: string
     restTime: string
     setCount: string
+    tempos: string
+    currentExerciseIndex: string
+    isFirstExercise: string
+    exerciseStartTime: string
   }>()
 
   const [logs, setLogs] = useState<string[]>([])
   const [currentSet, setCurrentSet] = useState(1)
   const [elapsedTime, setElapsedTime] = useState(0)
   const [startTime, setStartTime] = useState<Date | null>(null)
+  const [showExerciseComplete, setShowExerciseComplete] = useState(false)
   const logsRef = useRef<string[]>([])
   const exerciseStartTimeRef = useRef<number>(0)
   const pikSoundRef = useRef<Audio.Sound | null>(null)
   const pipSoundRef = useRef<Audio.Sound | null>(null)
+  const router = useRouter()
 
   // 소리 초기화
   useEffect(() => {
@@ -170,15 +180,20 @@ export default function ExercisePage() {
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
+  // 실시간 경과시간 계산
+  const getCurrentElapsedTime = () => {
+    if (!startTime) return 0
+    const now = new Date()
+    return Math.floor((now.getTime() - startTime.getTime()) / 1000)
+  }
+
   // 경과시간 업데이트
   useEffect(() => {
     if (!startTime) return
 
     const timer = setInterval(() => {
-      const now = new Date()
-      const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000)
-      setElapsedTime(elapsed)
-    }, 1000)
+      setElapsedTime(getCurrentElapsedTime())
+    }, 100)
 
     return () => clearInterval(timer)
   }, [startTime])
@@ -218,6 +233,7 @@ export default function ExercisePage() {
     const repsCount = Number(reps)
     const rest = Number(restTime)
     const sets = Number(setCount)
+    const exerciseIndex = Number(currentExerciseIndex)
 
     if (
       !startWith ||
@@ -229,9 +245,10 @@ export default function ExercisePage() {
     )
       return
 
-    // 운동 시작 시간 설정
-    setStartTime(new Date())
-    exerciseStartTimeRef.current = Date.now()
+    // 시작 시간 설정 (전달받은 시간 사용)
+    const startTimeValue = exerciseStartTime ? new Date(Number(exerciseStartTime)) : new Date()
+    setStartTime(startTimeValue)
+    exerciseStartTimeRef.current = Number(exerciseStartTime) || Date.now()
 
     const runSet = (setIndex: number) => {
       addLog(`${setIndex}세트 시작`)
@@ -285,6 +302,7 @@ export default function ExercisePage() {
               }, 1000)
             } else {
               addLog('운동이 완전히 종료되었습니다.')
+              handleExerciseComplete()
             }
             return
           }
@@ -335,26 +353,89 @@ export default function ExercisePage() {
     
   }, [])
 
+  // 운동 완료 후 선택 페이지로 이동
+  const handleExerciseComplete = () => {
+    setShowExerciseComplete(true)
+  }
+
+  const addAnotherExercise = () => {
+    router.push({
+      pathname: '/tempo',
+      params: {
+        tempos: tempos,
+        exerciseStartTime: exerciseStartTime,
+      },
+    })
+  }
+
+  const finishAllExercises = () => {
+    const allTempos = tempos ? JSON.parse(tempos) : []
+    const totalExerciseTime = getCurrentElapsedTime()
+    const totalSets = allTempos.reduce((sum: number, tempo: any) => {
+      return sum + Number(tempo.setCount)
+    }, 0)
+    
+    router.push({
+      pathname: '/result',
+      params: {
+        tempos: tempos,
+        totalExerciseTime: totalExerciseTime.toString(),
+        totalSets: totalSets.toString(),
+      },
+    })
+  }
+
   return (
     <View className="flex-1 bg-black">
       {/* 플로팅 경과시간 */}
       <View className="absolute top-12 left-0 right-0 z-10 bg-black/80 py-2 px-4">
         <Text className="text-white text-center text-lg font-semibold">
-          총 경과시간: {formatElapsedTime(elapsedTime)}
+          총 경과시간: {formatElapsedTime(getCurrentElapsedTime())}
           현재 세트수: {currentSet}
         </Text>
       </View>
       
-      <ScrollView className="flex-1 px-6 pt-20 pb-10">
-        <Text className="text-white text-2xl font-bold mb-4 text-center">
-          운동 진행
-        </Text>
-        {logs.map((log, index) => (
-          <Text key={index} className="text-white mb-2">
-            {log}
+      {!showExerciseComplete ? (
+        <ScrollView className="flex-1 px-6 pt-20 pb-10">
+          <Text className="text-white text-2xl font-bold mb-4 text-center">
+            운동 진행
           </Text>
-        ))}
-      </ScrollView>
+          {logs.map((log, index) => (
+            <Text key={index} className="text-white mb-2">
+              {log}
+            </Text>
+          ))}
+        </ScrollView>
+      ) : (
+        <View className="flex-1 justify-center items-center px-6">
+          <Text className="text-white text-2xl font-bold mb-8 text-center">
+            운동 완료!
+          </Text>
+          <Text className="text-white text-lg mb-12 text-center">
+            다음 운동을 추가하시겠습니까?
+          </Text>
+          
+          <View className="w-full space-y-4">
+            <TouchableOpacity
+              onPress={addAnotherExercise}
+              className="bg-emerald-600 py-4 rounded-2xl"
+            >
+              <Text className="text-white text-center text-lg font-semibold">
+                운동 추가
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              onPress={finishAllExercises}
+              className="bg-zinc-700 py-4 rounded-2xl"
+            >
+              <Text className="text-white text-center text-lg font-semibold">
+                운동 종료
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
     </View>
   )
 }
