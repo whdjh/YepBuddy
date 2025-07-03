@@ -1,55 +1,7 @@
 import { Audio } from 'expo-av'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
-
-// 한국어 숫자 매핑
-const koreanNumbers: { [key: number]: string } = {
-  1: '하나',
-  2: '둘',
-  3: '셋',
-  4: '넷',
-  5: '다섯',
-  6: '여섯',
-  7: '일곱',
-  8: '여덟',
-  9: '아홉',
-  10: '열',
-  11: '열하나',
-  12: '열둘',
-  13: '열셋',
-  14: '열넷',
-  15: '열다섯',
-  16: '열여섯',
-  17: '열일곱',
-  18: '열여덟',
-  19: '열아홉',
-  20: '스물'
-}
-
-// 영어 숫자 매핑 (파일명용)
-const englishNumbers: { [key: number]: string } = {
-  1: 'one',
-  2: 'two',
-  3: 'three',
-  4: 'four',
-  5: 'five',
-  6: 'six',
-  7: 'seven',
-  8: 'eight',
-  9: 'nine',
-  10: 'ten',
-  11: 'eleven',
-  12: 'twelve',
-  13: 'thirteen',
-  14: 'fourteen',
-  15: 'fifteen',
-  16: 'sixteen',
-  17: 'seventeen',
-  18: 'eighteen',
-  19: 'nineteen',
-  20: 'twenty',
-}
+import { Text, TouchableOpacity, View } from 'react-native'
 
 // 숫자 mp3 파일 미리 require
 const countSounds: { [key: number]: any } = {
@@ -106,12 +58,11 @@ export default function ExercisePage() {
     exerciseStartTime: string
   }>()
 
-  const [logs, setLogs] = useState<string[]>([])
   const [currentSet, setCurrentSet] = useState(1)
-  const [elapsedTime, setElapsedTime] = useState(0)
   const [startTime, setStartTime] = useState<Date | null>(null)
   const [showExerciseComplete, setShowExerciseComplete] = useState(false)
-  const logsRef = useRef<string[]>([])
+  const [remainingRestTime, setRemainingRestTime] = useState<number | null>(null)
+  const [totalSets, setTotalSets] = useState(0)
   const exerciseStartTimeRef = useRef<number>(0)
   const pikSoundRef = useRef<Audio.Sound | null>(null)
   const pipSoundRef = useRef<Audio.Sound | null>(null)
@@ -121,13 +72,11 @@ export default function ExercisePage() {
   useEffect(() => {
     const loadSounds = async () => {
       try {
-        // PIK 소리
         const { sound: pikSound } = await Audio.Sound.createAsync(
           require('../../assets/sounds/beep/pik.mp3')
         )
         pikSoundRef.current = pikSound
 
-        // PIP 소리
         const { sound: pipSound } = await Audio.Sound.createAsync(
           require('../../assets/sounds/beep/pip.mp3')
         )
@@ -139,7 +88,6 @@ export default function ExercisePage() {
 
     loadSounds()
 
-    // 컴포넌트 언마운트 시 소리 정리
     return () => {
       if (pikSoundRef.current) {
         pikSoundRef.current.unloadAsync()
@@ -162,12 +110,6 @@ export default function ExercisePage() {
     }
   }
 
-  // 로그 추가 함수
-  const addLog = (message: string) => {
-    logsRef.current = [...logsRef.current, message]
-    setLogs([...logsRef.current])
-  }
-
   // 경과시간을 포맷팅하는 함수
   const formatElapsedTime = (seconds: number) => {
     const hours = Math.floor(seconds / 3600)
@@ -186,17 +128,6 @@ export default function ExercisePage() {
     const now = new Date()
     return Math.floor((now.getTime() - startTime.getTime()) / 1000)
   }
-
-  // 경과시간 업데이트
-  useEffect(() => {
-    if (!startTime) return
-
-    const timer = setInterval(() => {
-      setElapsedTime(getCurrentElapsedTime())
-    }, 100)
-
-    return () => clearInterval(timer)
-  }, [startTime])
 
   // 숫자 카운트 소리 재생 함수
   const playCountSound = async (num: number) => {
@@ -233,7 +164,6 @@ export default function ExercisePage() {
     const repsCount = Number(reps)
     const rest = Number(restTime)
     const sets = Number(setCount)
-    const exerciseIndex = Number(currentExerciseIndex)
 
     if (
       !startWith ||
@@ -249,10 +179,9 @@ export default function ExercisePage() {
     const startTimeValue = exerciseStartTime ? new Date(Number(exerciseStartTime)) : new Date()
     setStartTime(startTimeValue)
     exerciseStartTimeRef.current = Number(exerciseStartTime) || Date.now()
+    setTotalSets(sets)
 
     const runSet = (setIndex: number) => {
-      addLog(`${setIndex}세트 시작`)
-
       const firstPhase = startWith === 'concentric' ? 'PIK' : 'PIP'
       const secondPhase = startWith === 'concentric' ? 'PIP' : 'PIK'
       const firstTime = startWith === 'concentric' ? concentric : eccentric
@@ -276,7 +205,6 @@ export default function ExercisePage() {
           if (rep >= repsCount) {
             clearInterval(interval!)
             if (setIndex < sets) {
-              addLog('휴식시작')
               playRestSound('start')
               let restElapsed = 0
               const restStartTime = Date.now()
@@ -288,20 +216,20 @@ export default function ExercisePage() {
                 } else {
                   restElapsed++
                 }
-                if (restElapsed < rest) {
-                  addLog(`${restElapsed}초`)
-                }
+                
+                const remainingTime = rest - restElapsed
+                setRemainingRestTime(remainingTime > 0 ? remainingTime : null)
+                
                 if (restElapsed >= rest) {
                   clearInterval(restInterval)
-                  addLog('휴식종료')
                   playRestSound('end')
+                  setRemainingRestTime(null)
                   setCurrentSet(prev => prev + 1)
                   exerciseStartTimeRef.current = Date.now()
                   runSet(setIndex + 1)
                 }
               }, 1000)
             } else {
-              addLog('운동이 완전히 종료되었습니다.')
               handleExerciseComplete()
             }
             return
@@ -311,7 +239,6 @@ export default function ExercisePage() {
             // 첫 번째 페이즈 (PIK 또는 PIP)
             const soundType = firstPhase === 'PIK' ? 'pik' : 'pip'
             playSound(soundType)
-            addLog(`${firstPhase} (${rep + 1}회차 - ${time + 1}/${firstTime})`)
             time++
             currentStep++
             if (time >= firstTime) {
@@ -322,7 +249,6 @@ export default function ExercisePage() {
             // 두 번째 페이즈 (PIP 또는 PIK)
             const soundType = secondPhase === 'PIK' ? 'pik' : 'pip'
             playSound(soundType)
-            addLog(`${secondPhase} (${rep + 1}회차 - ${time + 1}/${secondTime})`)
             time++
             currentStep++
             if (time >= secondTime) {
@@ -331,13 +257,11 @@ export default function ExercisePage() {
               setTimeout(() => {
                 rep++
                 playCountSound(rep)
-                addLog(koreanNumbers[rep] || rep.toString())
                 // 다음 반복을 위해 interval 재시작
                 startInterval()
               }, 1000)
               phase = 0
               time = 0
-              // return을 통해 아래 코드 실행 방지
               return
             }
           }
@@ -347,8 +271,6 @@ export default function ExercisePage() {
       startInterval()
     }
 
-    logsRef.current = []
-    setLogs([])
     runSet(1)
     
   }, [])
@@ -387,25 +309,40 @@ export default function ExercisePage() {
 
   return (
     <View className="flex-1 bg-black">
-      {/* 플로팅 경과시간 */}
-      <View className="absolute top-12 left-0 right-0 z-10 bg-black/80 py-2 px-4">
-        <Text className="text-white text-center text-lg font-semibold">
-          총 경과시간: {formatElapsedTime(getCurrentElapsedTime())}
-          현재 세트수: {currentSet}
-        </Text>
-      </View>
-      
       {!showExerciseComplete ? (
-        <ScrollView className="flex-1 px-6 pt-20 pb-10">
-          <Text className="text-white text-2xl font-bold mb-4 text-center">
-            운동 진행
-          </Text>
-          {logs.map((log, index) => (
-            <Text key={index} className="text-white mb-2">
-              {log}
+        <View className="flex-1 justify-center items-center px-6">
+          {/* 총 경과시간 */}
+          <View className="bg-black/80 p-6 rounded-2xl mb-8">
+            <Text className="text-white text-2xl font-bold text-center">
+              총 경과시간
             </Text>
-          ))}
-        </ScrollView>
+            <Text className="text-white text-4xl font-bold text-center">
+              {formatElapsedTime(getCurrentElapsedTime())}
+            </Text>
+          </View>
+
+          {/* 남은 세트수 */}
+          <View className="bg-emerald-600/80 p-6 rounded-2xl mb-8">
+            <Text className="text-white text-xl font-semibold text-center">
+              남은 세트수
+            </Text>
+            <Text className="text-white text-3xl font-bold text-center">
+              {totalSets - currentSet + 1} / {totalSets}
+            </Text>
+          </View>
+
+          {/* 남은 휴식시간 */}
+          {remainingRestTime !== null && (
+            <View className="bg-blue-600/80 p-6 rounded-2xl">
+              <Text className="text-white text-xl font-semibold text-center">
+                남은 휴식시간
+              </Text>
+              <Text className="text-white text-3xl font-bold text-center">
+                {remainingRestTime}초
+              </Text>
+            </View>
+          )}
+        </View>
       ) : (
         <View className="flex-1 justify-center items-center px-6">
           <Text className="text-white text-2xl font-bold mb-8 text-center">
