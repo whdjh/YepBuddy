@@ -77,17 +77,17 @@ export default function ExercisePage() {
         
         const { sound: pikSound } = await Audio.Sound.createAsync(
           require('../../assets/sounds/beep/pik.mp3'),
-          { shouldPlay: false }
+          { shouldPlay: false, volume: 1.0 }
         )
-        await pikSound.setStatusAsync({ shouldPlay: false })
+        await pikSound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
         pikSoundRef.current = pikSound
         console.log('pik 소리 로드 완료')
 
         const { sound: pipSound } = await Audio.Sound.createAsync(
           require('../../assets/sounds/beep/pip.mp3'),
-          { shouldPlay: false }
+          { shouldPlay: false, volume: 1.0 }
         )
-        await pipSound.setStatusAsync({ shouldPlay: false })
+        await pipSound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
         pipSoundRef.current = pipSound
         console.log('pip 소리 로드 완료')
         
@@ -158,9 +158,10 @@ export default function ExercisePage() {
     const soundFile = countSounds[num]
     if (!soundFile) return
     try {
-      const { sound } = await Audio.Sound.createAsync(soundFile)
+      const { sound } = await Audio.Sound.createAsync(soundFile, { volume: 1.0 })
       const status = await sound.getStatusAsync()
       if (status.isLoaded) {
+        await sound.setStatusAsync({ volume: 1.0 })
         await sound.replayAsync()
         setTimeout(() => {
           sound.unloadAsync()
@@ -175,9 +176,10 @@ export default function ExercisePage() {
   const playRestSound = async (type: 'start' | 'end') => {
     try {
       const soundFile = restSounds[type]
-      const { sound } = await Audio.Sound.createAsync(soundFile)
+      const { sound } = await Audio.Sound.createAsync(soundFile, { volume: 1.0 })
       const status = await sound.getStatusAsync()
       if (status.isLoaded) {
+        await sound.setStatusAsync({ volume: 1.0 })
         await sound.replayAsync()
         setTimeout(() => {
           sound.unloadAsync()
