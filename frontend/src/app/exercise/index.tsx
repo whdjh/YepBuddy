@@ -3,6 +3,84 @@ import { useLocalSearchParams } from 'expo-router'
 import { useEffect, useRef, useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 
+// 한국어 숫자 매핑
+const koreanNumbers: { [key: number]: string } = {
+  1: '하나',
+  2: '둘',
+  3: '셋',
+  4: '넷',
+  5: '다섯',
+  6: '여섯',
+  7: '일곱',
+  8: '여덟',
+  9: '아홉',
+  10: '열',
+  11: '열하나',
+  12: '열둘',
+  13: '열셋',
+  14: '열넷',
+  15: '열다섯',
+  16: '열여섯',
+  17: '열일곱',
+  18: '열여덟',
+  19: '열아홉',
+  20: '스물'
+}
+
+// 영어 숫자 매핑 (파일명용)
+const englishNumbers: { [key: number]: string } = {
+  1: 'one',
+  2: 'two',
+  3: 'three',
+  4: 'four',
+  5: 'five',
+  6: 'six',
+  7: 'seven',
+  8: 'eight',
+  9: 'nine',
+  10: 'ten',
+  11: 'eleven',
+  12: 'twelve',
+  13: 'thirteen',
+  14: 'fourteen',
+  15: 'fifteen',
+  16: 'sixteen',
+  17: 'seventeen',
+  18: 'eighteen',
+  19: 'nineteen',
+  20: 'twenty',
+}
+
+// 숫자 mp3 파일 미리 require
+const countSounds: { [key: number]: any } = {
+  1: require('../../assets/sounds/koreacount/one.mp3'),
+  2: require('../../assets/sounds/koreacount/two.mp3'),
+  3: require('../../assets/sounds/koreacount/three.mp3'),
+  4: require('../../assets/sounds/koreacount/four.mp3'),
+  5: require('../../assets/sounds/koreacount/five.mp3'),
+  6: require('../../assets/sounds/koreacount/six.mp3'),
+  7: require('../../assets/sounds/koreacount/seven.mp3'),
+  8: require('../../assets/sounds/koreacount/eight.mp3'),
+  9: require('../../assets/sounds/koreacount/nine.mp3'),
+  10: require('../../assets/sounds/koreacount/ten.mp3'),
+  11: require('../../assets/sounds/koreacount/eleven.mp3'),
+  12: require('../../assets/sounds/koreacount/twelve.mp3'),
+  13: require('../../assets/sounds/koreacount/thirteen.mp3'),
+  14: require('../../assets/sounds/koreacount/fourteen.mp3'),
+  15: require('../../assets/sounds/koreacount/fifteen.mp3'),
+  16: require('../../assets/sounds/koreacount/sixteen.mp3'),
+  17: require('../../assets/sounds/koreacount/seventeen.mp3'),
+  18: require('../../assets/sounds/koreacount/eighteen.mp3'),
+  19: require('../../assets/sounds/koreacount/nineteen.mp3'),
+  20: require('../../assets/sounds/koreacount/twenty.mp3'),
+}
+
+// 휴식 소리 파일
+const restSounds = {
+  start: require('../../assets/sounds/rest/start.mp3'),
+  end: require('../../assets/sounds/rest/end.mp3'),
+}
+
 export default function ExercisePage() {
   const {
     startWith,
@@ -33,15 +111,15 @@ export default function ExercisePage() {
   useEffect(() => {
     const loadSounds = async () => {
       try {
-        // PIK 소리 (높은 톤)
+        // PIK 소리
         const { sound: pikSound } = await Audio.Sound.createAsync(
-          require('../../assets/sounds/pik.mp3')
+          require('../../assets/sounds/beep/pik.mp3')
         )
         pikSoundRef.current = pikSound
 
-        // PIP 소리 (낮은 톤)
+        // PIP 소리
         const { sound: pipSound } = await Audio.Sound.createAsync(
-          require('../../assets/sounds/pip.mp3')
+          require('../../assets/sounds/beep/pip.mp3')
         )
         pipSoundRef.current = pipSound
       } catch (error) {
@@ -105,6 +183,35 @@ export default function ExercisePage() {
     return () => clearInterval(timer)
   }, [startTime])
 
+  // 숫자 카운트 소리 재생 함수
+  const playCountSound = async (num: number) => {
+    const soundFile = countSounds[num]
+    if (!soundFile) return
+    try {
+      const { sound } = await Audio.Sound.createAsync(soundFile)
+      await sound.replayAsync()
+      setTimeout(() => {
+        sound.unloadAsync()
+      }, 1500)
+    } catch (e) {
+      console.log('카운트 소리 재생 실패:', e)
+    }
+  }
+
+  // 휴식 소리 재생 함수
+  const playRestSound = async (type: 'start' | 'end') => {
+    try {
+      const soundFile = restSounds[type]
+      const { sound } = await Audio.Sound.createAsync(soundFile)
+      await sound.replayAsync()
+      setTimeout(() => {
+        sound.unloadAsync()
+      }, 2000)
+    } catch (e) {
+      console.log('휴식 소리 재생 실패:', e)
+    }
+  }
+
   useEffect(() => {
     const concentric = Number(concentricTime)
     const eccentric = Number(eccentricTime)
@@ -127,7 +234,6 @@ export default function ExercisePage() {
     exerciseStartTimeRef.current = Date.now()
 
     const runSet = (setIndex: number) => {
-      // TODO: 각 세트 시작 전에 세트 번호 표시 -> 소리로 변경 예정
       addLog(`${setIndex}세트 시작`)
 
       const firstPhase = startWith === 'concentric' ? 'PIK' : 'PIP'
@@ -139,83 +245,88 @@ export default function ExercisePage() {
       let phase = 0 // 0: first phase, 1: second phase
       let time = 0
       let currentStep = 0
+      let interval: number | null = null
 
-      const totalSteps = repsCount * (firstTime + secondTime)
-      
-      const interval = setInterval(() => {
-        const now = Date.now()
-        const expectedTime = exerciseStartTimeRef.current + (currentStep * 1000)
-        
-        // 시간 오차가 100ms 이상이면 조정
-        if (Math.abs(now - expectedTime) > 100) {
-          exerciseStartTimeRef.current = now - (currentStep * 1000)
-        }
+      const startInterval = () => {
+        interval = setInterval(() => {
+          const now = Date.now()
+          const expectedTime = exerciseStartTimeRef.current + (currentStep * 1000)
 
-        if (rep >= repsCount) {
-          // 모든 반복 완료
-          clearInterval(interval)
-          
-          if (setIndex < sets) {
-            // 사용자 설정 휴식시간 대기 후 다음 세트
-            addLog('휴식시작')
-            let restElapsed = 0
-            const restStartTime = Date.now()
-            const restInterval = setInterval(() => {
-              const restNow = Date.now()
-              const expectedRestTime = restStartTime + (restElapsed * 1000)
-              
-              if (Math.abs(restNow - expectedRestTime) > 100) {
-                restElapsed = Math.floor((restNow - restStartTime) / 1000)
-              } else {
-                restElapsed++
-              }
-              
-              if (restElapsed < rest) {
-                addLog(`${restElapsed}초`)
-              }
-              if (restElapsed >= rest) {
-                clearInterval(restInterval)
-                addLog('휴식종료')
-                setCurrentSet(prev => prev + 1)
-                exerciseStartTimeRef.current = Date.now()
-                runSet(setIndex + 1)
-              }
-            }, 1000)
+          if (Math.abs(now - expectedTime) > 100) {
+            exerciseStartTimeRef.current = now - (currentStep * 1000)
+          }
+
+          if (rep >= repsCount) {
+            clearInterval(interval!)
+            if (setIndex < sets) {
+              addLog('휴식시작')
+              playRestSound('start')
+              let restElapsed = 0
+              const restStartTime = Date.now()
+              const restInterval = setInterval(() => {
+                const restNow = Date.now()
+                const expectedRestTime = restStartTime + (restElapsed * 1000)
+                if (Math.abs(restNow - expectedRestTime) > 100) {
+                  restElapsed = Math.floor((restNow - restStartTime) / 1000)
+                } else {
+                  restElapsed++
+                }
+                if (restElapsed < rest) {
+                  addLog(`${restElapsed}초`)
+                }
+                if (restElapsed >= rest) {
+                  clearInterval(restInterval)
+                  addLog('휴식종료')
+                  playRestSound('end')
+                  setCurrentSet(prev => prev + 1)
+                  exerciseStartTimeRef.current = Date.now()
+                  runSet(setIndex + 1)
+                }
+              }, 1000)
+            } else {
+              addLog('운동이 완전히 종료되었습니다.')
+            }
+            return
+          }
+
+          if (phase === 0) {
+            // 첫 번째 페이즈 (PIK 또는 PIP)
+            const soundType = firstPhase === 'PIK' ? 'pik' : 'pip'
+            playSound(soundType)
+            addLog(`${firstPhase} (${rep + 1}회차 - ${time + 1}/${firstTime})`)
+            time++
+            currentStep++
+            if (time >= firstTime) {
+              phase = 1
+              time = 0
+            }
           } else {
-            addLog('운동이 완전히 종료되었습니다.')
+            // 두 번째 페이즈 (PIP 또는 PIK)
+            const soundType = secondPhase === 'PIK' ? 'pik' : 'pip'
+            playSound(soundType)
+            addLog(`${secondPhase} (${rep + 1}회차 - ${time + 1}/${secondTime})`)
+            time++
+            currentStep++
+            if (time >= secondTime) {
+              // 반복이 끝났으니 일단 멈추고 1초 후 카운트 로그 후 재개
+              clearInterval(interval!)
+              setTimeout(() => {
+                rep++
+                playCountSound(rep)
+                addLog(koreanNumbers[rep] || rep.toString())
+                // 다음 반복을 위해 interval 재시작
+                startInterval()
+              }, 1000)
+              phase = 0
+              time = 0
+              // return을 통해 아래 코드 실행 방지
+              return
+            }
           }
-          return
-        }
+        }, 1000)
+      }
 
-        if (phase === 0) {
-          // 첫 번째 페이즈 (PIK 또는 PIP)
-          // 매 초마다 소리 재생
-          const soundType = firstPhase === 'PIK' ? 'pik' : 'pip'
-          playSound(soundType)
-          addLog(`${firstPhase} (${rep + 1}회차 - ${time + 1}/${firstTime})`)
-          time++
-          currentStep++
-          
-          if (time >= firstTime) {
-            phase = 1
-            time = 0
-          }
-        } else {
-          // 두 번째 페이즈 (PIP 또는 PIK)
-          // 매 초마다 소리 재생
-          const soundType = secondPhase === 'PIK' ? 'pik' : 'pip'
-          playSound(soundType)
-          addLog(`${secondPhase} (${rep + 1}회차 - ${time + 1}/${secondTime})`)
-          time++
-          currentStep++
-          
-          if (time >= secondTime) {
-            phase = 0
-            time = 0
-            rep++
-          }
-        }
-      }, 1000)
+      startInterval()
     }
 
     logsRef.current = []
