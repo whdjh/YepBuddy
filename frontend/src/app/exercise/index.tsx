@@ -63,6 +63,7 @@ export default function ExercisePage() {
   const [showExerciseComplete, setShowExerciseComplete] = useState(false)
   const [remainingRestTime, setRemainingRestTime] = useState<number | null>(null)
   const [totalSets, setTotalSets] = useState(0)
+  const [elapsedTime, setElapsedTime] = useState(0)
   const exerciseStartTimeRef = useRef<number>(0)
   const pikSoundRef = useRef<Audio.Sound | null>(null)
   const pipSoundRef = useRef<Audio.Sound | null>(null)
@@ -122,12 +123,18 @@ export default function ExercisePage() {
     return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
   }
 
-  // 실시간 경과시간 계산
-  const getCurrentElapsedTime = () => {
-    if (!startTime) return 0
-    const now = new Date()
-    return Math.floor((now.getTime() - startTime.getTime()) / 1000)
-  }
+  // 경과시간 실시간 업데이트
+  useEffect(() => {
+    if (!startTime) return
+
+    const timer = setInterval(() => {
+      const now = new Date()
+      const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000)
+      setElapsedTime(elapsed)
+    }, 100)
+
+    return () => clearInterval(timer)
+  }, [startTime])
 
   // 숫자 카운트 소리 재생 함수
   const playCountSound = async (num: number) => {
@@ -292,7 +299,7 @@ export default function ExercisePage() {
 
   const finishAllExercises = () => {
     const allTempos = tempos ? JSON.parse(tempos) : []
-    const totalExerciseTime = getCurrentElapsedTime()
+    const totalExerciseTime = elapsedTime
     const totalSets = allTempos.reduce((sum: number, tempo: any) => {
       return sum + Number(tempo.setCount)
     }, 0)
@@ -317,7 +324,7 @@ export default function ExercisePage() {
               총 경과시간
             </Text>
             <Text className="text-white text-4xl font-bold text-center">
-              {formatElapsedTime(getCurrentElapsedTime())}
+              {formatElapsedTime(elapsedTime)}
             </Text>
           </View>
 
