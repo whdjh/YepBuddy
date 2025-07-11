@@ -54,6 +54,7 @@ export default function ExercisePage() {
   const [remainingRestTime, setRemainingRestTime] = useState<number | null>(null)
   const [totalSets, setTotalSets] = useState(0)
   const [elapsedTime, setElapsedTime] = useState(0)
+  const [isExerciseRunning, setIsExerciseRunning] = useState(false)
   const exerciseStartTimeRef = useRef<number>(0)
   const pikSoundRef = useRef<Audio.Sound | null>(null)
   const pipSoundRef = useRef<Audio.Sound | null>(null)
@@ -143,15 +144,20 @@ export default function ExercisePage() {
     }
   }, [])
 
-  // 소리 재생 함수
+  // 소리 재생 함수 (개선된 버전)
   const playSound = async (type: 'pik' | 'pip') => {
     try {
       const sound = type === 'pik' ? pikSoundRef.current : pipSoundRef.current
       if (sound) {
-        // 소리가 로드되어 있는지 확인
         const status = await sound.getStatusAsync()
         if (status.isLoaded) {
-          await sound.replayAsync()
+          // 소리가 재생 중이면 먼저 정지
+          if (status.isPlaying) {
+            await sound.stopAsync()
+          }
+          // 위치를 처음으로 되돌리고 재생
+          await sound.setPositionAsync(0)
+          await sound.playAsync()
         } else {
           console.log(`${type} 소리가 로드되지 않음`)
         }
@@ -160,6 +166,56 @@ export default function ExercisePage() {
       }
     } catch (error) {
       console.log('소리 재생 실패:', error)
+    }
+  }
+
+  // 숫자 카운트 소리 재생 함수 (개선된 버전)
+  const playCountSound = async (num: number) => {
+    try {
+      const sound = countSoundsRef.current[num]
+      if (sound) {
+        const status = await sound.getStatusAsync()
+        if (status.isLoaded) {
+          // 소리가 재생 중이면 먼저 정지
+          if (status.isPlaying) {
+            await sound.stopAsync()
+          }
+          // 위치를 처음으로 되돌리고 재생
+          await sound.setPositionAsync(0)
+          await sound.playAsync()
+        } else {
+          console.log(`${num} 카운트 소리가 로드되지 않음`)
+        }
+      } else {
+        console.log(`${num} 카운트 소리 참조가 없음`)
+      }
+    } catch (error) {
+      console.log('카운트 소리 재생 실패:', error)
+    }
+  }
+
+  // 휴식 소리 재생 함수 (개선된 버전)
+  const playRestSound = async (type: 'start' | 'end') => {
+    try {
+      const sound = type === 'start' ? restStartSoundRef.current : restEndSoundRef.current
+      if (sound) {
+        const status = await sound.getStatusAsync()
+        if (status.isLoaded) {
+          // 소리가 재생 중이면 먼저 정지
+          if (status.isPlaying) {
+            await sound.stopAsync()
+          }
+          // 위치를 처음으로 되돌리고 재생
+          await sound.setPositionAsync(0)
+          await sound.playAsync()
+        } else {
+          console.log(`${type} 휴식 소리가 로드되지 않음`)
+        }
+      } else {
+        console.log(`${type} 휴식 소리 참조가 없음`)
+      }
+    } catch (error) {
+      console.log('휴식 소리 재생 실패:', error)
     }
   }
 
@@ -188,44 +244,93 @@ export default function ExercisePage() {
     return () => clearInterval(timer)
   }, [startTime])
 
-  // 숫자 카운트 소리 재생 함수 (미리 로드된 소리 사용)
-  const playCountSound = async (num: number) => {
-    try {
-      const sound = countSoundsRef.current[num]
-      if (sound) {
-        const status = await sound.getStatusAsync()
-        if (status.isLoaded) {
-          await sound.replayAsync()
+  // 개선된 운동 실행 로직 (말씀하신 for문 기반)
+  const runExercise = async () => {
+    const sets = Number(setCount)
+    const repsCount = Number(reps)
+    const concentric = Number(concentricTime)
+    const eccentric = Number(eccentricTime)
+    const rest = Number(restTime)
+
+    console.log('운동 시작:', { sets, repsCount, concentric, eccentric, rest, startWith })
+
+    // 시작 시간 설정
+    const startTimeValue = exerciseStartTime ? new Date(Number(exerciseStartTime)) : new Date()
+    setStartTime(startTimeValue)
+    exerciseStartTimeRef.current = Number(exerciseStartTime) || Date.now()
+    setTotalSets(sets)
+    setIsExerciseRunning(true)
+
+    // 세트 반복
+    for (let set = 1; set <= sets; set++) {
+      console.log(`세트 ${set} 시작`)
+      setCurrentSet(set)
+      
+      // 반복 횟수만큼 반복
+      for (let rep = 1; rep <= repsCount; rep++) {
+        console.log(`반복 ${rep} 시작`)
+        
+        // 수축/이완 사이클
+        if (startWith === 'concentric') {
+          // 수축 → 이완 순서
+          console.log('수축 시작')
+          for (let i = 0; i < concentric; i++) {
+            await playSound('pik')
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
+          
+          console.log('이완 시작')
+          for (let i = 0; i < eccentric; i++) {
+            await playSound('pip')
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
         } else {
-          console.log(`${num} 카운트 소리가 로드되지 않음`)
+          // 이완 → 수축 순서
+          console.log('이완 시작')
+          for (let i = 0; i < eccentric; i++) {
+            await playSound('pip')
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
+          
+          console.log('수축 시작')
+          for (let i = 0; i < concentric; i++) {
+            await playSound('pik')
+            await new Promise(resolve => setTimeout(resolve, 1000))
+          }
         }
-      } else {
-        console.log(`${num} 카운트 소리 참조가 없음`)
+        
+        // 반복 완료 시 카운트 소리 (1-20까지만)
+        if (rep <= 20) {
+          console.log(`반복 ${rep} 완료, 카운트 소리 재생`)
+          await playCountSound(rep)
+          // 카운트 소리 재생 후 1초 대기
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
       }
-    } catch (error) {
-      console.log('카운트 소리 재생 실패:', error)
+      
+      // 세트 완료 후 휴식 (마지막 세트 제외)
+      if (set < sets) {
+        console.log(`세트 ${set} 완료, 휴식 시작`)
+        await playRestSound('start')
+        
+        for (let i = 0; i < rest; i++) {
+          setRemainingRestTime(rest - i)
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
+        
+        await playRestSound('end')
+        setRemainingRestTime(null)
+        console.log(`휴식 완료`)
+      }
     }
+    
+    // 운동 완료
+    console.log('운동 완료')
+    setIsExerciseRunning(false)
+    handleExerciseComplete()
   }
 
-  // 휴식 소리 재생 함수 (미리 로드된 소리 사용)
-  const playRestSound = async (type: 'start' | 'end') => {
-    try {
-      const sound = type === 'start' ? restStartSoundRef.current : restEndSoundRef.current
-      if (sound) {
-        const status = await sound.getStatusAsync()
-        if (status.isLoaded) {
-          await sound.replayAsync()
-        } else {
-          console.log(`${type} 휴식 소리가 로드되지 않음`)
-        }
-      } else {
-        console.log(`${type} 휴식 소리 참조가 없음`)
-      }
-    } catch (error) {
-      console.log('휴식 소리 재생 실패:', error)
-    }
-  }
-
+  // 운동 시작
   useEffect(() => {
     const concentric = Number(concentricTime)
     const eccentric = Number(eccentricTime)
@@ -240,108 +345,24 @@ export default function ExercisePage() {
       isNaN(repsCount) ||
       isNaN(rest) ||
       isNaN(sets)
-    )
+    ) {
+      console.log('유효하지 않은 파라미터:', { startWith, concentric, eccentric, repsCount, rest, sets })
       return
-
-    // 시작 시간 설정 (전달받은 시간 사용)
-    const startTimeValue = exerciseStartTime ? new Date(Number(exerciseStartTime)) : new Date()
-    setStartTime(startTimeValue)
-    exerciseStartTimeRef.current = Number(exerciseStartTime) || Date.now()
-    setTotalSets(sets)
-
-    const runSet = (setIndex: number) => {
-      const firstPhase = startWith === 'concentric' ? 'PIK' : 'PIP'
-      const secondPhase = startWith === 'concentric' ? 'PIP' : 'PIK'
-      const firstTime = startWith === 'concentric' ? concentric : eccentric
-      const secondTime = startWith === 'concentric' ? eccentric : concentric
-
-      let rep = 0
-      let phase = 0 // 0: first phase, 1: second phase
-      let time = 0
-      let currentStep = 0
-      let interval: number | null = null
-
-      const startInterval = () => {
-        interval = setInterval(() => {
-          const now = Date.now()
-          const expectedTime = exerciseStartTimeRef.current + (currentStep * 1000)
-
-          if (Math.abs(now - expectedTime) > 100) {
-            exerciseStartTimeRef.current = now - (currentStep * 1000)
-          }
-
-          if (rep >= repsCount) {
-            clearInterval(interval!)
-            if (setIndex < sets) {
-              playRestSound('start')
-              let restElapsed = 0
-              const restStartTime = Date.now()
-              const restInterval = setInterval(() => {
-                const restNow = Date.now()
-                const expectedRestTime = restStartTime + (restElapsed * 1000)
-                if (Math.abs(restNow - expectedRestTime) > 100) {
-                  restElapsed = Math.floor((restNow - restStartTime) / 1000)
-                } else {
-                  restElapsed++
-                }
-                
-                const remainingTime = rest - restElapsed
-                setRemainingRestTime(remainingTime > 0 ? remainingTime : null)
-                
-                if (restElapsed >= rest) {
-                  clearInterval(restInterval)
-                  playRestSound('end')
-                  setRemainingRestTime(null)
-                  setCurrentSet(prev => prev + 1)
-                  exerciseStartTimeRef.current = Date.now()
-                  runSet(setIndex + 1)
-                }
-              }, 1000)
-            } else {
-              handleExerciseComplete()
-            }
-            return
-          }
-
-          if (phase === 0) {
-            // 첫 번째 페이즈 (PIK 또는 PIP)
-            const soundType = firstPhase === 'PIK' ? 'pik' : 'pip'
-            playSound(soundType)
-            time++
-            currentStep++
-            if (time >= firstTime) {
-              phase = 1
-              time = 0
-            }
-          } else {
-            // 두 번째 페이즈 (PIP 또는 PIK)
-            const soundType = secondPhase === 'PIK' ? 'pik' : 'pip'
-            playSound(soundType)
-            time++
-            currentStep++
-            if (time >= secondTime) {
-              // 반복이 끝났으니 일단 멈추고 1초 후 카운트 로그 후 재개
-              clearInterval(interval!)
-              setTimeout(() => {
-                rep++
-                playCountSound(rep)
-                // 다음 반복을 위해 interval 재시작
-                startInterval()
-              }, 1000)
-              phase = 0
-              time = 0
-              return
-            }
-          }
-        }, 1000)
-      }
-
-      startInterval()
     }
 
-    runSet(1)
-    
-  }, [])
+    // 소리가 로드된 후 운동 시작
+    const checkSoundsLoaded = () => {
+      if (pikSoundRef.current && pipSoundRef.current && restStartSoundRef.current && restEndSoundRef.current) {
+        console.log('모든 소리 로드 완료, 운동 시작')
+        runExercise()
+      } else {
+        console.log('소리 로드 대기 중...')
+        setTimeout(checkSoundsLoaded, 100)
+      }
+    }
+
+    checkSoundsLoaded()
+  }, [startWith, concentricTime, eccentricTime, reps, restTime, setCount])
 
   // 운동 완료 후 선택 페이지로 이동
   const handleExerciseComplete = () => {
@@ -407,6 +428,15 @@ export default function ExercisePage() {
               </Text>
               <Text className="text-white text-3xl font-bold text-center">
                 {remainingRestTime}초
+              </Text>
+            </View>
+          )}
+
+          {/* 운동 상태 표시 */}
+          {isExerciseRunning && (
+            <View className="bg-orange-600/80 p-4 rounded-2xl mt-4">
+              <Text className="text-white text-lg font-semibold text-center">
+                운동 진행 중...
               </Text>
             </View>
           )}

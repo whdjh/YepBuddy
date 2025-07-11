@@ -124,7 +124,7 @@ export default function Tempo() {
                 keyboardType="numeric"
                 value={reps}
                 onChangeText={setReps}
-                placeholder="예: 10"
+                placeholder="최대 20Reps 까지 입력가능"
                 placeholderTextColor="#888"
               />
             </View>
