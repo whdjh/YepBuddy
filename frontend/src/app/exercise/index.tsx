@@ -27,12 +27,6 @@ const countSounds: { [key: number]: any } = {
   20: require('../../assets/sounds/koreacount/twenty.mp3'),
 }
 
-// 휴식 소리 파일
-const restSounds = {
-  start: require('../../assets/sounds/rest/start.mp3'),
-  end: require('../../assets/sounds/rest/end.mp3'),
-}
-
 export default function ExercisePage() {
   const {
     startWith,
@@ -42,8 +36,6 @@ export default function ExercisePage() {
     restTime,
     setCount,
     tempos,
-    currentExerciseIndex,
-    isFirstExercise,
     exerciseStartTime,
   } = useLocalSearchParams<{
     startWith: 'concentric' | 'eccentric'
@@ -53,8 +45,6 @@ export default function ExercisePage() {
     restTime: string
     setCount: string
     tempos: string
-    currentExerciseIndex: string
-    isFirstExercise: string
     exerciseStartTime: string
   }>()
 
@@ -67,6 +57,9 @@ export default function ExercisePage() {
   const exerciseStartTimeRef = useRef<number>(0)
   const pikSoundRef = useRef<Audio.Sound | null>(null)
   const pipSoundRef = useRef<Audio.Sound | null>(null)
+  const restStartSoundRef = useRef<Audio.Sound | null>(null)
+  const restEndSoundRef = useRef<Audio.Sound | null>(null)
+  const countSoundsRef = useRef<{ [key: number]: Audio.Sound | null }>({})
   const router = useRouter()
 
   // 소리 초기화
@@ -75,6 +68,7 @@ export default function ExercisePage() {
       try {
         console.log('소리 로드 시작...')
         
+        // 기본 비프 소리 로드
         const { sound: pikSound } = await Audio.Sound.createAsync(
           require('../../assets/sounds/beep/pik.mp3'),
           { shouldPlay: false, volume: 1.0 }
@@ -90,6 +84,35 @@ export default function ExercisePage() {
         await pipSound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
         pipSoundRef.current = pipSound
         console.log('pip 소리 로드 완료')
+
+        // 휴식 소리 로드
+        const { sound: restStartSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/rest/start.mp3'),
+          { shouldPlay: false, volume: 1.0 }
+        )
+        await restStartSound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
+        restStartSoundRef.current = restStartSound
+        console.log('휴식 시작 소리 로드 완료')
+
+        const { sound: restEndSound } = await Audio.Sound.createAsync(
+          require('../../assets/sounds/rest/end.mp3'),
+          { shouldPlay: false, volume: 1.0 }
+        )
+        await restEndSound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
+        restEndSoundRef.current = restEndSound
+        console.log('휴식 종료 소리 로드 완료')
+
+        // 카운트 소리들 로드
+        console.log('카운트 소리 로드 시작...')
+        for (let i = 1; i <= 20; i++) {
+          const soundFile = countSounds[i]
+          if (soundFile) {
+            const { sound } = await Audio.Sound.createAsync(soundFile, { shouldPlay: false, volume: 1.0 })
+            await sound.setStatusAsync({ shouldPlay: false, volume: 1.0 })
+            countSoundsRef.current[i] = sound
+          }
+        }
+        console.log('카운트 소리 로드 완료')
         
       } catch (error) {
         console.log('소리 로드 실패:', error)
@@ -105,6 +128,18 @@ export default function ExercisePage() {
       if (pipSoundRef.current) {
         pipSoundRef.current.unloadAsync()
       }
+      if (restStartSoundRef.current) {
+        restStartSoundRef.current.unloadAsync()
+      }
+      if (restEndSoundRef.current) {
+        restEndSoundRef.current.unloadAsync()
+      }
+      // 카운트 소리들 정리
+      Object.values(countSoundsRef.current).forEach(sound => {
+        if (sound) {
+          sound.unloadAsync()
+        }
+      })
     }
   }, [])
 
@@ -153,40 +188,41 @@ export default function ExercisePage() {
     return () => clearInterval(timer)
   }, [startTime])
 
-  // 숫자 카운트 소리 재생 함수
+  // 숫자 카운트 소리 재생 함수 (미리 로드된 소리 사용)
   const playCountSound = async (num: number) => {
-    const soundFile = countSounds[num]
-    if (!soundFile) return
     try {
-      const { sound } = await Audio.Sound.createAsync(soundFile, { volume: 1.0 })
-      const status = await sound.getStatusAsync()
-      if (status.isLoaded) {
-        await sound.setStatusAsync({ volume: 1.0 })
-        await sound.replayAsync()
-        setTimeout(() => {
-          sound.unloadAsync()
-        }, 1500)
+      const sound = countSoundsRef.current[num]
+      if (sound) {
+        const status = await sound.getStatusAsync()
+        if (status.isLoaded) {
+          await sound.replayAsync()
+        } else {
+          console.log(`${num} 카운트 소리가 로드되지 않음`)
+        }
+      } else {
+        console.log(`${num} 카운트 소리 참조가 없음`)
       }
-    } catch (e) {
-      console.log('카운트 소리 재생 실패:', e)
+    } catch (error) {
+      console.log('카운트 소리 재생 실패:', error)
     }
   }
 
-  // 휴식 소리 재생 함수
+  // 휴식 소리 재생 함수 (미리 로드된 소리 사용)
   const playRestSound = async (type: 'start' | 'end') => {
     try {
-      const soundFile = restSounds[type]
-      const { sound } = await Audio.Sound.createAsync(soundFile, { volume: 1.0 })
-      const status = await sound.getStatusAsync()
-      if (status.isLoaded) {
-        await sound.setStatusAsync({ volume: 1.0 })
-        await sound.replayAsync()
-        setTimeout(() => {
-          sound.unloadAsync()
-        }, 2000)
+      const sound = type === 'start' ? restStartSoundRef.current : restEndSoundRef.current
+      if (sound) {
+        const status = await sound.getStatusAsync()
+        if (status.isLoaded) {
+          await sound.replayAsync()
+        } else {
+          console.log(`${type} 휴식 소리가 로드되지 않음`)
+        }
+      } else {
+        console.log(`${type} 휴식 소리 참조가 없음`)
       }
-    } catch (e) {
-      console.log('휴식 소리 재생 실패:', e)
+    } catch (error) {
+      console.log('휴식 소리 재생 실패:', error)
     }
   }
 
@@ -359,7 +395,7 @@ export default function ExercisePage() {
               남은 세트수
             </Text>
             <Text className="text-white text-3xl font-bold text-center">
-              {totalSets - currentSet + 1} / {totalSets}
+              {totalSets - currentSet}
             </Text>
           </View>
 
