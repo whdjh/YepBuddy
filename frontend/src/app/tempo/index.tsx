@@ -6,7 +6,7 @@ export default function Tempo() {
   const router = useRouter()
   const params = useLocalSearchParams()
 
-  const [startWith, setStartWith] = useState<'concentric' | 'eccentric'>('eccentric')
+  const [startWith, setStartWith] = useState<'concentric' | 'eccentric'>('concentric')
   const [concentricTime, setConcentricTime] = useState('')
   const [eccentricTime, setEccentricTime] = useState('')
   const [reps, setReps] = useState('')
@@ -61,15 +61,12 @@ export default function Tempo() {
   return (
     <View className="flex-1 bg-black">
       <ScrollView className="flex-1 px-6 py-10" showsVerticalScrollIndicator={false}>
-        <Text className="text-white text-2xl font-bold mb-6 text-center">템포 설정</Text>
-        
         {/* 운동 번호 표시 */}
         <Text className="text-white text-lg mb-4 text-center">
           {currentExerciseNumber}번째 운동
         </Text>
 
-        {/* 1. 수축/이완 먼저 선택 */}
-        <Text className="text-white mb-2">운동 시작 시</Text>
+        {/* 수축/이완 먼저 선택 */}
         <View className="flex-row justify-around mb-6">
           <TouchableOpacity
             onPress={() => setStartWith('concentric')}
@@ -89,46 +86,63 @@ export default function Tempo() {
           </TouchableOpacity>
         </View>
 
-        {/* 2. 컨트롤 시간 입력 */}
+        {/* 컨트롤 시간 입력 */}
         <View className="mb-4">
-          <Text className="text-white mb-2">수축(단축성수축) 시간 (초)</Text>
-          <TextInput
-            className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
-            keyboardType="numeric"
-            value={concentricTime}
-            onChangeText={setConcentricTime}
-            placeholder="예: 2"
-            placeholderTextColor="#888"
-          />
+          <View className="flex-row space-x-3">
+            <View className="flex-1">
+              <Text className="text-white text-sm mb-1">수축(단축성수축) 시간(초)</Text>
+              <TextInput
+                className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
+                keyboardType="numeric"
+                value={concentricTime}
+                onChangeText={setConcentricTime}
+                placeholder="예: 3"
+                placeholderTextColor="#888"
+              />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white text-sm mb-1">이완(신장성수축) 시간(초)</Text>
+              <TextInput
+                className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
+                keyboardType="numeric"
+                value={eccentricTime}
+                onChangeText={setEccentricTime}
+                placeholder="예: 1"
+                placeholderTextColor="#888"
+              />
+            </View>
+          </View>
         </View>
 
-        {/* 3. 이완 시간 입력 */}
+        {/* 운동 횟수 & 운동세트수 입력 */}
         <View className="mb-4">
-          <Text className="text-white mb-2">이완(신장성수축) 시간 (초)</Text>
-          <TextInput
-            className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
-            keyboardType="numeric"
-            value={eccentricTime}
-            onChangeText={setEccentricTime}
-            placeholder="예: 4"
-            placeholderTextColor="#888"
-          />
+          <View className="flex-row space-x-3">
+            <View className="flex-1">
+              <Text className="text-white mb-2">운동 횟수 (Reps)</Text>
+              <TextInput
+                className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
+                keyboardType="numeric"
+                value={reps}
+                onChangeText={setReps}
+                placeholder="예: 10"
+                placeholderTextColor="#888"
+              />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white mb-2">운동 세트 수</Text>
+              <TextInput
+                className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
+                keyboardType="numeric"
+                value={setCount}
+                onChangeText={setSetCount}
+                placeholder="예: 3"
+                placeholderTextColor="#888"
+              />
+            </View>
+          </View>
         </View>
 
-        {/* 4. 운동 횟수 입력 */}
-        <View className="mb-4">
-          <Text className="text-white mb-2">운동 횟수 (Reps)</Text>
-          <TextInput
-            className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-            placeholder="예: 10"
-            placeholderTextColor="#888"
-          />
-        </View>
-
-        {/* 5. 휴식 시간 입력 */}
+        {/* 휴식 시간 입력 */}
         <View className="mb-4">
           <Text className="text-white mb-2">휴식 시간 (초)</Text>
           <TextInput
@@ -137,19 +151,6 @@ export default function Tempo() {
             value={restTime}
             onChangeText={setRestTime}
             placeholder="예: 60"
-            placeholderTextColor="#888"
-          />
-        </View>
-
-        {/* 6. 세트 수 입력 */}
-        <View className="mb-8">
-          <Text className="text-white mb-2">운동 세트 수</Text>
-          <TextInput
-            className="bg-zinc-800 text-white px-4 py-2 rounded-xl"
-            keyboardType="numeric"
-            value={setCount}
-            onChangeText={setSetCount}
-            placeholder="예: 3"
             placeholderTextColor="#888"
           />
         </View>
