@@ -37,6 +37,7 @@ export default function ExercisePage() {
     setCount,
     tempos,
     exerciseStartTime,
+    isFirstExercise,
   } = useLocalSearchParams<{
     startWith: 'concentric' | 'eccentric'
     concentricTime: string
@@ -46,6 +47,7 @@ export default function ExercisePage() {
     setCount: string
     tempos: string
     exerciseStartTime: string
+    isFirstExercise: string
   }>()
 
   const [currentSet, setCurrentSet] = useState(1)
@@ -260,6 +262,17 @@ export default function ExercisePage() {
     exerciseStartTimeRef.current = Number(exerciseStartTime) || Date.now()
     setTotalSets(sets)
     setIsExerciseRunning(true)
+
+    // 첫 번째 운동인 경우 10초 준비 시간 추가
+    const isFirst = isFirstExercise === 'true'
+    if (isFirst) {
+      console.log('첫 번째 운동 시작, 10초 준비 시간')
+      for (let i = 10; i >= 1; i--) {
+        console.log(`운동 시작 ${i}초 전`)
+        await playCountSound(i)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
 
     // 세트 반복
     for (let set = 1; set <= sets; set++) {
