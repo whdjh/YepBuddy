@@ -313,12 +313,32 @@ export default function ExercisePage() {
         console.log(`세트 ${set} 완료, 휴식 시작`)
         await playRestSound('start')
         
+        let countdownStarted = false
+        
         for (let i = 0; i < rest; i++) {
-          setRemainingRestTime(rest - i)
+          const remainingTime = rest - i
+          setRemainingRestTime(remainingTime)
+          
+          // 휴식 종료 10초 전에 휴식 종료 소리 재생하고 카운트다운 시작
+          if (remainingTime === 10 && !countdownStarted) {
+            console.log(`휴식 종료 10초 전, 휴식 종료 소리 재생`)
+            await playRestSound('end')
+            countdownStarted = true
+            
+            // 휴식 종료 소리 재생 후 10초부터 1초까지 카운트다운 시작 (별도로 실행)
+            setTimeout(async () => {
+              for (let j = 10; j >= 1; j--) {
+                console.log(`운동 시작 ${j}초 전`)
+                await playCountSound(j)
+                await new Promise(resolve => setTimeout(resolve, 1000))
+              }
+            }, 0)
+          }
+          
           await new Promise(resolve => setTimeout(resolve, 1000))
         }
         
-        await playRestSound('end')
+        // 휴식 완료 후 남은 휴식시간 UI 제거
         setRemainingRestTime(null)
         console.log(`휴식 완료`)
       }
