@@ -1,0 +1,160 @@
+@import "tailwindcss";
+@import './fonts.css';
+
+:root {
+  --background: #1a1a1e;
+  --foreground: #f3f4f6;
+  --primary: #c179ff;
+  --purple-500: #BF5eff;
+  --purple-600: #a339ff;
+  --purple-700: #9900ff;
+  --purple-750: #9952ff;
+  --bg-34343A: #34343a;
+  --gray-50: #9CA3AF;
+  --gray-100: #29292C;
+  --gray-400: #D1D5DB;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #f3f4f6;
+    --gray-50: #9CA3AF;
+    --gray-400: #D1D5DB;
+  }
+}
+
+/* 커스텀 글로벌 스타일 추가 가능 */
+@layer base {
+  html {
+    --font-pretendard:
+      'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+      system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
+      'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji',
+      'Segoe UI Symbol', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-pretendard);
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    background: var(--background);
+    color: var(--foreground);
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  button {
+    all: unset;
+    cursor: pointer;
+    box-sizing: border-box;
+    transition: background-color 0.2s ease;
+  }
+
+  p {
+    margin: 0;
+    word-break: keep-all;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  em {
+    font-style: normal;
+    word-break: keep-all;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    word-break: keep-all;
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+    border-style: none;
+  }
+
+  ul,
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  input,
+  textarea,
+  select {
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    border: none;
+    background: transparent;
+    outline: none;
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #34343a inset !important;
+    -webkit-text-fill-color: #9CA3AF !important;
+    transition: background-color 5000s ease-in-out 0s;
+    font-size: 1rem !important;
+    font-weight: 500 !important;
+  }
+
+}
+
+::-webkit-scrollbar {
+  width: 0.1875rem;
+}
+
+::-webkit-scrollbar-track {
+  background: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 0.5rem;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+mux-player {
+    --media-accent-color: var(--purple-600) !important;
+
+}
