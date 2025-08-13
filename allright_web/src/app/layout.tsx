@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
-import Gnb from "@/components/Gnb";
+import Gnb from "@/components/common/Gnb";
 
 
 export const metadata: Metadata = {
@@ -17,7 +17,9 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <Gnb />
-        {children}
+        <div className="mt-[3.75rem]">
+          {children}
+        </div>
       </body>
     </html>
   );
