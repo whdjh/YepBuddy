@@ -17,7 +17,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <Gnb />
-        <div className="mt-[3.75rem]">
+        <div className="mt-[7rem]">
           {children}
         </div>
       </body>
