@@ -1,7 +1,7 @@
 export default function Home() {
   return (
-    <main>
-      
-    </main>
+    <div>
+      메인페이지인뎅
+    </div>
   );
 }
