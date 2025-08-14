@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import Link from "next/link";
 import Logo from "@/asset/ic/ic_logo.svg";
@@ -15,7 +15,7 @@ export default function Gnb() {
       <div className="flex h-[3.75rem] w-full max-w-[84rem] items-center justify-between px-[1.5rem] text-white mt-[1rem]">
         <nav className="flex items-center gap-[0.75rem]">
           <Link 
-            href='/'
+            href="/"
             aria-label="메인페이지로 이동"
           >
             <Logo width={60} height={60} />
