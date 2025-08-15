@@ -1,4 +1,4 @@
-export default function TrainerPage() {
+export default function Trainer() {
   return (
     <div>
       <h1>트레이너 페이지</h1>

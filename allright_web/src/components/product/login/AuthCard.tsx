@@ -29,10 +29,10 @@ export default function AuthCard() {
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
         noValidate
-        className="flex items-center justify-center min-h-screen"
+        className="w-full h-full flex items-center justify-center"
       >
-        <div className="flex w-full max-w-[20rem] gap-[2rem] flex-col items-center justify-center rounded-[1rem] bg-[#242429] px-[2rem] py-[2rem]">
-          <Logo width={100} height={100} />
+        <div className="flex w-full max-w-[20rem] gap-[1rem] flex-col items-center justify-center rounded-[1rem] bg-[#242429] px-[2rem] py-[2rem]">
+          <Logo width={70} height={70} />
           <Input 
             name="id" 
             label="아이디" 
@@ -64,10 +64,10 @@ export default function AuthCard() {
               }
             }}
           />
-          <Button type="submit" variant="solid" className='w-[10rem]'>
+          <Button type="submit" variant="solid" className='w-[15rem]'>
             로그인
           </Button>
-          <Button variant="kakao" className='w-[10rem]'>
+          <Button variant="kakao" className='w-[15rem]'>
             카카오로그인
           </Button>
         </div>
