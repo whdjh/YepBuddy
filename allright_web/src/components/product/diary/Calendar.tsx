@@ -1,11 +1,19 @@
 "use client";
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
+
+interface Event {
+  id: string;
+  date: string;
+  title: string;
+  type: 'event' | 'holiday' | 'task';
+}
 
 interface CalendarProps {
   onDateChange?: (date: Date) => void;
@@ -13,7 +21,12 @@ interface CalendarProps {
 }
 
 export default function DiaryCalendar({ onDateChange, initialDate = new Date() }: CalendarProps) {
-  const [value, setValue] = useState<Value>(initialDate);
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate());
+  
+  const [value, setValue] = useState<Value>(initialDate || defaultDate);
+  const [events, setEvents] = useState<Event[]>([]);
+  const router = useRouter();
 
   const handleDateChange = (newValue: Value) => {
     setValue(newValue);
@@ -22,8 +35,47 @@ export default function DiaryCalendar({ onDateChange, initialDate = new Date() }
     }
   };
 
+  const handleTileClick = (value: Date) => {
+    const dateString = value.toISOString().split('T')[0];
+    router.push(`/diary/${dateString}`);
+  };
+
+  const getEventsForDate = (date: Date) => {
+    const adjustedDate = new Date(date);
+    adjustedDate.setDate(date.getDate() + 1);
+    const dateString = adjustedDate.toISOString().split('T')[0];
+    return events.filter(event => event.date === dateString);
+  };
+
+  const tileClassName = ({ date }: { date: Date }) => {
+    const dateEvents = getEventsForDate(date);
+    const hasEvents = dateEvents.length > 0;
+    
+    return `hover:bg-[#34343A] transition-colors ${hasEvents ? 'relative' : ''}`;
+  };
+
+  const tileContent = ({ date }: { date: Date }) => {
+    const dateEvents = getEventsForDate(date);
+    
+    if (dateEvents.length === 0) return null;
+
+    return (
+      <div className="absolute bottom-0 left-0 right-0">
+        {dateEvents.map((event) => (
+          <div
+            key={event.id}
+            className="bg-green-600 text-white text-xs px-1 py-0.5 rounded-[0.3rem] truncate flex items-center justify-between"
+            title={event.title}
+          >
+            <span>{event.title}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div className="bg-[#242429] rounded-lg p-6">
+    <div className="bg-[#242429] rounded-lg p-6 w-full">
       <Calendar
         onChange={handleDateChange}
         value={value}
@@ -32,13 +84,17 @@ export default function DiaryCalendar({ onDateChange, initialDate = new Date() }
         minDetail="month"
         showNavigation={true}
         showNeighboringMonth={false}
-        tileClassName="hover:bg-[#34343A] transition-colors"
+        tileClassName={tileClassName}
+        tileContent={tileContent}
         navigationLabel={({ date }) => 
           date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long' })
         }
-        formatDay={(locale, date) => date.getDate().toString()}
+        formatDay={(_, date) => date.getDate().toString()}
         view="month"
+        onClickDay={handleTileClick}
       />
+
+
 
       <style jsx global>{`
         .react-calendar {
@@ -107,24 +163,20 @@ export default function DiaryCalendar({ onDateChange, initialDate = new Date() }
           background: transparent !important;
           border: none !important;
           color: white !important;
-          font-size: 1rem !important;
-          padding: 0.75rem !important;
-          border-radius: 0.5rem !important;
+          font-size: 1.1rem !important;
+          padding: 0rem 0.5rem 1rem 0.5rem !important;
+          border-radius: 0.3rem !important;
           transition: background-color 0.2s !important;
           text-align: center !important;
-        }
-        
-        .react-calendar__tile:hover {
-          background: #34343A !important;
+          position: relative !important;
+          min-height: 4rem !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
         }
         
         .react-calendar__tile--active {
-          background: #16a34a !important;
-          color: white !important;
-        }
-        
-        .react-calendar__tile--now {
-          background: #404040 !important;
+          background: #34343A !important;
           color: white !important;
         }
         
