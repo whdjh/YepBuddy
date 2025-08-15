@@ -4,6 +4,7 @@ import Logo from '@/asset/ic/ic_logo.svg';
 import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 
 interface FormValues {
   id: string;
@@ -11,6 +12,7 @@ interface FormValues {
 }
 
 export default function AuthCard() {
+  const router = useRouter();
   const methods = useForm<FormValues>({
     mode: 'all',
     defaultValues: { id: '', pwd: '' },
@@ -19,6 +21,7 @@ export default function AuthCard() {
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log(data);
+    router.push('/');
   };
 
   return (
@@ -61,7 +64,7 @@ export default function AuthCard() {
               }
             }}
           />
-          <Button variant="solid" className='w-[10rem]'>
+          <Button type="submit" variant="solid" className='w-[10rem]'>
             로그인
           </Button>
           <Button variant="kakao" className='w-[10rem]'>
