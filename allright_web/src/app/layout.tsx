@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import Gnb from "@/components/common/Gnb";
-
+import ScrollController from "@/components/common/ScrollController";
 
 export const metadata: Metadata = {
   title: "allright",
@@ -16,10 +16,9 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <ScrollController />
         <Gnb />
-        <main className="mt-[7rem]">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );
