@@ -8,7 +8,6 @@ export default function Gnb() {
     { href: "/trainer", label: "트레이너" },
     { href: "/diary", label: "운동일지" },
     { href: "/tempo", label: "운동템포" },
-    { href: "/member", label: "회원관리" }, // 이거의 경우 트레이너만 볼 수 있음
   ];
 
   return (
