@@ -5,9 +5,10 @@ import Logo from "@/asset/ic/ic_logo.svg";
 
 export default function Gnb() {
   const navItems = [
-    { href: "/tmp1", label: "임시1" },
-    { href: "/tmp2", label: "임시2" },
-    { href: "/tmp3", label: "임시3" },
+    { href: "/trainer", label: "트레이너" },
+    { href: "/diary", label: "운동일지" },
+    { href: "/tempo", label: "운동템포" },
+    { href: "/member", label: "회원관리" }, // 이거의 경우 트레이너만 볼 수 있음
   ];
 
   return (
