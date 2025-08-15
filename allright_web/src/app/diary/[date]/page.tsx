@@ -8,7 +8,9 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   const router = useRouter();
 
   const { date: dateParam } = use(params);
-  const date = new Date(dateParam);
+  const adjustedDateParam = new Date(dateParam);
+  adjustedDateParam.setDate(adjustedDateParam.getDate());
+  const date = adjustedDateParam;
   const formattedDate = date.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
