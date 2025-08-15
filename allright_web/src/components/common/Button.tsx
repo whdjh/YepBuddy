@@ -12,10 +12,10 @@ export default function Button({
   className,
   ...props
 }: ButtonProps) {
-  const baseClasses = "h-[2.75rem] rounded-[0.75rem] flex items-center text-[1rem] font-semibold justify-center cursor-pointer disabled:cursor-not-allowed";
+  const baseClasses = "h-[3rem] rounded-[1rem] flex items-center justify-center cursor-pointer disabled:cursor-not-allowed";
   
   const variants = {
-    solid: "bg-[#16a34a] text-white hover:bg-[#22c55e] active:bg-[#4ade80] disabled:bg-gray-400",
+    solid: "bg-[#16a34a] hover:bg-[#22c55e] active:bg-[#4ade80] disabled:bg-gray-400",
     outline: "bg-transparent border border-solid text-[#16a34a] border-[#16a34a] hover:border-[#22c55e] hover:text-[#22c55e] active:border-[#16a34a] active:text-[#16a34a] disabled:border-gray-400 disabled:text-gray-400",
     kakao: "bg-[#FEE500] text-[#191919] hover:bg-[#FDD835] active:bg-[#FCC419] disabled:bg-gray-400 disabled:text-gray-600",
   };

@@ -5,15 +5,24 @@ import Input from '@/components/common/Input';
 export default function AuthCard() {
 
   return (
-    <div className="flex items-center justify-center">
-      <div className="flex flex-col items-center justify-center gap-[2.5rem]">
-        <div className="flex w-full max-w-[31.875rem] gap-[1rem] flex-col items-center justify-center rounded-[1.5rem] bg-[#242429] px-[1rem] py-[2rem]">
-          <Logo height={120} />
-          <Input name="id" label="아이디" />
-          <Input name="pwd" label="비밀번호" type="password" />
-          <Button variant="solid" className='w-[20.7rem]'>로그인</Button>
-          <Button variant="kakao" className='w-[20.7rem]'>카카오로그인</Button>
-        </div>
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="flex w-full max-w-[30rem] gap-[2rem] flex-col items-center justify-center rounded-[1rem] bg-[#242429] px-[2rem] py-[2rem]">
+        <Logo width={100} height={100} />
+        <Input 
+          name="id" 
+          label="아이디" 
+          placeholder='아이디를 입력해주세요.'
+          width='w-[20rem]'
+        />
+        <Input 
+          name="pwd" 
+          label="비밀번호" 
+          type="password" 
+          placeholder='비밀번호를 입력해주세요.'
+          width='w-[20rem]'
+        />
+        <Button variant="solid" className='w-[15rem]'>로그인</Button>
+        <Button variant="kakao" className='w-[15rem]'>카카오로그인</Button>
       </div>
     </div>
   );

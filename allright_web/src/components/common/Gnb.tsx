@@ -18,7 +18,7 @@ export default function Gnb() {
             href="/"
             aria-label="메인페이지로 이동"
           >
-            <Logo width={60} height={60} />
+            <Logo width={100} />
           </Link>
           {navItems.map(({ href, label }) => (
             <Link 

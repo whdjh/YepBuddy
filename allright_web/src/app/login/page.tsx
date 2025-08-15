@@ -2,6 +2,8 @@ import AuthCard from "@/components/product/login/AuthCard";
 
 export default function Login() {
   return (
-    <AuthCard />
-  )
+    <div className="flex items-center justify-center min-h-screen">
+      <AuthCard />
+    </div>
+  );
 }

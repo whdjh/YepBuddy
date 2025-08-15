@@ -13,44 +13,44 @@ interface InputProps {
   placeholder?: string;
   /** input type 설정 */
   type?: 'text' | 'password';
+  /** input의 너비 클래스 */
+  width?: string;
+  /** 추가 클래스명 */
+  className?: string;
 }
 
-function Input({ name, label, placeholder, type }: InputProps) {
+function Input({ name, label, placeholder, type, width, className }: InputProps) {
   const IsPwd = type === 'password';
   const [showPassword, setShowPassword] = useState(false);
 
 
   return (
-    <>
-      <div className="flex flex-col gap-[0.5rem]">
-        <label 
-          htmlFor={name}
-          className="block"
-        >
-          {label}
-        </label>
-        <div className="relative">
-          <div className="flex flex-row items-center gap-[0.5rem]">
-            <input 
-              id={name}
-              type={IsPwd ? (showPassword ? 'text' : 'password') : type}
-              placeholder={placeholder}
-              className="h-[2.75rem] w-full rounded-lg border-0 bg-[#34343A] px-[1rem] py-[0.625rem]"
-            />
-          </div>
-          {IsPwd && (
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute top-1/2 right-3 -translate-y-1/2"
-              aria-label="비밀번호 숨김 버튼"
-            >
-              {showPassword ? <Visibility /> : <Invisibility />} 
-            </button>
-          )}
-        </div>
+    <div className="flex flex-col gap-[0.5rem]">
+      <label 
+        htmlFor={name}
+        className="block"
+      >
+        {label}
+      </label>
+      <div className={`relative ${width} ${className}`}>
+        <input 
+          id={name}
+          type={IsPwd ? (showPassword ? 'text' : 'password') : type}
+          placeholder={placeholder}
+          className="h-[3rem] w-full rounded-lg border-0 bg-[#34343A] px-[1rem] py-[1rem]"
+        />
+        {IsPwd && (
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute top-1/2 right-3 -translate-y-1/2"
+            aria-label="비밀번호 숨김 버튼"
+          >
+            {showPassword ? <Visibility /> : <Invisibility />} 
+          </button>
+        )}
       </div>
-    </>
+    </div>
   );
 }
 
