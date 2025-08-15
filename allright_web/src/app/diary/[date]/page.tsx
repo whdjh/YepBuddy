@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import Button from '@/components/common/Button';
 import { use } from 'react';
+import Back from '@/asset/ic/ic_back.svg'
 
 export default function DiaryDetail({ params }: { params: Promise<{ date: string }> }) {
   const router = useRouter();
@@ -21,15 +22,13 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white p-4 mt-[5.5rem] mx-[0.5rem] rounded-[1rem]">
+    <div className="min-h-screen bg-[#1a1a1a] text-white p-5 mt-[5.5rem] mx-[0.5rem] rounded-[1rem]">
       <div className="flex items-center justify-between mb-6">
-        <Button
+        <button
           onClick={handleBack}
-          variant="outline"
-          className='p-2'
         >
-          뒤로이동
-        </Button>
+          <Back />
+        </button>
         <h1>{formattedDate}</h1>
       </div>
     </div>

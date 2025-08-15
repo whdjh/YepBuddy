@@ -3,7 +3,7 @@
 import { memo, ReactNode, useState, useCallback, ChangeEventHandler } from "react";
 import { RegisterOptions, useFormContext } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
-import Invisibility from "@/asset/ic/ic_Invisibility.svg";
+import Invisibility from "@/asset/ic/ic_invisibility.svg";
 import Visibility from "@/asset/ic/ic_visibility.svg";
 
 interface InputProps {
