@@ -59,10 +59,21 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
     console.log('저장할 데이터:', diaryData);
     
     // TODO: API 호출로 서버에 저장
+    // TODO: 저장 성공/실패 처리
+    // TODO: 로딩 상태 표시
+    // TODO: 에러 처리 및 사용자 피드백
     // saveDiaryData(diaryData);
     
     alert('운동일지가 저장되었습니다!');
   };
+
+  // TODO: 페이지 로드 시 기존 데이터 불러오기
+  // TODO: 날짜 변경 시 데이터 초기화 또는 불러오기
+  // TODO: 탭 변경 시 데이터 유지
+  // TODO: 브라우저 뒤로가기/앞으로가기 처리
+  // TODO: 데이터 유효성 검사
+  // TODO: 자동 저장 기능 (선택사항)
+  // TODO: 데이터 백업 기능
 
   return (
     <div className="flex flex-col mb-6">

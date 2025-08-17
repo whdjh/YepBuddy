@@ -12,6 +12,16 @@ interface Exercise {
   }>;
 }
 
+interface ExerciseData {
+  selectedBodyParts: string[];
+  exercises: Exercise[];
+}
+
+interface ExerciseDiaryTabProps {
+  data?: ExerciseData;
+  onChange?: (data: ExerciseData) => void;
+}
+
 const BODY_PARTS = [
   { value: 'chest', label: '가슴' },
   { value: 'back', label: '등' },
@@ -22,41 +32,63 @@ const BODY_PARTS = [
 
 const MAX_SETS = 10;
 
-export default function ExerciseDiaryTab() {
-  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(['chest']);
-  const [exercises, setExercises] = useState<Exercise[]>([]);
+export default function ExerciseDiaryTab({ data, onChange }: ExerciseDiaryTabProps) {
+  const [selectedBodyParts, setSelectedBodyParts] = useState<string[]>(data?.selectedBodyParts || ['chest']);
+  const [exercises, setExercises] = useState<Exercise[]>(data?.exercises || []);
+
+  // TODO: 데이터 변경 시 부모 컴포넌트에 알림
+  const handleDataChange = (newData: Partial<ExerciseData>) => {
+    const updatedData = {
+      selectedBodyParts,
+      exercises,
+      ...newData
+    };
+    onChange?.(updatedData);
+  };
 
   const handleAddExercise = () => {
     const newExercise: Exercise = {
       id: Date.now().toString(),
       name: '',
-      sets: Array.from({ length: 10 }, () => ({ weight: '0', reps: '0' }))
+      sets: Array.from({ length: MAX_SETS }, () => ({ weight: '0', reps: '0' }))
     };
-    setExercises([...exercises, newExercise]);
+    const newExercises = [...exercises, newExercise];
+    setExercises(newExercises);
+    handleDataChange({ exercises: newExercises });
   };
 
   const handleUpdateExerciseName = (exerciseId: string, name: string) => {
-    setExercises(exercises.map(exercise => {
+    const newExercises = exercises.map(exercise => {
       if (exercise.id === exerciseId) {
         return { ...exercise, name };
       }
       return exercise;
-    }));
+    });
+    setExercises(newExercises);
+    handleDataChange({ exercises: newExercises });
   };
 
   const handleUpdateSet = (exerciseId: string, setIndex: number, field: 'weight' | 'reps', value: string) => {
-    setExercises(exercises.map(exercise => {
+    const newExercises = exercises.map(exercise => {
       if (exercise.id === exerciseId) {
         const newSets = [...exercise.sets];
+        // Ensure the array is long enough to update the set
+        while (newSets.length <= setIndex) {
+          newSets.push({ weight: '0', reps: '0' });
+        }
         newSets[setIndex] = { ...newSets[setIndex], [field]: value };
         return { ...exercise, sets: newSets };
       }
       return exercise;
-    }));
+    });
+    setExercises(newExercises);
+    handleDataChange({ exercises: newExercises });
   };
 
   const handleRemoveExercise = (exerciseId: string) => {
-    setExercises(exercises.filter(exercise => exercise.id !== exerciseId));
+    const newExercises = exercises.filter(exercise => exercise.id !== exerciseId);
+    setExercises(newExercises);
+    handleDataChange({ exercises: newExercises });
   };
 
   const handleRemoveLastExercise = () => {
@@ -66,18 +98,12 @@ export default function ExerciseDiaryTab() {
   };
 
   const handleToggleBodyPart = (bodyPart: string) => {
-    setSelectedBodyParts(prev => {
-      if (prev.includes(bodyPart)) {
-        // 이미 선택된 경우 제거 (단, 최소 1개는 유지)
-        if (prev.length > 1) {
-          return prev.filter(part => part !== bodyPart);
-        }
-        return prev;
-      } else {
-        // 선택되지 않은 경우 추가
-        return [...prev, bodyPart];
-      }
-    });
+    const newSelectedBodyParts = selectedBodyParts.includes(bodyPart)
+      ? (selectedBodyParts.length > 1 ? selectedBodyParts.filter(part => part !== bodyPart) : selectedBodyParts)
+      : [...selectedBodyParts, bodyPart];
+    
+    setSelectedBodyParts(newSelectedBodyParts);
+    handleDataChange({ selectedBodyParts: newSelectedBodyParts });
   };
 
   return (
