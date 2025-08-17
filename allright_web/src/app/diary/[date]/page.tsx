@@ -1,6 +1,7 @@
 "use client";
 
-import { use, useState } from 'react';
+import { use } from 'react';
+import useQueryTab from '@/hooks/useQueryTab';
 import DiaryHeader from '@/components/product/diary/detail/DiaryHeader';
 import DiaryTabNavigation from '@/components/product/diary/detail/DiaryTabNavigation';
 import StatusCheckTab from '@/components/product/diary/detail/StatusCheckTab';
@@ -9,14 +10,19 @@ import EvaluationTab from '@/components/product/diary/detail/EvaluationTab';
 
 export default function DiaryDetail({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);
+  
   const adjustedDateParam = new Date(dateParam);
   adjustedDateParam.setDate(adjustedDateParam.getDate());
   const date = adjustedDateParam;
   
-  const [activeTab, setActiveTab] = useState<'status' | 'exercise' | 'evaluation'>('status');
+  const { activeTab, setTab } = useQueryTab<'status' | 'exercise' | 'evaluation'>(
+    'tab',
+    'status',
+    ['status', 'exercise', 'evaluation']
+  );
 
   const handleTabChange = (tab: 'status' | 'exercise' | 'evaluation') => {
-    setActiveTab(tab);
+    setTab(tab);
   };
 
   return (
