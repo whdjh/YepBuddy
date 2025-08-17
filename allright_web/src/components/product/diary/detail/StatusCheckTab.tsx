@@ -30,7 +30,7 @@ export default function StatusCheckTab({ data, onChange }: StatusCheckTabProps) 
   const [condition, setCondition] = useState<'high' | 'medium' | 'low'>(data?.condition || 'medium');
   const [activityLevel, setActivityLevel] = useState<'high' | 'medium' | 'low'>(data?.activityLevel || 'medium');
 
-  const updateData = (newData: Partial<StatusData>) => {
+  const handleUpdateData = (newData: Partial<StatusData>) => {
     const updatedData = {
       sleepStatus,
       condition,
@@ -64,7 +64,7 @@ export default function StatusCheckTab({ data, onChange }: StatusCheckTabProps) 
               onChange={(e) => {
                 const newValue = e.target.value as 'high' | 'medium' | 'low';
                 handleChange(newValue);
-                updateData({ [field]: newValue });
+                handleUpdateData({ [field]: newValue });
               }}
               className="sr-only"
             />

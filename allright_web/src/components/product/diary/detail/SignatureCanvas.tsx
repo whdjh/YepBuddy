@@ -32,20 +32,20 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
     contextRef.current = context;
   }, []);
 
-  const startDrawing = (event: React.MouseEvent | React.TouchEvent) => {
+  const handleStartDrawing = (event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault(); // 스크롤 방지
     setIsDrawing(true);
-    draw(event);
+    handleDraw(event);
   };
 
-  const finishDrawing = () => {
+  const handleFinishDrawing = () => {
     setIsDrawing(false);
     if (contextRef.current) {
       contextRef.current.beginPath();
     }
   };
 
-  const draw = (event: React.MouseEvent | React.TouchEvent) => {
+  const handleDraw = (event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault(); // 스크롤 방지
     if (!isDrawing || !contextRef.current) return;
 
@@ -73,13 +73,13 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
     contextRef.current.moveTo(clientX, clientY);
   };
 
-  const clearSignature = () => {
+  const handleClearSignature = () => {
     if (!contextRef.current || !canvasRef.current) return;
     const canvas = canvasRef.current;
     contextRef.current.clearRect(0, 0, canvas.width, canvas.height);
   };
 
-  const saveSignature = () => {
+  const handleSaveSignature = () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const signatureData = canvas.toDataURL('image/png');
@@ -98,13 +98,13 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
           <canvas
             ref={canvasRef}
             className="w-full h-20 border border-gray-600 rounded bg-white cursor-crosshair touch-none"
-            onMouseDown={startDrawing}
-            onMouseUp={finishDrawing}
-            onMouseOut={finishDrawing}
-            onMouseMove={draw}
-            onTouchStart={startDrawing}
-            onTouchEnd={finishDrawing}
-            onTouchMove={draw}
+            onMouseDown={handleStartDrawing}
+            onMouseUp={handleFinishDrawing}
+            onMouseOut={handleFinishDrawing}
+            onMouseMove={handleDraw}
+            onTouchStart={handleStartDrawing}
+            onTouchEnd={handleFinishDrawing}
+            onTouchMove={handleDraw}
           />
         </div>
       </div>
@@ -112,14 +112,14 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
       <div className="flex gap-2">
         <Button
           variant="outline"
-          onClick={clearSignature}
+          onClick={handleClearSignature}
           className="h-[2rem] text-sm w-[10rem]"
         >
           지우기
         </Button>
         <Button
           variant="solid"
-          onClick={saveSignature}
+          onClick={handleSaveSignature}
           className="h-[2rem] text-sm w-[10rem]"
         >
           저장
