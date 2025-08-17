@@ -109,7 +109,7 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
         </div>
       </div>
       
-      <div className="flex gap-2">
+      <div className="flex gap-2 justify-center items-center">
         <Button
           variant="outline"
           onClick={handleClearSignature}

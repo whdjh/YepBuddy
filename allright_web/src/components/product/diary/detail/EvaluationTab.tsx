@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import Button from '@/components/common/Button';
 import Textarea from '@/components/common/Textarea';
 import SignatureCanvas from './SignatureCanvas';
+import { useToastStore } from '@/app/stores/useToastStore';
 
 interface EvaluationData {
   trainerComment: string;
@@ -20,6 +20,7 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
   const [trainerComment, setTrainerComment] = useState(data?.trainerComment || '');
   const [feedback, setFeedback] = useState(data?.feedback || '');
   const [signatureData, setSignatureData] = useState<string>(data?.signatureData || '');
+  const { show: showToast } = useToastStore();
 
   // TODO: 데이터 변경 시 부모 컴포넌트에 알림
   const handleDataChange = (newData: Partial<EvaluationData>) => {
@@ -35,6 +36,7 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
   const handleSignatureSave = (data: string) => {
     setSignatureData(data);
     handleDataChange({ signatureData: data });
+    showToast('사인이 저장되었습니다');
   };
 
   const handleTrainerCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -79,15 +81,8 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
           <h3 className="text-md font-medium text-white mb-4">PT 확인 사인</h3>
           <div className="border border-gray-600 rounded-md p-4 h-[150px]">
             <SignatureCanvas onSave={handleSignatureSave} />
-            {signatureData && (
-              <div className="mt-3 p-3 border border-[#16a34a] rounded bg-transparent">
-                <p className="text-sm text-gray-400 mb-1">사인이 저장되었습니다</p>
-              </div>
-            )}
           </div>
         </div>
-
-        {/* TODO: 평가 저장 버튼 - 개별 저장 기능 제거 (상위 컴포넌트에서 통합 저장) */}
       </div>
     </div>
   );
