@@ -12,7 +12,7 @@ export default function Button({
   className,
   ...props
 }: ButtonProps) {
-  const baseClasses = "h-[3rem] rounded-[1rem] flex items-center justify-center cursor-pointer disabled:cursor-not-allowed";
+  const baseClasses = "rounded-[1rem] flex items-center justify-center cursor-pointer disabled:cursor-not-allowed";
   
   const variants = {
     solid: "bg-[#16a34a] hover:bg-[#22c55e] active:bg-[#4ade80] disabled:bg-gray-400",
