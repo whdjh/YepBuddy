@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-
-interface StatusOption {
-  value: 'high' | 'medium' | 'low';
-  label: string;
-  color: string;
-}
+import RadioGroup from '@/components/common/RadioGroup';
 
 interface StatusData {
   sleepStatus: 'high' | 'medium' | 'low';
@@ -19,10 +14,16 @@ interface StatusCheckTabProps {
   onChange?: (data: StatusData) => void;
 }
 
-const statusOptions: StatusOption[] = [
+const statusOptions = [
   { value: 'high', label: '상', color: 'text-[#16a34a]' },
   { value: 'medium', label: '중', color: 'text-yellow-500' },
   { value: 'low', label: '하', color: 'text-red-500' }
+];
+
+const statusFields = [
+  { key: 'sleepStatus' as const, label: '숙면상태', name: 'sleepStatus' },
+  { key: 'condition' as const, label: '컨디션', name: 'condition' },
+  { key: 'activityLevel' as const, label: '활동강도', name: 'activityLevel' }
 ];
 
 export default function StatusCheckTab({ data, onChange }: StatusCheckTabProps) {
@@ -40,77 +41,51 @@ export default function StatusCheckTab({ data, onChange }: StatusCheckTabProps) 
     onChange?.(updatedData);
   };
 
-  const StatusRadioGroup = ({
-    value,
-    onChange: handleChange,
-    label,
-    field
-  }: {
-    value: 'high' | 'medium' | 'low';
-    onChange: (value: 'high' | 'medium' | 'low') => void;
-    label: string;
-    field: keyof StatusData;
-  }) => (
-    <div className="mb-8 flex flex-col gap-1">
-      <label className="text-lg font-medium text-white mb-4">{label}</label>
-      <div className="flex gap-6">
-        {statusOptions.map((option) => (
-          <label key={option.value} className="flex items-center cursor-pointer">
-            <input
-              type="radio"
-              name={label}
-              value={option.value}
-              checked={value === option.value}
-              onChange={(e) => {
-                const newValue = e.target.value as 'high' | 'medium' | 'low';
-                handleChange(newValue);
-                handleUpdateData({ [field]: newValue });
-              }}
-              className="sr-only"
-            />
-            <div className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-all ${
-              value === option.value
-                ? 'border-[#16a34a]'
-                : 'border-gray-500'
-            }`}>
-              {value === option.value && (
-                <div className="w-2 h-2 bg-[#16a34a] rounded-full"></div>
-              )}
-            </div>
-            <span className={`text-base font-medium transition-colors ${
-              value === option.value ? option.color : 'text-gray-400'
-            }`}>
-              {option.label}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-  );
+  const handleStatusChange = (field: keyof StatusData, value: string) => {
+    const newValue = value as 'high' | 'medium' | 'low';
+    
+    // 상태 업데이트
+    switch (field) {
+      case 'sleepStatus':
+        setSleepStatus(newValue);
+        break;
+      case 'condition':
+        setCondition(newValue);
+        break;
+      case 'activityLevel':
+        setActivityLevel(newValue);
+        break;
+    }
+    
+    // 부모 컴포넌트에 알림
+    handleUpdateData({ [field]: newValue });
+  };
+
+  const getStatusValue = (field: keyof StatusData) => {
+    switch (field) {
+      case 'sleepStatus':
+        return sleepStatus;
+      case 'condition':
+        return condition;
+      case 'activityLevel':
+        return activityLevel;
+    }
+  };
 
   return (
     <div className="text-white">
       <div className="space-y-6">
-        <StatusRadioGroup
-          label="숙면상태"
-          value={sleepStatus}
-          onChange={setSleepStatus}
-          field="sleepStatus"
-        />
-
-        <StatusRadioGroup
-          label="컨디션"
-          value={condition}
-          onChange={setCondition}
-          field="condition"
-        />
-
-        <StatusRadioGroup
-          label="활동강도"
-          value={activityLevel}
-          onChange={setActivityLevel}
-          field="activityLevel"
-        />
+        {statusFields.map((field) => (
+          <RadioGroup
+            key={field.key}
+            label={field.label}
+            options={statusOptions}
+            value={getStatusValue(field.key)}
+            onChange={(value) => handleStatusChange(field.key, value)}
+            name={field.name}
+            className="mb-8"
+          />
+        ))}
       </div>
     </div>
   );
