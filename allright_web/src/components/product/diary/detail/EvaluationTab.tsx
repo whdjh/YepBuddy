@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/common/Button';
+import Textarea from '@/components/common/Textarea';
 import SignatureCanvas from './SignatureCanvas';
 
 export default function EvaluationTab() {
@@ -19,11 +20,10 @@ export default function EvaluationTab() {
         {/* 트레이너의 한줄평 */}
         <div>
           <h3 className="text-md font-medium text-white mb-4">트레이너의 한줄평</h3>
-          <textarea
+          <Textarea
             value={trainerComment}
             onChange={(e) => setTrainerComment(e.target.value)}
-            placeholder="오늘 운동에 대한 한줄평을 작성해주세요..."
-            className="w-full h-[50px] px-4 py-3 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:border-[#16a34a] focus:outline-none bg-transparent resize-none"
+            placeholder="한줄평을 작성해주세요."
             rows={3}
           />
         </div>
@@ -31,11 +31,10 @@ export default function EvaluationTab() {
         {/* 피드백 */}
         <div>
           <h3 className="text-md font-medium text-white mb-4">피드백</h3>
-          <textarea
+          <Textarea
             value={feedback}
             onChange={(e) => setFeedback(e.target.value)}
-            placeholder="운동에 대한 피드백을 작성해주세요..."
-            className="w-full h-[50px] px-4 py-3 border border-gray-600 rounded-md text-white placeholder-gray-500 focus:border-[#16a34a] focus:outline-none bg-transparent resize-none"
+            placeholder="피드백을 작성해주세요"
             rows={5}
           />
         </div>
