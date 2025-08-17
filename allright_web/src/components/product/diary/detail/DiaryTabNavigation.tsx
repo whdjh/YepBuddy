@@ -15,7 +15,7 @@ export default function DiaryTabNavigation({ activeTab, onTabChange }: DiaryTabN
   return (
     <div className="flex w-full justify-start gap-[1rem] pt-[1rem]">
       {tabs.map((tab) => (
-                <button
+        <button
           key={tab.id}
           onClick={() => onTabChange(tab.id)}
           className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${

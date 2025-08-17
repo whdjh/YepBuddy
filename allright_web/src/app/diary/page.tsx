@@ -9,8 +9,10 @@ export default function Diary() {
   };
 
   return (
-    <div className="border-2 border-white rounded-[1rem] text-white p-2 max-w-lg w-full">
-      <DiaryCalendar onDateChange={handleDateChange} />
+    <div className="flex justify-center items-center p-4">
+      <div className="border-2 border-gray-700 rounded-[1rem] text-white max-w-lg w-full p-2">
+        <DiaryCalendar onDateChange={handleDateChange} />
+      </div>
     </div>
   );
 }

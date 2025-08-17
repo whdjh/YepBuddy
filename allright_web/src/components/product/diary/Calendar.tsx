@@ -75,7 +75,7 @@ export default function DiaryCalendar({ onDateChange, initialDate = new Date() }
   };
 
   return (
-    <div className="bg-[#242429] rounded-lg p-6 w-full">
+    <div className="bg-[#242429] rounded-lg p-4 w-full flex flex-col items-center">
       <Calendar
         onChange={handleDateChange}
         value={value}
