@@ -20,7 +20,7 @@ export default function DiaryTabNavigation({ activeTab, onTabChange }: DiaryTabN
           onClick={() => onTabChange(tab.id)}
           className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
             activeTab === tab.id
-              ? 'underline decoration-emerald-600 decoration-[3px] underline-offset-[6px]'
+              ? 'underline decoration-[#16a34a] decoration-[3px] underline-offset-[6px]'
               : 'text-gray-400 cursor-pointer'
           }`}
         >
