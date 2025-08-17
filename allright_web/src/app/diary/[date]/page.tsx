@@ -23,11 +23,18 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   };
 
   return (
-    <div className="flex items-center justify-between mb-6">
-      <button onClick={handleBack}>
-        <Back />
-      </button>
-      <h1>{formattedDate}</h1>
+    <div className="flex flex-col mb-6">
+      <div className="flex justify-between">
+        <button onClick={handleBack}>
+          <Back />
+        </button>
+        <h1>{formattedDate}</h1>
+      </div>
+      <div className="flex w-full justify-start gap-[1.25rem] py-[1.25rem]">
+          <button>상태체크</button>
+          <button>운동일지</button>
+          <button>평가</button>
+      </div>
     </div>
   );
 }
