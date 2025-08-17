@@ -72,6 +72,12 @@ export default function ExerciseDiaryTab() {
     setExercises(exercises.filter(exercise => exercise.id !== exerciseId));
   };
 
+  const handleRemoveExercise = () => {
+    if (exercises.length > 1) {
+      removeExercise(exercises[exercises.length - 1].id);
+    }
+  };
+
   const toggleBodyPart = (bodyPart: string) => {
     setSelectedBodyParts(prev => {
       if (prev.includes(bodyPart)) {
@@ -93,8 +99,8 @@ export default function ExerciseDiaryTab() {
   return (
     <div className="text-white">
       {/* 운동 부위 표시 */}
-      <div className="mb-6">
-        <h3 className="text-base font-medium text-white mb-3">오늘 운동 부위</h3>
+      <div className="mb-6 flex flex-col gap-1">
+        <label className="text-base font-medium text-white mb-3">오늘 운동 부위</label>
         <div className="flex gap-2 flex-wrap">
           {bodyParts.map((part) => (
             <button
@@ -115,29 +121,23 @@ export default function ExerciseDiaryTab() {
       {/* 운동 기록 테이블 */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-base font-medium text-white">운동기록</h3>
+          <label className="text-base font-medium text-white">운동기록</label>
           <div className="flex gap-2">
-            <div className="flex gap-2">
-              <Button
-                variant="solid"
-                onClick={addExercise}
-                className="px-2 text-sm h-[2rem]"
-              >
-                운동 추가
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  if (exercises.length > 1) {
-                    removeExercise(exercises[exercises.length - 1].id);
-                  }
-                }}
-                disabled={exercises.length <= 1}
-                className="px-2 text-sm h-[2rem]"
-              >
-                운동 삭제
-              </Button>
-            </div>
+            <Button
+              variant="solid"
+              onClick={addExercise}
+              className="px-2 text-sm h-[2rem]"
+            >
+              운동 추가
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleRemoveExercise}
+              disabled={exercises.length <= 1}
+              className="px-2 text-sm h-[2rem]"
+            >
+              운동 삭제
+            </Button> 
           </div>
         </div>
 
