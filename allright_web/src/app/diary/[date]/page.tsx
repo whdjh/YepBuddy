@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import useQueryTab from '@/hooks/useQueryTab';
 import DiaryHeader from '@/components/product/diary/detail/DiaryHeader';
 import DiaryTabNavigation from '@/components/product/diary/detail/DiaryTabNavigation';
@@ -43,28 +44,57 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
     signatureData: ''
   });
 
+  // FormProvider 설정
+  const methods = useForm({
+    defaultValues: {
+      // ExerciseDiaryTab의 동적 필드들을 위한 기본값
+      exercises: {},
+      // 다른 탭들의 필드들도 추가 가능
+      status: statusData,
+      evaluation: evaluationData
+    }
+  });
+
   const handleTabChange = (tab: 'status' | 'exercise' | 'evaluation') => {
     setTab(tab);
   };
 
   const handleSaveAll = () => {
+    // 폼 데이터 가져오기
+    const formData = methods.getValues();
+    
+    // 운동일지 데이터에서 0인 세트 필터링
+    const filteredExerciseData = {
+      ...exerciseData,
+      exercises: exerciseData.exercises.map(exercise => ({
+        ...exercise,
+        sets: exercise.sets.filter(set => 
+          set.weight !== '0' && set.weight !== '' && 
+          set.reps !== '0' && set.reps !== ''
+        )
+      })).filter(exercise => 
+        exercise.name.trim() !== '' && exercise.sets.length > 0
+      )
+    };
+    
     // 모든 탭 데이터를 통합 저장
     const diaryData = {
       date: date.toISOString().split('T')[0],
       status: statusData,
-      exercise: exerciseData,
-      evaluation: evaluationData
+      exercise: filteredExerciseData,
+      evaluation: evaluationData,
+      formData // 폼 데이터도 포함
     };
 
-    console.log('저장할 데이터:', diaryData);
+    console.log('=== 운동일지 저장 데이터 ===');
+    console.log('날짜:', diaryData.date);
+    console.log('상태체크 데이터:', diaryData.status);
+    console.log('운동일지 데이터:', diaryData.exercise);
+    console.log('   - 선택된 운동 부위:', diaryData.exercise.selectedBodyParts);
+    console.log('   - 운동 목록:', diaryData.exercise.exercises);
+    console.log('평가 데이터:', diaryData.evaluation);
     
-    // TODO: API 호출로 서버에 저장
-    // TODO: 저장 성공/실패 처리
-    // TODO: 로딩 상태 표시
-    // TODO: 에러 처리 및 사용자 피드백
-    // saveDiaryData(diaryData);
-    
-    alert('운동일지가 저장되었습니다!');
+    alert('운동일지가 저장되어 console 확인');
   };
 
   // TODO: 페이지 로드 시 기존 데이터 불러오기
@@ -76,31 +106,33 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   // TODO: 데이터 백업 기능
 
   return (
-    <div className="flex flex-col mb-6">
-      <DiaryHeader date={date} onSave={handleSaveAll} />
-      <DiaryTabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-      
-      {/* 탭별 콘텐츠 */}
-      <div className="mt-4">
-        {activeTab === 'status' && (
-          <StatusCheckTab 
-            data={statusData} 
-            onChange={setStatusData} 
-          />
-        )}
-        {activeTab === 'exercise' && (
-          <ExerciseDiaryTab 
-            data={exerciseData} 
-            onChange={setExerciseData} 
-          />
-        )}
-        {activeTab === 'evaluation' && (
-          <EvaluationTab 
-            data={evaluationData} 
-            onChange={setEvaluationData} 
-          />
-        )}
+    <FormProvider {...methods}>
+      <div className="flex flex-col mb-6">
+        <DiaryHeader date={date} onSave={handleSaveAll} />
+        <DiaryTabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+        
+        {/* 탭별 콘텐츠 */}
+        <div className="mt-4">
+          {activeTab === 'status' && (
+            <StatusCheckTab 
+              data={statusData} 
+              onChange={setStatusData} 
+            />
+          )}
+          {activeTab === 'exercise' && (
+            <ExerciseDiaryTab 
+              data={exerciseData} 
+              onChange={setExerciseData} 
+            />
+          )}
+          {activeTab === 'evaluation' && (
+            <EvaluationTab 
+              data={evaluationData} 
+              onChange={setEvaluationData} 
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </FormProvider>
   );
 }

@@ -30,10 +30,29 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
     context.strokeStyle = '#16a34a';
     context.lineWidth = 2;
     contextRef.current = context;
+
+    // 터치 이벤트에 passive: false 옵션 추가
+    const preventScroll = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+
+    canvas.addEventListener('touchstart', preventScroll, { passive: false });
+    canvas.addEventListener('touchmove', preventScroll, { passive: false });
+    canvas.addEventListener('touchend', preventScroll, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', preventScroll);
+      canvas.removeEventListener('touchmove', preventScroll);
+      canvas.removeEventListener('touchend', preventScroll);
+    };
   }, []);
 
   const handleStartDrawing = (event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault(); // 스크롤 방지
+    if ('touches' in event) {
+      // 터치 이벤트는 이미 preventDefault가 처리됨
+    } else {
+      event.preventDefault(); // 마우스 이벤트만 preventDefault
+    }
     setIsDrawing(true);
     handleDraw(event);
   };
@@ -46,7 +65,12 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
   };
 
   const handleDraw = (event: React.MouseEvent | React.TouchEvent) => {
-    event.preventDefault(); // 스크롤 방지
+    if ('touches' in event) {
+      // 터치 이벤트는 이미 preventDefault가 처리됨
+    } else {
+      event.preventDefault(); // 마우스 이벤트만 preventDefault
+    }
+    
     if (!isDrawing || !contextRef.current) return;
 
     const canvas = canvasRef.current;
