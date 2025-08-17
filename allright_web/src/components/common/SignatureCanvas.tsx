@@ -33,6 +33,7 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
   }, []);
 
   const startDrawing = (event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault(); // 스크롤 방지
     setIsDrawing(true);
     draw(event);
   };
@@ -45,6 +46,7 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
   };
 
   const draw = (event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault(); // 스크롤 방지
     if (!isDrawing || !contextRef.current) return;
 
     const canvas = canvasRef.current;
@@ -95,7 +97,7 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
         <div className="relative">
           <canvas
             ref={canvasRef}
-            className="w-full h-20 border border-gray-600 rounded bg-white cursor-crosshair"
+            className="w-full h-20 border border-gray-600 rounded bg-white cursor-crosshair touch-none"
             onMouseDown={startDrawing}
             onMouseUp={finishDrawing}
             onMouseOut={finishDrawing}
