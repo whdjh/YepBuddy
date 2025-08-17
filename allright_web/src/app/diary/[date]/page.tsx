@@ -1,11 +1,11 @@
 "use client";
 
 import { use, useState } from 'react';
-import DiaryHeader from '@/components/product/diary/DiaryHeader';
-import DiaryTabNavigation from '@/components/product/diary/DiaryTabNavigation';
-import StatusCheckTab from '@/components/product/diary/StatusCheckTab';
-import ExerciseDiaryTab from '@/components/product/diary/ExerciseDiaryTab';
-import EvaluationTab from '@/components/product/diary/EvaluationTab';
+import DiaryHeader from '@/components/product/diary/detail/DiaryHeader';
+import DiaryTabNavigation from '@/components/product/diary/detail/DiaryTabNavigation';
+import StatusCheckTab from '@/components/product/diary/detail/StatusCheckTab';
+import ExerciseDiaryTab from '@/components/product/diary/detail/ExerciseDiaryTab';
+import EvaluationTab from '@/components/product/diary/detail/EvaluationTab';
 
 export default function DiaryDetail({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import Button from './Button';
+import Button from '@/components/common/Button';
 
 interface SignatureCanvasProps {
   onSave?: (signatureData: string) => void;

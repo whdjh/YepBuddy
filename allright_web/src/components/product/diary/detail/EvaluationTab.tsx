@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/common/Button';
-import SignatureCanvas from '@/components/common/SignatureCanvas';
+import SignatureCanvas from './SignatureCanvas';
 
 export default function EvaluationTab() {
   const [trainerComment, setTrainerComment] = useState('');
