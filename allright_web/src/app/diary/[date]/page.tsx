@@ -13,7 +13,7 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   adjustedDateParam.setDate(adjustedDateParam.getDate());
   const date = adjustedDateParam;
   
-  const [activeTab, setActiveTab] = useState<'status' | 'exercise' | 'evaluation'>('exercise');
+  const [activeTab, setActiveTab] = useState<'status' | 'exercise' | 'evaluation'>('status');
 
   const handleTabChange = (tab: 'status' | 'exercise' | 'evaluation') => {
     setActiveTab(tab);
