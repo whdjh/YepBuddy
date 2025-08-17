@@ -95,7 +95,7 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
         <div className="relative">
           <canvas
             ref={canvasRef}
-            className="w-full h-20 border border-gray-600 rounded bg-white cursor-crosshair"
+            className="w-full h-20 border border-gray-600 rounded bg-white cursor-crosshair touch-none"
             onMouseDown={startDrawing}
             onMouseUp={finishDrawing}
             onMouseOut={finishDrawing}
