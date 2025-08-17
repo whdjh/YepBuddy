@@ -85,6 +85,10 @@ export default function ExerciseDiaryTab({ data, onChange }: ExerciseDiaryTabPro
     handleDataChange({ exercises: newExercises });
   };
 
+  const handleInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
+  };
+
   const handleRemoveExercise = (exerciseId: string) => {
     const newExercises = exercises.filter(exercise => exercise.id !== exerciseId);
     setExercises(newExercises);
@@ -196,15 +200,17 @@ export default function ExerciseDiaryTab({ data, onChange }: ExerciseDiaryTabPro
                       <input
                         type="text"
                         placeholder="무게"
-                        value={exercise.sets[index]?.weight || '0'}
+                        value={exercise.sets[index]?.weight ?? '0'}
                         onChange={(e) => handleUpdateSet(exercise.id, index, 'weight', e.target.value)}
+                        onFocus={handleInputFocus}
                         className="w-8 px-1 py-1 text-xs border border-gray-700 rounded text-white placeholder-gray-500 focus:border-[#16a34a] focus:outline-none"
                       />
                       <input
                         type="text"
                         placeholder="횟수"
-                        value={exercise.sets[index]?.reps || '0'}
+                        value={exercise.sets[index]?.reps ?? '0'}
                         onChange={(e) => handleUpdateSet(exercise.id, index, 'reps', e.target.value)}
+                        onFocus={handleInputFocus}
                         className="w-8 px-1 py-1 text-xs border border-gray-700 rounded text-white placeholder-gray-500 focus:border-[#16a34a] focus:outline-none"
                       />
                     </div>
