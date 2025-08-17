@@ -63,24 +63,38 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
     // 폼 데이터 가져오기
     const formData = methods.getValues();
     
+    // 운동일지 데이터에서 0인 세트 필터링
+    const filteredExerciseData = {
+      ...exerciseData,
+      exercises: exerciseData.exercises.map(exercise => ({
+        ...exercise,
+        sets: exercise.sets.filter(set => 
+          set.weight !== '0' && set.weight !== '' && 
+          set.reps !== '0' && set.reps !== ''
+        )
+      })).filter(exercise => 
+        exercise.name.trim() !== '' && exercise.sets.length > 0
+      )
+    };
+    
     // 모든 탭 데이터를 통합 저장
     const diaryData = {
       date: date.toISOString().split('T')[0],
       status: statusData,
-      exercise: exerciseData,
+      exercise: filteredExerciseData,
       evaluation: evaluationData,
       formData // 폼 데이터도 포함
     };
 
-    console.log('저장할 데이터:', diaryData);
+    console.log('=== 운동일지 저장 데이터 ===');
+    console.log('날짜:', diaryData.date);
+    console.log('상태체크 데이터:', diaryData.status);
+    console.log('운동일지 데이터:', diaryData.exercise);
+    console.log('   - 선택된 운동 부위:', diaryData.exercise.selectedBodyParts);
+    console.log('   - 운동 목록:', diaryData.exercise.exercises);
+    console.log('평가 데이터:', diaryData.evaluation);
     
-    // TODO: API 호출로 서버에 저장
-    // TODO: 저장 성공/실패 처리
-    // TODO: 로딩 상태 표시
-    // TODO: 에러 처리 및 사용자 피드백
-    // saveDiaryData(diaryData);
-    
-    alert('운동일지가 저장되었습니다!');
+    alert('운동일지가 저장되어 console 확인');
   };
 
   // TODO: 페이지 로드 시 기존 데이터 불러오기
