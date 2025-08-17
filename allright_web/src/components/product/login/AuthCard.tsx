@@ -64,10 +64,10 @@ export default function AuthCard() {
               }
             }}
           />
-          <Button type="submit" variant="solid" className='w-[15rem]'>
+          <Button type="submit" variant="solid" className='h-[3rem] w-[15rem]'>
             로그인
           </Button>
-          <Button variant="kakao" className='w-[15rem]'>
+          <Button variant="kakao" className='h-[3rem] w-[15rem]'>
             카카오로그인
           </Button>
         </div>
