@@ -1,6 +1,7 @@
 "use client";
 
 import { use, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
 import useQueryTab from '@/hooks/useQueryTab';
 import DiaryHeader from '@/components/product/diary/detail/DiaryHeader';
 import DiaryTabNavigation from '@/components/product/diary/detail/DiaryTabNavigation';
@@ -43,17 +44,32 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
     signatureData: ''
   });
 
+  // FormProvider 설정
+  const methods = useForm({
+    defaultValues: {
+      // ExerciseDiaryTab의 동적 필드들을 위한 기본값
+      exercises: {},
+      // 다른 탭들의 필드들도 추가 가능
+      status: statusData,
+      evaluation: evaluationData
+    }
+  });
+
   const handleTabChange = (tab: 'status' | 'exercise' | 'evaluation') => {
     setTab(tab);
   };
 
   const handleSaveAll = () => {
+    // 폼 데이터 가져오기
+    const formData = methods.getValues();
+    
     // 모든 탭 데이터를 통합 저장
     const diaryData = {
       date: date.toISOString().split('T')[0],
       status: statusData,
       exercise: exerciseData,
-      evaluation: evaluationData
+      evaluation: evaluationData,
+      formData // 폼 데이터도 포함
     };
 
     console.log('저장할 데이터:', diaryData);
@@ -76,31 +92,33 @@ export default function DiaryDetail({ params }: { params: Promise<{ date: string
   // TODO: 데이터 백업 기능
 
   return (
-    <div className="flex flex-col mb-6">
-      <DiaryHeader date={date} onSave={handleSaveAll} />
-      <DiaryTabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-      
-      {/* 탭별 콘텐츠 */}
-      <div className="mt-4">
-        {activeTab === 'status' && (
-          <StatusCheckTab 
-            data={statusData} 
-            onChange={setStatusData} 
-          />
-        )}
-        {activeTab === 'exercise' && (
-          <ExerciseDiaryTab 
-            data={exerciseData} 
-            onChange={setExerciseData} 
-          />
-        )}
-        {activeTab === 'evaluation' && (
-          <EvaluationTab 
-            data={evaluationData} 
-            onChange={setEvaluationData} 
-          />
-        )}
+    <FormProvider {...methods}>
+      <div className="flex flex-col mb-6">
+        <DiaryHeader date={date} onSave={handleSaveAll} />
+        <DiaryTabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+        
+        {/* 탭별 콘텐츠 */}
+        <div className="mt-4">
+          {activeTab === 'status' && (
+            <StatusCheckTab 
+              data={statusData} 
+              onChange={setStatusData} 
+            />
+          )}
+          {activeTab === 'exercise' && (
+            <ExerciseDiaryTab 
+              data={exerciseData} 
+              onChange={setExerciseData} 
+            />
+          )}
+          {activeTab === 'evaluation' && (
+            <EvaluationTab 
+              data={evaluationData} 
+              onChange={setEvaluationData} 
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </FormProvider>
   );
 }
