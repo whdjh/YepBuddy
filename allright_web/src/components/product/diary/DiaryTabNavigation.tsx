@@ -13,7 +13,7 @@ export default function DiaryTabNavigation({ activeTab, onTabChange }: DiaryTabN
   ];
 
   return (
-    <div className="flex w-full justify-start gap-[1.25rem] py-[1.25rem]">
+    <div className="flex w-full justify-start gap-[1rem] pt-[1rem]">
       {tabs.map((tab) => (
                 <button
           key={tab.id}
