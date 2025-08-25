@@ -1,7 +1,9 @@
+import SearchSection from "@/components/product/main/SearchSection";
+
 export default function Home() {
   return (
-    <div>
-      화려한 애니메이션 돌아옵니다. 기다리세요.
-    </div>
+    <main className="flex flex-col gap-3">
+      <SearchSection />
+    </main>
   );
 }
