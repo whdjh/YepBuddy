@@ -66,9 +66,9 @@ export default function VirtuoInfinityScroll<T>({
           List: forwardRef<HTMLDivElement>((props, ref) => (
             <div {...props} ref={ref} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" />
           )),
-          Item: ({ children, ...props }: { children: ReactNode }) => (
-            <div {...props}>{children}</div>
-          )
+          Item: forwardRef<HTMLDivElement>((props, ref) => (
+            <div {...props} ref={ref} />
+          ))
         }}
         itemContent={(index) => item(list[index], index)}
       />
