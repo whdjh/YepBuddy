@@ -31,7 +31,7 @@ export const TagList = ({ tags }: TagListProps) => {
             key={index}
             className="rounded-lg bg-[var(--bg-34343A)] px-3 py-1.5 text-sm font-medium whitespace-nowrap"
           >
-            # {tag}
+            {tag}
           </span>
         ))}
       </motion.div>
