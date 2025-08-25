@@ -6,7 +6,6 @@ import Logo from "@/asset/ic/ic_logo.svg";
 export default function Gnb() {
   const navItems = [
     { href: "/diary", label: "운동일지" },
-    { href: "/trainer", label: "트레이너" },
     { href: "/tempo", label: "운동템포" },
   ];
 
