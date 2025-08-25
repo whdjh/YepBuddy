@@ -10,7 +10,7 @@ export default function Gnb() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 z-50 w-full">
+    <header className="fixed top-0 left-0 z-50 w-full bg-black">
       <div className="flex h-[3.75rem] w-full items-center justify-center px-[1.5rem]">
         <div className="flex w-full items-center justify-between text-white mt-[1rem]">
           <nav className="flex items-center gap-[0.75rem]">
