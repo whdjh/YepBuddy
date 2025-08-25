@@ -18,8 +18,11 @@ export default function CardItem({
       {thumbnail && (
         <Card.Thumbnail thumbnail={thumbnail} alt="thumbnail" isFirst={true} />
       )}
-      <Card.TitleBlock author={author} location={location} />
-      <Card.TagList tags={tags} />
+      <hr className="border-1 border-gray-400" />
+      <div className="flex flex-col gap-5">
+        <Card.TitleBlock author={author} location={location} />
+        <Card.TagList tags={tags} />
+      </div>
     </div>
   );
 }
