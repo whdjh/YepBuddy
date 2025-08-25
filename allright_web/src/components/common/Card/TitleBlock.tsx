@@ -1,12 +1,11 @@
 interface TitleBlockProps {
   author: string;
   location: string; // TODO: 네이버 API 연동하여 실제 근무 헬스장 위치 지정
-  className?: string;
 }
 
-export const TitleBlock = ({ author, location, className = '' }: TitleBlockProps) => {
+export const TitleBlock = ({ author, location }: TitleBlockProps) => {
   return (
-    <div className={`${className}`}>
+    <div>
       <p className="text-lg font-semibold mb-2">
         {author}
       </p>
