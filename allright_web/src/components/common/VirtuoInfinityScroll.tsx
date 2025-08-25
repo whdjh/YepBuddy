@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode, useState, useEffect, Fragment, forwardRef } from 'react';
+import { ReactNode, useState, useEffect, forwardRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { VirtuosoGrid } from 'react-virtuoso';
 
@@ -57,7 +57,7 @@ export default function VirtuoInfinityScroll<T>({
   
 
   return (
-    <Fragment>
+    <>
       <VirtuosoGrid
         totalCount={list.length}
         useWindowScroll
@@ -73,6 +73,6 @@ export default function VirtuoInfinityScroll<T>({
         itemContent={(index) => item(list[index], index)}
       />
       {hasMore ? <div ref={observerRef} className="h-10 w-full" /> : null}
-    </Fragment>
+    </>
   );
 }
