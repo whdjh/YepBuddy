@@ -2,24 +2,33 @@
 
 import { CardData } from '@/mock/cardData';
 import CardItem from '@/components/common/Card/CardItem';
+import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
   cards: CardData[];
 }
 
 export default function CardSection({ cards }: CardSectionProps) {
+  // TODO: get card API 교체 예정
+  const handleLoadMore = () => {
+    console.log('load more');
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      {cards.map((card) => (
-        <div key={card.id}>
-          <CardItem
-            author={card.author}
-            location={card.location}
-            tags={card.tags}
-            thumbnail={card.thumbnail}
-          />
-        </div>
-      ))}
-    </div>
+    <VirtuoInfinityScroll
+      list={cards}
+      item={(card) => (
+        <CardItem
+          key={card.id}
+          author={card.author}
+          location={card.location}
+          tags={card.tags}
+          thumbnail={card.thumbnail}
+        />
+      )}
+      emptyText="검색 결과가 없습니다."
+      onInView={handleLoadMore}
+      hasMore={true}
+    />
   );
 }
