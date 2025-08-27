@@ -77,6 +77,7 @@ export default function Tempo() {
                 value: /^[0-9]+$/,
                 message: '숫자만 입력 가능합니다.',
                 },
+                validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
               }}
             />
             <Input
@@ -92,6 +93,7 @@ export default function Tempo() {
                 value: /^[0-9]+$/,
                 message: '숫자만 입력 가능합니다.',
                 },
+                validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
               }}
             />
           </div>
@@ -109,6 +111,7 @@ export default function Tempo() {
                 value: /^[0-9]+$/,
                 message: '숫자만 입력 가능합니다.',
                 },
+                validate: value => Number(value) <= 20 || '20까지 입력 가능합니다.'
               }}
             />
             <Input
@@ -124,6 +127,7 @@ export default function Tempo() {
                 value: /^[0-9]+$/,
                 message: '숫자만 입력 가능합니다.',
                 },
+                validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
               }}
             />
           </div>
@@ -140,6 +144,7 @@ export default function Tempo() {
                 value: /^[0-9]+$/,
                 message: '숫자만 입력 가능합니다.',
                 },
+                validate: value => Number(value) <= 600 || '600까지 입력 가능합니다.'
               }}
             />
         </div>
