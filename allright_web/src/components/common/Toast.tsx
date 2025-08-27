@@ -1,6 +1,6 @@
 "use client";
 
-import { useToastStore } from "@/app/stores/useToastStore";
+import { useToastStore } from "@/stores/useToastStore";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Toast() {
