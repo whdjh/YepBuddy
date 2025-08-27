@@ -4,6 +4,7 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+import ButtonSection from '@/components/product/tempo/ButtonSection';
 import { TempoFormValues } from '@/types/Tempo';
 import { useTempoStore } from '@/stores/useTempo';
 
@@ -16,10 +17,6 @@ export default function Tempo() {
     defaultValues: tempoFormValues,
     shouldUnregister: false,
   });
-
-  const handleClickButton = (id: "concentric" | "eccentric") => {
-    setSelected(id);
-  };
 
   const onSubmit: SubmitHandler<TempoFormValues> = (data) => {
     console.log(data);
@@ -37,28 +34,7 @@ export default function Tempo() {
         onSubmit={methods.handleSubmit(onSubmit)}
         className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
       >
-        <div className="flex gap-5 justify-center items-center mt-5">
-          <Button
-            type="button"
-            variant="solid"
-            onClick={() => handleClickButton('concentric')}
-            className={`h-[3rem] w-[10rem] ${
-              selected === "concentric" ? "bg-[#16a34a]" : "bg-gray-400"
-            }`}
-          >
-            수축(단축성 수축)먼저
-          </Button>
-          <Button
-            type="button"
-            variant="solid"
-            onClick={() => handleClickButton('eccentric')}
-            className={`h-[3rem] w-[10rem] ${
-              selected === "eccentric" ? "bg-[#16a34a]" : "bg-gray-400"
-            }`}
-          >
-            이완(신장성 수축)먼저
-          </Button>
-        </div>
+        <ButtonSection selected={selected} setSelected={setSelected} />
         <div className='flex flex-col gap-5'>
           <div className='flex justify-start gap-3'>
             <Input
