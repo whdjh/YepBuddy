@@ -17,7 +17,7 @@ interface FormValues {
 export default function Tempo() {
   const router = useRouter();
   const methods = useForm<FormValues>({
-    mode: 'all',
+    mode: 'onChange',
     defaultValues: { concentric: '', eccentric: '', reps: '', sets: '', rests: '' },
     shouldUnregister: false,
   });
@@ -148,7 +148,7 @@ export default function Tempo() {
               }}
             />
         </div>
-        <Button type="submit" variant="solid" className='h-[3rem] w-[21rem]'>
+        <Button type="submit" variant="solid" disabled={!methods.formState.isValid && !selected} className='h-[3rem] w-[21rem]'>
           운동시작
         </Button>
       </form>
