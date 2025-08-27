@@ -88,7 +88,7 @@ function Input({
     onChange: handleChange,
     onBlur: onInputBlur,
     ...rules,
-    shouldUnregister: true,
+    shouldUnregister: false,
   });
 
 

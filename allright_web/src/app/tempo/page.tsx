@@ -1,43 +1,40 @@
 'use client';
 
-import { useState } from 'react';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
-
-interface FormValues {
-  concentric: string;
-  eccentric: string;
-  reps: string;
-  sets: string;
-  rests: string;
-}
+import { TempoFormValues } from '@/types/Tempo';
+import { useTempoStore } from '@/stores/useTempo';
 
 export default function Tempo() {
   const router = useRouter();
-  const methods = useForm<FormValues>({
+  const { selected, setSelected, tempoFormValues, setFormValue } = useTempoStore();
+  
+  const methods = useForm<TempoFormValues>({
     mode: 'onChange',
-    defaultValues: { concentric: '', eccentric: '', reps: '', sets: '', rests: '' },
+    defaultValues: tempoFormValues,
     shouldUnregister: false,
   });
-
-  const [selected, setSelected] = useState<"concentric" | "eccentric" | null>(null)
 
   const handleClickButton = (id: "concentric" | "eccentric") => {
     setSelected(id);
   };
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<TempoFormValues> = (data) => {
     console.log(data);
     router.push('/tempo/exercise');
+  };
+
+  const handleInputChange = (key: keyof TempoFormValues, value: string) => {
+    methods.setValue(key, value, { shouldValidate: true });
+    setFormValue(key, value);
   };
   
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
-        noValidate
         className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
       >
         <div className="flex gap-5 justify-center items-center mt-5">
@@ -71,6 +68,7 @@ export default function Tempo() {
               width='w-[10rem]'
               type="number"
               inputMode="numeric"
+              onChange={(e) => handleInputChange("eccentric", e.target.value)}
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -87,6 +85,7 @@ export default function Tempo() {
               width='w-[10rem]'
               type="number"
               inputMode="numeric"
+              onChange={(e) => handleInputChange("concentric", e.target.value)}
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -105,6 +104,7 @@ export default function Tempo() {
               width='w-[10rem]'
               type="number"
               inputMode="numeric"
+              onChange={(e) => handleInputChange("reps", e.target.value)}
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -121,6 +121,7 @@ export default function Tempo() {
               width='w-[10rem]'
               type="number"
               inputMode="numeric"
+              onChange={(e) => handleInputChange("sets", e.target.value)}
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -138,6 +139,7 @@ export default function Tempo() {
               width='w-[21rem]'
               type="number"
               inputMode="numeric"
+              onChange={(e) => handleInputChange("rests", e.target.value)}
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -148,7 +150,7 @@ export default function Tempo() {
               }}
             />
         </div>
-        <Button type="submit" variant="solid" disabled={!methods.formState.isValid && !selected} className='h-[3rem] w-[21rem]'>
+        <Button type="submit" variant="solid" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
           운동시작
         </Button>
       </form>
