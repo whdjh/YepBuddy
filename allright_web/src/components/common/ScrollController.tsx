@@ -7,20 +7,17 @@ export default function ScrollController() {
   const pathname = usePathname();
   
   useEffect(() => {
-    // 로그인 페이지와 다이어리 페이지에서만 스크롤 차단
-    if (pathname === '/login' || pathname === '/diary') {
+    if (pathname === '/login' || pathname === '/diary' || pathname === '/tempo' || pathname === '/tempo/exercise' || pathname === '/tempo/exercise/result') {
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-      document.body.style.height = 'auto';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
     }
-    
-    // 컴포넌트 언마운트 시 스크롤 복원
-    return () => {
+    else {
       document.body.style.overflow = 'auto';
-      document.body.style.height = 'auto';
-    };
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
   }, [pathname]);
   
-  return null; // 이 컴포넌트는 UI를 렌더링하지 않음
+  return null;
 }
