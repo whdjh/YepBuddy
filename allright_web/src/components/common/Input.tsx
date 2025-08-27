@@ -1,12 +1,12 @@
 "use client";
 
-import { memo, ReactNode, useState, useCallback, ChangeEventHandler } from "react";
+import { memo, ReactNode, useState, useCallback, ChangeEventHandler, InputHTMLAttributes } from "react";
 import { RegisterOptions, useFormContext } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import Invisibility from "@/asset/ic/ic_invisibility.svg";
 import Visibility from "@/asset/ic/ic_visibility.svg";
 
-interface InputProps {
+interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   /** RHF name속성 */
   name: string;
   /** input label 설정 */
@@ -14,7 +14,7 @@ interface InputProps {
   /** input placeholder 설정 */
   placeholder?: string;
   /** input type 설정 */
-  type?: 'text' | 'password';
+  type?: 'text' | 'password' | 'number';
   /** input의 너비 클래스 */
   width?: string;
   /** 추가 클래스명 */
@@ -46,7 +46,8 @@ function Input({
   rules, 
   minLength, 
   maxLength, 
-}: InputProps) {
+  ...props
+}: InputProps & React.InputHTMLAttributes<HTMLInputElement>) {
   const {
     register,
     setValue,
