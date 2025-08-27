@@ -37,7 +37,7 @@ export default function Tempo() {
           <Button type="button" variant="solid" className='h-[3rem] w-[10rem]'>
             수축(단축성 수축)먼저
           </Button>
-          <Button type="button" variant="outline" className='h-[3rem] w-[10rem]'>
+          <Button type="button" variant="solid" className='h-[3rem] w-[10rem]'>
             이완(신장성 수축)먼저
           </Button>
         </div>
@@ -48,6 +48,8 @@ export default function Tempo() {
               label="수축(초)"
               placeholder='숫자만 입력하세요.'
               width='w-[10rem]'
+              type="number"
+              inputMode="numeric"
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -61,6 +63,8 @@ export default function Tempo() {
               label="이완(초)"
               placeholder='숫자만 입력하세요.'
               width='w-[10rem]'
+              type="number"
+              inputMode="numeric"
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -76,6 +80,8 @@ export default function Tempo() {
               label="운동 횟수(reps)"
               placeholder='숫자만 입력하세요.'
               width='w-[10rem]'
+              type="number"
+              inputMode="numeric"
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -89,6 +95,8 @@ export default function Tempo() {
               label="세트수(set)"
               placeholder='숫자만 입력하세요.'
               width='w-[10rem]'
+              type="number"
+              inputMode="numeric"
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -103,6 +111,8 @@ export default function Tempo() {
               label="휴식 시간(초)"
               placeholder='숫자만 입력하세요.'
               width='w-[21rem]'
+              type="number"
+              inputMode="numeric"
               rules={{
                 required: '필수 입력입니다.',
                 pattern: {
@@ -112,7 +122,7 @@ export default function Tempo() {
               }}
             />
         </div>
-        <Button type="button" variant="solid" className='h-[3rem] w-[21rem]'>
+        <Button type="submit" variant="solid" className='h-[3rem] w-[21rem]'>
           운동시작
         </Button>
       </form>
