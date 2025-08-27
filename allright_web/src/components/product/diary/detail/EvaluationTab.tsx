@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Textarea from '@/components/common/Textarea';
 import SignatureCanvas from './SignatureCanvas';
-import { useToastStore } from '@/app/stores/useToastStore';
+import { useToastStore } from '@/stores/useToastStore';
 
 interface EvaluationData {
   trainerComment: string;
