@@ -1,15 +1,7 @@
 "use client";
 
 import { memo } from 'react';
-
-interface Exercise {
-  id: string;
-  name: string;
-  sets: Array<{
-    weight: string;
-    reps: string;
-  }>;
-}
+import { Exercise } from '@/types/Exercise';
 
 interface ExerciseRowProps {
   exercise: Exercise;

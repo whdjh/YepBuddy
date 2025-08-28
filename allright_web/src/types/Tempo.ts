@@ -4,4 +4,5 @@ export interface TempoFormValues {
   reps: string;
   sets: string;
   rests: string;
+  name: string;
 }

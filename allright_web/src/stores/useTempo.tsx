@@ -18,6 +18,7 @@ export const useTempoStore = create<TemponState>((set) => ({
     reps: '',
     sets: '',
     rests: '',
+    name: '',
   },
 
   setSelected: (id) => set({ selected: id }),
@@ -35,6 +36,7 @@ export const useTempoStore = create<TemponState>((set) => ({
         reps: '',
         sets: '',
         rests: '',
+        name: '',
       },
     }),
 }));

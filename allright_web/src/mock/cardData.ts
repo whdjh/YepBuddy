@@ -1,10 +1,4 @@
-export interface CardData {
-  id: number;
-  author: string;
-  location: string;
-  tags: string[];
-  thumbnail?: string;
-}
+import { CardData } from "@/types/Card";
 
 // TODO: API 교체 예정 - 현재는 목데이터로 개발
 export const MOCK_CARDS: CardData[] = Array.from({ length: 50 }, (_, index) => ({
