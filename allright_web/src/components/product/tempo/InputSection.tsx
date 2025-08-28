@@ -17,13 +17,13 @@ export default function InputSection({ methods, setFormValue }: InputSectionProp
     <div className='flex flex-col gap-5'>
       <div className='flex justify-start gap-3'>
         <Input
-          name="eccentric"
+          name="concentric"
           label="수축(초)"
           placeholder='숫자만 입력'
           width='w-[10rem]'
           type="number"
           inputMode="numeric"
-          onChange={(e) => handleInputChange("eccentric", e.target.value)}
+          onChange={(e) => handleInputChange("concentric", e.target.value)}
           rules={{
             required: '필수 입력입니다.',
             pattern: {
@@ -34,13 +34,13 @@ export default function InputSection({ methods, setFormValue }: InputSectionProp
           }}
         />
         <Input
-          name="concentric"
+          name="eccentric"
           label="이완(초)"
           placeholder='숫자만 입력'
           width='w-[10rem]'
           type="number"
           inputMode="numeric"
-          onChange={(e) => handleInputChange("concentric", e.target.value)}
+          onChange={(e) => handleInputChange("eccentric", e.target.value)}
           rules={{
             required: '필수 입력입니다.',
             pattern: {
