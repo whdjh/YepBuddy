@@ -1,6 +1,6 @@
 'use client';
 
-import { CardData } from '@/mock/cardData';
+import { CardData } from '@/types/Card';
 import CardItem from '@/components/common/Card/CardItem';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 

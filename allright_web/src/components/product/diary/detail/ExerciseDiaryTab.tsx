@@ -4,20 +4,7 @@ import { useState } from 'react';
 import BodyPartsSelector from './ExerciseDiaryTab/BodyPartsSelector';
 import ExerciseControls from './ExerciseDiaryTab/ExerciseControls';
 import ExerciseTable from './ExerciseDiaryTab/ExerciseTable';
-
-interface Exercise {
-  id: string;
-  name: string;
-  sets: Array<{
-    weight: string;
-    reps: string;
-  }>;
-}
-
-interface ExerciseData {
-  selectedBodyParts: string[];
-  exercises: Exercise[];
-}
+import { Exercise, ExerciseData } from '@/types/Exercise';
 
 interface ExerciseDiaryTabProps {
   data?: ExerciseData;

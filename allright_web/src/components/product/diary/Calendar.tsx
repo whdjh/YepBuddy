@@ -4,16 +4,10 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { EventData } from '@/types/event';
 
 type ValuePiece = Date | null;
 type Value = ValuePiece | [ValuePiece, ValuePiece];
-
-interface Event {
-  id: string;
-  date: string;
-  title: string;
-  type: 'event' | 'holiday' | 'task';
-}
 
 interface CalendarProps {
   onDateChange?: (date: Date) => void;
@@ -25,7 +19,7 @@ export default function DiaryCalendar({ onDateChange, initialDate = new Date() }
   defaultDate.setDate(defaultDate.getDate());
   
   const [value, setValue] = useState<Value>(initialDate || defaultDate);
-  const [events, setEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventData[]>([]);
   const router = useRouter();
 
   const handleDateChange = (newValue: Value) => {

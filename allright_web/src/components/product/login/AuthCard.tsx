@@ -5,21 +5,17 @@ import Button from '@/components/common/Button';
 import Input from '@/components/common/Input';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-
-interface FormValues {
-  id: string;
-  pwd: string;
-}
+import { LoginFormValues } from '@/types/Login';
 
 export default function AuthCard() {
   const router = useRouter();
-  const methods = useForm<FormValues>({
+  const methods = useForm<LoginFormValues>({
     mode: 'all',
     defaultValues: { id: '', pwd: '' },
     shouldUnregister: false,
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<LoginFormValues> = (data) => {
     console.log(data);
     router.push('/');
   };
