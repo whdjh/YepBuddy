@@ -2,6 +2,10 @@
 @import "tailwindcss";
 @import './fonts.css';
 
+@theme {
+  --breakpoint-tab: 768px;
+}
+
 :root {
   --background: #1a1a1e;
   --foreground: #f3f4f6;
