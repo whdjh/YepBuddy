@@ -37,14 +37,14 @@ type Entry = { href: string; title: string; desc?: string }
 // TODO: 회원다이어리는 트레이너만 볼 수 있고, 목록을 보여주고, 회원 클릭해서 들어갈 수 있음 -> 여기서 회원과 트레이너가 양방향이어야한다는점(pt종료후 다른 Pt선생도 가능)
 const dairyLinks: Entry[] = [
   { href: "/dairy", title: "개인", desc: "자신의 운동기록일지를 볼 수 있어요." },
-  { href: "/mypage", title: "회원", desc: "회원의 운동기록일지를 볼 수 있어요." },
+  { href: "/mypage", title: "회원", desc: "트레이너가 회원의 운동 기록을 볼 수 있어요." },
 ];
 
 // TODO: 모바일은 템포조절이 안되니까 카운팅만 가능하게 하는 페이지로 개발
 // TODO: PC는 템포조절이 되므로 기존 tempo로 사용
 const tempoLink: Entry[] = [
-  { href: "/diary", title: "모바일", desc: "카운팅해줄 수 있어요." },
-  { href: "/tempo", title: "PC", desc: "템포 조절이 가능해요." },
+  { href: "/tempomanual", title: "모바일", desc: "버튼을 눌러 세트를 카운트하며 운동해요." },
+  { href: "/tempoauto", title: "PC", desc: "템포를 설정하고 자동으로 운동을 진행해요." },
 ];
 
 export default function Gnb({
