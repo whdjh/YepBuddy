@@ -69,56 +69,56 @@ export default function Gnb({
           </Link>
           <hr className="w-px h-6 border-0 bg-[#34343A]" />
 
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>운동일지</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[150px] gap-4 tab:w-[300px]">
-                      <li className="flex flex-col gap-2">
-                        {dairyLinks.map((item) => (
-                          <NavigationMenuLink asChild key={item.href}>
-                            <Link href={item.href} data-active={isActive(item.href)}>
-                              <div className="font-medium">{item.title}</div>
-                              {item.desc && (
-                                <div className="text-muted-foreground">
-                                  {item.desc}
-                                </div>
-                              )}
-                            </Link>
-                          </NavigationMenuLink>
-                        ))}
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>운동일지</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[150px] gap-4 tab:w-[300px]">
+                    <li className="flex flex-col gap-2">
+                      {dairyLinks.map((item) => (
+                        <NavigationMenuLink asChild key={item.href}>
+                          <Link href={item.href} data-active={isActive(item.href)}>
+                            <div className="font-medium">{item.title}</div>
+                            {item.desc && (
+                              <div className="text-muted-foreground">
+                                {item.desc}
+                              </div>
+                            )}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
 
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>운동템포</NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="grid w-[150px] gap-4 tab:w-[300px]">
-                      <li className="flex flex-col gap-2">
-                        {tempoLink.map((item) => (
-                          <NavigationMenuLink asChild key={item.href}>
-                            <Link href={item.href} data-active={isActive(item.href)}>
-                              <div className="font-medium">{item.title}</div>
-                              {item.desc && (
-                                <div className="text-muted-foreground">
-                                  {item.desc}
-                                </div>
-                              )}
-                            </Link>
-                          </NavigationMenuLink>
-                        ))}
-                      </li>
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              </NavigationMenuList>
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>운동템포</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid w-[150px] gap-4 tab:w-[300px]">
+                    <li className="flex flex-col gap-2">
+                      {tempoLink.map((item) => (
+                        <NavigationMenuLink asChild key={item.href}>
+                          <Link href={item.href} data-active={isActive(item.href)}>
+                            <div className="font-medium">{item.title}</div>
+                            {item.desc && (
+                              <div className="text-muted-foreground">
+                                {item.desc}
+                              </div>
+                            )}
+                          </Link>
+                        </NavigationMenuLink>
+                      ))}
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            </NavigationMenuList>
           </NavigationMenu>
 
           <NavigationMenu>
@@ -195,17 +195,17 @@ export default function Gnb({
             </DropdownMenu>
           </div>
         ) : (
-            <div className="flex items-center gap-4">
-              {/* 모바일/PC 공통: Login */}
-              <Button asChild variant="secondary">
-                <Link href="/auth/login">Login</Link>
-              </Button>
+          <div className="flex items-center gap-4">
+            {/* 모바일/PC 공통: Login */}
+            <Button asChild variant="secondary">
+              <Link href="/auth/login">Login</Link>
+            </Button>
 
-              {/* PC에서만 Join 보이기 */}
-              <Button asChild className="hidden sm:inline-flex">
-                <Link href="/auth/join">Join</Link>
-              </Button>
-            </div>
+            {/* PC에서만 Join 보이기 */}
+            <Button asChild className="hidden sm:inline-flex">
+              <Link href="/auth/join">Join</Link>
+            </Button>
+          </div>
         )}
       </div>
     </nav>
