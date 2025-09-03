@@ -13,23 +13,22 @@ export default function Exercise() {
   const [isFinished, setIsFinished] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const handleStartSet = async () => {
+  const handleStartSet = () => {
     if (isFinished || isButtonDisabled) return;
 
-    // 1. 세트 증가
+    // 세트 증가
     setCurrentSet((prev) => prev + 1);
 
-    // 2. 버튼 비활성화, 운동중 상태
+    // 버튼 비활성화, 운동중 상태
     setIsButtonDisabled(true);
     setIsRunning(true);
 
-    // 3. 10초 대기 후 음성 재생
-    await new Promise((res) => setTimeout(res, 10000));
+    // MP3 재생
     const audioPath = `/sound/manual_count/rep_${reps}.mp3`;
     const audio = new Audio(audioPath);
     audio.play();
 
-    // 4. 음성 재생 완료 후 버튼 활성화
+    // 재생 끝나면 버튼 활성화
     audio.onended = () => {
       setIsButtonDisabled(false);
       setIsRunning(false);
