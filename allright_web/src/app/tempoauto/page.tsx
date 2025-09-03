@@ -4,12 +4,12 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Button from "@/components/common/Button";
-import ButtonSection from '@/components/product/tempo/ButtonSection';
-import InputSection from '@/components/product/tempo/InputSection';
+import ButtonSection from '@/components/product/tempoauto/ButtonSection';
+import InputSection from '@/components/product/tempoauto/InputSection';
 import { TempoFormValues } from '@/types/Tempo';
 import { useTempoStore } from '@/stores/useTempo';
 
-export default function Tempo() {
+export default function TempoAuto() {
   const router = useRouter();
   const { selected, setSelected, tempoFormValues, setFormValue } = useTempoStore();
   const [isSubmit, setIsSubmit] = useState(false);
@@ -32,7 +32,7 @@ export default function Tempo() {
       flag: selected,
     };
     console.log(payload);
-    router.push('/tempo/exercise');
+    router.push('/tempoauto/exercise');
   };
 
   return (
