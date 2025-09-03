@@ -32,7 +32,7 @@ export default function TempoAuto() {
       flag: selected,
     };
     console.log(payload);
-    router.push('/tempo/exercise');
+    router.push('/tempoauto/exercise');
   };
 
   return (
