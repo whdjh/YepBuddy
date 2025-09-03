@@ -5,3 +5,12 @@ export interface CardData {
   tags: string[];
   thumbnail?: string;
 }
+
+export interface ProductCardProps {
+  id: string;
+  name: string;
+  description: string;
+  commentsCount: number;
+  viewsCount: number;
+  votesCount: number;
+}

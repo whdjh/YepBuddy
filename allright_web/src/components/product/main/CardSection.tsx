@@ -1,34 +1,53 @@
-'use client';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from "lucide-react";
+import { ProductCardProps } from "@/types/Card";
 
-import { CardData } from '@/types/Card';
-import CardItem from '@/components/common/Card/CardItem';
-import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
-
-interface CardSectionProps {
-  cards: CardData[];
-}
-
-export default function CardSection({ cards }: CardSectionProps) {
-  // TODO: get card API 교체 예정
-  const handleLoadMore = () => {
-    console.log('load more');
-  };
-
+export default function CardSection({
+  id,
+  name,
+  description,
+  commentsCount,
+  viewsCount,
+  votesCount,
+}: ProductCardProps) {
   return (
-    <VirtuoInfinityScroll
-      list={cards}
-      item={(card) => (
-        <CardItem
-          key={card.id}
-          author={card.author}
-          location={card.location}
-          tags={card.tags}
-          thumbnail={card.thumbnail}
-        />
-      )}
-      emptyText="검색 결과가 없습니다."
-      onInView={handleLoadMore}
-      hasMore={true}
-    />
+    <Link href={`/products/${id}`}>
+      <Card className="flex flex-row justify-between">
+        <div>
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold ">
+            {name}
+          </CardTitle>
+          <CardDescription className="text-muted-foreground">
+            {description}
+          </CardDescription>
+          <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-px text-xs text-muted-foreground">
+              <MessageCircleIcon className="w-4 h-4" />
+              <span>{commentsCount}</span>
+            </div>
+            <div className="flex items-center gap-px text-xs text-muted-foreground">
+              <EyeIcon className="w-4 h-4" />
+              <span>{viewsCount}</span>
+            </div>
+          </div>
+          </CardHeader>
+        </div>
+        <CardFooter>
+          <Button variant="outline" className="flex flex-col h-14">
+            <ChevronUpIcon className="size-4 shrink-0" />
+            <span>{votesCount}</span>
+          </Button>
+        </CardFooter>
+      </Card>
+    </Link>
   );
 }
