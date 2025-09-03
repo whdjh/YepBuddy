@@ -195,14 +195,17 @@ export default function Gnb({
             </DropdownMenu>
           </div>
         ) : (
-          <div className="flex items-center gap-4">
-            <Button asChild variant="secondary">
-              <Link href="/auth/login">Login</Link>
-            </Button>
-            <Button asChild>
-              <Link href="/auth/join">Join</Link>
-            </Button>
-          </div>
+            <div className="flex items-center gap-4">
+              {/* 모바일/PC 공통: Login */}
+              <Button asChild variant="secondary">
+                <Link href="/auth/login">Login</Link>
+              </Button>
+
+              {/* PC에서만 Join 보이기 */}
+              <Button asChild className="hidden sm:inline-flex">
+                <Link href="/auth/join">Join</Link>
+              </Button>
+            </div>
         )}
       </div>
     </nav>
