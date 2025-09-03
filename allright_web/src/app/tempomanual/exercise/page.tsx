@@ -13,23 +13,22 @@ export default function Exercise() {
   const [isFinished, setIsFinished] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const handleStartSet = async () => {
+  const handleStartSet = () => {
     if (isFinished || isButtonDisabled) return;
 
-    // 1. 세트 증가
+    // 세트 증가
     setCurrentSet((prev) => prev + 1);
 
-    // 2. 버튼 비활성화, 운동중 상태
+    // 버튼 비활성화, 운동중 상태
     setIsButtonDisabled(true);
     setIsRunning(true);
 
-    // 3. 10초 대기 후 음성 재생
-    await new Promise((res) => setTimeout(res, 10000));
+    // MP3 재생
     const audioPath = `/sound/manual_count/rep_${reps}.mp3`;
     const audio = new Audio(audioPath);
     audio.play();
 
-    // 4. 음성 재생 완료 후 버튼 활성화
+    // 재생 끝나면 버튼 활성화
     audio.onended = () => {
       setIsButtonDisabled(false);
       setIsRunning(false);
@@ -44,7 +43,7 @@ export default function Exercise() {
     <div className="flex flex-col gap-6 p-6">
       {!isFinished && (
         <div className="bg-red-500 text-black p-3 rounded-md text-center font-bold">
-          ⚠️ 모바일 브라우저에서는 소리 재생이 불안정할 수 있습니다.
+          ⚠️ 운동 시작 버튼을 누르고 10초뒤 재생됩니다. 버튼을 클릭 후 카운트시작에 맞춰 시작하세요.
         </div>
       )}
 
