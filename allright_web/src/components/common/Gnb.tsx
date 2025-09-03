@@ -119,7 +119,17 @@ export default function Gnb({
                   </NavigationMenuContent>
                 </NavigationMenuItem>
               </NavigationMenuList>
-            </NavigationMenu>
+          </NavigationMenu>
+
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link href="/trainer">트레이너</Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
         </div>
         {isLoggedIn ? (
           <div className="flex items-center tab:gap-4">
@@ -148,8 +158,10 @@ export default function Gnb({
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[150px] tab:w-[300px]">
                 <DropdownMenuLabel className="flex flex-col">
-                  <span className="font-medium">John Doe</span>
-                  <span className="text-xs text-muted-foreground">@username</span>
+                  { /** 실제 API로 변경 */}
+                  <span className="font-medium">이주훈</span>
+                  { /** 실제 API로 변경 */}
+                  <span className="text-xs text-muted-foreground">@wngns9807</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

@@ -71,7 +71,7 @@ function NavigationMenuItem({
 const navigationMenuTriggerStyle = cva(
   [
     "group inline-flex h-9 w-max items-center justify-center rounded-md",
-    "px-4 py-2 text-sm font-medium",
+    "px-1 tab:px-4 py-2 text-sm font-medium",
     "text-gray-200 bg-transparent",
     // hover / focus / open
     "hover:bg-white/10 hover:text-white",
@@ -160,8 +160,8 @@ function NavigationMenuLink({
     <NavigationMenuPrimitive.Link
       data-slot="navigation-menu-link"
       className={cn(
-        "flex flex-col gap-1 rounded-sm p-2 text-sm transition-colors outline-none",
-        "text-gray-300 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white",
+        "flex flex-col gap-1 rounded-sm p-2 text-sm font-medium transition-colors outline-none",
+        "text-gray-200 hover:bg-white/10 hover:text-white focus:bg-white/10 focus:text-white",
         "focus-visible:ring-[3px] focus-visible:ring-white/30 focus-visible:outline-1",
         "data-[active=true]:bg-white/10 data-[active=true]:text-white",
         "[&_svg:not([class*='text-'])]:text-gray-400 [&_svg:not([class*='size-'])]:size-4",
