@@ -1,3 +1,8 @@
+// 8/29 아젠다
+// TODO1: Toast 추가 후 메인 페이지 이동
+// TODO2: 컴포넌트화
+// TODO3: UI 수정
+// TODO4: 이건 추후 앱으로 배포할 예정임을 어필해야됨
 'use client';
 
 import { useTempoStore } from "@/stores/useTempo";
