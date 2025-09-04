@@ -1,4 +1,4 @@
-import CardSection from "@/components/product/main/CardSection";
+import ProductCard from "@/components/common/Card/ProductCard";
 
 export default function Home() {
   return (
@@ -13,7 +13,7 @@ export default function Home() {
           </p>
         </div>
         {Array.from({ length: 10 }).map((_, index) => (
-          <CardSection
+          <ProductCard
             key={`trainer-${index}`}
             id={`trainerId-${index}`}
             name="트레이너 이름"

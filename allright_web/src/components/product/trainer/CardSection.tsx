@@ -1,7 +1,7 @@
 'use client';
 
 import { CardData } from '@/types/Card';
-import CardItem from '@/components/common/Card/CardItem';
+import CardItem from '@/components/common/OldCard/CardItem';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {

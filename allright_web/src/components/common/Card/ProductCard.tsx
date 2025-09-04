@@ -10,7 +10,7 @@ import {
 import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from "lucide-react";
 import { ProductCardProps } from "@/types/Card";
 
-export default function CardSection({
+export default function ProductCard({
   id,
   name,
   description,
