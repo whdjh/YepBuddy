@@ -2,7 +2,7 @@ import { Hero } from "@/components/common/hero";
 import CardSection from "@/components/product/trainer/CardSection";
 import { mockProductCards } from "@/mock/cardData";
 
-export default function Home() {
+export default function Trainer() {
   return (
     <div className="space-y-20">
       <Hero
