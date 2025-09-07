@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProductCard from "@/components/common/Card/ProductCard";
 import PostCard from "@/components/common/Card/PostCard";
 import IdeaCard from "@/components/common/Card/IdeaCard";
+import PartnerCard from "@/components/common/Card/PartnerCard";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -76,6 +77,33 @@ export default function Home() {
             postedAt="12 hours ago"
             likesCount={12}
             claimed={index % 2 === 0}
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <h2 className="text-5xl font-bold leading-tight tracking-tight">
+            파트너 최신글
+          </h2>
+          <p className="text-xl font-light text-foreground">
+            운동 파트너를 구해보세요!
+          </p>
+          <Button variant="link" asChild className="text-lg p-0">
+            <Link href="/ideas">파트너 전체 보기 &rarr;</Link>
+          </Button>
+        </div>
+        {Array.from({ length: 11 }).map((_, index) => (
+          <PartnerCard
+            key={`jobId-${index}`}
+            id={`jobId-${index}`}
+            gym="NONGYM"
+            gymLogoUrl="https://github.com/facebook.png"
+            gymHq="경기도, 용인시"
+            title="하체운동"
+            postedAt="12 hours ago"
+            type="everyday"
+            positionLocation="Remote"
+            time="12:00 - 14:00"
           />
         ))}
       </div>
