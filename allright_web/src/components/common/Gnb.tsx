@@ -81,8 +81,8 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "운동일지",
-    href: "/diary",
+    name: "IdeasGPT",
+    href: "/ideas",
   },
   {
     name: "운동템포",
