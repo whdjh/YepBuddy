@@ -1,6 +1,6 @@
 "use client";
 
-import Button from '@/components/common/Button';
+import { Button } from "@/components/ui/button";
 
 interface BodyPartsSelectorProps {
   selectedBodyParts: string[];
@@ -23,7 +23,7 @@ export default function BodyPartsSelector({ selectedBodyParts, onToggleBodyPart 
         {BODY_PARTS.map((part) => (
           <Button
             key={part.value}
-            variant={selectedBodyParts.includes(part.value) ? "solid" : "outline"}
+            variant={selectedBodyParts.includes(part.value) ? "default" : "outline"}
             onClick={() => onToggleBodyPart(part.value)}
             className="px-3 py-1.5 text-sm h-auto"
           >

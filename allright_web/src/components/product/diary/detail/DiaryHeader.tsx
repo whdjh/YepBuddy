@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import Back from '@/asset/ic/ic_back.svg';
-import Button from '@/components/common/Button';
+import { Button } from '@/components/ui/button';
 
 interface DiaryHeaderProps {
   date: Date;
@@ -35,7 +35,6 @@ export default function DiaryHeader({ date, onBack, onSave }: DiaryHeaderProps) 
       </button>
       <h1 className="text-xl font-semibold text-white">{formattedDate}</h1>
       <Button 
-        variant="solid" 
         onClick={onSave}
         className="h-[2rem] px-4 text-sm"
       >

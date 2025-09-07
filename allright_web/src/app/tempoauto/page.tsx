@@ -3,7 +3,7 @@
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import Button from "@/components/common/Button";
+import { Button } from '@/components/ui/button';
 import ButtonSection from '@/components/product/tempoauto/ButtonSection';
 import InputSection from '@/components/product/tempoauto/InputSection';
 import { TempoFormValues } from '@/types/Tempo';
@@ -43,7 +43,7 @@ export default function TempoAuto() {
       >
         <ButtonSection selected={selected} setSelected={setSelected} />
         <InputSection methods={methods} setFormValue={setFormValue} />
-        <Button type="submit" variant="solid" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
+        <Button type="submit" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
           운동시작
         </Button>
       </form>
