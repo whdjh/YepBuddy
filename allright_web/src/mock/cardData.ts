@@ -5,7 +5,7 @@ export const mockProductCards: ProductCardProps[] = [
   {
     id: "trainer-1",
     name: "이주훈",
-    description: "체형 교정 · 코어 강화",
+    description: "체형교정 · 코어강화",
     commentsCount: 14,
     viewsCount: 512,
     votesCount: 120,
@@ -21,7 +21,7 @@ export const mockProductCards: ProductCardProps[] = [
   {
     id: "trainer-3",
     name: "김민수",
-    description: "재활 트레이닝 · 통증 케어",
+    description: "재활 · 통증 케어",
     commentsCount: 21,
     viewsCount: 742,
     votesCount: 188,
@@ -37,7 +37,7 @@ export const mockProductCards: ProductCardProps[] = [
   {
     id: "trainer-5",
     name: "오주현",
-    description: "근비대 · 3분할 프로그램",
+    description: "근비대 · 3분할프로그램",
     commentsCount: 11,
     viewsCount: 498,
     votesCount: 140,
@@ -69,7 +69,7 @@ export const mockProductCards: ProductCardProps[] = [
   {
     id: "trainer-9",
     name: "문유진",
-    description: "체력 증진 · 서킷 트레이닝",
+    description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
     viewsCount: 151,
     votesCount: 33,
