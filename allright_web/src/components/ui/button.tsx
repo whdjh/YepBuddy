@@ -3,11 +3,6 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-/**
- * - 토큰 의존 제거 (bg-primary, ring-ring 등)
- * - 기본(primary)은 프로젝트 변수 `--primary`를 직접 사용
- * - 나머지는 중립 색(white/gray)과 red 계열만 사용
- */
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all " +
   "disabled:pointer-events-none disabled:opacity-50 " +

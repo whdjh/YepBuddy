@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from 'react';
-import Button from '@/components/common/Button';
+import { Button } from '@/components/ui/button';
 
 interface SignatureCanvasProps {
   onSave?: (signatureData: string) => void;
@@ -142,7 +142,6 @@ export default function SignatureCanvas({ onSave, className = "" }: SignatureCan
           지우기
         </Button>
         <Button
-          variant="solid"
           onClick={handleSaveSignature}
           className="h-[2rem] text-sm w-[10rem]"
         >

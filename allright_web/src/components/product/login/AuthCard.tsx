@@ -1,7 +1,7 @@
 "use client";
 
 import Logo from '@/asset/ic/ic_logo.svg';
-import Button from '@/components/common/Button';
+import { Button } from '@/components/ui/button';
 import Input from '@/components/common/Input';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
@@ -60,11 +60,8 @@ export default function AuthCard() {
               }
             }}
           />
-          <Button type="submit" variant="solid" className='h-[3rem] w-[15rem]'>
+          <Button type="submit" className='h-[3rem] w-[15rem]'>
             로그인
-          </Button>
-          <Button variant="kakao" className='h-[3rem] w-[15rem]'>
-            카카오로그인
           </Button>
         </div>
       </form>

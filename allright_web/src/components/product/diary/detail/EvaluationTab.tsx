@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Textarea from '@/components/common/Textarea';
+import { Textarea } from '@/components/ui/textarea';
 import SignatureCanvas from './SignatureCanvas';
 import { useToastStore } from '@/stores/useToastStore';
 
@@ -89,7 +89,6 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
               value={getTextareaValue(field.key)}
               onChange={(e) => handleTextareaChange(field.key, e.target.value)}
               placeholder={field.placeholder}
-              rows={field.rows}
             />
           </div>
         ))}

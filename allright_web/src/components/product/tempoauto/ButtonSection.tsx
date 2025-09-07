@@ -1,4 +1,4 @@
-import Button from "@/components/common/Button";
+import { Button } from "@/components/ui/button";
 
 interface ButtonSectionProps {
   selected: "concentric" | "eccentric" | null;
@@ -14,7 +14,6 @@ export default function ButtonSection({ selected, setSelected }: ButtonSectionPr
     <div className="flex gap-5 justify-center items-center mt-5">
       <Button
         type="button"
-        variant="solid"
         onClick={() => handleClickButton('concentric')}
         className={`h-[3rem] w-[10rem] ${selected === "concentric" ? "bg-[#16a34a]" : "bg-gray-400"
           }`}
@@ -23,7 +22,6 @@ export default function ButtonSection({ selected, setSelected }: ButtonSectionPr
       </Button>
       <Button
         type="button"
-        variant="solid"
         onClick={() => handleClickButton('eccentric')}
         className={`h-[3rem] w-[10rem] ${selected === "eccentric" ? "bg-[#16a34a]" : "bg-gray-400"
           }`}

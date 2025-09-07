@@ -1,6 +1,6 @@
 "use client";
 
-import Button from '@/components/common/Button';
+import { Button } from "@/components/ui/button";
 
 interface ExerciseControlsProps {
   onAddExercise: () => void;
@@ -18,7 +18,6 @@ export default function ExerciseControls({
       <label className="text-base font-medium text-white">운동기록</label>
       <div className="flex gap-2">
         <Button
-          variant="solid"
           onClick={onAddExercise}
           className="px-2 text-sm h-[2rem]"
         >
