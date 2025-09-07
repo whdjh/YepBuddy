@@ -37,7 +37,7 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         // base
-        "flex w-fit items-center justify-between gap-2 rounded-md px-3 py-2 text-sm whitespace-nowrap shadow-xs outline-none transition-colors",
+        "flex w-full items-center justify-between gap-2 rounded-md px-3 py-2 text-sm whitespace-nowrap shadow-xs outline-none transition-colors",
         "data-[size=default]:h-9 data-[size=sm]:h-8",
         // colors (dark-friendly)
         "border border-white/15 bg-transparent text-gray-100 hover:bg-white/10",

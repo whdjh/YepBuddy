@@ -1,35 +1,25 @@
-'use client';
+"use client";
 
-import { Hero } from "@/components/common/hero";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import Input from "@/components/common/Input";
-import { FormProvider, SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { useState } from "react";
+import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import Image from "next/image";
+import { ImageIcon } from "lucide-react";
+import InputPair from "@/components/common/InputPair";
+import { Hero } from "@/components/common/hero";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SelectPair from "@/components/common/SelectPair";
 
 type FormValues = {
   name: string;
   tags: string;
   description: string;
   category: string;
+  icon: File | null;
 };
 
-const options = [
-  { label: "AI", value: "ai" },
-  { label: "Design", value: "design" },
-  { label: "Marketing", value: "marketing" },
-  { label: "Development", value: "development" },
-];
-
 export default function Submit() {
-  const [open, setOpen] = useState(false);
-
   const methods = useForm<FormValues>({
     mode: "all",
     defaultValues: {
@@ -37,101 +27,116 @@ export default function Submit() {
       tags: "",
       description: "",
       category: "",
+      icon: null
     },
-    shouldUnregister: false,
+
   });
+
+  const [icon, setIcon] = useState<string | null>(null);
+
+  const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const file = event.target.files[0];
+      setIcon(URL.createObjectURL(file));
+    }
+  };
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log("submit:", data);
   };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 flex flex-col justify-center">
       <Hero title="트레이너 등록" subtitle="모든 사람이 볼 수 있게 당신을 알리세요!" />
-
       <FormProvider {...methods}>
-        <form
-          onSubmit={methods.handleSubmit(onSubmit)}
-          noValidate
-          className="grid grid-cols-2 gap-10 max-w-screen-lg mx-auto"
-        >
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="grid grid-cols-2 gap-10 max-w-screen-lg mx-auto">
           <div className="space-y-5">
-            <Input
+            <InputPair
               name="name"
               label="이름"
-              placeholder="트레이너 이름을 입력하세요."
-              rules={{
-                required: "이름은 필수 입력입니다.",
-                pattern: {
-                  value: /^[가-힣]+$/,
-                  message: "한글만 입력 가능합니다.",
-                },
-              }}
+              description="실명으로 입력해주세요"
+              placeholder="이름을 입력하세요"
+              rules={{ required: "이름은 필수 입력입니다." }}
             />
 
-            <Input
+            <InputPair
               name="tags"
               label="태그"
-              placeholder="태그로 간단하게 입력하세요."
-              rules={{
-                required: "태그 입력은 필수 입력입니다.",
-                pattern: {
-                  value: /^[가-힣]+$/,
-                  message: "한글만 입력 가능합니다.",
-                },
-              }}
+              description="태그 60자 이하"
+              placeholder="간결하게 표현할 태그를 입력하세요"
+              maxLength={60}
             />
-            <Input
+
+            <InputPair
               name="description"
               label="자기소개"
-              placeholder="자기소개를 입력하세요."
-              rules={{
-                required: "자기소개는 필수 입력입니다.",
-                pattern: {
-                  value: /^[가-힣]+$/,
-                  message: "한글만 입력 가능합니다.",
-                },
-              }}
+              description="300자 이내로 간단한 소개를 작성하세요."
+              isTextArea
+              maxLength={300}
             />
 
-            {/* Select ← RHF Controller로 연동 */}
-            <div>
-              <Controller
-                name="category"
-                control={methods.control}
-                rules={{ required: "카테고리를 선택하세요." }}
-                render={({ field, fieldState }) => (
-                  <div className="space-y-1.5">
-                    <Select
-                      open={open}
-                      onOpenChange={setOpen}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="min-w-[15rem]">
-                        <SelectValue placeholder="카테고리를 클릭해주세요." />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {options.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.error && (
-                      <p className="text-sm text-red-400">{fieldState.error.message}</p>
-                    )}
-                  </div>
-                )}
-              />
-            </div>
+            <SelectPair
+              label="카테고리"
+              description="카테고리입니다."
+              name="category"
+              required
+              placeholder="카테고리를 고르세요"
+              options={[
+                { label: "가슴", value: "chest" },
+                { label: "등", value: "back" },
+                { label: "하체", value: "leg" },
+                { label: "어깨", value: "sholder" },
+                { label: "팔", value: "arm" },
+              ]}
+            />
 
-            <Button
-              type="submit"
-            >
-              등록하기
+            <Button type="submit" className="w-full" size="lg">
+              제출하기
             </Button>
+          </div>
+          <div className="flex flex-col items-start space-y-2">
+            <div className="relative size-40 rounded-xl overflow-hidden border border-white/15 shadow-xl">
+              {icon ? (
+                <Image
+                  src={icon}
+                  alt="프로필 미리보기"
+                  fill
+                  sizes="160px"
+                  className="object-cover"
+                  unoptimized
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-white/10 text-gray-300">
+                  <ImageIcon className="size-8 opacity-70" />
+                </div>
+              )}
+            </div>
+            <Label className="flex flex-col items-start gap-1">
+              프로필 사진
+              <small className="text-muted-foreground">
+                프로필 사진을 넣어주세요
+              </small>
+            </Label>
+            <Input
+              type="file"
+              accept="image/png, image/jpeg"
+              className="w-1/2"
+              onChange={(e) => {
+                const file = e.target.files?.[0] ?? null;
+                setIcon(file ? URL.createObjectURL(file) : null);
+                methods.setValue("icon", file, { shouldValidate: true });
+              }}
+            />
+            <div className="flex flex-col text-xs">
+              <span className=" text-muted-foreground">
+                추천 사이즈: 128x128px
+              </span>
+              <span className=" text-muted-foreground">
+                허용 파일 포멧: PNG, JPEG
+              </span>
+              <span className=" text-muted-foreground">최대 파일 크기: 1MB</span>
+            </div>
           </div>
         </form>
       </FormProvider>
