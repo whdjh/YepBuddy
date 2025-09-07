@@ -9,6 +9,8 @@ interface CardSectionProps {
 }
 
 export default function CardSection({ cards }: CardSectionProps) {
+  // TODO: 추천수에 비례해서 상위부터 보여지게 하면될듯
+
   // TODO: get card API 교체 예정
   const handleLoadMore = () => {
     console.log('load more');
