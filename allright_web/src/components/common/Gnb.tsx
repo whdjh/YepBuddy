@@ -71,6 +71,10 @@ const menus: Menu[] = [
     ],
   },
   {
+    name: "운동일지",
+    href: "/dairy",
+  },
+  {
     name: "커뮤니티",
     href: "/community",
     highlightLast: true,
@@ -83,6 +87,15 @@ const menus: Menu[] = [
   {
     name: "IdeasGPT",
     href: "/ideas",
+  },
+  {
+    name: "Team",
+    href: "/teams",
+    highlightLast: false,
+    items: [
+      { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
+    ],
   },
   {
     name: "운동템포",
@@ -239,12 +252,12 @@ export default function Gnb({
           <div className="flex items-center gap-4">
             {/* 모바일/PC 공통: Login */}
             <Button asChild variant="secondary">
-              <Link href="/auth/login">Login</Link>
+              <Link href="/login">Login</Link>
             </Button>
 
             {/* PC에서만 Join 보이기 */}
-            <Button asChild className="hidden sm:inline-flex">
-              <Link href="/auth/join">Join</Link>
+            <Button asChild>
+              <Link href="/signup">Join</Link>
             </Button>
           </div>
         )}
