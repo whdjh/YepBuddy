@@ -42,7 +42,7 @@ function SelectTrigger({
         // colors (dark-friendly)
         "border border-white/15 bg-transparent text-gray-100 hover:bg-white/10",
         // focus: 브랜드 그린
-        "focus-visible:border-[var(--primary)] focus-visible:ring-[3px] focus-visible:ring-[color:var(--primary)/0.35]",
+        "focus-visible:border-[#16a34a] focus-visible:ring-[3px] focus-visible:ring-[color:#16a34a/0.35]",
         // disabled
         "disabled:cursor-not-allowed disabled:opacity-50",
         // icons
@@ -129,7 +129,7 @@ function SelectItem({
         // hover/focus
         "hover:bg-white/10 focus:bg-white/10",
         // 선택 상태 강조: 브랜드 그린 톤
-        "data-[state=checked]:bg-[color:var(--primary)/0.15] data-[state=checked]:text-white",
+        "data-[state=checked]:bg-[color:#16a34a/0.15] data-[state=checked]:text-white",
         // disabled
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         // 내부 svg
@@ -140,7 +140,7 @@ function SelectItem({
     >
       <span className="absolute right-2 flex size-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <CheckIcon className="size-4 text-[var(--primary)]" />
+          <CheckIcon className="size-4 text-[#16a34a]" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

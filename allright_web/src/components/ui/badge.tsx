@@ -3,12 +3,6 @@ import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-/**
- * 토큰 의존 최소화:
- * - focus ring → white/30
- * - 기본/호버 컬러를 다크 배경(#191919) 친화 팔레트로 재정의
- * - default는 프로젝트 변수 --primary 사용
- */
 const badgeVariants = cva(
   "inline-flex items-center justify-center gap-1 w-fit whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-medium shrink-0 overflow-hidden transition-colors outline-none " +
   "[&>svg]:size-3 [&>svg]:pointer-events-none " +
