@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProductCard from "@/components/common/Card/ProductCard";
-import { PostCard } from "@/components/common/Card/PostCard";
+import PostCard from "@/components/common/Card/PostCard";
+import IdeaCard from "@/components/common/Card/IdeaCard";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -51,6 +52,30 @@ export default function Home() {
             authorAvatarUrl="https://github.com/gym.png"
             category="Productivity"
             postedAt="12 hours ago"
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <h2 className="text-5xl font-bold leading-tight tracking-tight">
+            IdeasGPT
+          </h2>
+          <p className="text-xl font-light text-foreground">
+            나만의 운동 루틴을 상품으로 판매하세요. GPT가 만든 루틴도, 직접 만든 루틴도 손쉽게 등록할 수 있어요.
+          </p>
+          <Button variant="link" asChild className="text-lg p-0">
+            <Link href="/ideas">운동루틴 전체 보기 &rarr;</Link>
+          </Button>
+        </div>
+        {Array.from({ length: 11 }).map((_, index) => (
+          <IdeaCard
+            key={`ideaId-${index}`}
+            id={`ideaId-${index}`}
+            title="A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations and tracking of progress using a mobile app to track workouts and progress as well as a website to manage the business."
+            viewsCount={123}
+            postedAt="12 hours ago"
+            likesCount={12}
+            claimed={index % 2 === 0}
           />
         ))}
       </div>
