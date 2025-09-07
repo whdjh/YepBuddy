@@ -3,6 +3,7 @@ import ProductCard from "@/components/common/Card/ProductCard";
 import PostCard from "@/components/common/Card/PostCard";
 import IdeaCard from "@/components/common/Card/IdeaCard";
 import PartnerCard from "@/components/common/Card/PartnerCard";
+import TeamCard from "@/components/common/Card/TeamCard";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -104,6 +105,30 @@ export default function Home() {
             type="everyday"
             positionLocation="Remote"
             time="12:00 - 14:00"
+          />
+        ))}
+      </div>
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <h2 className="text-5xl font-bold leading-tight tracking-tight">
+            PT 회원 모집
+          </h2>
+          <p className="text-xl font-light text-foreground">
+            1:1 맞춤 트레이닝 회원을 모집·관리하는 공간
+          </p>
+          <Button variant="link" asChild className="text-lg p-0">
+            <Link href="/teams">전체 팀 보기 &rarr;</Link>
+          </Button>
+        </div>
+
+        {Array.from({ length: 11 }).map((_, index) => (
+          <TeamCard
+            key={`teamId-${index}`}
+            id={`teamId-${index}`}
+            leaderUsername="이주훈"
+            leaderAvatarUrl="https://github.com/gym.png"
+            positions={["초보 환영", "재활·통증 케어", "다이어트"]}
+            teamDescription="맞춤형 8주 트레이닝"
           />
         ))}
       </div>
