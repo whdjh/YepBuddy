@@ -17,7 +17,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        /** 보라 기본 버튼(프로젝트 변수 사용) */
+        /** 초록색 기본 버튼(프로젝트 변수 사용) */
         default:
           "bg-[#16a34a] text-white shadow-xs hover:brightness-110 active:brightness-95",
 

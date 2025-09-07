@@ -17,7 +17,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        // 보라 기본 뱃지
+        // 초록 기본 뱃지
         default:
           "border-transparent bg-[#16a34a] text-white [a&]:hover:brightness-110",
         // 중립(세컨더리)
