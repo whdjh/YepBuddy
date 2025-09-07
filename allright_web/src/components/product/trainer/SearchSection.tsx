@@ -15,8 +15,8 @@ export default function SearchSection() {
     }
 
     const query = searchQuery.toLowerCase();
-    
-    return MOCK_CARDS.filter((card) => 
+
+    return MOCK_CARDS.filter((card) =>
       card.author.toLowerCase().includes(query) ||
       card.location.toLowerCase().includes(query) ||
       card.tags.some((tag) => tag.toLowerCase().includes(query))

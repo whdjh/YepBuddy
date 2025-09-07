@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Logo from "@/asset/ic/ic_logo.svg";
 import {
   NavigationMenu,
@@ -30,21 +29,83 @@ import {
   SettingsIcon,
   UserIcon,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type Entry = { href: string; title: string; desc?: string }
+type SubItem = {
+  name: string;
+  description?: string;
+  href: string;
+};
 
-// TODO: 개인다이어리는 개인이 들어갈 수 있게
-// TODO: 회원다이어리는 트레이너만 볼 수 있고, 목록을 보여주고, 회원 클릭해서 들어갈 수 있음 -> 여기서 회원과 트레이너가 양방향이어야한다는점(pt종료후 다른 Pt선생도 가능)
-const dairyLinks: Entry[] = [
-  { href: "/dairy", title: "개인", desc: "자신의 운동기록일지를 볼 수 있어요." },
-  { href: "/mypage", title: "회원", desc: "트레이너가 회원의 운동 기록을 볼 수 있어요." },
-];
+type Menu = {
+  name: string;
+  href: string;
+  items?: SubItem[];
+  /** 마지막 항목을 2칸 확장 + 초록 강조로 보여줄지 여부 */
+  highlightLast?: boolean;
+};
 
-// TODO: 모바일은 템포조절이 안되니까 카운팅만 가능하게 하는 페이지로 개발
-// TODO: PC는 템포조절이 되므로 기존 tempo로 사용
-const tempoLink: Entry[] = [
-  { href: "/tempomanual", title: "모바일", desc: "버튼을 눌러 세트를 카운트하며 운동해요." },
-  { href: "/tempoauto", title: "PC", desc: "템포를 설정하고 자동으로 운동을 진행해요." },
+const menus: Menu[] = [
+  {
+    name: "트레이너",
+    href: "/trainer",
+    highlightLast: true,
+    items: [
+      { name: "인기 트레이너", description: "추천수가 많은 트레이너 보기", href: "/trainer/leaderboards" },
+      { name: "카테고리별", description: "지역별로 트레이너 찾기", href: "/trainer/categories" },
+      { name: "트레이너 검색", description: "이름으로 원하는 트레이너 찾기", href: "/trainer/search" },
+      { name: "트레이너 등록", description: "내 프로필을 트레이너로 등록하기", href: "/trainer/submit" },
+      { name: "트레이너 홍보", description: "유료로 나를 홍보하기", href: "/trainer/promote" },
+    ],
+  },
+  {
+    name: "파트너",
+    href: "/partner",
+    highlightLast: true,
+    items: [
+      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람 찾기", href: "/friend?location=remote" },
+      { name: "정기 모임", description: "정기적으로 만날 운동 파트너", href: "/friend?type=full-time" },
+      { name: "자유 모임", description: "시간 맞춰 자유롭게 운동할 사람", href: "/friend?type=freelance" },
+      { name: "1회 체험", description: "가볍게 한 번 함께 운동해보기", href: "/friend?type=internship" },
+      { name: "모집 글 올리기", description: "함께할 파트너를 직접 모집하기", href: "/friend/submit" },
+    ],
+  },
+  {
+    name: "운동일지",
+    href: "/dairy",
+  },
+  {
+    name: "커뮤니티",
+    href: "/community",
+    highlightLast: true,
+    items: [
+      { name: "실시간 인기", description: "지금 가장 많이 주목받는 글", href: "/community?sort=trending" },
+      { name: "최신 글", description: "방금 올라온 최신 게시글", href: "/community?sort=new" },
+      { name: "글쓰기", description: "나만의 운동 이야기 공유하기", href: "/community/create" },
+    ],
+  },
+  {
+    name: "IdeasGPT",
+    href: "/ideas",
+  },
+  {
+    name: "Team",
+    href: "/teams",
+    highlightLast: false,
+    items: [
+      { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
+    ],
+  },
+  {
+    name: "운동템포",
+    href: "/tempoauto",
+    highlightLast: false,
+    items: [
+      { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
+    ],
+  },
 ];
 
 export default function Gnb({
@@ -56,88 +117,80 @@ export default function Gnb({
   hasNotifications: boolean;
   hasMessages: boolean;
 }) {
-  const pathname = usePathname();
-  const isActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/");
-
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-[4.5rem] bg-[#191919]/80 backdrop-blur">
-      <div className="flex items-center justify-between px-2 tab:px-20 py-1.5">
-        <div className="flex items-center tab:gap-2">
+      <div className="flex items-center justify-between px-20 py-1.5">
+        <div className="flex items-center gap-2">
           <Link href="/" aria-label="메인페이지로 이동">
             <Logo width={60} height={60} />
           </Link>
-          <hr className="w-px h-6 border-0 bg-[#34343A]" />
+          <hr className="h-6 w-px border-0 bg-[#34343A]" />
 
           <NavigationMenu>
             <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>운동일지</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[150px] gap-4 tab:w-[300px]">
-                    <li className="flex flex-col gap-2">
-                      {dairyLinks.map((item) => (
-                        <NavigationMenuLink asChild key={item.href}>
-                          <Link href={item.href} data-active={isActive(item.href)}>
-                            <div className="font-medium">{item.title}</div>
-                            {item.desc && (
-                              <div className="text-muted-foreground">
-                                {item.desc}
-                              </div>
-                            )}
-                          </Link>
-                        </NavigationMenuLink>
-                      ))}
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>운동템포</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <ul className="grid w-[150px] gap-4 tab:w-[300px]">
-                    <li className="flex flex-col gap-2">
-                      {tempoLink.map((item) => (
-                        <NavigationMenuLink asChild key={item.href}>
-                          <Link href={item.href} data-active={isActive(item.href)}>
-                            <div className="font-medium">{item.title}</div>
-                            {item.desc && (
-                              <div className="text-muted-foreground">
-                                {item.desc}
-                              </div>
-                            )}
-                          </Link>
-                        </NavigationMenuLink>
-                      ))}
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                  <Link href="/trainer">트레이너</Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
+              {menus.map((menu) => (
+                <NavigationMenuItem key={menu.name}>
+                  {menu.items ? (
+                    <>
+                      <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
+                      <NavigationMenuContent>
+                        <ul className="grid w-[600px] grid-cols-2 gap-3 p-4 font-light">
+                          {menu.items.map((item, idx) => {
+                            const isLast = idx === menu.items!.length - 1;
+                            const emphasize = Boolean(menu.highlightLast && isLast);
+                            return (
+                              <li
+                                key={item.name}
+                                className={cn(
+                                  "select-none rounded-md transition-colors hover:bg-accent focus:bg-accent",
+                                  emphasize &&
+                                  "col-span-2 bg-[#16a34a]/20 text-white hover:bg-[#16a34a]/50 focus:bg-[#16a34a]/50"
+                                )}
+                              >
+                                <NavigationMenuLink asChild>
+                                  <Link
+                                    href={item.href}
+                                    className="block space-y-1 p-3 leading-none no-underline outline-none"
+                                  >
+                                    <span className="text-sm font-medium leading-none">
+                                      {item.name}
+                                    </span>
+                                    {item.description && (
+                                      <p
+                                        className={cn(
+                                          "text-sm leading-snug text-muted-foreground",
+                                          emphasize && "text-white/90"
+                                        )}
+                                      >
+                                        {item.description}
+                                      </p>
+                                    )}
+                                  </Link>
+                                </NavigationMenuLink>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </NavigationMenuContent>
+                    </>
+                  ) : (
+                    <NavigationMenuLink asChild>
+                      <Link href={menu.href}>{menu.name}</Link>
+                    </NavigationMenuLink>
+                  )}
+                </NavigationMenuItem>
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
         </div>
+
         {isLoggedIn ? (
-          <div className="flex items-center tab:gap-4">
+          <div className="flex items-center gap-4">
             <Button size="icon" variant="ghost" asChild className="relative">
               <Link href="/my/notifications">
                 <BellIcon className="size-4" />
                 {hasNotifications && (
-                  <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                  <div className="absolute right-1.5 top-1.5 size-2 rounded-full bg-red-500" />
                 )}
               </Link>
             </Button>
@@ -145,10 +198,11 @@ export default function Gnb({
               <Link href="/my/messages">
                 <MessageCircleIcon className="size-4" />
                 {hasMessages && (
-                  <div className="absolute top-1.5 right-1.5 size-2 bg-red-500 rounded-full" />
+                  <div className="absolute right-1.5 top-1.5 size-2 rounded-full bg-red-500" />
                 )}
               </Link>
             </Button>
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar>
@@ -156,30 +210,30 @@ export default function Gnb({
                   <AvatarFallback>N</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-[150px] tab:w-[300px]">
+              <DropdownMenuContent className="w-[300px]">
                 <DropdownMenuLabel className="flex flex-col">
-                  { /** 실제 API로 변경 */}
+                  {/** 실제 API로 변경 */}
                   <span className="font-medium">이주훈</span>
-                  { /** 실제 API로 변경 */}
+                  {/** 실제 API로 변경 */}
                   <span className="text-xs text-muted-foreground">@wngns9807</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/my/dashboard">
-                      <BarChart3Icon className="size-4 mr-2" />
+                      <BarChart3Icon className="mr-2 size-4" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/my/profile">
-                      <UserIcon className="size-4 mr-2" />
+                      <UserIcon className="mr-2 size-4" />
                       Profile
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/my/settings">
-                      <SettingsIcon className="size-4 mr-2" />
+                      <SettingsIcon className="mr-2 size-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
@@ -187,7 +241,7 @@ export default function Gnb({
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/auth/logout">
-                    <LogOutIcon className="size-4 mr-2" />
+                    <LogOutIcon className="mr-2 size-4" />
                     Logout
                   </Link>
                 </DropdownMenuItem>
@@ -198,16 +252,16 @@ export default function Gnb({
           <div className="flex items-center gap-4">
             {/* 모바일/PC 공통: Login */}
             <Button asChild variant="secondary">
-              <Link href="/auth/login">Login</Link>
+              <Link href="/login">Login</Link>
             </Button>
 
             {/* PC에서만 Join 보이기 */}
-            <Button asChild className="hidden sm:inline-flex">
-              <Link href="/auth/join">Join</Link>
+            <Button asChild>
+              <Link href="/signup">Join</Link>
             </Button>
           </div>
         )}
       </div>
     </nav>
-  )
+  );
 }

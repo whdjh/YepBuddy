@@ -1,4 +1,4 @@
-import SearchSection from "@/components/product/main/SearchSection";
+import SearchSection from "@/components/product/trainer/SearchSection";
 
 export default function Home() {
   return (
