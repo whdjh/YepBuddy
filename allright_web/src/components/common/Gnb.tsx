@@ -51,7 +51,7 @@ const menus: Menu[] = [
     href: "/trainer",
     highlightLast: true,
     items: [
-      { name: "인기 트레이너", description: "추천수가 많은 트레이너 보기", href: "/trainer/leaderboards" },
+      { name: "인기 트레이너", description: "추천수가 많은 트레이너 보기", href: "/trainer" },
       { name: "카테고리별", description: "지역별로 트레이너 찾기", href: "/trainer/categories" },
       { name: "트레이너 검색", description: "이름으로 원하는 트레이너 찾기", href: "/trainer/search" },
       { name: "트레이너 등록", description: "내 프로필을 트레이너로 등록하기", href: "/trainer/submit" },
@@ -71,10 +71,6 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "운동일지",
-    href: "/dairy",
-  },
-  {
     name: "커뮤니티",
     href: "/community",
     highlightLast: true,
@@ -89,21 +85,22 @@ const menus: Menu[] = [
     href: "/ideas",
   },
   {
-    name: "Team",
+    name: "회원모집",
     href: "/teams",
     highlightLast: false,
     items: [
-      { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
-      { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
+      { name: "모집공고", description: "등록된 회원모집공고 목록 보기", href: "/teams" },
+      { name: "글쓰기", description: "피티모집 글 쓰기", href: "/teams/applications" },
     ],
   },
   {
-    name: "운동템포",
+    name: "운동보조",
     href: "/tempoauto",
-    highlightLast: false,
+    highlightLast: true,
     items: [
       { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
       { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
+      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/dairy"},
     ],
   },
 ];
@@ -250,12 +247,9 @@ export default function Gnb({
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            {/* 모바일/PC 공통: Login */}
             <Button asChild variant="secondary">
               <Link href="/login">Login</Link>
             </Button>
-
-            {/* PC에서만 Join 보이기 */}
             <Button asChild>
               <Link href="/signup">Join</Link>
             </Button>
