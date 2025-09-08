@@ -19,7 +19,7 @@ export default function RootLayout({
       <body>
         <ScrollController />
         <Gnb isLoggedIn={true} hasMessages={true} hasNotifications={true} />
-        <main className="mt-[5.5rem]">
+        <main className="mt-[5.5rem] p-5">
           {children}
         </main>
         <Toast />
