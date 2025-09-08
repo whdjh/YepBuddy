@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Overview from "./OverViews";
 
 export default function TabSection({
   id,
@@ -16,8 +17,7 @@ export default function TabSection({
           asChild
           variant="outline"
           className={cn(
-            "active:bg-accent active:text-accent-foreground transition-colors",
-            activeTab === "overviews" && "bg-accent text-accent-foreground"
+            activeTab === "overviews" && "bg-white/10 text-accent-foreground"
           )}
           aria-current={activeTab === "overviews" ? "page" : undefined}
           role="tab"
@@ -29,8 +29,7 @@ export default function TabSection({
           asChild
           variant="outline"
           className={cn(
-            "active:bg-accent active:text-accent-foreground transition-colors",
-            activeTab === "reviews" && "bg-accent text-accent-foreground"
+            activeTab === "reviews" && "bg-white/10 text-accent-foreground"
           )}
           aria-current={activeTab === "reviews" ? "page" : undefined}
           role="tab"
@@ -40,7 +39,7 @@ export default function TabSection({
       </div>
 
       <div className="mt-6">
-        {activeTab === "overviews" ? <div>소개 콘텐츠</div> : <div>리뷰 콘텐츠</div>}
+        {activeTab === "overviews" ? <Overview /> : <div>리뷰 콘텐츠</div>}
       </div>
     </>
   );
