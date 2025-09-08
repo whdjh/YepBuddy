@@ -18,13 +18,13 @@ export default function Home() {
             오늘 가장 주목받는 트레이너를 만나보세요!
           </p>
           <Button variant="link" asChild className="text-lg px-0">
-            <Link href="/products/leaderboards">트레이너 전체 보기 &rarr;</Link>
+            <Link href="/trainer/leaderboards">트레이너 전체 보기 &rarr;</Link>
           </Button>
         </div>
         {Array.from({ length: 11 }).map((_, index) => (
           <ProductCard
-            key={`trainer-${index}`}
-            id={`trainerId-${index}`}
+            key={`${index}`}
+            id={`${index}`}
             name="이주훈"
             description="개발자입니다."
             commentsCount={12}

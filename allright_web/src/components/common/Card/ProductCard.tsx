@@ -20,7 +20,7 @@ export default function ProductCard({
   votesCount,
 }: ProductCardProps) {
   return (
-    <Link href={`/products/${id}`}>
+    <Link href={`/trainer/${id}`}>
       <Card className="flex flex-row justify-between">
         <div>
         <CardHeader>
