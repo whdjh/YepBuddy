@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Overview from "./OverViews";
+import Overview from "@/components/product/trainer/detail/OverViews";
+import Reviews from "@/components/product/trainer/detail/Reviews";
 
 export default function TabSection({
   id,
@@ -39,7 +40,7 @@ export default function TabSection({
       </div>
 
       <div className="mt-6">
-        {activeTab === "overviews" ? <Overview /> : <div>리뷰 콘텐츠</div>}
+        {activeTab === "overviews" ? <Overview /> : <Reviews />}
       </div>
     </>
   );
