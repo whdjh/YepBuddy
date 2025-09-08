@@ -3,7 +3,7 @@ import type { ProductCardProps } from "@/types/Card";
 // TODO: API로 교체 예정
 export const mockProductCards: ProductCardProps[] = [
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -11,7 +11,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -19,7 +19,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -27,7 +27,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -35,7 +35,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -43,7 +43,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -51,7 +51,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -59,7 +59,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -67,7 +67,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -75,7 +75,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -83,7 +83,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -91,7 +91,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -99,7 +99,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -107,7 +107,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -115,7 +115,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -123,7 +123,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -131,7 +131,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -139,7 +139,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -147,7 +147,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -155,7 +155,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -163,7 +163,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -171,7 +171,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -179,7 +179,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -187,7 +187,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -195,7 +195,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -203,7 +203,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -211,7 +211,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -219,7 +219,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -227,7 +227,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -235,7 +235,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -243,7 +243,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -251,7 +251,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -259,7 +259,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -267,7 +267,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -275,7 +275,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -283,7 +283,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -291,7 +291,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -299,7 +299,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -307,7 +307,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -315,7 +315,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -323,7 +323,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -331,7 +331,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -339,7 +339,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -347,7 +347,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -355,7 +355,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -363,7 +363,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -371,7 +371,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -379,7 +379,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -387,7 +387,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -395,7 +395,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -403,7 +403,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -411,7 +411,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -419,7 +419,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -427,7 +427,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -435,7 +435,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -443,7 +443,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -451,7 +451,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -459,7 +459,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -467,7 +467,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -475,7 +475,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -483,7 +483,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -491,7 +491,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -499,7 +499,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -507,7 +507,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -515,7 +515,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -523,7 +523,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -531,7 +531,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -539,7 +539,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -547,7 +547,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -555,7 +555,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -563,7 +563,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -571,7 +571,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -579,7 +579,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -587,7 +587,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -595,7 +595,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -603,7 +603,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -611,7 +611,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -619,7 +619,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -627,7 +627,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -635,7 +635,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -643,7 +643,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -651,7 +651,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -659,7 +659,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -667,7 +667,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -675,7 +675,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -683,7 +683,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -691,7 +691,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -699,7 +699,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -707,7 +707,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -715,7 +715,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -723,7 +723,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -731,7 +731,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -739,7 +739,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -747,7 +747,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -755,7 +755,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -763,7 +763,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -771,7 +771,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -779,7 +779,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -787,7 +787,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -795,7 +795,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -803,7 +803,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -811,7 +811,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -819,7 +819,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -827,7 +827,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -835,7 +835,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -843,7 +843,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -851,7 +851,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -859,7 +859,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -867,7 +867,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -875,7 +875,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -883,7 +883,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -891,7 +891,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -899,7 +899,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -907,7 +907,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -915,7 +915,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -923,7 +923,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -931,7 +931,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -939,7 +939,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -947,7 +947,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -955,7 +955,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
@@ -963,7 +963,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 92,
   },
   {
-    id: "trainer-1",
+    id: "1",
     name: "이주훈",
     description: "체형교정 · 코어강화",
     commentsCount: 14,
@@ -971,7 +971,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 120,
   },
   {
-    id: "trainer-2",
+    id: "2",
     name: "박소연",
     description: "여성 전문 · 하체 집중",
     commentsCount: 8,
@@ -979,7 +979,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 96,
   },
   {
-    id: "trainer-3",
+    id: "3",
     name: "김민수",
     description: "재활 · 통증 케어",
     commentsCount: 21,
@@ -987,7 +987,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 188,
   },
   {
-    id: "trainer-4",
+    id: "4",
     name: "정해린",
     description: "다이어트 · 유산소 루틴",
     commentsCount: 5,
@@ -995,7 +995,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 73,
   },
   {
-    id: "trainer-5",
+    id: "5",
     name: "오주현",
     description: "근비대 · 3분할프로그램",
     commentsCount: 11,
@@ -1003,7 +1003,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 140,
   },
   {
-    id: "trainer-6",
+    id: "6",
     name: "이서준",
     description: "홈짐 · 최소 장비 루틴",
     commentsCount: 4,
@@ -1011,7 +1011,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 55,
   },
   {
-    id: "trainer-7",
+    id: "7",
     name: "장다연",
     description: "산후 케어 · 골반 안정화",
     commentsCount: 13,
@@ -1019,7 +1019,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 110,
   },
   {
-    id: "trainer-8",
+    id: "8",
     name: "최지후",
     description: "정체기 탈출 · 템포조절",
     commentsCount: 7,
@@ -1027,7 +1027,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 84,
   },
   {
-    id: "trainer-9",
+    id: "9",
     name: "문유진",
     description: "체력 증진 · 서킷트레이닝",
     commentsCount: 2,
@@ -1035,7 +1035,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 33,
   },
   {
-    id: "trainer-10",
+    id: "10",
     name: "강도윤",
     description: "컨디셔닝 · 민첩성",
     commentsCount: 6,
@@ -1043,7 +1043,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 67,
   },
   {
-    id: "trainer-11",
+    id: "11",
     name: "배예린",
     description: "바디프로필 준비 루틴",
     commentsCount: 19,
@@ -1051,7 +1051,7 @@ export const mockProductCards: ProductCardProps[] = [
     votesCount: 201,
   },
   {
-    id: "trainer-12",
+    id: "12",
     name: "홍성우",
     description: "원격 PT · 영상 피드백",
     commentsCount: 9,
