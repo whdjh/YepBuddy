@@ -1,4 +1,4 @@
-import { Hero } from "@/components/common/hero";
+import { Hero } from "@/components/common/Hero";
 import CardSection from "@/components/product/trainer/CardSection";
 import { mockProductCards } from "@/mock/cardData";
 

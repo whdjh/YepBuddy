@@ -1,6 +1,6 @@
 "use client";
 
-import { Hero } from "@/components/common/hero";
+import { Hero } from "@/components/common/Hero";
 import FormSection from "@/components/product/trainer/promote/FormSection";
 
 export default function Promote() {

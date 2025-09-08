@@ -1,4 +1,4 @@
-import { Hero } from "@/components/common/hero";
+import { Hero } from "@/components/common/Hero";
 import CategoryCard from "@/components/product/trainer/categories/CategoryCard";
 
 export default function Categories() {

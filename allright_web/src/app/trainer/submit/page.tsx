@@ -1,4 +1,4 @@
-import { Hero } from "@/components/common/hero";
+import { Hero } from "@/components/common/Hero";
 import TrainerRegistrationForm from "@/components/product/trainer/submit/TrainerRegistrationForm";
 
 export default function Submit() {
