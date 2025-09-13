@@ -24,7 +24,7 @@ export default function PostCard({
   postedAt,
 }: PostCardProps) {
   return (
-    <Card>
+    <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
       <Link href={`/community/${id}`} className="block">
         <CardHeader className="flex flex-row items-center gap-2">
           <Avatar className="size-14">
