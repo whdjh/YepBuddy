@@ -34,7 +34,7 @@ export default function PartnerCard({
   time,
 }: PartnerCardProps) {
   return (
-    <Link href={`/jobs/${id}`}>
+    <Link href={`/partner/${id}`}>
       <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
         <CardHeader>
           <div className="flex items-center gap-4 mb-4">

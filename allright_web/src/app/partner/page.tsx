@@ -8,7 +8,7 @@ import TypeSection from "@/components/product/partner/TypeSection";
 import LocationSection from "@/components/product/partner/LocationSection";
 import TimeRangeSection from "@/components/product/partner/TimeRangeSection";
 
-export default function JobsPage() {
+export default function PartnersPage() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

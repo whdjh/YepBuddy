@@ -2,7 +2,7 @@ import type { PartnerCardProps } from "@/types/Card";
 
 export const mockPartnerCards: PartnerCardProps[] = [
   {
-    id: "001",
+    id: "1",
     gym: "NONGYM",
     gymLogoUrl: "https://github.com/facebook.png",
     gymHq: "경기도 용인시",
@@ -13,7 +13,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "12:00 - 14:00",
   },
   {
-    id: "002",
+    id: "2",
     gym: "GYMBOX",
     gymLogoUrl: "https://github.com/vercel.png",
     gymHq: "서울 강남구",
@@ -24,7 +24,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "19:00 - 20:30",
   },
   {
-    id: "003",
+    id: "3",
     gym: "IRONLAB",
     gymLogoUrl: "https://github.com/microsoft.png",
     gymHq: "부산 해운대구",
@@ -35,7 +35,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "10:00 - 18:00",
   },
   {
-    id: "004",
+    id: "4",
     gym: "FITTEE",
     gymLogoUrl: "https://github.com/google.png",
     gymHq: "대구 수성구",
@@ -46,7 +46,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "07:00 - 08:00",
   },
   {
-    id: "005",
+    id: "5",
     gym: "PULSE",
     gymLogoUrl: "https://github.com/airbnb.png",
     gymHq: "인천 연수구",
@@ -57,7 +57,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "21:00 - 22:00",
   },
   {
-    id: "006",
+    id: "6",
     gym: "HARDLINE",
     gymLogoUrl: "https://github.com/netflix.png",
     gymHq: "서울 마포구",
@@ -68,7 +68,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "18:30 - 20:00",
   },
   {
-    id: "007",
+    id: "7",
     gym: "MOVE365",
     gymLogoUrl: "https://github.com/stripe.png",
     gymHq: "광주 북구",
@@ -79,7 +79,7 @@ export const mockPartnerCards: PartnerCardProps[] = [
     time: "15:00 - 16:30",
   },
   {
-    id: "008",
+    id: "8",
     gym: "ATHLETICA",
     gymLogoUrl: "https://github.com/shopify.png",
     gymHq: "울산 남구",
