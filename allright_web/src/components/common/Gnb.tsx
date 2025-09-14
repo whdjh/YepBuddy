@@ -63,11 +63,11 @@ const menus: Menu[] = [
     href: "/partner",
     highlightLast: true,
     items: [
-      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람 찾기", href: "/friend?location=remote" },
-      { name: "정기 모임", description: "정기적으로 만날 운동 파트너", href: "/friend?type=full-time" },
-      { name: "자유 모임", description: "시간 맞춰 자유롭게 운동할 사람", href: "/friend?type=freelance" },
-      { name: "1회 체험", description: "가볍게 한 번 함께 운동해보기", href: "/friend?type=internship" },
-      { name: "모집 글 올리기", description: "함께할 파트너를 직접 모집하기", href: "/friend/submit" },
+      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람 찾기", href: "/partner?location=remote" },
+      { name: "정기 모임", description: "정기적으로 만날 운동 파트너", href: "/partner?type=full-time" },
+      { name: "자유 모임", description: "시간 맞춰 자유롭게 운동할 사람", href: "/partner?type=freelance" },
+      { name: "1회 체험", description: "가볍게 한 번 함께 운동해보기", href: "/partner?type=internship" },
+      { name: "모집 글 올리기", description: "함께할 파트너를 직접 모집하기", href: "/partner/submit" },
     ],
   },
   {
