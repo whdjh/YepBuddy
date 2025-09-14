@@ -81,7 +81,7 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "IdeasGPT",
+    name: "IdeasRoutine",
     href: "/ideas",
   },
   {
