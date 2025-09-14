@@ -53,12 +53,12 @@ export default function IdeaCard({
         </Button>
         {!claimed ? (
           <Button asChild>
-            <Link href={`/ideas/${id}/claim`}>Claim idea now &rarr;</Link>
+            <Link href={`/ideas/${id}`}>자세히보기 &rarr;</Link>
           </Button>
         ) : (
           <Button variant="outline" disabled className="cursor-not-allowed">
             <LockIcon className="size-4" />
-            Claimed
+            잠금
           </Button>
         )}
       </CardFooter>

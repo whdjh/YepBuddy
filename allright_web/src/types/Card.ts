@@ -14,3 +14,12 @@ export interface ProductCardProps {
   viewsCount: number;
   votesCount: number;
 }
+
+export interface IdeasCardProps {
+  id: string;
+  title: string;
+  viewsCount: number;
+  postedAt: string;
+  likeCount: number;
+  claimed?: boolean;
+}

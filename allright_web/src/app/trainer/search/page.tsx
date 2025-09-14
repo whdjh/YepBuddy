@@ -1,7 +1,7 @@
 import { Hero } from "@/components/common/Hero";
 import SearchSection from "@/components/product/trainer/search/SearchSection";
 import CardSection from "@/components/product/trainer/CardSection";
-import { mockProductCards } from "@/mock/cardData";
+import { mockProductCards } from "@/mock/productCardData";
 
 type PageProps = {
   searchParams: Promise<{ query?: string }>;
