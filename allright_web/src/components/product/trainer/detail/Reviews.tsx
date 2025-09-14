@@ -15,7 +15,7 @@ export default function ProductReviewsPage() {
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">10개의 리뷰 </h2>
           <DialogTrigger asChild>
-            <Button variant={"secondary"}>Write a review</Button>
+            <Button variant={"secondary"}>리뷰작성</Button>
           </DialogTrigger>
         </div>
         <div className="space-y-20">
