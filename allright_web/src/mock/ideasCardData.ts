@@ -2,7 +2,7 @@ import type { IdeasCardProps } from "@/types/Card";
 
 export const mockIdeasCards: IdeasCardProps[] = [
   {
-    id: "idea-1",
+    id: "1",
     title: "초보자 4주 전신 루틴 (집/헬스장 겸용)",
     viewsCount: 341,
     postedAt: "2 hours ago",
@@ -10,7 +10,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-2",
+    id: "2",
     title: "상·하체 분할 3일 루틴 — 업무 병행용",
     viewsCount: 512,
     postedAt: "5 hours ago",
@@ -18,7 +18,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: true,
   },
   {
-    id: "idea-3",
+    id: "3",
     title: "여성 하체 집중 루틴 (둔근·대퇴 후면)",
     viewsCount: 198,
     postedAt: "1 day ago",
@@ -26,7 +26,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-4",
+    id: "4",
     title: "체지방 감량 HIIT + 근비대 보조 루틴",
     viewsCount: 782,
     postedAt: "3 days ago",
@@ -34,7 +34,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-5",
+    id: "5",
     title: "어깨·등 집중 2분할 (초중급)",
     viewsCount: 423,
     postedAt: "6 days ago",
@@ -42,7 +42,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: true,
   },
   {
-    id: "idea-6",
+    id: "6",
     title: "출퇴근 30분 루틴 — 덤벨 1쌍만으로",
     viewsCount: 267,
     postedAt: "8 days ago",
@@ -50,7 +50,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-7",
+    id: "7",
     title: "무릎 친화 하체 루틴 (재활·저충격)",
     viewsCount: 154,
     postedAt: "10 days ago",
@@ -58,7 +58,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-8",
+    id: "8",
     title: "3대 500 도전 근력 루틴 (5x5 변형)",
     viewsCount: 903,
     postedAt: "12 days ago",
@@ -66,7 +66,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: true,
   },
   {
-    id: "idea-9",
+    id: "9",
     title: "코어 안정성 & 자세 교정 20분",
     viewsCount: 119,
     postedAt: "2 weeks ago",
@@ -74,7 +74,7 @@ export const mockIdeasCards: IdeasCardProps[] = [
     claimed: false,
   },
   {
-    id: "idea-10",
+    id: "10",
     title: "러닝 + 상체 보완 하이브리드",
     viewsCount: 301,
     postedAt: "3 weeks ago",
