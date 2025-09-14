@@ -21,7 +21,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   return (
     <Link href={`/trainer/${id}`}>
-      <Card className="flex flex-row justify-between">
+      <Card className="bg-transparent hover:bg-[#26262c] border-white/10 flex flex-row justify-between">
         <div>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold ">

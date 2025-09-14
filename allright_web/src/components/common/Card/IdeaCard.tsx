@@ -28,13 +28,7 @@ export default function IdeaCard({
   claimed,
 }: IdeaCardProps) {
   return (
-    <Card
-      className={cn(
-        "transition-colors",
-        "bg-[#1f1f23] hover:bg-[#26262c]",
-        "border-white/10"
-      )}
-    >
+    <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
       <CardHeader>
         <Link href={`/ideas/${id}`}>
           <CardTitle className="text-xl">

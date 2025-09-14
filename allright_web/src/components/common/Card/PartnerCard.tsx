@@ -35,7 +35,7 @@ export default function PartnerCard({
 }: PartnerCardProps) {
   return (
     <Link href={`/jobs/${id}`}>
-      <Card className="transition-colors bg-[#1f1f23] hover:bg-[#26262c] border-white/10">
+      <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
         <CardHeader>
           <div className="flex items-center gap-4 mb-4">
             <Image

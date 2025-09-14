@@ -12,7 +12,7 @@ export default function TabSection({
   activeTab: "overviews" | "reviews";
 }) {
   return (
-    <>
+    <div className="m-6">
       <div className="flex gap-2.5" role="tablist" aria-label="트레이너 상세 탭">
         <Button
           asChild
@@ -42,6 +42,6 @@ export default function TabSection({
       <div className="mt-6">
         {activeTab === "overviews" ? <Overview /> : <Reviews />}
       </div>
-    </>
+    </div>
   );
 }
