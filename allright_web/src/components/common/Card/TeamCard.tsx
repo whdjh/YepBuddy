@@ -12,14 +12,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-
-interface TeamCardProps {
-  id: string;
-  leaderUsername: string;
-  leaderAvatarUrl: string;
-  positions: string[];
-  teamDescription: string;
-}
+import { TeamCardProps } from "@/types/Card";
 
 export default function TeamCard({
   id,

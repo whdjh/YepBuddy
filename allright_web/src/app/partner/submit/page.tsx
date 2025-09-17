@@ -3,7 +3,7 @@ import FormSection from "@/components/product/partner/submit/FormSection";
 
 export default function PartnerPost() {
   return (
-    <div>
+    <div className="space-y-20">
       <Hero title="파트너 등록" subtitle="파트너를 모집해보세요!" />
       <FormSection />
     </div>

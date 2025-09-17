@@ -90,7 +90,7 @@ const menus: Menu[] = [
     highlightLast: false,
     items: [
       { name: "모집공고", description: "등록된 회원모집공고 목록 보기", href: "/teams" },
-      { name: "글쓰기", description: "피티모집 글 쓰기", href: "/teams/applications" },
+      { name: "글쓰기", description: "피티모집 글 쓰기", href: "/teams/submit" },
     ],
   },
   {

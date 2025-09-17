@@ -6,7 +6,7 @@ import { PARTNER_TYPES, LOCATION_TYPES, TIME_RANGE } from "@/constants/partner";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 
-type FormValues = {
+interface FormValues {
   position: string;
   overview: string;
   responsibilities: string;

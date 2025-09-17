@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SelectPair from "@/components/common/SelectPair";
 
-export type FormValues = {
+interface FormValues {
   name: string;
   tags: string;
   description: string;
