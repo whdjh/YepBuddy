@@ -2,13 +2,21 @@
 
 import { Hero } from "@/components/common/Hero";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, Suspense } from "react";
 import { HeaderSection } from "@/components/product/community/HeaderSection";
 import { CardSection } from "@/components/product/community/CardSection";
 import { TopicSection } from "@/components/product/community/TopicSection";
 import { mockPosts } from "@/mock/postCardData";
 
-export default function CommunityClient() {
+export default function Community() {
+  return (
+    <Suspense fallback={null}>
+      <CommunityInner />
+    </Suspense>
+  );
+}
+
+function CommunityInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
