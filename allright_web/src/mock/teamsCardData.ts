@@ -3,128 +3,90 @@ import type { TeamCardProps } from "@/types/Card";
 export const mockTeamCards: TeamCardProps[] = [
   {
     id: "1",
-    leaderUsername: "민수",
+    leaderUsername: "주훈 트레이너",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/101?v=4",
-    positions: ["러닝", "사이클"],
-    teamDescription: "잠실~탄천 러닝 크루. 주 3회 저녁 7시, 5'30 페이스로 같이 달려요!",
+    positions: ["1:1 PT", "센터 방문", "평일 저녁"],
+    teamDescription:
+      "스케줄: 평일 18:00–22:00, 토 10:00–13:00\n" +
+      "가격/정책: 10회 75만원 · 유효 8주 · 노쇼 1회 차감\n" +
+      "소개: NASM-CPT, 체형교정/감량 5년\n" +
+      "연락: 카톡 @trainer_jh",
   },
   {
     id: "2",
-    leaderUsername: "지연",
+    leaderUsername: "민수 코치",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/102?v=4",
-    positions: ["헬스", "크로스핏"],
-    teamDescription: "목동 헬스장 3분할 루틴 같이 하실 분. 초보 환영, 자세 교정 함께해요.",
+    positions: ["그룹 PT(2-3인)", "센터 방문", "주말 오전"],
+    teamDescription:
+      "스케줄: 토/일 09:00–12:00\n" +
+      "가격/정책: 8회 48만원 · 유효 6주 · 지각 10분 패널티\n" +
+      "소개: 근비대/근력 전문, 스쿼트 교정\n" +
+      "연락: 010-1234-5678",
   },
   {
     id: "3",
-    leaderUsername: "도윤",
+    leaderUsername: "지연 트레이너",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/103?v=4",
-    positions: ["클라이밍"],
-    teamDescription: "서울숲/압구정 볼더링. 빌레이 교환하고 프로젝트 같이 잡아요.",
+    positions: ["온라인 코칭", "영상 피드백", "다이어트"],
+    teamDescription:
+      "스케줄: 주 2회 영상 피드백 + 식단 체크\n" +
+      "가격/정책: 월 25만원 · 4주 단위 결제\n" +
+      "소개: IF 다이어트/여성 체형 라인업 특화\n" +
+      "연락: 폼 https://example.com/apply",
   },
   {
     id: "4",
-    leaderUsername: "수아",
+    leaderUsername: "도윤 코치",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/104?v=4",
-    positions: ["요가", "필라테스"],
-    teamDescription: "주말 아침 요가 스터디. 호흡/유연성 위주, 초보도 OK.",
+    positions: ["1:1 PT", "방문 PT", "평일 아침"],
+    teamDescription:
+      "스케줄: 평일 06:00–09:00 (강남/서초 인근)\n" +
+      "가격/정책: 회당 9만원 · 이동거리 3km 초과 추가비\n" +
+      "소개: 재활/자세 교정, Janda 패턴 교정 경험\n" +
+      "연락: 카톡 @coach_do",
   },
   {
     id: "5",
-    leaderUsername: "현우",
+    leaderUsername: "수아 트레이너",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/105?v=4",
-    positions: ["사이클"],
-    teamDescription: "한강 자전거 종주(토). 평균 25km/h 크루, 안전장비 필수!",
+    positions: ["그룹 PT(2-3인)", "센터 방문", "평일 점심"],
+    teamDescription:
+      "스케줄: 평일 12:00–14:00 (선착순 2명)\n" +
+      "가격/정책: 12회 60만원 · 유효 8주 · 양도 가능\n" +
+      "소개: 요가/필라테스 기반 코어 강화\n" +
+      "연락: 카톡 @sua_pt",
   },
   {
     id: "6",
-    leaderUsername: "유진",
+    leaderUsername: "현우 코치",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/106?v=4",
-    positions: ["풋살"],
-    teamDescription: "상암 풋살 일요 저녁 팀원 모집. 즐겜 위주, 포지션 무관.",
+    positions: ["1:1 PT", "센터 방문", "주말 오후"],
+    teamDescription:
+      "스케줄: 토/일 14:00–18:00\n" +
+      "가격/정책: 10회 80만원 · 유효 10주 · 환불 규정 별도 안내\n" +
+      "소개: 러닝 보강(하체/엉덩이) + 체지방 감량\n" +
+      "연락: 010-2222-3333",
   },
   {
     id: "7",
-    leaderUsername: "하린",
+    leaderUsername: "유진 트레이너",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/107?v=4",
-    positions: ["수영"],
-    teamDescription: "평일 새벽 자유수영 메이트 구해요. 중급 레인 함께 탑니다.",
+    positions: ["온라인 코칭", "식단 관리", "초보 환영"],
+    teamDescription:
+      "스케줄: 매일 DM 체크, 주 1회 화상 코칭\n" +
+      "가격/정책: 월 20만원 · 4주 구독\n" +
+      "소개: 초보자 루틴 설계/식단 가이드\n" +
+      "연락: 인스타 @pt_eugene",
   },
   {
     id: "8",
-    leaderUsername: "준호",
+    leaderUsername: "서연 코치",
     leaderAvatarUrl: "https://avatars.githubusercontent.com/u/108?v=4",
-    positions: ["배드민턴"],
-    teamDescription: "성수 배드민턴 더블 파트너. 라켓 있으신 분 환영!",
-  },
-  {
-    id: "9",
-    leaderUsername: "서연",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/109?v=4",
-    positions: ["테니스"],
-    teamDescription: "탄천 테니스 초급/중급 랠리. 평일 저녁 8시 고정.",
-  },
-  {
-    id: "10",
-    leaderUsername: "태민",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/110?v=4",
-    positions: ["등산"],
-    teamDescription: "북한산 새벽 등산. 초보 코스부터 시작해요.",
-  },
-  {
-    id: "11",
-    leaderUsername: "가을",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/111?v=4",
-    positions: ["복싱"],
-    teamDescription: "합정 복싱 체육관 스파링 파트너. 라이트 스파링만!",
-  },
-  {
-    id: "12",
-    leaderUsername: "현서",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/112?v=4",
-    positions: ["요가", "명상"],
-    teamDescription: "퇴근 후 요가+명상 30분 챌린지. 디스코드 출석체크해요.",
-  },
-  {
-    id: "13",
-    leaderUsername: "은우",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/113?v=4",
-    positions: ["러닝"],
-    teamDescription: "광교호수 러닝. 10K 대비 훈련 루틴 공유합니다.",
-  },
-  {
-    id: "14",
-    leaderUsername: "보민",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/114?v=4",
-    positions: ["크로스핏"],
-    teamDescription: "WOD 같이 하실 분. 초심자 스케일링 도와드려요.",
-  },
-  {
-    id: "15",
-    leaderUsername: "지호",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/115?v=4",
-    positions: ["농구"],
-    teamDescription: "잠실 농구 3대3 픽업게임. 매주 수요일 밤.",
-  },
-  {
-    id: "16",
-    leaderUsername: "다은",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/116?v=4",
-    positions: ["필라테스"],
-    teamDescription: "코어 강화 필라테스 소모임. 매트 개인 지참 부탁!",
-  },
-  {
-    id: "17",
-    leaderUsername: "시우",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/117?v=4",
-    positions: ["클라이밍", "요가"],
-    teamDescription: "클라이밍 후 요가 스트레칭으로 마무리하는 루틴 공유.",
-  },
-  {
-    id: "18",
-    leaderUsername: "나연",
-    leaderAvatarUrl: "https://avatars.githubusercontent.com/u/118?v=4",
-    positions: ["러닝", "수영", "사이클"],
-    teamDescription: "트라이애슬론 입문 반. 기초 장비/루틴부터 같이 시작!",
+    positions: ["1:1 PT", "센터 방문", "평일 저녁"],
+    teamDescription:
+      "스케줄: 평일 19:00–22:00 (성수)\n" +
+      "가격/정책: 8회 56만원 · 유효 6주 · 노쇼 차감\n" +
+      "소개: 여성 근력/힙업, 프리웨이트 위주\n" +
+      "연락: 카톡 @seoyeon_fit",
   },
 ];
