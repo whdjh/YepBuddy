@@ -77,7 +77,7 @@ const menus: Menu[] = [
       { name: "모든 글", description: "지금까지 올라온 글", href: "/community" },
       { name: "실시간 인기", description: "지금 가장 많이 주목받는 글", href: "/community?sort=trending" },
       { name: "최신 글", description: "방금 올라온 최신 게시글", href: "/community?sort=new" },
-      { name: "글쓰기", description: "나만의 운동 이야기 공유하기", href: "/community/create" },
+      { name: "글쓰기", description: "나만의 운동 이야기 공유하기", href: "/community/submit" },
     ],
   },
   {
