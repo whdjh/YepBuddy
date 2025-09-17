@@ -23,3 +23,15 @@ export interface IdeasCardProps {
   likeCount: number;
   claimed?: boolean;
 }
+
+export interface PartnerCardProps {
+  id: string;
+  gym: string;
+  gymLogoUrl: string;
+  gymHq: string;
+  title: string;
+  postedAt: string;
+  type: string;
+  positionLocation: string;
+  time: string;
+}

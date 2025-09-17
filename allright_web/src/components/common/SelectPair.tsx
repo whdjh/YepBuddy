@@ -19,7 +19,7 @@ export default function SelectPair({
 }: {
   label: string;
   description: string;
-  name: "category"; // 안전하게 고정하거나 제네릭으로 확장
+  name: string;
   required?: boolean;
   placeholder: string;
   options: Option[];
