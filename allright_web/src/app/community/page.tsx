@@ -54,7 +54,9 @@ export default function CommunityClient() {
             setParam={setParam}
           />
 
-          <CardSection posts={mockPosts} />
+          <div className="space-y-10">
+            <CardSection cards={mockPosts} />
+          </div>
         </div>
 
         <TopicSection

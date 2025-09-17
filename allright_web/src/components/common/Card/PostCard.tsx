@@ -30,7 +30,7 @@ export default function PostCard({
             <AvatarFallback>{author[0]}</AvatarFallback>
             {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
           </Avatar>
-          <div className="space-y-2">
+          <div className="space-y-2 whitespace-nowrap">
             <CardTitle>{title}</CardTitle>
             <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
               <span>
