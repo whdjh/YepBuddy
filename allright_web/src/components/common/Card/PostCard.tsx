@@ -6,17 +6,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DotIcon, ChevronUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface PostCardProps {
-  id: string;
-  title: string;
-  author: string;
-  authorAvatarUrl: string;
-  category: string;
-  postedAt: string;
-  expanded?: boolean;
-  votesCount?: number;
-}
+import { PostCardProps } from "@/types/Card";
 
 export default function PostCard({
   id,
