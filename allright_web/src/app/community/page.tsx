@@ -39,10 +39,7 @@ export default function CommunityClient() {
 
   return (
     <div>
-      <Hero
-        title="커뮤니티"
-        subtitle="질문하고, 운동 팁을 공유하며, 다른 사람들과 소통하세요!"
-      />
+      <Hero title="커뮤니티" subtitle="질문하고, 운동 팁을 공유하며, 다른 사람들과 소통하세요!" />
 
       <div className="grid grid-cols-6 items-start gap-40 p-5">
         <div className="col-span-4 space-y-10">
