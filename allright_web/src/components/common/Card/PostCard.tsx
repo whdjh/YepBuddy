@@ -42,7 +42,7 @@ export default function PostCard({
           </Avatar>
           <div className="space-y-2">
             <CardTitle>{title}</CardTitle>
-            <div className="flex gap-2 text-sm leading-tight text-muted-foreground">
+            <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
               <span>
                 {author} on {category}
               </span>

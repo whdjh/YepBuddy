@@ -31,11 +31,11 @@ export default function ProductCard({
             {description}
           </CardDescription>
           <div className="flex items-center gap-4 mt-2">
-            <div className="flex items-center gap-px text-xs text-muted-foreground">
+              <div className="flex items-center gap-px text-xs text-muted-foreground whitespace-nowrap">
               <MessageCircleIcon className="w-4 h-4" />
               <span>{commentsCount}</span>
             </div>
-            <div className="flex items-center gap-px text-xs text-muted-foreground">
+            <div className="flex items-center gap-px text-xs text-muted-foreground whitespace-nowrap">
               <EyeIcon className="w-4 h-4" />
               <span>{viewsCount}</span>
             </div>
