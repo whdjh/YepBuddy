@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { PROGRAM_TYPES, LOCATION_MODES } from "@/constants/team";
 
-type FormValues = {
+interface FormValues {
   programType: string;
   locationMode: string;
   schedule: string;
