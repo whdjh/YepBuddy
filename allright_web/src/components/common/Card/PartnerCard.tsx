@@ -45,7 +45,7 @@ export default function PartnerCard({
               height={40}
               className="size-10 rounded-full"
             />
-            <div className="space-x-2">
+            <div className="space-x-2 whitespace-nowrap">
               <span className="text-gray-100">{gym}</span>
               <span className="text-xs text-gray-400">{postedAt}</span>
             </div>
@@ -62,7 +62,7 @@ export default function PartnerCard({
           </Badge>
         </CardContent>
 
-        <CardFooter className="flex justify-between">
+        <CardFooter className="flex justify-between whitespace-nowrap">
           <div className="flex flex-col">
             <span className="text-sm font-medium text-gray-400">{time}</span>
             <span className="text-sm font-medium text-gray-400">{gymHq}</span>

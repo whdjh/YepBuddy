@@ -35,3 +35,14 @@ export interface PartnerCardProps {
   positionLocation: string;
   time: string;
 }
+
+export interface PostCardProps {
+  id: string;
+  title: string;
+  author: string;
+  authorAvatarUrl: string;
+  category: string;
+  postedAt: string;
+  expanded?: boolean;
+  votesCount?: number;
+}

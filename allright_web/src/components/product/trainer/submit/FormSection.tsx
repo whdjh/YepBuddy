@@ -18,7 +18,7 @@ export type FormValues = {
   icon: File | null;
 };
 
-export default function TrainerRegistrationForm() {
+export default function FormSection() {
   const methods = useForm<FormValues>({
     mode: "all",
     defaultValues: {

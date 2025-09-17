@@ -39,7 +39,7 @@ export default function IdeaCard({
         </Link>
       </CardHeader>
       <CardContent className="flex items-center text-sm text-gray-300">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 whitespace-nowrap">
           <EyeIcon className="w-4 h-4" />
           <span>{viewsCount}</span>
         </div>

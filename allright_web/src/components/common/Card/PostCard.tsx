@@ -4,16 +4,9 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DotIcon } from "lucide-react";
-
-interface PostCardProps {
-  id: string;
-  title: string;
-  author: string;
-  authorAvatarUrl: string;
-  category: string;
-  postedAt: string;
-}
+import { DotIcon, ChevronUpIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { PostCardProps } from "@/types/Card";
 
 export default function PostCard({
   id,
@@ -22,18 +15,24 @@ export default function PostCard({
   authorAvatarUrl,
   category,
   postedAt,
+  expanded = false,
+  votesCount = 0,
 }: PostCardProps) {
   return (
-    <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
+    <Card className={cn(
+      "bg-transparent hover:bg-[#26262c] border-white/10",
+      expanded ? "flex flex-row items-center justify-between" : ""
+      )}
+    >
       <Link href={`/community/${id}`} className="block">
         <CardHeader className="flex flex-row items-center gap-2">
           <Avatar className="size-14">
             <AvatarFallback>{author[0]}</AvatarFallback>
             {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
           </Avatar>
-          <div className="space-y-2">
+          <div className="space-y-2 whitespace-nowrap">
             <CardTitle>{title}</CardTitle>
-            <div className="flex gap-2 text-sm leading-tight text-muted-foreground">
+            <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
               <span>
                 {author} on {category}
               </span>
@@ -44,11 +43,22 @@ export default function PostCard({
         </CardHeader>
       </Link>
 
-      <CardFooter className="flex justify-end">
-        <Button variant="link" asChild>
-          <Link href={`/community/${id}`}>Reply &rarr;</Link>
-        </Button>
-      </CardFooter>
+      {!expanded && (
+        <CardFooter className="flex justify-end">
+          <Button variant="link" asChild>
+            <Link href={`/community/${id}`}>Reply &rarr;</Link>
+          </Button>
+        </CardFooter>
+      )}
+      
+      {expanded && (
+        <CardFooter className="flex justify-end  pb-0">
+          <Button variant="outline" className="flex flex-col h-14">
+            <ChevronUpIcon className="size-4 shrink-0" />
+            <span>{votesCount}</span>
+          </Button>
+        </CardFooter>
+      )}
     </Card>
   );
 }
