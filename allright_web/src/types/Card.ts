@@ -46,3 +46,11 @@ export interface PostCardProps {
   expanded?: boolean;
   votesCount?: number;
 }
+
+export interface TeamCardProps {
+  id: string;
+  leaderUsername: string;
+  leaderAvatarUrl: string;
+  positions: string[];
+  teamDescription: string;
+}
