@@ -4,22 +4,15 @@ import { ReactNode, useState, useEffect, forwardRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { VirtuosoGrid } from 'react-virtuoso';
 
-// 0.5: 화면에 요소의 절반이 보이면 감지
-// 0: 화면에 요소의 조금이라도 보이면 감지
-// 1: 화면에 요소의 완전히 보이면 감지
 const INFINITY_SCROLL_THRESHOLD = 0.5;
 
 interface VirtuoInfinityScrollProps<T> {
-    /** 렌더링할 데이터 리스트 */
-    list?: T[];
-    /** 각 아이템을 렌더링하는 함수 */
-    item: (itemData: T, index: number) => ReactNode;
-    /** 데이터가 없을 때 사용할 문구 */
-    emptyText: string;
-    /** 무한스크롤 감지 */
-    onInView: () => void;
-    /** 더 불러올 데이터가 있는지 확인 */
-    hasMore?: boolean;
+  list?: T[];
+  item: (itemData: T, index: number) => ReactNode;
+  emptyText: string;
+  onInView: () => void;
+  hasMore?: boolean;
+  layout?: 'grid' | 'flex';
 }
 
 export default function VirtuoInfinityScroll<T>({
@@ -28,6 +21,7 @@ export default function VirtuoInfinityScroll<T>({
   emptyText,
   onInView,
   hasMore = true,
+  layout = 'grid',
 }: VirtuoInfinityScrollProps<T>) {
   const [isFetching, setIsFetching] = useState(false);
   const { ref: observerRef, inView } = useInView({
@@ -54,21 +48,28 @@ export default function VirtuoInfinityScroll<T>({
       </div>
     );
   }
-  
 
   return (
     <>
       <VirtuosoGrid
         totalCount={list.length}
         useWindowScroll
-        computeItemKey={(index) => index} // TODO: 아이템 키 설정
+        computeItemKey={(index) => index}
         components={{
           List: forwardRef<HTMLDivElement>((props, ref) => (
-            <div {...props} ref={ref} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" />
+            <div
+              {...props}
+              ref={ref}
+              className={
+                layout === 'grid'
+                  ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'
+                  : 'flex flex-col gap-4'
+              }
+            />
           )),
           Item: forwardRef<HTMLDivElement>((props, ref) => (
             <div {...props} ref={ref} />
-          ))
+          )),
         }}
         itemContent={(index) => item(list[index], index)}
       />
