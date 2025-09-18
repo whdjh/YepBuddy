@@ -11,7 +11,7 @@ export default function Notification() {
           userName="이주훈"
           message=" 팔로우 신청"
           timestamp="2일전"
-          seen={false}
+          seen={true}
         />
       </div>
     </div>
