@@ -1,5 +1,14 @@
+import { SidebarProvider } from "@/components/ui/sidebar";
+import EmptyMessage from "@/components/product/my/messages/EmptyMessage";
+import SideInventory from "@/components/common/SideInventory";
+
 export default function Message() {
   return (
-    <div>메세지페이지(2026년 구현 예정입니다.)</div>
+    <div className="h-[calc(100vh-14rem)] overflow-hidden">
+      <SidebarProvider className="flex h-full">
+        <SideInventory />
+        <EmptyMessage />
+      </SidebarProvider>
+    </div>
   );
 }
