@@ -74,10 +74,10 @@ export default function FormSection() {
               />
 
               <SelectPair
-                label="Role"
-                description="What role do you identify the most with"
+                label="구분"
+                description="트레이너 또는 회원을 고르세요"
                 name="role"
-                placeholder="트레이너 또는 회원을 고르세요"
+                placeholder="트레이너 또는 회원"
                 options={[
                   { label: "트레이너", value: "trainer" },
                   { label: "회원", value: "member" },
