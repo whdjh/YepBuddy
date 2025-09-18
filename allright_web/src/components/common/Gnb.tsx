@@ -231,7 +231,7 @@ export default function Gnb({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="my/settings">
+                    <Link href="/my/settings">
                       <SettingsIcon className="mr-2 size-4" />
                       프로필수정
                     </Link>
