@@ -109,10 +109,12 @@ export default function Gnb({
   isLoggedIn,
   hasNotifications,
   hasMessages,
+  username,
 }: {
   isLoggedIn: boolean;
   hasNotifications: boolean;
   hasMessages: boolean;
+  username: string;
 }) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 h-[4.5rem] bg-[#191919]/80 backdrop-blur">
@@ -223,7 +225,7 @@ export default function Gnb({
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/my/profile">
+                    <Link href={`/users/${username}`}>
                       <UserIcon className="mr-2 size-4" />
                       Profile
                     </Link>
