@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ProfileCard() {
   return (
-    <div className="col-span-2 space-y-5 border rounded-lg p-6 shadow-sm">
+    <div className="col-span-2 space-y-5 border border-white/10 rounded-lg p-6 shadow-sm">
       <div className="flex gap-5">
         <Avatar className="size-14">
           <AvatarFallback>J</AvatarFallback>

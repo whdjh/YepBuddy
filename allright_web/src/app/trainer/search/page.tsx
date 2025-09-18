@@ -16,7 +16,7 @@ export default async function Search({ searchParams }: PageProps) {
     : mockProductCards;
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-20 p-5">
       <Hero title="검색" subtitle="트레이너의 이름을 검색하세요!" />
       <SearchSection />
       <CardSection cards={filtered} />
