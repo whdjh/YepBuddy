@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/sidebar";
 import { MessageCard } from "@/components/common/Card/MessageCard";
 
-export default function SideBar() {
+export default function SideInventory() {
   return (
     <Sidebar variant="floating">
       <SidebarContent className="overflow-y-auto">
