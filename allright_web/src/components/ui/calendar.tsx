@@ -100,11 +100,11 @@ function toneClasses(tone: Tone) {
         rangeEnd:
           "data-[range-end=true]:bg-primary data-[range-end=true]:text-primary-foreground",
         rangeMiddle:
-          "data-[range-middle=true]:bg-accent data-[range-middle=true]:text-accent-foreground",
+          "data-[range-middle=true]:bg-white/10 data-[range-middle=true]:text-white/10-foreground",
         focusRing:
           "group-data-[focused=true]/day:ring-ring/50 group-data-[focused=true]/day:border-ring",
         today: "outline outline-2 outline-ring/40",
-        hover: "hover:bg-accent/50 dark:hover:bg-accent/30",
+        hover: "hover:bg-white/60 dark:hover:bg-white/40",
       }
   }
 }
