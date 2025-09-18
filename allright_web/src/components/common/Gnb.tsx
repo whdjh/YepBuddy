@@ -81,7 +81,7 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "IdeasRoutine",
+    name: "IdeasGPT",
     href: "/ideas",
   },
   {
@@ -221,19 +221,19 @@ export default function Gnb({
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href="/my/dashboard">
                       <BarChart3Icon className="mr-2 size-4" />
-                      Dashboard
+                      대쉬보드
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <Link href={`/users/${username}`}>
                       <UserIcon className="mr-2 size-4" />
-                      Profile
+                      프로필
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/my/settings">
+                    <Link href="my/settings">
                       <SettingsIcon className="mr-2 size-4" />
-                      Settings
+                      프로필수정
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -241,7 +241,7 @@ export default function Gnb({
                 <DropdownMenuItem asChild className="cursor-pointer">
                   <Link href="/auth/logout">
                     <LogOutIcon className="mr-2 size-4" />
-                    Logout
+                    로그아웃
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -250,10 +250,10 @@ export default function Gnb({
         ) : (
           <div className="flex items-center gap-4">
             <Button asChild variant="secondary">
-              <Link href="/login">Login</Link>
+              <Link href="/login">로그인</Link>
             </Button>
             <Button asChild>
-              <Link href="/signup">Join</Link>
+              <Link href="/signup">회원가입</Link>
             </Button>
           </div>
         )}

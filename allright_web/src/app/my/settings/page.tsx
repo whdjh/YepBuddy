@@ -1,6 +1,6 @@
 import FormSection from "@/components/product/my/settings/FormSection";
 
-export default function UserProfile() {
+export default function EditProfile() {
   return (
     <FormSection />
   );
