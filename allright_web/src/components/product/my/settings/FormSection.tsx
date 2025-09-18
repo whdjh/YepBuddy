@@ -60,7 +60,7 @@ export default function FormSection() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-15">
         <div className="flex">
           <div className="col-span-4 flex flex-col w-1/2 gap-10">
-            <h2 className="text-2xl font-semibold">Edit profile</h2>
+            <h2 className="text-2xl font-semibold">프로필 수정하기</h2>
 
             <div className="flex flex-col w-1/2 gap-5 ">
               <InputPair
