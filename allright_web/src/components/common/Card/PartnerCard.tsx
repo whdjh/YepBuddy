@@ -72,7 +72,7 @@ export default function PartnerCard({
             size="sm"
             className="border border-white/10 bg-white/10 text-gray-100 hover:bg-white/20"
           >
-            Apply now
+            함께하기
           </Button>
         </CardFooter>
       </Card>

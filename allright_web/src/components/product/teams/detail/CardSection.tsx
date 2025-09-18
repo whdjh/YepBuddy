@@ -14,7 +14,7 @@ export default function CardSection() {
         { key: "time", title: "가능 시간대", value: "평일 18:00–22:00, 토 10:00–13:00" },
         { key: "price", title: "가격/정책", value: "10회 75만원, 유효 8주" },
       ].map((item) => (
-        <Card className="bg-transparent" key={item.key}>
+        <Card className="bg-transparent border border-white/10" key={item.key}>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {item.title}
@@ -26,7 +26,7 @@ export default function CardSection() {
         </Card>
       ))}
 
-      <Card className="bg-transparent col-span-2">
+      <Card className="bg-transparent col-span-2 border border-white/10">
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
             모집 대상
@@ -46,7 +46,7 @@ export default function CardSection() {
         </CardContent>
       </Card>
 
-      <Card className="bg-transparent col-span-2">
+      <Card className="bg-transparent col-span-2 border border-white/10">
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
             프로그램 소개
