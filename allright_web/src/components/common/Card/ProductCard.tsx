@@ -43,7 +43,7 @@ export default function ProductCard({
           </CardHeader>
         </div>
         <CardFooter>
-          <Button variant="outline" className="flex flex-col h-14">
+          <Button variant="outline" className="flex flex-col h-14 border border-white/10">
             <ChevronUpIcon className="size-4 shrink-0" />
             <span>{votesCount}</span>
           </Button>

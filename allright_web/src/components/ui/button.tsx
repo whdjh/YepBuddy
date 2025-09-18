@@ -1,40 +1,25 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
+
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all " +
-  "disabled:pointer-events-none disabled:opacity-50 " +
-  "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 " +
-  "outline-none focus-visible:ring-[3px] focus-visible:ring-white/30 focus-visible:outline-1 " +
-  "focus-visible:border-white/30 aria-invalid:ring-red-500/20 aria-invalid:border-red-500/60 shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        /** 초록색 기본 버튼(프로젝트 변수 사용) */
         default:
-          "bg-[#16a34a] text-white shadow-xs hover:brightness-110 active:brightness-95",
-
-        /** 파괴적 액션 */
+          "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
-          "bg-red-500 text-white shadow-xs hover:bg-red-600 focus-visible:ring-red-400/30",
-
-        /** 외곽선 스타일(투명 배경) */
+          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
-          "border border-white/15 bg-transparent text-gray-100 shadow-xs hover:bg-white/10",
-
-        /** 보조 버튼(중립 배경) */
+          "border bg-background shadow-xs hover:bg-white/10 hover:text-white/10-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
-          "bg-white/10 text-gray-100 shadow-xs hover:bg-white/20",
-
-        /** 고스트(배경 없음, 호버만) */
+          "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost:
-          "bg-transparent text-gray-200 hover:bg-white/10 hover:text-white",
-
-        /** 링크 스타일(기본 색상 링크) */
-        link:
-          "text-[#16a34a] underline-offset-4 hover:underline",
+          "hover:bg-white/10 hover:text-white/10-foreground dark:hover:bg-white/60",
+        link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
@@ -61,6 +46,7 @@ function Button({
     asChild?: boolean
   }) {
   const Comp = asChild ? Slot : "button"
+
   return (
     <Comp
       data-slot="button"
