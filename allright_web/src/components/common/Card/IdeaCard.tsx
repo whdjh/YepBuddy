@@ -47,7 +47,7 @@ export default function IdeaCard({
         <span className="text-gray-400">{postedAt}</span>
       </CardContent>
       <CardFooter className="flex justify-end gap-2">
-        <Button variant="outline">
+        <Button variant="outline" className="border border-white/10">
           <HeartIcon className="w-4 h-4" />
           <span>{likesCount}</span>
         </Button>
