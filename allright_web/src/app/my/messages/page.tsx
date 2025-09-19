@@ -1,6 +1,6 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import EmptyMessage from "@/components/product/my/messages/EmptyMessage";
-import SideInventory from "@/components/common/SideInventory";
+import SideInventory from "@/components/product/my/messages/SideInventory";
 
 export default function Message() {
   return (
