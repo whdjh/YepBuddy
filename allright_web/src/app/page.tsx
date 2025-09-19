@@ -6,11 +6,13 @@ import PartnerCard from "@/components/common/Card/PartnerCard";
 import TeamCard from "@/components/common/Card/TeamCard";
 import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/product/main/HeroSection";
+import SlideSection from "@/components/product/main/SlideSection";
 
 export default function Home() {
   return (
     <div className="pt-5 px-20 space-y-20">
       <HeroSection />
+      <SlideSection />
       <div className="grid grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
