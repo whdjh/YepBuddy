@@ -5,10 +5,12 @@ import IdeaCard from "@/components/common/Card/IdeaCard";
 import PartnerCard from "@/components/common/Card/PartnerCard";
 import TeamCard from "@/components/common/Card/TeamCard";
 import { Button } from "@/components/ui/button";
+import HeroSection from "@/components/product/main/HeroSection";
 
 export default function Home() {
   return (
-    <div className="pt-5 px-20 space-y-40">
+    <div className="pt-5 px-20 space-y-20">
+      <HeroSection />
       <div className="grid grid-cols-3 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">
@@ -21,7 +23,7 @@ export default function Home() {
             <Link href="/trainer/leaderboards">트레이너 전체 보기 &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {Array.from({ length: 8 }).map((_, index) => (
           <ProductCard
             key={`${index}`}
             id={`${index}`}
