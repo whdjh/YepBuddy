@@ -62,7 +62,7 @@ export default function AuthCard() {
                 rules={{ required: "필수 입력 사항입니다." }}
               />
 
-              <Button className="w-full" type="submit" disabled={isSubmitting}>
+              <Button className="w-full border border-white/10" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "회웝가입 중" : "회원가입"}
               </Button>
             </form>
@@ -79,7 +79,7 @@ export default function AuthCard() {
 
         </div>
         <div className="w-full flex flex-col gap-2">
-          <Button variant="outline" className="w-full" asChild>
+          <Button variant="outline" className="w-full border border-white/10" asChild>
             <Link href="/auth/social/kakao/start">
               <MessageCircleIcon className="w-4 h-4" />
               카카오톡

@@ -101,7 +101,7 @@ function InputPair({
             id={name}
             type={IsPwd ? (showPassword ? 'text' : 'password') : type}
             placeholder={placeholder}
-            className={`h-[3rem] w-full rounded-lg bg-[#34343A] px-[1rem] py-[1rem] ${IsError
+            className={`border border-white/10 h-[3rem] w-full rounded-lg bg-transparents px-[1rem] py-[1rem] ${IsError
                 ? 'border-[#16a34a] focus-within:border-[#16a34a] focus-within:ring-[#16a34a]'
                 : 'focus-within:ring-0 focus-within:outline-none'
               }`}

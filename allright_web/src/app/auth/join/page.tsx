@@ -1,9 +1,16 @@
+import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import AuthCard from "@/components/product/auth/join/AuthCard";
 
 export default function Join() {
   return (
     <div className="grid grid-cols-2 min-h-[calc(100vh-8rem)]">
-      <div className="bg-gradient-to-br from-[rgba(22,163,74,.45)] via-black/80 to-[rgba(22,163,74,.45)]" />
+      <FlickeringGrid
+        squareSize={4}
+        gridGap={5}
+        maxOpacity={0.5}
+        flickerChance={0.2}
+        color="#16a34a"
+      />
       <div className="flex flex-col items-center">
         <AuthCard />
       </div>
