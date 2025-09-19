@@ -8,7 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
 } from "@/components/ui/sidebar";
 
 export default function SideInventory() {
@@ -21,7 +20,7 @@ export default function SideInventory() {
               <SidebarMenuButton asChild>
                 <Link href="/my/dashboard">
                   <HomeIcon className="size-4" />
-                  <span>Home</span>
+                  <span>대시보드</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -29,20 +28,20 @@ export default function SideInventory() {
               <SidebarMenuButton asChild>
                 <Link href="/my/dashboard/ideas">
                   <SparklesIcon className="size-4" />
-                  <span>Ideas</span>
+                  <span>루틴</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>Product Analytics</SidebarGroupLabel>
+          <SidebarGroupLabel>트레이너 or 커뮤니티 분석</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link href="/my/dashboard/products/1">
+                <Link href="/my/dashboard/1">
                   <RocketIcon className="size-4" />
-                  <span>Trainer 1</span>
+                  <span>트레이너 or 커뮤니티</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

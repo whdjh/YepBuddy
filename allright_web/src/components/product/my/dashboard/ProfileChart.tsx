@@ -28,7 +28,7 @@ export default function ProfileChart() {
   return (
     <Card className="w-1/2 border border-white/10">
       <CardHeader>
-        <CardTitle>프로필 방문자 수</CardTitle>
+        <CardTitle>방문자 수</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
