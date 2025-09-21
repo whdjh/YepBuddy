@@ -23,7 +23,7 @@ export default function TeamCard({
 }: TeamCardProps) {
   return (
     <Link href={`/teams/${id}`}>
-      <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
+      <Card className="bg-transparent border-white/10">
         <CardHeader className="flex flex-row items-center">
           <CardTitle className="text-base leading-loose">
             <Badge
