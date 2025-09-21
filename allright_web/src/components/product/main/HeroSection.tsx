@@ -20,7 +20,7 @@ export default function HeroSection() {
         </BlurFade>
         <BlurFade delay={1} duration={1} inView>
           <span className="text-4xl">
-            오늘도 좋은 운동되세요!
+            아래 운동 커뮤니티와 더불어 운동 일지 기록 및 운동 템포 조절해보세요!
           </span>
         </BlurFade>
       </div>
