@@ -1,13 +1,12 @@
 import Link from "next/link";
-import IdeaCard from "@/components/common/Card/IdeaCard";
-import PartnerCard from "@/components/common/Card/PartnerCard";
 import TeamCard from "@/components/common/Card/TeamCard";
 import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/product/main/HeroSection";
 import SlideSection from "@/components/product/main/SlideSection";
 import TrainerSection from "@/components/product/main/TrainerSection";
-import CommunitySection from "@/components/product/main/CommunitySection";
 import IdeasSection from "@/components/product/main/IdeasSection";
+import CommunitySection from "@/components/product/main/CommunitySection";
+import PartnerSection from "@/components/product/main/PartnerSection";
 
 export default function Home() {
   return (
@@ -17,33 +16,7 @@ export default function Home() {
       <TrainerSection />
       <IdeasSection />
       <CommunitySection />
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <h2 className="text-5xl font-bold leading-tight tracking-tight">
-            파트너 최신글
-          </h2>
-          <p className="text-xl font-light text-foreground">
-            운동 파트너를 구해보세요!
-          </p>
-          <Button variant="link" asChild className="text-lg p-0">
-            <Link href="/ideas">파트너 전체 보기 &rarr;</Link>
-          </Button>
-        </div>
-        {Array.from({ length: 11 }).map((_, index) => (
-          <PartnerCard
-            key={`jobId-${index}`}
-            id={`jobId-${index}`}
-            gym="NONGYM"
-            gymLogoUrl="https://github.com/facebook.png"
-            gymHq="경기도, 용인시"
-            title="하체운동"
-            postedAt="12 hours ago"
-            type="everyday"
-            positionLocation="Remote"
-            time="12:00 - 14:00"
-          />
-        ))}
-      </div>
+      <PartnerSection />
       <div className="grid grid-cols-4 gap-4">
         <div>
           <h2 className="text-5xl font-bold leading-tight tracking-tight">

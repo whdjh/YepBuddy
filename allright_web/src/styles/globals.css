@@ -181,3 +181,13 @@ mux-player {
   animation: marquee-y var(--duration, 40s) linear infinite;
   will-change: transform;
 }
+
+@keyframes retro-grid {
+  0%   { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+
+.animate-grid {
+  animation: retro-grid var(--retro-grid-duration, 15s) linear infinite;
+  will-change: transform;
+}
