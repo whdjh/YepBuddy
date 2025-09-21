@@ -22,11 +22,11 @@ export default function IdeasSection() {
             <Link href="/ideas">운동루틴 전체 보기 &rarr;</Link>
           </Button>
         </div>
-        <div className="md:absolute w-full flex justify-between md:h-full h-[75vh]  top-0 left-0">
+        <div className="md:absolute inset-0 w-full flex md:h-full h-[75vh]">
           <Marquee
             pauseOnHover
             vertical
-            className="[--duration:80s] flex"
+            className="[--duration:80s] flex flex-1"
           >
             {Array.from({ length: 5 }).map((_, index) => (
               <IdeaCard
@@ -44,7 +44,7 @@ export default function IdeasSection() {
             pauseOnHover
             vertical
             reverse
-            className="[--duration:80s] flex"
+            className="[--duration:80s] flex flex-1"
           >
             {Array.from({ length: 5 }).map((_, index) => (
               <IdeaCard
@@ -61,7 +61,7 @@ export default function IdeasSection() {
           <Marquee
             pauseOnHover
             vertical
-            className="[--duration:80s] flex"
+            className="[--duration:80s] flex flex-1"
           >
             {Array.from({ length: 5 }).map((_, index) => (
               <IdeaCard
@@ -79,7 +79,7 @@ export default function IdeasSection() {
             pauseOnHover
             vertical
             reverse
-            className="[--duration:80s] flex"
+            className="[--duration:80s] flex flex-1"
           >
             {Array.from({ length: 5 }).map((_, index) => (
               <IdeaCard

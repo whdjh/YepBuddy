@@ -22,7 +22,7 @@ export default function TeamSection() {
           <Ripple />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 -mt-32 md:-mt-60 z-10 gap-4">
-          {Array.from({ length: 11 }).map((_, index) => (
+          {Array.from({ length: 12 }).map((_, index) => (
             <BlurFade
               delay={0.1 * index}
               duration={0.25}

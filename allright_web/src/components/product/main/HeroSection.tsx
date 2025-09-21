@@ -8,7 +8,7 @@ export default function HeroSection() {
         className="z-0 absolute inset-0 size-full"
         squareSize={4}
         gridGap={5}
-        color="#e11d48"
+        color="#16a34a"
         maxOpacity={0.5}
         flickerChance={0.2}
       />
