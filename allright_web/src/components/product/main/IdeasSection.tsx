@@ -43,6 +43,7 @@ export default function IdeasSection() {
           <Marquee
             pauseOnHover
             vertical
+            reverse
             className="[--duration:80s] flex"
           >
             {Array.from({ length: 5 }).map((_, index) => (
@@ -77,6 +78,7 @@ export default function IdeasSection() {
           <Marquee
             pauseOnHover
             vertical
+            reverse
             className="[--duration:80s] flex"
           >
             {Array.from({ length: 5 }).map((_, index) => (
