@@ -163,3 +163,21 @@ mux-player {
     --media-accent-color: var(--purple-600) !important;
 
 }
+
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+}
+.animate-marquee {
+  animation: marquee-x var(--duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee-y {
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+}
+.animate-marquee-vertical {
+  animation: marquee-y var(--duration, 40s) linear infinite;
+  will-change: transform;
+}
