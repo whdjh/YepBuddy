@@ -2,6 +2,8 @@
 @import "tailwindcss";
 @import './fonts.css';
 
+@custom-variant dark (&:is(.dark *));
+
 @theme {
   --breakpoint-tab: 768px;
 }
@@ -162,4 +164,42 @@
 mux-player {
     --media-accent-color: var(--purple-600) !important;
 
+}
+
+@keyframes marquee-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+}
+.animate-marquee {
+  animation: marquee-x var(--duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes marquee-y {
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+}
+.animate-marquee-vertical {
+  animation: marquee-y var(--duration, 40s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes retro-grid {
+  0%   { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
+
+.animate-grid {
+  animation: retro-grid var(--retro-grid-duration, 15s) linear infinite;
+  will-change: transform;
+}
+
+@keyframes ripple {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50%      { transform: translate(-50%, -50%) scale(0.9); }
+}
+
+.animate-ripple {
+  animation: ripple var(--ripple-duration, 2s) ease var(--ripple-delay, 0s) infinite;
+  will-change: transform;
 }
