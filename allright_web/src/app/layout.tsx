@@ -18,8 +18,8 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <ScrollController />
-        <Gnb isLoggedIn={true} hasMessages={true} hasNotifications={true} username={"1"} />
-        <main className="mt-[5.5rem] p-5">
+        <Gnb isLoggedIn={false} hasMessages={true} hasNotifications={true} username={"1"} />
+        <main className="mt-[5.5rem] p-0 tab:p-5">
           {children}
         </main>
         <Toast />
