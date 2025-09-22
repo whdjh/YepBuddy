@@ -52,8 +52,8 @@ export default function PostCard({
       )}
       
       {expanded && (
-        <CardFooter className="flex justify-end  pb-0">
-          <Button variant="outline" className="flex flex-col h-14">
+        <CardFooter className="flex justify-end pb-0">
+          <Button variant="outline" className="flex flex-col h-14 border border-white/10">
             <ChevronUpIcon className="size-4 shrink-0" />
             <span>{votesCount}</span>
           </Button>
