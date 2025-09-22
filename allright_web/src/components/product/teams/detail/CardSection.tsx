@@ -7,7 +7,7 @@ import {
 
 export default function CardSection() {
   return (
-    <div className="col-span-4 grid grid-cols-4 gap-5">
+    <div className="grid grid-cols-2 tab:grid-cols-4 gap-5">
       {[
         { key: "program", title: "프로그램 유형", value: "1:1 PT" },
         { key: "mode", title: "진행 방식", value: "센터 방문" },
@@ -59,13 +59,12 @@ export default function CardSection() {
               주당 루틴과 식단 가이드를 함께 제공합니다. 처음 시작하시는 분도 안전하게 진행합니다.
             </p>
             <p className="text-base text-muted-foreground">
-              <span className="block"><strong>트레이너 소개:</strong> NASM-CPT, 5년 경력(체형교정/감량)</span> {/* trainerIntro */}
-              <span className="block"><strong>연락:</strong> 카톡 @trainer_jh</span>                                 {/* contact */}
+              <span className="block"><strong>트레이너 소개:</strong> NASM-CPT, 5년 경력(체형교정/감량)</span>
+              <span className="block"><strong>연락:</strong> 카톡 @trainer_jh</span>
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
-
   );
 }

@@ -36,7 +36,7 @@ export default function FormSection() {
   return (
     <FormProvider {...methods}>
       <form onSubmit={onSubmit} className="max-w-screen-2xl flex flex-col items-center gap-10 mx-auto">
-        <div className="grid grid-cols-3 w-full gap-10">
+        <div className="grid grid-cols-1 tab:grid-cols-3 w-full gap-10">
           <SelectPair
             label="프로그램 유형"
             description="1:1 / 그룹 / 온라인"
