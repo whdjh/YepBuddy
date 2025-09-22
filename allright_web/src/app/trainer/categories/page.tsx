@@ -6,7 +6,7 @@ export default function Categories() {
   return (
     <div className="space-y-20 p-5">
       <Hero title="카테고리" subtitle="카테고리별 트레이너" />
-      <div className="grid grid-cols-4 gap-10">
+      <div className="grid grid-cols-1 tab:grid-cols-2 pc:grid-cols-3 gap-10">
         {Array.from({ length: 10 }).map((_, index) => (
           <CategoryCard
             key={`${index}`}
