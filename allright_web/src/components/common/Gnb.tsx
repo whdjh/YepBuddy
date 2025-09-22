@@ -319,10 +319,10 @@ export default function Gnb({
                 ) : (
                   <div className="flex justify-end gap-2">
                     <Button asChild variant="secondary">
-                      <Link href="/login" onClick={() => setIsSheetOpen(false)}>로그인</Link>
+                        <Link href="/auth/login" onClick={() => setIsSheetOpen(false)}>로그인</Link>
                     </Button>
                     <Button asChild variant="secondary">
-                      <Link href="/signup" onClick={() => setIsSheetOpen(false)}>회원가입</Link>
+                        <Link href="/auth/join" onClick={() => setIsSheetOpen(false)}>회원가입</Link>
                     </Button>
                   </div>
                 )}
@@ -398,10 +398,10 @@ export default function Gnb({
         ) : (
           <div className="hidden tab:flex items-center gap-4">
             <Button asChild variant="secondary">
-              <Link href="/login">로그인</Link>
+              <Link href="/auth/login">로그인</Link>
             </Button>
             <Button asChild className="hidden tab:inline-flex">
-              <Link href="/signup">회원가입</Link>
+              <Link href="/auth/join">회원가입</Link>
             </Button>
           </div>
         )}

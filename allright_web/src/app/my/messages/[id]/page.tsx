@@ -4,7 +4,7 @@ import MessageRoom from "@/components/product/my/messages/detail/MessageRoom";
 
 export default function MessageDetail() {
   return (
-    <div className="h-[calc(100vh-14rem)] ">
+    <div className="h-[calc(100vh-14rem)] p-2 tab:p-5">
       <SidebarProvider className="flex h-full min-h-0">
         <SideInventory />
         <MessageRoom />

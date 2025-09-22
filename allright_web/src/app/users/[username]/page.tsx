@@ -13,7 +13,7 @@ export default async function UserProfile({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <div className="space-y-10 p-5">
+      <div className="space-y-10 p-2 tab:p-5">
         <HeaderSection />
         <TabSection username={username} activeTab={activeTab} />
       </div>

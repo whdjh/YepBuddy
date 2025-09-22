@@ -2,9 +2,9 @@ import NotificationCard from "@/components/common/Card/NotificationCard";
 
 export default function Notification() {
   return (
-    <div className="space-y-20 p-5">
+    <div className="space-y-20 p-2 tab:p-5">
       <h1 className="text-4xl font-bold">알림 목록</h1>
-      <div className="flex flex-col items-start gap-5">
+      <div className="grid grid-cols-1 tab:grid-cols-2 pc:grid-cols-3 items-start gap-5">
         <NotificationCard
           avatarUrl="https://github.com/gym.png"
           avatarFallback="S"

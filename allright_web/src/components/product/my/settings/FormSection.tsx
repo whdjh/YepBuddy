@@ -16,7 +16,7 @@ interface FormValues {
   role: string;
   description: string;
   avatar?: File | null;
-};
+}
 
 export default function FormSection() {
   const methods = useForm<FormValues>({
@@ -28,6 +28,7 @@ export default function FormSection() {
       avatar: null,
     },
   });
+
   const validateFile = (file?: File | null) => {
     if (!file) return true;
     if (!ACCEPTED_TYPES.includes(file.type)) return "PNG 또는 JPEG만 허용";
@@ -57,12 +58,11 @@ export default function FormSection() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-15">
-        <div className="flex">
-          <div className="col-span-4 flex flex-col w-1/2 gap-10">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-2 tab:p-5">
+        <div className="grid grid-cols-1 tab:grid-cols-6 gap-10">
+          <div className="col-span-full tab:col-span-4 space-y-10">
             <h2 className="text-2xl font-semibold">프로필 수정하기</h2>
-
-            <div className="flex flex-col w-1/2 gap-5 ">
+            <div className="flex flex-col gap-5">
               <InputPair
                 label="이름"
                 description="이름을 입력하세요"
@@ -72,7 +72,6 @@ export default function FormSection() {
                 placeholder="이름을 입력하세요"
                 rules={{ required: "이름을 입력하세요" }}
               />
-
               <SelectPair
                 label="구분"
                 description="트레이너 또는 회원을 고르세요"
@@ -83,7 +82,6 @@ export default function FormSection() {
                   { label: "회원", value: "member" },
                 ]}
               />
-
               <InputPair
                 label="자기소개"
                 description="자기소개를 적어보세요."
@@ -96,7 +94,7 @@ export default function FormSection() {
             </div>
           </div>
 
-          <div className="col-span-2 p-6 rounded-lg border border-white/10 shadow-md">
+          <div className="col-span-full tab:col-span-2 p-6 rounded-lg border border-white/10 shadow-md">
             <Label className="flex flex-col gap-1">
               이미지
               <small className="text-muted-foreground">이미지를 업로드 해보세요.</small>
@@ -115,17 +113,18 @@ export default function FormSection() {
 
               <Input
                 type="file"
-                className="w-1/2"
+                className="w-full tab:w-1/2"
                 accept="image/png,image/jpeg"
                 onChange={onFileChange}
               />
-              {/* RHF에 파일 필드 등록 + 커스텀 검증 */}
               <input
                 type="hidden"
                 {...register("avatar", { validate: (f) => validateFile(f as File | null) })}
               />
               {formState.errors.avatar && (
-                <p className="text-xs text-red-500">{String(formState.errors.avatar.message)}</p>
+                <p className="text-xs text-red-500">
+                  {String(formState.errors.avatar.message)}
+                </p>
               )}
 
               <div className="flex flex-col text-xs">
