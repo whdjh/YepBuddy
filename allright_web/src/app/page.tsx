@@ -8,7 +8,7 @@ import TeamSection from "@/components/product/main/TeamSection";
 
 export default function Home() {
   return (
-    <div className="pt-5 px-20 space-y-20">
+    <div className="pt-0 tab:pt-5 px-5 tab:px-20 space-y-20">
       <HeroSection />
       <SlideSection />
       <TrainerSection />
