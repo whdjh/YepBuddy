@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import Back from '@/asset/ic/ic_back.svg';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DiaryHeaderProps {
@@ -31,7 +31,7 @@ export default function DiaryHeader({ date, onBack, onSave }: DiaryHeaderProps) 
   return (
     <div className="flex justify-center items-center gap-2">
       <button onClick={handleBack} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
-        <Back />
+        <ArrowLeft />
       </button>
       <h1 className="text-xl font-semibold text-white">{formattedDate}</h1>
       <Button 
