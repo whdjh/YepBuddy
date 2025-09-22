@@ -12,7 +12,7 @@ export default async function TrainerId({ params, searchParams }: PageProps) {
   const activeTab: "overviews" | "reviews" = tab === "overviews" ? "overviews" : "reviews";
 
   return (
-    <div className="space-y-10 p-5">
+    <div className="space-y-10 p-2 tab:p-5">
       <HeaderSection
         title="트레이너 이름"
         description="트레이너 설명"
