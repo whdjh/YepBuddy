@@ -22,14 +22,25 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
+  Sheet,
+  SheetContent,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
+import {
   BarChart3Icon,
   BellIcon,
   LogOutIcon,
   MessageCircleIcon,
   SettingsIcon,
   UserIcon,
+  MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { useState } from "react";
 
 type SubItem = {
   name: string;
@@ -100,7 +111,7 @@ const menus: Menu[] = [
     items: [
       { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
       { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
-      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/diary"},
+      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/diary" },
     ],
   },
 ];
@@ -116,10 +127,12 @@ export default function Gnb({
   hasMessages: boolean;
   username: string;
 }) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-[4.5rem] bg-[#191919]/80 backdrop-blur">
-      <div className="flex items-center justify-between px-20 py-1.5">
-        <div className="flex items-center gap-2">
+    <nav className="fixed top-0 left-0 z-50 h-[4.5rem] w-full bg-[#191919]/80 backdrop-blur">
+      <div className="flex items-center justify-between px-5 pc:px-20 py-1.5">
+        <div className="hidden tab:flex items-center gap-2">
           <Link href="/" aria-label="메인페이지로 이동">
             <Logo width={60} height={60} />
           </Link>
@@ -183,8 +196,143 @@ export default function Gnb({
           </NavigationMenu>
         </div>
 
+        {/* 모바일 탭 메뉴 */}
+        <div className="flex w-full items-center justify-between tab:hidden">
+          <Link href="/" aria-label="메인페이지로 이동">
+            <Logo width={60} height={60} />
+          </Link>
+          <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+            <SheetTrigger asChild>
+              <Button size="icon" variant="ghost" aria-label="모바일 메뉴 열기">
+                <MenuIcon className="size-6" />
+              </Button>
+            </SheetTrigger>
+
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>메뉴</SheetTitle>
+              </SheetHeader>
+              <div className="px-3">
+                <Accordion type="single" collapsible>
+                  {menus.map((menu) => (
+                    <AccordionItem key={menu.name} value={menu.name}>
+                      <AccordionTrigger>{menu.name}</AccordionTrigger>
+                      <AccordionContent>
+                        {menu.items ? (
+                          <ul className="space-y-1">
+                            {menu.items.map((item) => (
+                              <li key={item.name}>
+                                <Link
+                                  href={item.href}
+                                  className="block px-3 py-1 text-sm"
+                                  onClick={() => setIsSheetOpen(false)}
+                                >
+                                  <div className="font-medium">{item.name}</div>
+                                  {item.description && (
+                                    <div className="text-xs text-muted-foreground">
+                                      {item.description}
+                                    </div>
+                                  )}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <Link
+                            href={menu.href}
+                            className="block px-3 py-1 text-sm font-medium"
+                            onClick={() => setIsSheetOpen(false)}
+                          >
+                            {menu.name}
+                          </Link>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+
+              <SheetFooter>
+                {isLoggedIn ? (
+                  <div className="flex justify-end gap-2">
+                    <Button size="icon" variant="ghost" asChild className="relative">
+                      <Link href="/my/notifications" onClick={() => setIsSheetOpen(false)}>
+                        <BellIcon className="size-4" />
+                        {hasNotifications && (
+                          <div className="absolute right-1.5 top-1.5 size-2 rounded-full bg-red-500" />
+                        )}
+                      </Link>
+                    </Button>
+                    <Button size="icon" variant="ghost" asChild className="relative">
+                      <Link href="/my/messages" onClick={() => setIsSheetOpen(false)}>
+                        <MessageCircleIcon className="size-4" />
+                        {hasMessages && (
+                          <div className="absolute right-1.5 top-1.5 size-2 rounded-full bg-red-500" />
+                        )}
+                      </Link>
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Avatar>
+                          <AvatarImage src="https://github.com/evilrabbit.png" />
+                          <AvatarFallback>N</AvatarFallback>
+                        </Avatar>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent className="w-[300px]">
+                        <DropdownMenuLabel className="flex flex-col">
+                          {/** 실제 API로 변경 */}
+                          <span className="font-medium">이주훈</span>
+                          {/** 실제 API로 변경 */}
+                          <span className="text-xs text-muted-foreground">@wngns9807</span>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>
+                          <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/my/dashboard" onClick={() => setIsSheetOpen(false)}>
+                              <BarChart3Icon className="mr-2 size-4" />
+                              대쉬보드
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href={`/users/${username}`} onClick={() => setIsSheetOpen(false)}>
+                              <UserIcon className="mr-2 size-4" />
+                              프로필
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild className="cursor-pointer">
+                            <Link href="/my/settings" onClick={() => setIsSheetOpen(false)}>
+                              <SettingsIcon className="mr-2 size-4" />
+                              프로필수정
+                            </Link>
+                          </DropdownMenuItem>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild className="cursor-pointer">
+                          <Link href="/auth/logout" onClick={() => setIsSheetOpen(false)}>
+                            <LogOutIcon className="mr-2 size-4" />
+                            로그아웃
+                          </Link>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                ) : (
+                  <div className="flex justify-end gap-2">
+                    <Button asChild variant="secondary">
+                      <Link href="/login" onClick={() => setIsSheetOpen(false)}>로그인</Link>
+                    </Button>
+                    <Button asChild variant="secondary">
+                      <Link href="/signup" onClick={() => setIsSheetOpen(false)}>회원가입</Link>
+                    </Button>
+                  </div>
+                )}
+              </SheetFooter>
+            </SheetContent>
+          </Sheet>
+        </div>
+
         {isLoggedIn ? (
-          <div className="flex items-center gap-4">
+          <div className="hidden tab:flex items-center gap-4">
             <Button size="icon" variant="ghost" asChild className="relative">
               <Link href="/my/notifications">
                 <BellIcon className="size-4" />
@@ -248,11 +396,11 @@ export default function Gnb({
             </DropdownMenu>
           </div>
         ) : (
-          <div className="flex items-center gap-4">
+          <div className="hidden tab:flex items-center gap-4">
             <Button asChild variant="secondary">
               <Link href="/login">로그인</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="hidden tab:inline-flex">
               <Link href="/signup">회원가입</Link>
             </Button>
           </div>

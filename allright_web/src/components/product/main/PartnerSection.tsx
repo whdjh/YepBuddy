@@ -10,10 +10,10 @@ export default function PartnerSection() {
       <div className="rounded-lg border border-white/10 overflow-hidden -mt-20 shadow-xl group">
         <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
           <div className="flex relative z-10 bg-background w-full justify-center items-center flex-col -mt-24">
-            <h2 className="md:text-5xl text-3xl font-bold leading-tight tracking-tight ">
+            <h2 className="tab:text-5xl text-3xl font-bold leading-tight tracking-tight ">
               파트너 최신글
             </h2>
-            <p className="max-w-2xl md:text-xl font-light text-foreground">
+            <p className="max-w-2xl tab:text-xl font-light text-foreground">
               운동 파트너를 구해보세요!
             </p>
             <Button variant="link" asChild className="text-lg p-0">
@@ -22,8 +22,8 @@ export default function PartnerSection() {
           </div>
           <RetroGrid />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:p-10 p-5 -mt-32 md:-mt-14">
-          {Array.from({ length: 9 }).map((_, index) => (
+        <div className="grid grid-cols-1 tab:grid-cols-2 gap-4 tab:p-10 p-5 -mt-32 tab:-mt-14">
+          {Array.from({ length: 8 }).map((_, index) => (
             <BlurFade
               delay={0.1 * index}
               duration={0.25}

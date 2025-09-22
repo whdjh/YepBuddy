@@ -8,12 +8,12 @@ import { MagicCard } from "@/components/ui/magic-card";
 export default function TeamSection() {
   return (
     <BlurFade delay={0.25} duration={1} inView>
-      <div className="md:-mt-44 overflow-hidden ">
-        <div className="flex h-[75vh] relative flex-col justify-center items-center text-center md:text-left">
-          <h2 className="md:text-5xl text-3xl font-bold leading-tight tracking-tight ">
+      <div className="tab:-mt-44 overflow-hidden ">
+        <div className="flex h-[75vh] relative flex-col justify-center items-center text-center tab:text-left">
+          <h2 className="tab:text-5xl text-3xl font-bold leading-tight tracking-tight ">
             PT 회원 모집
           </h2>
-          <p className="max-w-2xl md:text-xl font-light text-foreground">
+          <p className="max-w-2xl tab:text-xl font-light text-foreground">
             1:1 맞춤 트레이닝 회원을 모집·관리하는 공간
           </p>
           <Button variant="link" asChild className="text-lg p-0">
@@ -21,7 +21,7 @@ export default function TeamSection() {
           </Button>
           <Ripple />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 -mt-32 md:-mt-60 z-10 gap-4">
+        <div className="grid grid-cols-1 tab:grid-cols-3 -mt-32 tab:-mt-60 z-10 gap-4">
           {Array.from({ length: 12 }).map((_, index) => (
             <BlurFade
               delay={0.1 * index}
