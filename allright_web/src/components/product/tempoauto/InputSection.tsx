@@ -1,19 +1,8 @@
 import { UseFormReturn } from 'react-hook-form';
-import Input from "@/components/common/Input";
 import InputPair from '@/components/common/InputPair';
 import { TempoFormValues } from '@/types/Tempo';
 
-interface InputSectionProps {
-  methods: UseFormReturn<TempoFormValues>;
-  setFormValue: (key: keyof TempoFormValues, value: string) => void;
-}
-
-export default function InputSection({ methods, setFormValue }: InputSectionProps) {
-  const handleInputChange = (key: keyof TempoFormValues, value: string) => {
-    methods.setValue(key, value, { shouldValidate: true });
-    setFormValue(key, value);
-  };
-
+export default function InputSection() {
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex justify-start gap-3'>

@@ -12,7 +12,7 @@ import { Hero } from '@/components/common/Hero';
 
 export default function TempoAuto() {
   const router = useRouter();
-  const { selected, setSelected, tempoFormValues, setFormValue } = useTempoStore();
+  const { selected, setSelected, tempoFormValues } = useTempoStore();
   const [isSubmit, setIsSubmit] = useState(false);
   
   const methods = useForm<TempoFormValues>({
@@ -45,7 +45,7 @@ export default function TempoAuto() {
           className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
         >
           <ButtonSection selected={selected} setSelected={setSelected} />
-          <InputSection methods={methods} setFormValue={setFormValue} />
+          <InputSection />
           <Button type="submit" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
             운동시작
           </Button>
