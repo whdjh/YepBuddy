@@ -7,22 +7,22 @@ import { Marquee } from "@/components/ui/marquee";
 export default function IdeasSection() {
   return (
     <BlurFade delay={0.25} duration={1} inView>
-      <div className="space-y-10 relative md:h-[50vh] flex flex-col justify-center items-center overflow-hidden">
-        <div className="relative flex flex-col justify-center items-center md:p-64 z-50 text-center md:text-left">
+      <div className="space-y-10 relative tab:h-[50vh] flex flex-col justify-center items-center overflow-hidden">
+        <div className="absolute tab:relative flex flex-col justify-center items-center tab:p-64 z-50 text-center tab:text-left">
           <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
-            <div className="w-[37rem] h-[37rem] rounded-full bg-black/90" />
+            <div className="w-[30rem] h-[30rem] tab:w-[37rem] tab:h-[37rem] rounded-full bg-black/90" />
           </div>
-          <h2 className="z-20 md:text-5xl text-3xl font-bold leading-tight tracking-tight">
+          <h2 className="z-20 tab:text-5xl text-2xl font-bold leading-tight tracking-tight">
             IdeasGPT
           </h2>
-          <p className="z-20 max-w-2xl md:text-xl font-light text-foreground">
+          <p className="z-20 max-w-2xl tab:text-xl text-md font-light text-foreground">
             나만의 운동 루틴을 상품으로 판매하세요. GPT가 만든 루틴도, 직접 만든 루틴도 손쉽게 등록할 수 있어요.
           </p>
-          <Button variant="link" asChild className="z-20 text-lg p-0">
+          <Button variant="link" asChild className="z-20 tab:text-lg text-sm p-0">
             <Link href="/ideas">운동루틴 전체 보기 &rarr;</Link>
           </Button>
         </div>
-        <div className="md:absolute inset-0 w-full flex md:h-full h-[75vh]">
+        <div className="tab:absolute inset-0 grid grid-cols-2 tab:grid-cols-3 pc:grid-cols-4 tab:h-full h-[75vh]">
           <Marquee
             pauseOnHover
             vertical
