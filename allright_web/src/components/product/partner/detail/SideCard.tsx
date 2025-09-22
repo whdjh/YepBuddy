@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export default function SideCard() {
   return (
-    <div className="col-span-2 space-y-5 mt-32 sticky top-20 p-6 border border-white/10 rounded-lg">
+    <div className="tab:w-[300px] col-span-2 space-y-5 tab:mt-32 sticky top-20 p-6 border border-white/10 rounded-lg">
       <div className="flex flex-col">
         <span className=" text-sm text-muted-foreground">시간대</span>
         <span className="text-2xl font-medium">10:00 - 12:00</span>
