@@ -32,15 +32,15 @@ function PartnerInner() {
   };
 
   return (
-    <div className="space-y-20">
+    <div className="space-y-20 p-2 tab:p-5">
       <Hero title="파트너" subtitle="파트너를 찾아보세요!" />
-
-      <div className="grid gap-20 grid-cols-12 items-start mx-auto">
-        <div className="col-span-8 xl:col-span-9">
+      
+      <div className="grid gap-20 grid-cols-1 tab:grid-cols-12 items-start mx-auto">
+        <div className="col-span-full tab:col-span-8">
           <CardSection cards={mockPartnerCards} />
         </div>
 
-        <div className="col-span-3 space-y-10">
+        <div className="hidden tab:block tab:col-span-3 pc:col-span-4 space-y-10">
           <TypeSection onFilterClick={onFilterClick} />
           <LocationSection onFilterClick={onFilterClick} />
           <TimeRangeSection onFilterClick={onFilterClick} />
