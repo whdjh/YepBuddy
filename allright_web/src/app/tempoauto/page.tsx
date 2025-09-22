@@ -8,6 +8,7 @@ import ButtonSection from '@/components/product/tempoauto/ButtonSection';
 import InputSection from '@/components/product/tempoauto/InputSection';
 import { TempoFormValues } from '@/types/Tempo';
 import { useTempoStore } from '@/stores/useTempo';
+import { Hero } from '@/components/common/Hero';
 
 export default function TempoAuto() {
   const router = useRouter();
@@ -36,17 +37,20 @@ export default function TempoAuto() {
   };
 
   return (
-    <FormProvider {...methods}>
-      <form
-        onSubmit={methods.handleSubmit(onSubmit)}
-        className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
-      >
-        <ButtonSection selected={selected} setSelected={setSelected} />
-        <InputSection methods={methods} setFormValue={setFormValue} />
-        <Button type="submit" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
-          운동시작
-        </Button>
-      </form>
-    </FormProvider>
+    <div>
+      <Hero title="PC 전용 운동 템포 조절" subtitle="PC로 커스텀 운동 템포를 경험해보세요!" />
+      <FormProvider {...methods}>
+        <form
+          onSubmit={methods.handleSubmit(onSubmit)}
+          className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
+        >
+          <ButtonSection selected={selected} setSelected={setSelected} />
+          <InputSection methods={methods} setFormValue={setFormValue} />
+          <Button type="submit" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
+            운동시작
+          </Button>
+        </form>
+      </FormProvider>
+    </div>
   );
 }

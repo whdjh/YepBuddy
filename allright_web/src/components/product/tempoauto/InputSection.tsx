@@ -1,5 +1,6 @@
 import { UseFormReturn } from 'react-hook-form';
 import Input from "@/components/common/Input";
+import InputPair from '@/components/common/InputPair';
 import { TempoFormValues } from '@/types/Tempo';
 
 interface InputSectionProps {
@@ -16,113 +17,57 @@ export default function InputSection({ methods, setFormValue }: InputSectionProp
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex justify-start gap-3'>
-        <Input
-          name="concentric"
+        <InputPair
           label="수축(초)"
-          placeholder='숫자만 입력'
-          width='w-[10rem]'
-          type="number"
-          inputMode="numeric"
-          onChange={(e) => handleInputChange("concentric", e.target.value)}
-          rules={{
-            required: '필수 입력입니다.',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다.',
-            },
-            validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
-          }}
+          description="수축 시간을 적어보세요."
+          required
+          id="concentric"
+          name="concentric"
+          rules={{ required: "수축시간을 입력하세요" }}
         />
-        <Input
-          name="eccentric"
+        <InputPair
           label="이완(초)"
-          placeholder='숫자만 입력'
-          width='w-[10rem]'
-          type="number"
-          inputMode="numeric"
-          onChange={(e) => handleInputChange("eccentric", e.target.value)}
-          rules={{
-            required: '필수 입력입니다.',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다.',
-            },
-            validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
-          }}
+          description="이완 시간을 적어보세요."
+          required
+          id="eccentric"
+          name="eccentric"
+          rules={{ required: "이완시간을 입력하세요" }}
         />
       </div>
       <div className='flex justify-start gap-3'>
-        <Input
-          name="reps"
+        <InputPair
           label="운동 횟수(reps)"
-          placeholder='숫자만 입력'
-          width='w-[10rem]'
-          type="number"
-          inputMode="numeric"
-          onChange={(e) => handleInputChange("reps", e.target.value)}
-          rules={{
-            required: '필수 입력입니다.',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다.',
-            },
-            validate: value => Number(value) <= 20 || '20까지 입력 가능합니다.'
-          }}
+          description="운동 횟수을 적어보세요."
+          required
+          id="reps"
+          name="reps"
+          rules={{ required: "운동횟수을 입력하세요" }}
         />
-        <Input
-          name="sets"
+        <InputPair
           label="세트수(set)"
-          placeholder='숫자만 입력'
-          width='w-[10rem]'
-          type="number"
-          inputMode="numeric"
-          onChange={(e) => handleInputChange("sets", e.target.value)}
-          rules={{
-            required: '필수 입력입니다.',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다.',
-            },
-            validate: value => Number(value) <= 10 || '10까지 입력 가능합니다.'
-          }}
+          description="세트수를 적어보세요."
+          required
+          id="sets"
+          name="sets"
+          rules={{ required: "세트수를 입력하세요" }}
         />
       </div>
       <div className='flex justify-start gap-3'>
-        <Input
-          name="rests"
+        <InputPair
           label="휴식 시간(초)"
-          placeholder='숫자만 입력'
-          width='w-[10rem]'
-          type="number"
-          inputMode="numeric"
-          onChange={(e) => handleInputChange("rests", e.target.value)}
-          rules={{
-            required: '필수 입력입니다.',
-            pattern: {
-              value: /^[0-9]+$/,
-              message: '숫자만 입력 가능합니다.',
-            },
-            validate: value => Number(value) <= 600 || '600까지 입력 가능합니다.'
-          }}
+          description="휴식 시간을 적어보세요."
+          required
+          id="rests"
+          name="rests"
+          rules={{ required: "휴식 시간을 입력하세요" }}
         />
-        <Input
-          name="name"
+        <InputPair
           label="운동 이름"
-          placeholder='영어, 한글로 입력'
-          width='w-[10rem]'
-          type="text"
-          onChange={(e) => handleInputChange("name", e.target.value)}
-          rules={{
-            required: "필수 입력입니다.",
-            pattern: {
-              value: /^[A-Za-z가-힣\s]+$/,
-              message: "영어와 한글만 입력 가능합니다.",
-            },
-            maxLength: {
-              value: 30,
-              message: "30자 이내로 입력해주세요.",
-            },
-          }}
+          description="운동명을 적어보세요."
+          required
+          id="name"
+          name="name"
+          rules={{ required: "운동명을 입력하세요" }}
         />
       </div>
     </div>
