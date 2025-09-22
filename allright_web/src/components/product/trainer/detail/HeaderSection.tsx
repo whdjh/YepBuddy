@@ -17,11 +17,11 @@ export default function HeaderSection({
   return (
     <div className="flex justify-between">
       <div className="flex gap-10">
-        <div className="size-40 rounded-xl shadow-xl bg-red-100/50" />
+        <div className="size-30 tab:size-40 rounded-xl shadow-xl bg-red-100/50" />
         <div>
-          <h1 className="text-5xl font-bold">{title}</h1>
-          <p className="text-2xl font-light">{description}</p>
-          <div className="mt-5 flex items-center gap-2">
+          <h1 className="text-2xl tab:text-5xl font-bold">{title}</h1>
+          <p className="text-lg tab:text-2xl font-light">{description}</p>
+          <div className="tab:mt-5 flex flex-col tab:flex-row tab:items-center gap-0 tab:gap-2">
             <div className="flex text-yellow-400">
               {Array.from({ length: 5 }).map((_, i) => (
                 <StarIcon
@@ -38,7 +38,7 @@ export default function HeaderSection({
       </div>
 
       <div className="flex gap-5 items-center">
-        <Button size="lg" className="text-lg h-14 px-10">
+        <Button size="lg" className="hidden tab:inline-flex text-lg h-14 px-10">
           <ChevronUpIcon className="size-4" />
           투표하기 ({voteCount})
         </Button>
