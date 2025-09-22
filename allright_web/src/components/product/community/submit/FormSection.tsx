@@ -35,7 +35,7 @@ export default function FormSection() {
           label="제목"
           name="title"
           id="title"
-          description="40글자 이하로 작성"
+          description="15글자 이하로 작성"
           required
           placeholder="제목을 입력하세요."
         />

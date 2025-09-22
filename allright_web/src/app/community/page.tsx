@@ -49,8 +49,10 @@ function CommunityInner() {
     <div>
       <Hero title="커뮤니티" subtitle="질문하고, 운동 팁을 공유하며, 다른 사람들과 소통하세요!" />
 
-      <div className="grid grid-cols-6 items-start gap-40 p-5">
-        <div className="col-span-4 space-y-10">
+      {/* 소형 1열, tab 이상 6열 */}
+      <div className="grid grid-cols-1 tab:grid-cols-6 items-start gap-40 p-2 tab:p-5">
+        {/* 메인: 소형 전체폭, tab 이상 4칸 */}
+        <div className="col-span-full tab:col-span-4 space-y-10">
           <HeaderSection
             pathname={pathname}
             sorting={sorting}
@@ -64,10 +66,13 @@ function CommunityInner() {
           </div>
         </div>
 
-        <TopicSection
-          topics={["토픽1", "토픽2", "토픽3", "토픽4", "토픽5"]}
-          makeHref={makeHref}
-        />
+        {/* 토픽: 소형 숨김, tab 이상 표시(2칸) */}
+        <div className="hidden tab:block tab:col-span-2">
+          <TopicSection
+            topics={["토픽1", "토픽2", "토픽3", "토픽4", "토픽5"]}
+            makeHref={makeHref}
+          />
+        </div>
       </div>
     </div>
   );
