@@ -1,18 +1,25 @@
 "use client";
 
-import DiaryCalendar from '@/components/product/diary/Calendar';
+import dynamic from "next/dynamic";
+import { Hero } from '@/components/common/Hero';
+
+const DiaryCalendar = dynamic(() => import('@/components/product/diary/Calendar'), { ssr: false });
 
 export default function Diary() {
   const handleDateChange = (date: Date) => {
     console.log('선택된 날짜:', date);
-    // 여기에 날짜 선택 시 처리 로직 추가
   };
 
   return (
-    <div className="flex justify-center items-center p-4">
-      <div className="border-2 border-gray-700 rounded-[1rem] text-white max-w-lg w-full p-2">
-        <DiaryCalendar onDateChange={handleDateChange} />
+    <>
+      <div className="hidden tab:block">
+        <Hero title="운동일지 기록" subtitle="운동일지를 기록해보세요!" />
       </div>
-    </div>
+      <div className="flex justify-center items-center p-4">
+        <div className="border-2 border-white/10 rounded-[1rem] text-white max-w-lg w-full p-2">
+          <DiaryCalendar onDateChange={handleDateChange} />
+        </div>
+      </div>
+    </>
   );
 }

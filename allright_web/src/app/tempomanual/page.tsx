@@ -4,7 +4,8 @@ import { useTempoStore } from '@/stores/useTempo';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
-import Input from "@/components/common/Input";
+import InputPair from '@/components/common/InputPair';
+import { Hero } from '@/components/common/Hero';
 
 interface ManualFormValues {
   name: string;
@@ -34,72 +35,62 @@ export default function TempoManual() {
     router.push('/tempomanual/exercise');
   };
 
-  const handleInputChange = (key: "name" | "reps", value: string) => {
-    methods.setValue(key, value, { shouldValidate: true });
-    setFormValue(key, value);
-  };
-
   return (
-    <FormProvider {...methods}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-6 p-6"
-      >
-        {/* 운동 종목 */}
-        <Input
-          name="name"
-          label="운동 이름"
-          placeholder='영어, 한글로 입력'
-          type="text"
-          onChange={(e) => handleInputChange("name", e.target.value)}
-          rules={{
-            required: "필수 입력입니다.",
-            pattern: {
-              value: /^[A-Za-z가-힣\s]+$/,
-              message: "영어와 한글만 입력 가능합니다.",
-            },
-            maxLength: {
-              value: 30,
-              message: "30자 이내로 입력해주세요.",
-            },
-          }}
-        />
-
-        {/* 반복 횟수 선택 */}
-        <div>
-          <p className="font-medium text-gray-700 mb-2">반복 횟수</p>
-          <Controller
-            name="reps"
-            control={control}
-            rules={{ required: '반복 횟수를 선택해주세요.' }}
-            render={({ field }) => (
-              <div className="flex flex-col gap-2">
-                {availableReps.map((r) => (
-                  <label key={r} className="cursor-pointer">
-                    <input
-                      type="radio"
-                      {...field}
-                      value={r}
-                      checked={field.value === r}
-                      onChange={() => field.onChange(r)}
-                      className="mr-1"
-                    />
-                    {r}회
-                  </label>
-                ))}
-              </div>
-            )}
-          />
-        </div>
-
-        {/* 운동 시작 버튼 */}
-        <Button
-          type="submit"
-          disabled={!watch('name') || !selectedReps}
+    <>
+      <div className="hidden tab:block">
+        <Hero title="모바일 전용 운동 템포 조절" subtitle="모바일로 커스텀 운동 템포를 경험해보세요!" />
+      </div>
+      <FormProvider {...methods}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col gap-6 p-6"
         >
-          운동 시작
-        </Button>
-      </form>
-    </FormProvider>
+          {/* 운동 종목 */}
+          <InputPair
+            label="운동이름"
+            description="운동이름을 적어보세요."
+            required
+            id="description"
+            name="description"
+            rules={{ required: "자기소개를 입력하세요" }}
+          />
+
+          {/* 반복 횟수 선택 */}
+          <div>
+            <p className="font-medium mb-2">반복 횟수</p>
+            <Controller
+              name="reps"
+              control={control}
+              rules={{ required: '반복 횟수를 선택해주세요.' }}
+              render={({ field }) => (
+                <div className="flex flex-col gap-2">
+                  {availableReps.map((r) => (
+                    <label key={r} className="cursor-pointer">
+                      <input
+                        type="radio"
+                        {...field}
+                        value={r}
+                        checked={field.value === r}
+                        onChange={() => field.onChange(r)}
+                        className="mr-1"
+                      />
+                      {r}회
+                    </label>
+                  ))}
+                </div>
+              )}
+            />
+          </div>
+
+          {/* 운동 시작 버튼 */}
+          <Button
+            type="submit"
+            disabled={!watch('name') || !selectedReps}
+          >
+            운동 시작
+          </Button>
+        </form>
+      </FormProvider>
+    </>
   );
 }
