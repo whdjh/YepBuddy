@@ -37,8 +37,10 @@ export default function TempoAuto() {
   };
 
   return (
-    <div>
-      <Hero title="PC 전용 운동 템포 조절" subtitle="PC로 커스텀 운동 템포를 경험해보세요!" />
+    <>
+      <div className="hidden tab:block">
+        <Hero title="컴퓨터 전용 운동 템포 조절" subtitle="컴퓨터로 커스텀 운동 템포를 경험해보세요!" />
+      </div>
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
@@ -51,6 +53,6 @@ export default function TempoAuto() {
           </Button>
         </form>
       </FormProvider>
-    </div>
+    </>
   );
 }

@@ -36,8 +36,10 @@ export default function TempoManual() {
   };
 
   return (
-    <div>
-      <Hero title="모바일 전용 운동 템포 조절" subtitle="모바일로 운동 템포를 경험해보세요!" />
+    <>
+      <div className="hidden tab:block">
+        <Hero title="모바일 전용 운동 템포 조절" subtitle="모바일로 커스텀 운동 템포를 경험해보세요!" />
+      </div>
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -89,6 +91,6 @@ export default function TempoManual() {
           </Button>
         </form>
       </FormProvider>
-    </div>
+    </>
   );
 }
