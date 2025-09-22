@@ -28,6 +28,7 @@ import {
   MessageCircleIcon,
   SettingsIcon,
   UserIcon,
+  MenuIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -100,7 +101,7 @@ const menus: Menu[] = [
     items: [
       { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
       { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
-      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/diary"},
+      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/diary" },
     ],
   },
 ];
@@ -117,9 +118,9 @@ export default function Gnb({
   username: string;
 }) {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 h-[4.5rem] bg-[#191919]/80 backdrop-blur">
-      <div className="flex items-center justify-between px-20 py-1.5">
-        <div className="flex items-center gap-2">
+    <nav className="fixed top-0 left-0 z-50 h-[4.5rem] w-full bg-[#191919]/80 backdrop-blur">
+      <div className="flex items-center justify-between px-5 pc:px-20 py-1.5">
+        <div className="hidden tab:flex items-center gap-2">
           <Link href="/" aria-label="메인페이지로 이동">
             <Logo width={60} height={60} />
           </Link>
@@ -182,9 +183,17 @@ export default function Gnb({
             </NavigationMenuList>
           </NavigationMenu>
         </div>
+        <div className="flex w-full items-center justify-between tab:hidden">
+          <Link href="/" aria-label="메인페이지로 이동">
+            <Logo width={60} height={60} />
+          </Link>
+          <Button size="icon" variant="ghost">
+            <MenuIcon className="size-6" />
+          </Button>
+        </div>
 
         {isLoggedIn ? (
-          <div className="flex items-center gap-4">
+          <div className="hidden tab:flex items-center gap-4">
             <Button size="icon" variant="ghost" asChild className="relative">
               <Link href="/my/notifications">
                 <BellIcon className="size-4" />
@@ -248,11 +257,11 @@ export default function Gnb({
             </DropdownMenu>
           </div>
         ) : (
-          <div className="flex items-center gap-4">
+          <div className="hidden tab:flex items-center gap-4">
             <Button asChild variant="secondary">
               <Link href="/login">로그인</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="hidden tab:inline-flex">
               <Link href="/signup">회원가입</Link>
             </Button>
           </div>
