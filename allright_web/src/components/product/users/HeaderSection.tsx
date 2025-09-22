@@ -26,16 +26,16 @@ export default function HeaderSection() {
       <div className="space-y-5">
         <div className="flex flex-col gap-2">
           <div className="flex gap-5">
-            <h1 className="text-2xl font-semibold">이주훈</h1>
-            <Button variant="outline" asChild>
+            <h1 className="text-lg tab:text-2xl font-semibold">이주훈</h1>
+            <Button variant="outline" className="border border-white/10" asChild>
               <Link href="/my/settings">프로필 수정</Link>
             </Button>
           </div>
           <div className="flex gap-5">
-            <Button variant="secondary">팔로우</Button>
+            <Button variant="outline" className="border border-white/10">팔로우</Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="secondary">메세지</Button>
+                <Button variant="outline" className="border border-white/10">메세지</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -51,8 +51,8 @@ export default function HeaderSection() {
             </Dialog>
           </div>
         </div>
-        <div className="flex gap-2 items-center">
-          <span className="text-sm text-muted-foreground">@wngns9807</span>
+        <div className="flex flex-col tab:flex-row gap-2 items-center">
+          <span className="text-xs tab:text-sm text-muted-foreground">@wngns9807</span>
           <Badge variant={"secondary"}>등 장인</Badge>
         </div>
       </div>
