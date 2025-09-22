@@ -12,14 +12,14 @@ export default function HeroSection() {
         maxOpacity={0.5}
         flickerChance={0.2}
       />
-      <div className="flex flex-col text-center md:space-y-5 items-center">
+      <div className="flex flex-col text-center tab:space-y-5 items-center">
         <BlurFade delay={0.25} duration={1} inView>
-          <h2 className="font-bold text-7xl">
+          <h2 className="font-bold text-3xl tab:text-7xl">
             Allright에 오신걸 환영합니다!
           </h2>
         </BlurFade>
         <BlurFade delay={1} duration={1} inView>
-          <span className="text-4xl">
+          <span className="text-2xl tab:text-4xl">
             아래 운동 커뮤니티와 더불어 운동 일지 기록 및 운동 템포 조절해보세요!
           </span>
         </BlurFade>
