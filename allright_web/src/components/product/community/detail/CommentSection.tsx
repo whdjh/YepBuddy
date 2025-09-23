@@ -19,7 +19,9 @@ export default function CommentSection() {
           className="w-full resize-none"
           rows={5}
         />
-        <Button>댓글달기</Button>
+        <Button variant="outline">
+          댓글달기
+        </Button>
       </div>
     </form>
   );
