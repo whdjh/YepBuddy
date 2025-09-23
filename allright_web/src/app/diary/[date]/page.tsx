@@ -3,11 +3,11 @@
 import { use, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useQueryTab from '@/hooks/useQueryTab';
-import DiaryHeader from '@/components/product/diary/detail/DiaryHeader';
-import DiaryTabNavigation from '@/components/product/diary/detail/DiaryTabNavigation';
-import StatusCheckTab from '@/components/product/diary/detail/StatusCheckTab';
-import ExerciseDiaryTab from '@/components/product/diary/detail/ExerciseDiaryTab';
-import EvaluationTab from '@/components/product/diary/detail/EvaluationTab';
+import DiaryHeader from '@/app/diary/[date]/components/DiaryHeader';
+import DiaryTabNavigation from '@/app/diary/[date]/components/DiaryTabNavigation';
+import StatusCheckTab from '@/app/diary/[date]/components/StatusCheckTab';
+import ExerciseDiaryTab from '@/app/diary/[date]/components/ExerciseDiaryTab';
+import EvaluationTab from '@/app/diary/[date]/components/EvaluationTab';
 
 export default function DiaryDetail({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);
