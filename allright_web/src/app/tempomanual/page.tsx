@@ -38,7 +38,7 @@ export default function TempoManual() {
   return (
     <>
       <div className="hidden tab:block">
-        <Hero title="모바일 전용 운동 템포 조절" subtitle="모바일로 커스텀 운동 템포를 경험해보세요!" />
+        <Hero title="모바일 버전" subtitle="간단한 카운팅" />
       </div>
       <FormProvider {...methods}>
         <form

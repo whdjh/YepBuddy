@@ -47,7 +47,7 @@ function CommunityInner() {
 
   return (
     <div className="p-2 tab:p-5 space-y-5 tab:space-y-20">
-      <Hero title="커뮤니티" subtitle="질문하고, 운동 팁을 공유하며, 다른 사람들과 소통하세요!" />
+      <Hero title="커뮤니티 글" subtitle="커뮤니티 글 목록" />
 
       {/* 소형 1열, tab 이상 6열 */}
       <div className="grid grid-cols-1 tab:grid-cols-6 items-start gap-40 p-2 tab:p-5">

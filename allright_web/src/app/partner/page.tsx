@@ -33,7 +33,7 @@ function PartnerInner() {
 
   return (
     <div className="space-y-20 p-2 tab:p-5">
-      <Hero title="파트너" subtitle="파트너를 찾아보세요!" />
+      <Hero title="파트너" subtitle="함께 운동할 사람" />
       
       <div className="grid gap-20 grid-cols-1 tab:grid-cols-12 items-start mx-auto">
         <div className="col-span-full tab:col-span-8">

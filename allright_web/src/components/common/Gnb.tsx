@@ -62,11 +62,11 @@ const menus: Menu[] = [
     href: "/trainer",
     highlightLast: true,
     items: [
-      { name: "인기 트레이너", description: "추천수가 많은 트레이너 보기", href: "/trainer" },
-      { name: "카테고리별", description: "지역별로 트레이너 찾기", href: "/trainer/categories" },
-      { name: "트레이너 검색", description: "이름으로 원하는 트레이너 찾기", href: "/trainer/search" },
-      { name: "트레이너 등록", description: "내 프로필을 트레이너로 등록하기", href: "/trainer/submit" },
-      { name: "트레이너 홍보", description: "유료로 나를 홍보하기", href: "/trainer/promote" },
+      { name: "인기 트레이너", description: "가장 인기 있는 트레이너", href: "/trainer" },
+      { name: "카테고리별 트레이너", description: "카테고리별 트레이너 목록", href: "/trainer/categories" },
+      { name: "트레이너 검색", description: "이름으로 트레이너 검색", href: "/trainer/search" },
+      { name: "트레이너 등록", description: "트레이너로 내 프로필 등록", href: "/trainer/submit" },
+      { name: "트레이너 홍보", description: "내 활동 홍보", href: "/trainer/promote" },
     ],
   },
   {
@@ -74,21 +74,21 @@ const menus: Menu[] = [
     href: "/partner",
     highlightLast: true,
     items: [
-      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람 찾기", href: "/partner?location=remote" },
-      { name: "정기 모임", description: "정기적으로 만날 운동 파트너", href: "/partner?type=full-time" },
-      { name: "자유 모임", description: "시간 맞춰 자유롭게 운동할 사람", href: "/partner?type=freelance" },
-      { name: "1회 체험", description: "가볍게 한 번 함께 운동해보기", href: "/partner?type=internship" },
-      { name: "모집 글 올리기", description: "함께할 파트너를 직접 모집하기", href: "/partner/submit" },
+      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람", href: "/partner?location=remote" },
+      { name: "정기 모임", description: "정기적으로 함께 운동할 사람", href: "/partner?type=full-time" },
+      { name: "자유 모임", description: "시간 맞춰 자유롭게 함께 운동할 사람", href: "/partner?type=freelance" },
+      { name: "1회 체험", description: "가볍게 한 번 함께 운동할 사람", href: "/partner?type=internship" },
+      { name: "파트너 모집", description: "함께할 사람 직접 모집", href: "/partner/submit" },
     ],
   },
   {
     name: "커뮤니티",
     href: "/community",
     items: [
-      { name: "모든 글", description: "지금까지 올라온 글", href: "/community" },
-      { name: "실시간 인기", description: "지금 가장 많이 주목받는 글", href: "/community?sort=trending" },
-      { name: "최신 글", description: "방금 올라온 최신 게시글", href: "/community?sort=new" },
-      { name: "글쓰기", description: "나만의 운동 이야기 공유하기", href: "/community/submit" },
+      { name: "모든 글", description: "커뮤니티 글 전체 목록", href: "/community" },
+      { name: "실시간 인기 글", description: "지금 가장 주목받는 글", href: "/community?sort=trending" },
+      { name: "최신 글", description: "최근 게시된 글", href: "/community?sort=new" },
+      { name: "글쓰기", description: "운동 이야기 공유", href: "/community/submit" },
     ],
   },
   {
@@ -100,8 +100,8 @@ const menus: Menu[] = [
     href: "/teams",
     highlightLast: false,
     items: [
-      { name: "모집공고", description: "등록된 회원모집공고 목록 보기", href: "/teams" },
-      { name: "글쓰기", description: "피티모집 글 쓰기", href: "/teams/submit" },
+      { name: "모집공고", description: "회원 모집 공고 목록", href: "/teams" },
+      { name: "글쓰기", description: "회원 모집 글 작성", href: "/teams/submit" },
     ],
   },
   {
@@ -109,9 +109,9 @@ const menus: Menu[] = [
     href: "/tempoauto",
     highlightLast: true,
     items: [
-      { name: "PC 버전", description: "세밀한 템포 조절이 가능한 버전", href: "/tempoauto" },
-      { name: "모바일 버전", description: "간단한 카운팅 전용 버전", href: "/tempomanual" },
-      { name: "운동일지", description: "캘린더형식으로 운동일지 기록", href: "/diary" },
+      { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
+      { name: "운동일지", description: "캘린더 형식 운동 기록", href: "/diary" },
     ],
   },
 ];

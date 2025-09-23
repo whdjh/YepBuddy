@@ -39,7 +39,7 @@ export default function TempoAuto() {
   return (
     <>
       <div className="hidden tab:block">
-        <Hero title="컴퓨터 전용 운동 템포 조절" subtitle="컴퓨터로 커스텀 운동 템포를 경험해보세요!" />
+        <Hero title="PC 버전" subtitle="세밀한 템포 조절" />
       </div>
       <FormProvider {...methods}>
         <form

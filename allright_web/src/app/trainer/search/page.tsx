@@ -17,7 +17,7 @@ export default async function Search({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-5 tab:space-y-20 p-2 tab:p-5">
-      <Hero title="검색" subtitle="트레이너의 이름을 검색하세요!" />
+      <Hero title="트레이너 검색" subtitle="이름으로 트레이너 검색" />
       <SearchSection />
       <CardSection cards={filtered} />
     </div>
