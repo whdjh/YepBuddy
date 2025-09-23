@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import CardSection from "@/components/product/ideas/CardSection";
+import CardSection from "@/app/ideas/components/CardSection";
 import { mockIdeasCards } from "@/mock/ideasCardData";
 
 export default function Ideas() {

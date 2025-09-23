@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import MainSection from "@/components/product/ideas/detail/MainSection";
+import MainSection from "@/app/ideas/[id]/components/MainSection";
 
 export default async function IdeaCardId() {
   return (
