@@ -18,8 +18,7 @@ export default function TabSection({
           asChild
           variant="outline"
           className={cn(
-            activeTab === "abouts" && "bg-white/10 text-accent-foreground",
-            "border border-white/10"
+            activeTab === "abouts" && "bg-white/10 text-accent-foreground"
           )}
           aria-current={activeTab === "abouts" ? "page" : undefined}
           role="tab"
@@ -31,8 +30,7 @@ export default function TabSection({
           asChild
           variant="outline"
           className={cn(
-            activeTab === "posts" && "bg-white/10 text-accent-foreground",
-            "border border-white/10"
+            activeTab === "posts" && "bg-white/10 text-accent-foreground"
           )}
           aria-current={activeTab === "posts" ? "page" : undefined}
           role="tab"

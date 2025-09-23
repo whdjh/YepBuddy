@@ -31,7 +31,7 @@ export default function NotificationCard({
   seen,
 }: NotificationCardProps) {
   return (
-    <Card className={cn("min-w-[450px] bg-transparents", seen ? "border-white/10" : "border-yellow-500/60")}>
+    <Card className={cn("w-full min-w-0 bg-transparent", seen ? "" : "border-yellow-500/60")}>
       <CardHeader className="flex flex-row gap-5 space-y-0 items-start">
         <Avatar className="">
           <AvatarImage src={avatarUrl} />
@@ -46,7 +46,7 @@ export default function NotificationCard({
         </div>
       </CardHeader>
       <CardFooter className="flex justify-end">
-        <Button variant="outline" size="icon" className="border border-white/10">
+        <Button variant="outline" size="icon">
           <EyeIcon className="w-4 h-4" />
         </Button>
       </CardFooter>

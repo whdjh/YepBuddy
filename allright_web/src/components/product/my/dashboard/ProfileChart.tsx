@@ -26,7 +26,7 @@ const chartConfig = {
 
 export default function ProfileChart() {
   return (
-    <Card className="w-1/2 border border-white/10">
+    <Card className="w-1/2">
       <CardHeader>
         <CardTitle>방문자 수</CardTitle>
       </CardHeader>
