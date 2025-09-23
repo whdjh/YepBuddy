@@ -1,5 +1,5 @@
-import HeaderSection from "@/components/product/trainer/detail/HeaderSection";
-import TabSection from "@/components/product/trainer/detail/TabSection";
+import HeaderSection from "@/app/trainer/[id]/components/HeaderSection";
+import TabSection from "@/app/trainer/[id]/components/TabSection";
 
 type PageProps = {
   params: Promise<{ id: string }>;

@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import CategoryCard from "@/components/product/trainer/categories/CategoryCard";
+import CategoryCard from "@/app/trainer/categories/components/CategoryCard";
 
 export default function Categories() {
   // MEMO: 카테고리별 ID([id])값을 가져와서 해당 ID에 해당하는 카드만 보여주기

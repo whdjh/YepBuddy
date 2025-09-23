@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import Overview from "@/components/product/trainer/detail/OverViews";
-import Reviews from "@/components/product/trainer/detail/Reviews";
+import Overview from "@/app/trainer/[id]/components/OverViews";
+import Reviews from "@/app/trainer/[id]/components/Reviews";
 
 export default function TabSection({
   id,

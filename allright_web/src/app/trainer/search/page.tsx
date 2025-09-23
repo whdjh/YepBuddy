@@ -1,6 +1,6 @@
 import { Hero } from "@/components/common/Hero";
-import SearchSection from "@/components/product/trainer/search/SearchSection";
-import CardSection from "@/components/product/trainer/CardSection";
+import SearchSection from "@/app/trainer/search/components/SearchSection";
+import CardSection from "@/app/trainer/components/CardSection";
 import { mockProductCards } from "@/mock/productCardData";
 
 type PageProps = {

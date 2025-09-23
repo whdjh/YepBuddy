@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import FromSection from "@/components/product/trainer/submit/FormSection";
+import FromSection from "@/app/trainer/submit/components/FormSection";
 
 export default function Submit() {
   return (
