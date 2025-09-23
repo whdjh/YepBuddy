@@ -26,7 +26,7 @@ export default function SearchSection() {
         enterKeyHint="search"
         aria-label="트레이너 검색어"
       />
-      <Button type="submit">Search</Button>
+      <Button type="submit">검색</Button>
     </form>
   );
 }

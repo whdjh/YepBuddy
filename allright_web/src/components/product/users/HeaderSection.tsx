@@ -27,15 +27,15 @@ export default function HeaderSection() {
         <div className="flex flex-col gap-2">
           <div className="flex gap-5">
             <h1 className="text-lg tab:text-2xl font-semibold">이주훈</h1>
-            <Button variant="outline" className="border border-white/10" asChild>
+            <Button variant="outline" asChild>
               <Link href="/my/settings">프로필 수정</Link>
             </Button>
           </div>
           <div className="flex gap-5">
-            <Button variant="outline" className="border border-white/10">팔로우</Button>
+            <Button variant="outline">팔로우</Button>
             <Dialog>
               <DialogTrigger asChild>
-                <Button variant="outline" className="border border-white/10">메세지</Button>
+                <Button variant="outline">메세지</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>

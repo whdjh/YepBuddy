@@ -13,7 +13,7 @@ export default function Diary() {
   return (
     <>
       <div className="hidden tab:block">
-        <Hero title="운동일지 기록" subtitle="운동일지를 기록해보세요!" />
+        <Hero title="운동일지" subtitle="캘린더 형식 운동 기록" />
       </div>
       <div className="flex justify-center items-center p-4">
         <div className="border-2 border-white/10 rounded-[1rem] text-white max-w-lg w-full p-2">

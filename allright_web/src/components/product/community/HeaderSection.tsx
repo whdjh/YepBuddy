@@ -99,7 +99,7 @@ export function HeaderSection({
         </form>
       </div>
 
-      <Button asChild>
+      <Button variant={"outline"} asChild>
         <Link href="/community/submit">생성하기</Link>
       </Button>
     </div>

@@ -9,7 +9,7 @@ type PageProps = {
 export default async function UserProfile({ params, searchParams }: PageProps) {
   const { username } = await params;
   const { tab } = await searchParams;
-  const activeTab: "abouts" | "posts" = tab === "abouts" ? "abouts" : "posts";
+  const activeTab: "abouts" | "posts" = tab === "posts" ? "posts" : "abouts";
 
   return (
     <>

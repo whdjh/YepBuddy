@@ -13,7 +13,7 @@ export default function PostPage() {
       <div className="grid grid-cols-1 tab:grid-cols-6 gap-10 tab:gap-40 items-start">
         <div className="col-span-full tab:col-span-4 space-y-10">
           <div className="flex w-full items-start gap-6 tab:gap-10">
-            <Button variant="outline" className="flex flex-col h-14 border border-white/10">
+            <Button variant="outline" className="flex flex-col h-14">
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>10</span>
             </Button>

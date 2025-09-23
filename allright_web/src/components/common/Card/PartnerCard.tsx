@@ -35,7 +35,7 @@ export default function PartnerCard({
 }: PartnerCardProps) {
   return (
     <Link href={`/partner/${id}`}>
-      <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
+      <Card className="bg-transparent hover:bg-[#26262c]">
         <CardHeader>
           <div className="flex items-center gap-4 mb-4">
             <Image
@@ -68,9 +68,9 @@ export default function PartnerCard({
             <span className="text-sm font-medium text-gray-400">{gymHq}</span>
           </div>
           <Button
-            variant="secondary"
+            variant="outline"
             size="sm"
-            className="border border-white/10 bg-white/10 text-gray-100 hover:bg-white/20"
+            className="border text-gray-100 hover:bg-white/20"
           >
             함께하기
           </Button>

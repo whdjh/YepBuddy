@@ -24,7 +24,7 @@ export default function AuthCard() {
   return (
     <div className="w-full max-w-md">
       <FormProvider {...methods}>
-        <div className="flex flex-col relative items-center justify-center h-full">
+        <div className="flex flex-col relative items-center justify-start tab:h-full">
           <div className="flex items-center flex-col justify-center w-full max-w-md gap-10">
             <h1 className="text-2xl font-semibold">회원가입</h1>
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -62,24 +62,23 @@ export default function AuthCard() {
                 rules={{ required: "필수 입력 사항입니다." }}
               />
 
-              <Button className="w-full border border-white/10" type="submit" disabled={isSubmitting}>
+              <Button className="w-full" type="submit" disabled={isSubmitting}>
                 {isSubmitting ? "회웝가입 중" : "회원가입"}
               </Button>
             </form>
           </div>
         </div>
       </FormProvider>
-      <div className="w-full flex flex-col items-center gap-8">
+      <div className="w-full flex flex-col items-center tab:gap-8 gap-3 mt-5 tab:mt-0">
         <div className="w-full flex flex-col items-center gap-2">
           <hr className="w-full border-white/10" />
           <span className="text-xs text-muted-foreground uppercase font-medium">
             소셜 회원가입
           </span>
           <hr className="w-full border-white/10" />
-
         </div>
-        <div className="w-full flex flex-col gap-2">
-          <Button variant="outline" className="w-full border border-white/10" asChild>
+        <div className="w-full flex flex-col tab:gap-2">
+          <Button variant="outline" className="w-full" asChild>
             <Link href="/auth/social/kakao/start">
               <MessageCircleIcon className="w-4 h-4" />
               카카오톡

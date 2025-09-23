@@ -11,7 +11,7 @@ export default function Join() {
         flickerChance={0.2}
         color="#16a34a"
       />
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center justify-start p-2 tab:p-5">
         <AuthCard />
       </div>
     </div>

@@ -15,7 +15,7 @@ export default function MainSection() {
         <DotIcon className="w-4 h-4" />
         <span>12 hours ago</span>
         <DotIcon className="w-4 h-4" />
-        <Button variant="outline" className="border border-white/10">
+        <Button variant="outline">
           <HeartIcon className="w-4 h-4" />
           <span>12</span>
         </Button>

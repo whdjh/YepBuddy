@@ -52,7 +52,7 @@ export default function IdeaCard({
           <span>{likesCount}</span>
         </Button>
         {!claimed ? (
-          <Button asChild>
+          <Button variant={"outline"} asChild>
             <Link href={`/ideas/${id}`}>자세히보기 &rarr;</Link>
           </Button>
         ) : (

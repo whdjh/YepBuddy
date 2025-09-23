@@ -18,7 +18,7 @@ export default function MessageRoom() {
   return (
     <div className="h-full flex-1 flex flex-col">
       <div className="w-full max-w-7xl mx-auto flex-1 min-h-0 flex flex-col gap-5">
-        <Card className="border border-white/10">
+        <Card>
           <CardHeader className="flex flex-row items-center gap-4">
             <Avatar className="size-14">
               <AvatarImage src="https://github.com/stevejobs.png" />
@@ -40,7 +40,7 @@ export default function MessageRoom() {
           />
         </div>
 
-        <Card className="border border-white/10">
+        <Card>
           <CardHeader>
             <form className="relative flex justify-end items-center">
               <Textarea
@@ -48,7 +48,7 @@ export default function MessageRoom() {
                 rows={2}
                 className="resize-none pr-10"
               />
-              <Button type="submit" size="icon" className="absolute right-2">
+              <Button type="submit" size="icon" variant={"outline"} className="absolute right-2">
                 <SendIcon className="size-4" />
               </Button>
             </form>

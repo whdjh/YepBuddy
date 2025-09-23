@@ -11,7 +11,7 @@ export default function Login() {
         flickerChance={0.2}
         color="#16a34a"
       />
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center p-2 tab:p-5">
         <AuthCard />
       </div>
     </div>
