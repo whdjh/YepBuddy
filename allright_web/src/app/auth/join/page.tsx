@@ -1,5 +1,5 @@
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
-import AuthCard from "@/components/product/auth/join/AuthCard";
+import AuthCard from "@/app/auth/join/components/AuthCard";
 
 export default function Join() {
   return (

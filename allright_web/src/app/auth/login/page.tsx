@@ -1,5 +1,5 @@
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
-import AuthCard from "@/components/product/auth/login/AuthCard";
+import AuthCard from "@/app/auth/login/components/AuthCard";
 
 export default function Login() {
   return (
