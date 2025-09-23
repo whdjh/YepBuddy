@@ -20,7 +20,7 @@ export default function PostCard({
 }: PostCardProps) {
   return (
     <Card className={cn(
-      "bg-transparent hover:bg-[#26262c] border-white/10",
+      "bg-transparent hover:bg-[#26262c]",
       expanded ? "flex flex-row items-center justify-between" : ""
       )}
     >
