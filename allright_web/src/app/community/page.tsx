@@ -3,9 +3,9 @@
 import { Hero } from "@/components/common/Hero";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, Suspense } from "react";
-import { HeaderSection } from "@/components/product/community/HeaderSection";
-import { CardSection } from "@/components/product/community/CardSection";
-import { TopicSection } from "@/components/product/community/TopicSection";
+import { HeaderSection } from "@/app/community/components/HeaderSection";
+import { CardSection } from "@/app/community/components/CardSection";
+import { TopicSection } from "@/app/community/components/TopicSection";
 import { mockPosts } from "@/mock/postCardData";
 
 export default function Community() {

@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import CardSection from "@/components/product/trainer/CardSection";
+import CardSection from "@/app/trainer/components/CardSection";
 import { mockProductCards } from "@/mock/productCardData";
 
 export default function CategoriesId() {

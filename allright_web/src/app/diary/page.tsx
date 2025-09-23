@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Hero } from '@/components/common/Hero';
 
-const DiaryCalendar = dynamic(() => import('@/components/product/diary/Calendar'), { ssr: false });
+const DiaryCalendar = dynamic(() => import('@/app/diary/components/Calendar'), { ssr: false });
 
 export default function Diary() {
   const handleDateChange = (date: Date) => {

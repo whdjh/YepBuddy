@@ -1,6 +1,6 @@
 import { Hero } from "@/components/common/Hero";
-import CardSection from "@/components/product/teams/detail/CardSection";
-import SideCard from "@/components/product/teams/detail/SideCard";
+import CardSection from "@/app/teams/[id]/components/CardSection";
+import SideCard from "@/app/teams/[id]/components/SideCard";
 
 export default function TeamsDetail() {
   return (

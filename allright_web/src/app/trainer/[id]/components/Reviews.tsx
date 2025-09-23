@@ -6,7 +6,7 @@ import {
   Dialog,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import ReviewModal from "@/components/product/trainer/detail/ReviewModal";
+import ReviewModal from "@/app/trainer/[id]/components/ReviewModal";
 
 export default function ProductReviewsPage() {
   return (

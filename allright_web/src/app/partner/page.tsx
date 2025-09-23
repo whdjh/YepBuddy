@@ -3,11 +3,11 @@
 import { Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Hero } from "@/components/common/Hero";
-import CardSection from "@/components/product/partner/CardSection";
+import CardSection from "@/app/partner/components/CardSection";
 import { mockPartnerCards } from "@/mock/PartnerCardData";
-import TypeSection from "@/components/product/partner/TypeSection";
-import LocationSection from "@/components/product/partner/LocationSection";
-import TimeRangeSection from "@/components/product/partner/TimeRangeSection";
+import TypeSection from "@/app/partner/components/TypeSection";
+import LocationSection from "@/app/partner/components/LocationSection";
+import TimeRangeSection from "@/app/partner/components/TimeRangeSection";
 
 export default function Partner() {
   return (

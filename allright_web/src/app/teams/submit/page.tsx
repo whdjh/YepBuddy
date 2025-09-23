@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import FormSection from "@/components/product/teams/submit/FormSection";
+import FormSection from "@/app/teams/submit/components/FormSection";
 
 export default function TeamsSubmit() {
   return (

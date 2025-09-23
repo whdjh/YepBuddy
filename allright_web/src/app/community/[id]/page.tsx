@@ -1,9 +1,9 @@
 import { ChevronUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import MainSection from "@/components/product/community/detail/MainSection";
-import CommentSection from "@/components/product/community/detail/CommentSection";
-import HeaderSection from "@/components/product/community/detail/HeaderSection";
-import ProfileCard from "@/components/product/community/detail/ProfileCard";
+import MainSection from "@/app/community/[id]/components/MainSection";
+import CommentSection from "@/app/community/[id]/components/CommentSection";
+import HeaderSection from "@/app/community/[id]/components/HeaderSection";
+import ProfileCard from "@/app/community/[id]/components/ProfileCard";
 
 export default function PostPage() {
   return (

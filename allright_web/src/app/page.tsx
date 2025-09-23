@@ -1,10 +1,10 @@
-import HeroSection from "@/components/product/main/HeroSection";
-import SlideSection from "@/components/product/main/SlideSection";
-import TrainerSection from "@/components/product/main/TrainerSection";
-import IdeasSection from "@/components/product/main/IdeasSection";
-import CommunitySection from "@/components/product/main/CommunitySection";
-import PartnerSection from "@/components/product/main/PartnerSection";
-import TeamSection from "@/components/product/main/TeamSection";
+import HeroSection from "@/app/components/HeroSection";
+import SlideSection from "@/app/components/SlideSection";
+import TrainerSection from "@/app/components/TrainerSection";
+import IdeasSection from "@/app/components/IdeasSection";
+import CommunitySection from "@/app/components/CommunitySection";
+import PartnerSection from "@/app/components/PartnerSection";
+import TeamSection from "@/app/components/TeamSection";
 
 export default function Home() {
   return (

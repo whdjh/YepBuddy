@@ -1,7 +1,7 @@
 import { Hero } from "@/components/common/Hero";
-import ProfileHeader from "@/components/product/partner/detail/ProfileHeader";
-import ProfileOverview from "@/components/product/partner/detail/ProfileOverview";
-import SideCard from "@/components/product/partner/detail/SideCard";
+import ProfileHeader from "@/app/partner/[id]/components/ProfileHeader";
+import ProfileOverview from "@/app/partner/[id]/components/ProfileOverview";
+import SideCard from "@/app/partner/[id]/components/SideCard";
 
 export default function PartnerId() {
   return (

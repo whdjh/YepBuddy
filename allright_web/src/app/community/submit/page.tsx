@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import FormSection from "@/components/product/community/submit/FormSection";
+import FormSection from "@/app/community/submit/components/FormSection";
 
 export default function SubmitPost() { 
   return (
