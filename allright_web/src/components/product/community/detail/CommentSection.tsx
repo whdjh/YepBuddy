@@ -8,7 +8,7 @@ import {
 
 export default function CommentSection() {
   return (
-    <form className="flex items-start gap-5 w-3/4">
+    <form className="flex items-start gap-5 w-full tab:w-3/4">
       <Avatar className="size-14">
         <AvatarFallback>J</AvatarFallback>
         <AvatarImage src="https://github.com/gym.png" />

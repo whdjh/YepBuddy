@@ -13,7 +13,7 @@ export default function MainSection() {
         <DotIcon className="size-5" />
         <span>0개의 응답</span>
       </div>
-      <p className="text-muted-foreground max-w-full">
+      <p className="text-muted-foreground max-w-full whitespace-normal [overflow-wrap:anywhere]">
         등 운동을 하는데 너무 안되서 고민이야. 어떤 등운동이 등 기둥을 만드는데 효과적일까? 자세히알려줘!!자세히알려줘!!자세히알려줘!!자세히알려줘!!자세히알려줘!!
       </p>
     </div>
