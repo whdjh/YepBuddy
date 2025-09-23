@@ -16,7 +16,7 @@ interface CategoryCardProps {
 export default function CategoryCard({ id, name, description }: CategoryCardProps) {
   return (
     <Link href={`/trainer/categories/${id}`} className="block">
-      <Card className="bg-transparent border border-white/10">
+      <Card className="bg-transparent border">
         <CardHeader>
           <CardTitle className="flex">
             {name} <ChevronRightIcon className="size-6" />
