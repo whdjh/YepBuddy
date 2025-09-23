@@ -14,26 +14,26 @@ export default function CardSection() {
         { key: "time", title: "가능 시간대", value: "평일 18:00–22:00, 토 10:00–13:00" },
         { key: "price", title: "가격/정책", value: "10회 75만원, 유효 8주" },
       ].map((item) => (
-        <Card className="bg-transparent border border-white/10" key={item.key}>
+        <Card className="bg-transparent" key={item.key}>
           <CardHeader>
             <CardTitle className="text-sm font-medium text-muted-foreground">
               {item.title}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 font-bold text-2xl">
+          <CardContent className="p-0 font-bold text-lg tab:text-2xl">
             <p className="px-6 pb-6 pt-0">{item.value}</p>
           </CardContent>
         </Card>
       ))}
 
-      <Card className="bg-transparent col-span-2 border border-white/10">
+      <Card className="bg-transparent col-span-2">
         <CardHeader>
           <CardTitle className="text-sm font-medium text-muted-foreground">
             모집 대상
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 font-bold text-2xl">
-          <ul className="text-lg list-disc list-inside px-6 pb-6">
+        <CardContent className="p-0 font-bold text-lg tab:text-2xl">
+          <ul className="text-sm tab:text-lg list-disc list-inside px-6 pb-6">
             {[
               "체지방 감량 목표",
               "주 2회 이상 출석 가능",
@@ -46,13 +46,13 @@ export default function CardSection() {
         </CardContent>
       </Card>
 
-      <Card className="bg-transparent col-span-2 border border-white/10">
+      <Card className="bg-transparent col-span-2">
         <CardHeader>
-          <CardTitle className="text-sm font-medium text-muted-foreground">
+          <CardTitle className="text-lg tab:text-2xl font-medium text-muted-foreground">
             프로그램 소개
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-0 font-medium text-xl">
+        <CardContent className="p-0 font-medium text-sm tab:text-lg">
           <div className="px-6 pb-6 space-y-3">
             <p>
               체형교정/감량 특화 1:1 PT입니다. 프리웨이트 중심으로 기본 움직임 패턴을 교정하고,
