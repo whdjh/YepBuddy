@@ -70,7 +70,7 @@ export default function PartnerCard({
           <Button
             variant="secondary"
             size="sm"
-            className="border border-white/10 bg-white/10 text-gray-100 hover:bg-white/20"
+            className="border border-white/10 text-gray-100 hover:bg-white/20"
           >
             함께하기
           </Button>
