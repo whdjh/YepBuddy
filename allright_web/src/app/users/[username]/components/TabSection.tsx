@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import About from "@/components/product/users/About";
-import Post from "@/components/product/users/Post";
+import About from "@/app/users/[username]/components/About";
+import Post from "@/app/users/[username]/components/Post";
 
 export default function TabSection({
   username,
