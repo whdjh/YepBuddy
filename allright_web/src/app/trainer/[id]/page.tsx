@@ -9,7 +9,7 @@ type PageProps = {
 export default async function TrainerId({ params, searchParams }: PageProps) {
   const { id } = await params;
   const { tab } = await searchParams;
-  const activeTab: "overviews" | "reviews" = tab === "overviews" ? "overviews" : "reviews";
+  const activeTab: "overviews" | "reviews" = tab === "reviews" ? "reviews" : "overviews";
 
   return (
     <div className="space-y-10 p-2 tab:p-5">
