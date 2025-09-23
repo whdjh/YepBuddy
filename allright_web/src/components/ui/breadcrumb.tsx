@@ -1,7 +1,6 @@
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
-
 import { cn } from "@/lib/utils"
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
@@ -13,7 +12,8 @@ function BreadcrumbList({ className, ...props }: React.ComponentProps<"ol">) {
     <ol
       data-slot="breadcrumb-list"
       className={cn(
-        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5",
+        // 줄바꿈 허용 + 컨테이너 넘치지 않게
+        "text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5 max-w-full",
         className
       )}
       {...props}
@@ -25,7 +25,8 @@ function BreadcrumbItem({ className, ...props }: React.ComponentProps<"li">) {
   return (
     <li
       data-slot="breadcrumb-item"
-      className={cn("inline-flex items-center gap-1.5", className)}
+      // 수축 허용이 포인트!
+      className={cn("inline-flex items-center gap-1.5 min-w-0", className)}
       {...props}
     />
   )
@@ -35,15 +36,16 @@ function BreadcrumbLink({
   asChild,
   className,
   ...props
-}: React.ComponentProps<"a"> & {
-  asChild?: boolean
-}) {
+}: React.ComponentProps<"a"> & { asChild?: boolean }) {
   const Comp = asChild ? Slot : "a"
-
   return (
     <Comp
       data-slot="breadcrumb-link"
-      className={cn("hover:text-foreground transition-colors", className)}
+      // 긴 한글/영문도 줄바꿈 허용
+      className={cn(
+        "hover:text-foreground transition-colors whitespace-normal break-words",
+        className
+      )}
       {...props}
     />
   )
@@ -72,7 +74,8 @@ function BreadcrumbSeparator({
       data-slot="breadcrumb-separator"
       role="presentation"
       aria-hidden="true"
-      className={cn("[&>svg]:size-3.5", className)}
+      // 구분자는 수축 금지
+      className={cn("[&>svg]:size-3.5 flex-shrink-0", className)}
       {...props}
     >
       {children ?? <ChevronRight />}
