@@ -17,7 +17,7 @@ export default function PostPage() {
               <ChevronUpIcon className="size-4 shrink-0" />
               <span>10</span>
             </Button>
-            <div className="tab:space-y-20 space-y-5">
+            <div className="min-w-0 tab:space-y-20 space-y-5">
               <MainSection />
               <hr className="w-full border border-white/10"/>
               <CommentSection />
