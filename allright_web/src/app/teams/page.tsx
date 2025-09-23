@@ -1,5 +1,5 @@
 import { Hero } from "@/components/common/Hero";
-import CardSection from "@/components/product/teams/CardSection";
+import CardSection from "@/app/teams/components/CardSection";
 import { mockTeamCards } from "@/mock/teamsCardData";
 
 export default function TeamsPage() {
