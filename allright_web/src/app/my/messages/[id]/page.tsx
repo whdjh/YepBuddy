@@ -1,6 +1,6 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import SideInventory from "@/components/product/my/messages/SideInventory";
-import MessageRoom from "@/components/product/my/messages/detail/MessageRoom";
+import SideInventory from "@/app/my/messages/components/SideInventory";
+import MessageRoom from "@/app/my/messages/[id]/components/MessageRoom";
 
 export default function MessageDetail() {
   return (

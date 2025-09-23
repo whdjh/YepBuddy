@@ -12,7 +12,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SendIcon } from "lucide-react";
-import MessageBubble from "@/components/product/my/messages/detail/MessageBubble";
+import MessageBubble from "@/app/my/messages/[id]/components/MessageBubble";
 
 export default function MessageRoom() {
   return (

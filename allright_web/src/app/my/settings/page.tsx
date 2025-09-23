@@ -1,4 +1,4 @@
-import FormSection from "@/components/product/my/settings/FormSection";
+import FormSection from "@/app/my/settings/components/FormSection";
 
 export default function EditProfile() {
   return (

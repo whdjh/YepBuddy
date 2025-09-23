@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import SideInventory from "@/components/product/my/dashboard/SideInventory";
-import ProfileChart from "@/components/product/my/dashboard/ProfileChart";
+import SideInventory from "@/app/my/dashboard/components/SideInventory";
+import ProfileChart from "@/app/my/dashboard/components/ProfileChart";
 
 export default function DashboardDetail() {
   return (

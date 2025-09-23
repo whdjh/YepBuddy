@@ -1,5 +1,5 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import SideInventory from "@/components/product/my/dashboard/SideInventory";
+import SideInventory from "@/app/my/dashboard/components/SideInventory";
 import CardSection from "@/app/ideas/components/CardSection";
 import { mockIdeasCards } from "@/mock/ideasCardData";
 
