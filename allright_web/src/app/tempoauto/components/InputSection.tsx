@@ -1,6 +1,4 @@
-import { UseFormReturn } from 'react-hook-form';
 import InputPair from '@/components/common/InputPair';
-import { TempoFormValues } from '@/types/Tempo';
 
 export default function InputSection() {
   return (
