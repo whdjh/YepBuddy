@@ -70,8 +70,8 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "IdeasGPT",
-    href: "/ideas",
+    name: "헬스장",
+    href: "/gym",
   },
   {
     name: "운동일지",

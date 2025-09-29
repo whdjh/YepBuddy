@@ -12,7 +12,7 @@ export default function Categories() {
             key={`${index}`}
             id={`${index}`}
             name="엔오엔짐"
-            description="아스날, 짐레코, 헤머스트렝스, 드랙스, 매트릭스 머신 보유"
+            description="헬스장 위치"
           />
         ))}
       </div>

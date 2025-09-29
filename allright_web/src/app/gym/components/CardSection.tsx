@@ -1,7 +1,7 @@
 'use client';
 
 import { IdeasCardProps } from '@/types/Card';
-import IdeaCard from '@/components/common/Card/IdeaCard';
+import IdeaCard from '@/components/common/Card/GymCard';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
@@ -18,7 +18,7 @@ export default function CardSection({ cards }: CardSectionProps) {
     <VirtuoInfinityScroll
       list={cards}
       item={(card) => (
-        <IdeaCard 
+        <IdeaCard
           id={card.id}
           key={card.id}
           title={card.title}

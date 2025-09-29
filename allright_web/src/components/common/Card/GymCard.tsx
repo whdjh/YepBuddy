@@ -7,10 +7,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DotIcon, EyeIcon, HeartIcon, LockIcon } from "lucide-react";
+import { DotIcon, EyeIcon, HeartIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface IdeaCardProps {
+interface GymCardProps {
   id: string;
   title: string;
   viewsCount: number;
@@ -19,20 +19,19 @@ interface IdeaCardProps {
   claimed?: boolean;
 }
 
-export default function IdeaCard({
+export default function GymCard({
   id,
   title,
   viewsCount,
   postedAt,
-  likesCount,
-  claimed,
-}: IdeaCardProps) {
+  likesCount
+}: GymCardProps) {
   return (
     <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
       <CardHeader>
-        <Link href={`/ideas/${id}`}>
+        <Link href={`/gym/${id}`}>
           <CardTitle className="text-xl">
-            <span className={cn(claimed ? "bg-[currentColor]" : "")}>
+            <span>
               {title}
             </span>
           </CardTitle>
@@ -51,16 +50,9 @@ export default function IdeaCard({
           <HeartIcon className="w-4 h-4" />
           <span>{likesCount}</span>
         </Button>
-        {!claimed ? (
-          <Button variant={"outline"} asChild>
-            <Link href={`/ideas/${id}`}>자세히보기 &rarr;</Link>
-          </Button>
-        ) : (
-          <Button variant="outline" disabled className="cursor-not-allowed">
-            <LockIcon className="size-4" />
-            잠금
-          </Button>
-        )}
+        <Button variant={"outline"} asChild>
+          <Link href={`/gym/${id}`}>자세히보기 &rarr;</Link>
+        </Button>
       </CardFooter>
     </Card>
   );

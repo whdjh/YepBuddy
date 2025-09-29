@@ -1,7 +1,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SideInventory from "@/app/my/dashboard/components/SideInventory";
 import CardSection from "@/app/ideas/components/CardSection";
-import { mockIdeasCards } from "@/mock/ideasCardData";
+import { mockIdeasCards } from "@/mock/gymCardData";
 
 export default function IdeasDashboard() {
   return (
