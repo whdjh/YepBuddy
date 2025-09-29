@@ -1,5 +1,5 @@
-import CardSection from "./CardSection";
-import SideCard from "./SideCard";
+import CardSection from "@/app/trainer/[id]/components/CardSection";
+import SideCard from "@/app/trainer/[id]/components/SideCard";
 
 export default function Overviews() {
   return (
