@@ -8,16 +8,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChevronUpIcon, EyeIcon, MessageCircleIcon } from "lucide-react";
-import { ProductCardProps } from "@/types/Card";
+import { TrainerCardProps } from "@/types/Card";
 
-export default function ProductCard({
+export default function TrainerCard({
   id,
   name,
   description,
   commentsCount,
   viewsCount,
   votesCount,
-}: ProductCardProps) {
+}: TrainerCardProps) {
   return (
     <Link href={`/trainer/${id}`}>
       <Card className="bg-transparent hover:bg-[#26262c] flex flex-row justify-between">

@@ -1,7 +1,7 @@
-import type { ProductCardProps } from "@/types/Card";
+import type { TrainerCardProps } from "@/types/Card";
 
 // TODO: API로 교체 예정
-export const mockProductCards: ProductCardProps[] = [
+export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "1",
     name: "이주훈",

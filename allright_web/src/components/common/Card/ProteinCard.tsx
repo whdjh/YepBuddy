@@ -6,9 +6,9 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DotIcon, ChevronUpIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PostCardProps } from "@/types/Card";
+import { ProteinCardProps } from "@/types/Card";
 
-export default function PostCard({
+export default function ProteinCard({
   id,
   title,
   author,
@@ -17,7 +17,7 @@ export default function PostCard({
   postedAt,
   expanded = false,
   votesCount = 0,
-}: PostCardProps) {
+}: ProteinCardProps) {
   return (
     <Card className={cn(
       "bg-transparent hover:bg-[#26262c]",

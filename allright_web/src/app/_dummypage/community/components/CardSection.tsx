@@ -1,9 +1,9 @@
-import PostCard from "@/components/common/Card/PostCard";
-import { PostCardProps } from "@/types/Card";
+import PostCard from "@/components/common/Card/ProteinCard";
+import { ProteinCardProps } from "@/types/Card";
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
-  cards: PostCardProps[];
+  cards: ProteinCardProps[];
 }
 
 export function CardSection({ cards }: CardSectionProps) {

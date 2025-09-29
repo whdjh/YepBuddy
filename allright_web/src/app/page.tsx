@@ -1,10 +1,8 @@
 import HeroSection from "@/app/components/HeroSection";
 import SlideSection from "@/app/components/SlideSection";
 import TrainerSection from "@/app/components/TrainerSection";
-import IdeasSection from "@/app/components/GymSection";
-import CommunitySection from "@/app/components/CommunitySection";
-import PartnerSection from "@/app/components/PartnerSection";
-import TeamSection from "@/app/components/TeamSection";
+import GymSection from "@/app/components/GymSection";
+import AssistanceSection from "@/app/components/AssistanceSection";
 
 export default function Home() {
   return (
@@ -12,10 +10,8 @@ export default function Home() {
       <HeroSection />
       <SlideSection />
       <TrainerSection />
-      <IdeasSection />
-      <CommunitySection />
-      <PartnerSection />
-      <TeamSection />
+      <GymSection />
+      <AssistanceSection />
     </div >
   );
 }

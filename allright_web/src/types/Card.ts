@@ -6,7 +6,7 @@ export interface CardData {
   thumbnail?: string;
 }
 
-export interface ProductCardProps {
+export interface TrainerCardProps {
   id: string;
   name: string;
   description: string;
@@ -36,7 +36,7 @@ export interface PartnerCardProps {
   time: string;
 }
 
-export interface PostCardProps {
+export interface ProteinCardProps {
   id: string;
   title: string;
   author: string;
