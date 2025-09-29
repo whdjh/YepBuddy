@@ -1,11 +1,11 @@
 'use client';
 
-import { IdeasCardProps } from '@/types/Card';
-import IdeaCard from '@/components/common/Card/GymCard';
+import { GymCardProps } from '@/types/Card';
+import GymCard from '@/components/common/Card/GymCard';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
-  cards: IdeasCardProps[];
+  cards: GymCardProps[];
 }
 
 export default function CardSection({ cards }: CardSectionProps) {
@@ -18,14 +18,13 @@ export default function CardSection({ cards }: CardSectionProps) {
     <VirtuoInfinityScroll
       list={cards}
       item={(card) => (
-        <IdeaCard
+        <GymCard
           id={card.id}
           key={card.id}
           title={card.title}
           viewsCount={card.viewsCount}
           postedAt={card.postedAt}
-          likesCount={card.likeCount}
-          claimed={card.claimed}
+          likesCount={card.likesCount}
         />
       )}
       emptyText="검색 결과가 없습니다."

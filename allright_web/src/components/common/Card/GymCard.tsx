@@ -8,15 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DotIcon, EyeIcon, HeartIcon } from "lucide-react";
-
-interface GymCardProps {
-  id: string;
-  title: string;
-  viewsCount: number;
-  postedAt: string;
-  likesCount: number;
-  claimed?: boolean;
-}
+import { GymCardProps } from "@/types/Card";
 
 export default function GymCard({
   id,
