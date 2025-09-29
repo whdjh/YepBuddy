@@ -9,7 +9,7 @@ export const PARTNER_TYPES = [
   },
   {
     label: "1회성",
-    value: "intership",
+    value: "internship",
   },
 ] as const;
 

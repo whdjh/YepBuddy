@@ -9,7 +9,7 @@ import StatusCheckTab from '@/app/diary/[date]/components/StatusCheckTab';
 import ExerciseDiaryTab from '@/app/diary/[date]/components/ExerciseDiaryTab';
 import EvaluationTab from '@/app/diary/[date]/components/EvaluationTab';
 
-export default function DiaryDetail({ params }: { params: Promise<{ date: string }> }) {
+export default function DiaryDate({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);
   
   const adjustedDateParam = new Date(dateParam);

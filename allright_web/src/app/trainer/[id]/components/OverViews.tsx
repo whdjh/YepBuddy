@@ -1,18 +1,11 @@
+import CardSection from "@/app/trainer/[id]/components/CardSection";
+import SideCard from "@/app/trainer/[id]/components/SideCard";
+
 export default function Overviews() {
   return (
-    <div className="space-y-10">
-      <div className="space-y-1">
-        <h3 className="text-lg font-bold">어떤 트레이너에요?</h3>
-        <p className="text-muted-foreground">
-          저는 약속을 잘 지키는 트레이너에요
-        </p>
-      </div>
-      <div className="space-y-1">
-        <h3 className="text-lg font-bold">어떤 이력이 있어요?</h3>
-        <p className="text-muted-foreground">
-          2025 IFBB PRO 1st
-        </p>
-      </div>
+    <div className="grid grid-cols-1 tab:grid-cols-6 gap-10 items-start p-5">
+      <CardSection />
+      <SideCard />
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SideInventory from "@/app/my/dashboard/components/SideInventory";
 import ProfileChart from "@/app/my/dashboard/components/ProfileChart";
 
-export default function DashboardDetail() {
+export default function DashboardId() {
   return (
     <SidebarProvider className="flex h-full">
       <div className="tab:hidden mb-2">

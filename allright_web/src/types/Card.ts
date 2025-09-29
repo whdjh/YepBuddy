@@ -1,12 +1,4 @@
-export interface CardData {
-  id: number;
-  author: string;
-  location: string;
-  tags: string[];
-  thumbnail?: string;
-}
-
-export interface ProductCardProps {
+export interface TrainerCardProps {
   id: string;
   name: string;
   description: string;
@@ -15,42 +7,18 @@ export interface ProductCardProps {
   votesCount: number;
 }
 
-export interface IdeasCardProps {
+export interface GymCardProps {
   id: string;
   title: string;
   viewsCount: number;
   postedAt: string;
-  likeCount: number;
-  claimed?: boolean;
+  likesCount: number;
 }
 
-export interface PartnerCardProps {
-  id: string;
-  gym: string;
-  gymLogoUrl: string;
-  gymHq: string;
-  title: string;
-  postedAt: string;
-  type: string;
-  positionLocation: string;
-  time: string;
-}
-
-export interface PostCardProps {
+export interface ProteinCardProps {
   id: string;
   title: string;
-  author: string;
+  weigth: string;
   authorAvatarUrl: string;
-  category: string;
-  postedAt: string;
-  expanded?: boolean;
-  votesCount?: number;
-}
-
-export interface TeamCardProps {
-  id: string;
-  leaderUsername: string;
-  leaderAvatarUrl: string;
-  positions: string[];
-  teamDescription: string;
+  topic: string;
 }

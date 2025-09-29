@@ -1,11 +1,11 @@
 'use client';
 
-import { ProductCardProps } from '@/types/Card';
-import ProductCard from '@/components/common/Card/ProductCard';
+import { TrainerCardProps } from '@/types/Card';
+import TrainerCard from '@/components/common/Card/TrainerCard';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
-  cards: ProductCardProps[];
+  cards: TrainerCardProps[];
 }
 
 export default function CardSection({ cards }: CardSectionProps) {
@@ -20,7 +20,7 @@ export default function CardSection({ cards }: CardSectionProps) {
     <VirtuoInfinityScroll
       list={cards}
       item={(card) => (
-        <ProductCard
+        <TrainerCard
           id={card.id}
           key={card.id}
           name={card.name}

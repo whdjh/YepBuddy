@@ -7,6 +7,8 @@ import {
   ChevronRightIcon,
 } from "lucide-react"
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker"
+import { format } from "date-fns"
+import { ko } from "date-fns/locale"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
@@ -39,8 +41,7 @@ function toneClasses(tone: Tone) {
         rangeEnd:
           "data-[range-end=true]:bg-[#16a34a] data-[range-end=true]:text-white",
         rangeMiddle:
-          "data-[range-middle=true]:bg-[#16a34a]/15 data-[range-middle=true]:text-[#16a34a] " +
-          "dark:data-[range-middle=true]:bg-[#16a34a]/30 dark:data-[range-middle=true]:text-white",
+          "data-[range-middle=true]:bg-[#16a34a]/15 data-[range-middle=true]:text-[#16a34a] dark:data-[range-middle=true]:bg-[#16a34a]/30 dark:data-[range-middle=true]:text-white",
         focusRing:
           "group-data-[focused=true]/day:ring-[#16a34a]/50 group-data-[focused=true]/day:border-[#16a34a]",
         today: "outline outline-2 outline-[#16a34a]/40",
@@ -91,7 +92,7 @@ function toneClasses(tone: Tone) {
         today: "outline outline-2 outline-amber-500/40",
         hover: "hover:bg-amber-50 dark:hover:bg-amber-900/20",
       }
-    default: // primary 토큰 사용
+    default:
       return {
         selectedSingle:
           "data-[selected-single=true]:bg-primary data-[selected-single=true]:text-primary-foreground",
@@ -126,13 +127,13 @@ function Calendar({
   const defaultClassNames = getDefaultClassNames()
   const t = toneClasses(tone)
 
-  // DayButton에 tone을 주입하는 래퍼
   const ToneDayButton = (btnProps: React.ComponentProps<typeof DayButton>) => (
     <CalendarDayButton {...btnProps} tone={tone} />
   )
 
   return (
     <DayPicker
+      locale={ko}
       showOutsideDays={showOutsideDays}
       className={cn(
         "bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent",
@@ -142,8 +143,9 @@ function Calendar({
       )}
       captionLayout={captionLayout}
       formatters={{
-        formatMonthDropdown: (date) =>
-          date.toLocaleString("default", { month: "short" }),
+        formatCaption: (month) => format(month, "yyyy년 M월", { locale: ko }),
+        formatMonthDropdown: (date) => format(date, "M월", { locale: ko }),
+        formatWeekdayName: (date) => format(date, "EEEEE", { locale: ko }),
         ...formatters,
       }}
       classNames={{
@@ -209,12 +211,11 @@ function Calendar({
           "relative w-full h-full p-0 text-center [&:first-child[data-selected=true]_button]:rounded-l-md [&:last-child[data-selected=true]_button]:rounded-r-md group/day aspect-square select-none",
           defaultClassNames.day
         ),
-        // 배경색은 DayButton에서 상태별로 통일 적용
         range_start: cn("rounded-l-md", defaultClassNames.range_start),
         range_middle: cn("rounded-none", defaultClassNames.range_middle),
         range_end: cn("rounded-r-md", defaultClassNames.range_end),
         today: cn(
-          "rounded-md data-[selected=true]:rounded-none", // today 강조는 DayButton에서 outline로
+          "rounded-md data-[selected=true]:rounded-none",
           defaultClassNames.today
         ),
         outside: cn(
@@ -296,7 +297,6 @@ function CalendarDayButton({
       ref={ref}
       variant="ghost"
       size="icon"
-      data-day={day.date.toLocaleDateString()}
       data-selected-single={
         modifiers.selected &&
         !modifiers.range_start &&
@@ -306,23 +306,17 @@ function CalendarDayButton({
       data-range-start={modifiers.range_start}
       data-range-end={modifiers.range_end}
       data-range-middle={modifiers.range_middle}
-      // today 강조: outline 색상
       className={cn(
         "flex aspect-square size-auto w-full min-w-(--cell-size) flex-col gap-1 leading-none font-normal",
-        // hover
         t.hover,
-        // 포커스 링
         "group-data-[focused=true]/day:relative group-data-[focused=true]/day:z-10 group-data-[focused=true]/day:ring-[3px]",
         t.focusRing,
-        // 선택 상태
         "data-[range-end=true]:rounded-md data-[range-end=true]:rounded-r-md data-[range-middle=true]:rounded-none data-[range-start=true]:rounded-md data-[range-start=true]:rounded-l-md",
         t.selectedSingle,
         t.rangeStart,
         t.rangeEnd,
         t.rangeMiddle,
-        // 오늘
         modifiers.today && t.today,
-        // 기존 기본 클래스
         "[&>span]:text-xs [&>span]:opacity-70",
         defaultClassNames.day,
         className

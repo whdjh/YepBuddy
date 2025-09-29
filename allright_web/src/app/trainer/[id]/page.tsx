@@ -15,7 +15,7 @@ export default async function TrainerId({ params, searchParams }: PageProps) {
     <div className="space-y-10 p-2 tab:p-5">
       <HeaderSection
         title="트레이너 이름"
-        description="트레이너 설명"
+        location="헬스장 위치"
         rating={5}
         reviewCount={100}
         voteCount={100}
