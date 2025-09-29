@@ -14,8 +14,12 @@ const MAX_SIZE = 1 * 1024 * 1024;
 interface FormValues {
   name: string;
   role: string;
+  location: string;
+  history: string;
+  qualifications: string;
   description: string;
   avatar?: File | null;
+  avatarFile?: FileList | null; // 폼 내부 바인딩용이니 서버로 보내지 않도록 주의
 }
 
 export default function FormSection() {
@@ -24,8 +28,12 @@ export default function FormSection() {
     defaultValues: {
       name: "",
       role: "",
+      location: "",
+      history: "",
+      qualifications: "",
       description: "",
       avatar: null,
+      avatarFile: null,
     },
   });
 
@@ -39,18 +47,14 @@ export default function FormSection() {
   const { handleSubmit, register, watch, setValue, formState } = methods;
   const [preview, setPreview] = useState<string | null>(null);
 
-  const avatarFile = watch("avatar");
+  const avatar = watch("avatar");
+
   useEffect(() => {
-    if (!avatarFile) { setPreview(null); return; }
-    const url = URL.createObjectURL(avatarFile as File);
+    if (!avatar) { setPreview(null); return; }
+    const url = URL.createObjectURL(avatar);
     setPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [avatarFile]);
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    setValue("avatar", file, { shouldValidate: true, shouldDirty: true });
-  };
+  }, [avatar]);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     console.log("submit:", data);
@@ -82,6 +86,34 @@ export default function FormSection() {
                   { label: "회원", value: "member" },
                 ]}
               />
+              {/** 장소 api로 변경 예정 */ }
+              <InputPair
+                label="근무지"
+                description="근무지를 적어보세요."
+                required
+                id="location"
+                name="location"
+                placeholder="근무지를 입력하세요"
+                rules={{ required: "근무지를 입력하세요" }}
+              />
+              <InputPair
+                label="경력"
+                description="경력을 적어보세요."
+                required
+                id="history"
+                name="history"
+                isTextArea
+                rules={{ required: "경력을 입력하세요" }}
+              />
+              <InputPair
+                label="자격증"
+                description="자격증을 적어보세요."
+                required
+                id="qualifications"
+                name="qualifications"
+                isTextArea
+                rules={{ required: "자격증을 입력하세요" }}
+              />
               <InputPair
                 label="자기소개"
                 description="자기소개를 적어보세요."
@@ -95,35 +127,41 @@ export default function FormSection() {
           </div>
 
           <div className="col-span-full tab:col-span-2 p-6 rounded-lg border border-white/10 shadow-md">
-            <Label className="flex flex-col gap-1">
-              이미지
-              <small className="text-muted-foreground">이미지를 업로드 해보세요.</small>
+            <Label htmlFor="avatarFile" className="flex flex-col gap-1">
+              프로필
+              <small className="text-muted-foreground">프로필 이미지를 업로드 해보세요.</small>
             </Label>
 
             <div className="space-y-5">
-              <div className="size-40 rounded-full shadow-xl overflow-hidden bg-black/10">
-                {preview && (
+              <div className="flex justify-center">
+                <div className="inline-block overflow-hidden rounded-lg bg-black/10">
+                {preview ? (
                   <img
                     src={preview}
-                    className="object-cover w-full h-full"
                     alt="avatar preview"
+                    className="w-auto h-auto rounded-full max-w-full max-h-64 object-contain mt-4"
                   />
-                )}
+                ) : (
+                  <span className="block p-6 text-xs text-muted-foreground">미리보기 없음</span>
+                  )}
+                  </div>
               </div>
 
               <Input
+                id="avatarFile"
                 type="file"
-                className="w-full tab:w-1/2"
                 accept="image/png,image/jpeg"
-                onChange={onFileChange}
+                {...register("avatarFile", {
+                  validate: (fl) => validateFile(fl?.[0] ?? null),
+                  onChange: (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0] ?? null;
+                    setValue("avatar", file, { shouldValidate: true, shouldDirty: true });
+                  },
+                })}
               />
-              <input
-                type="hidden"
-                {...register("avatar", { validate: (f) => validateFile(f as File | null) })}
-              />
-              {formState.errors.avatar && (
+              {formState.errors.avatarFile && (
                 <p className="text-xs text-red-500">
-                  {String(formState.errors.avatar.message)}
+                  {String(formState.errors.avatarFile.message)}
                 </p>
               )}
 
