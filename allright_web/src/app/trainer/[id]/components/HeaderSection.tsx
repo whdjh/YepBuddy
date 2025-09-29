@@ -3,13 +3,13 @@ import { Button } from "@/components/ui/button";
 
 export default function HeaderSection({
   title,
-  description,
+  location,
   rating = 5,
   reviewCount = 100,
   voteCount = 100,
 }: {
   title: string;
-  description: string;
+  location: string;
   rating?: number;
   reviewCount?: number;
   voteCount?: number;
@@ -18,9 +18,9 @@ export default function HeaderSection({
     <div className="flex justify-between">
       <div className="flex gap-10">
         <div className="size-30 tab:size-40 rounded-xl shadow-xl bg-red-100/50" />
-        <div>
+        <div className="flex flex-col gap-1">
           <h1 className="text-2xl tab:text-5xl font-bold">{title}</h1>
-          <p className="text-lg tab:text-2xl font-light">{description}</p>
+          <p className="text-lg tab:text-2xl font-light">{location}</p>
           <div className="tab:mt-5 flex flex-col tab:flex-row tab:items-center gap-0 tab:gap-2">
             <div className="flex text-yellow-400">
               {Array.from({ length: 5 }).map((_, i) => (

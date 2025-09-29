@@ -27,7 +27,7 @@ export default function ProductReviewsPage() {
               avatarUrl="https://github.com/gym.png"
               rating={5}
               content="너무 친절히 알려줘요"
-              postedAt="10 days ago"
+              postedAt="10일전"
             />
           ))}
         </div>
