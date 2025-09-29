@@ -1,27 +1,95 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { RetroGrid } from "@/components/ui/retro-grid";
+import { BellIcon, CalendarIcon, MonitorSpeakerIcon, TabletSmartphoneIcon } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
+import { Marquee } from "@/components/ui/marquee";
+import ProteinCard from "@/components/common/Card/ProteinCard";
+
+const utc = (y: number, m: number, d: number) =>
+  new Date(Date.UTC(y, m, d, 0, 0, 0));
+
+const features = [
+  {
+    Icon: MonitorSpeakerIcon,
+    name: "운동템포(PC)",
+    description: "세밀한 템포조절을 해보세요!",
+    href: "/tempoauto",
+    cta: "운동템포 페이지로 이동하기",
+    className: "col-span-3 tab:col-span-1",
+    background: null,
+  },
+  {
+    Icon: BellIcon,
+    name: "단백질 비교",
+    description: "실시간 단백질 가격 비교를 해보세요!",
+    href: "/protein",
+    cta: "단백질 가격 비교 페이지로 이동하기",
+    className: "col-span-3 tab:col-span-2",
+    background: (
+      <Marquee
+        pauseOnHover
+        className="absolute top-10 [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] [--duration:20s]"
+      >
+        {Array.from({ length: 5 }).map((_, index) => (
+          <div
+            key={`post-1-${index}`}
+            className="shrink-0 w-[320px] tab:w-[360px]"
+          >
+            <div className="h-full overflow-hidden rounded-2xl border border-white/10">
+              <ProteinCard
+                key={`protein-${index}`}
+                id={`protein-${index}`}
+                title={`단백질 카드 ${index + 1}`}
+                author={`사용자${index + 1}`}
+                authorAvatarUrl=""
+                category={
+                  ["웨이", "아이솔레이트", "게이너", "비교", "가성비"][index % 5]
+                }
+                postedAt={`2025-09-${String(index + 1).padStart(2, "0")}`}
+                expanded={false}
+                votesCount={(index + 1) * 3}
+              />
+            </div>
+          </div>
+        ))}
+      </Marquee>
+    ),
+  },
+  {
+    Icon: CalendarIcon,
+    name: "운동일지",
+    description: "운동일지를 확인해보세요!",
+    href: "/diary",
+    cta: "운동일지 페이지로 이동하기",
+    className: "col-span-3 tab:col-span-2",
+    background: (
+      <Calendar
+        mode="single"
+        selected={utc(2022, 4, 11)}
+        className="absolute top-10 right-80 origin-top scale-75 rounded-md border [mask-image:linear-gradient(to_top,transparent_40%,#000_100%)] transition-all duration-300 ease-out group-hover:scale-90"
+      />
+    ),
+  },
+  {
+    Icon: TabletSmartphoneIcon,
+    name: "운동템포(MOB)",
+    description: "간단한 카운팅을 해보세요!",
+    className: "col-span-3 tab:col-span-1",
+    href: "/tempomanual",
+    cta: "운동템포 페이지로 이동하기",
+    background: null,
+  },
+] as const;
 
 export default function AssistanceSection() {
   return (
     <BlurFade delay={0.25} duration={1} inView>
-      <div className="rounded-lg border border-white/10 overflow-hidden -mt-20 shadow-xl group">
-        <div className="relative flex h-[500px] w-full flex-col items-center justify-center overflow-hidden">
-          <div className="flex relative z-10 bg-background w-full justify-center items-center flex-col -mt-24">
-            <h2 className="tab:text-5xl text-3xl font-bold leading-tight tracking-tight ">
-              파트너 최신글
-            </h2>
-            <p className="max-w-2xl tab:text-xl font-light text-foreground">
-              운동 파트너를 구해보세요!
-            </p>
-            <Button variant="link" asChild className="text-lg p-0">
-              <Link href="/ideas">파트너 전체 보기 &rarr;</Link>
-            </Button>
-          </div>
-          <RetroGrid />
-        </div>
-        {/** 운동보조(bentogrid: 상좌: 운동템포 상우: 단백질카드 하좌: 운동일지 하우: 운동템포) */ }
+      <div className="rounded-lg border border-white/10 overflow-hidden shadow-xl group">
+        <BentoGrid>
+          {features.map((feature) => (
+            <BentoCard key={feature.name} {...feature} />
+          ))}
+        </BentoGrid>
       </div>
     </BlurFade>
   );
