@@ -1,9 +1,9 @@
 import { ChevronUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import MainSection from "@/app/community/[id]/components/MainSection";
-import CommentSection from "@/app/community/[id]/components/CommentSection";
-import HeaderSection from "@/app/community/[id]/components/HeaderSection";
-import ProfileCard from "@/app/community/[id]/components/ProfileCard";
+import MainSection from "@/app/_dummypage/community/[id]/components/MainSection";
+import CommentSection from "@/app/_dummypage/community/[id]/components/CommentSection";
+import HeaderSection from "@/app/_dummypage/community/[id]/components/HeaderSection";
+import ProfileCard from "@/app/_dummypage/community/[id]/components/ProfileCard";
 
 export default function PostPage() {
   return (
@@ -19,7 +19,7 @@ export default function PostPage() {
             </Button>
             <div className="min-w-0 tab:space-y-20 space-y-5">
               <MainSection />
-              <hr className="w-full border border-white/10"/>
+              <hr className="w-full border border-white/10" />
               <CommentSection />
             </div>
           </div>
