@@ -70,6 +70,7 @@ export default function FormSection() {
             <h2 className="text-2xl font-semibold">프로필 수정하기</h2>
 
             <div className="flex flex-col gap-5">
+              {/* 공통 필드: 회원/트레이너 모두 */}
               <InputPair
                 label="이름"
                 description="이름을 입력하세요"
@@ -89,6 +90,15 @@ export default function FormSection() {
                   { label: "회원", value: "member" },
                 ]}
               />
+              <InputPair
+                label="자기소개"
+                description="자기소개를 적어보세요."
+                required
+                id="description"
+                name="description"
+                isTextArea
+                rules={{ required: "자기소개를 입력하세요" }}
+              />
 
               {/* 트레이너 전용 필드 */}
               {isTrainer && (
@@ -103,9 +113,10 @@ export default function FormSection() {
                     placeholder="근무지를 입력하세요"
                     rules={{ required: "근무지를 입력하세요" }}
                   />
+                  {/* 데이터값 보낼 때, 콤마를 기점으로 보내기 */}
                   <InputPair
                     label="경력"
-                    description="경력을 적어보세요."
+                    description="콤마(,)로 구분하여 경력을 적어주세요."
                     required
                     id="history"
                     name="history"
@@ -114,7 +125,7 @@ export default function FormSection() {
                   />
                   <InputPair
                     label="자격증"
-                    description="자격증을 적어보세요."
+                    description="콤마(,)로 구분하여 자격증을 적어주세요."
                     required
                     id="qualifications"
                     name="qualifications"
@@ -123,17 +134,6 @@ export default function FormSection() {
                   />
                 </>
               )}
-
-              {/* 공통 필드: 회원/트레이너 모두 */}
-              <InputPair
-                label="자기소개"
-                description="자기소개를 적어보세요."
-                required
-                id="description"
-                name="description"
-                isTextArea
-                rules={{ required: "자기소개를 입력하세요" }}
-              />
             </div>
           </div>
 
