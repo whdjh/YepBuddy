@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DotIcon, EyeIcon, HeartIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface GymCardProps {
   id: string;

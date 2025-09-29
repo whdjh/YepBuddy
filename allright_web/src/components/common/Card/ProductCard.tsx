@@ -1,4 +1,3 @@
-// TODO: 모바일일때 크기 조정이 필요
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {

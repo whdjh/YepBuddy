@@ -87,27 +87,9 @@ const menus: Menu[] = [
     ],
   },
   {
-    name: "파트너",
-    href: "/partner",
-    highlightLast: true,
-    items: [
-      { name: "온라인 파트너", description: "온라인으로 함께 운동할 사람", href: "/partner?location=remote" },
-      { name: "정기 모임", description: "정기적으로 함께 운동할 사람", href: "/partner?type=full-time" },
-      { name: "자유 모임", description: "시간 맞춰 자유롭게 함께 운동할 사람", href: "/partner?type=freelance" },
-      { name: "1회 체험", description: "가볍게 한 번 함께 운동할 사람", href: "/partner?type=internship" },
-      { name: "파트너 모집", description: "함께할 사람 직접 모집", href: "/partner/submit" },
-    ],
+    name: "단백질비교",
+    href: "/protein",
   },
-  {
-    name: "커뮤니티",
-    href: "/community",
-    items: [
-      { name: "모든 글", description: "커뮤니티 글 전체 목록", href: "/community" },
-      { name: "실시간 인기 글", description: "지금 가장 주목받는 글", href: "/community?sort=trending" },
-      { name: "최신 글", description: "최근 게시된 글", href: "/community?sort=new" },
-      { name: "글쓰기", description: "운동 이야기 공유", href: "/community/submit" },
-    ],
-  }
 ];
 
 export default function Gnb({
