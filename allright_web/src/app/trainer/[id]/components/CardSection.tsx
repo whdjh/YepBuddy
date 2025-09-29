@@ -11,7 +11,7 @@ export default function CardSection() {
       <div className="grid grid-cols-2 tab:grid-cols-4 gap-5">
         {[
           { key: "program", title: "프로그램 유형", value: "1:1 PT" },
-          { key: "location", title: "진행 방식", value: "센터 방문" },
+          { key: "proceed", title: "진행 방식", value: "센터 방문" },
           { key: "schedule", title: "가능 시간대", value: "방문 후 확정" },
           { key: "price", title: "가격", value: "10회 75만원" },
         ].map((item) => (
@@ -29,6 +29,7 @@ export default function CardSection() {
 
         <Card className="bg-transparent col-span-2">
           <CardHeader>
+            {/** intro */}
             <CardTitle className="text-sm font-medium text-muted-foreground">
               모집 대상
             </CardTitle>
@@ -49,8 +50,8 @@ export default function CardSection() {
 
         <Card className="bg-transparent col-span-2">
           <CardHeader>
+            {/** description */}
             <CardTitle className="text-sm font-medium text-muted-foreground">
-
               프로그램 소개
             </CardTitle>
           </CardHeader>

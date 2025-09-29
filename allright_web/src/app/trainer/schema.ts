@@ -8,21 +8,31 @@ import {
   text,
   timestamp,
   uuid,
+  pgEnum,
 } from "drizzle-orm/pg-core";
 import { profiles } from "@/app/users/[username]/schema";
 import { sql } from "drizzle-orm";
 
-export const products = pgTable("products", {
+const programs = pgEnum("program", ["1:1 PT", "그룹 PT(2-3인)"]);
+const proceeds = pgEnum("proceed", ["센터 방문", "방문 PT"]);
+
+
+export const trainers = pgTable("trainers", {
   product_id: bigint({ mode: "number" })
     .primaryKey()
     .generatedAlwaysAsIdentity(),
-  name: text().notNull(),
-  description: text().notNull(),
-  location: text(),
-  history: text(),
-  qualifications: text().notNull(),
+  
   avatarFile: text(),
+  name: text().notNull(),
+  location: text(),
+
+  program: programs().default("1:1 PT").notNull(),
+  proceed: proceeds().default("센터 방문").notNull(),
+  schedule: text().notNull(),
+  intro: text().notNull(),
+  description: text().notNull(),
   stats: jsonb().notNull().default({ views: 0, reviews: 0 }),
+
   profile_id: uuid()
     .references(() => profiles.profile_id, { onDelete: "cascade" })
     .notNull(),
@@ -30,6 +40,7 @@ export const products = pgTable("products", {
     () => categories.category_id,
     { onDelete: "set null" }
   ),
+
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 });
@@ -44,11 +55,11 @@ export const categories = pgTable("categories", {
   updated_at: timestamp().notNull().defaultNow(),
 });
 
-export const product_upvotes = pgTable(
-  "product_upvotes",
+export const trainer_upvotes = pgTable(
+  "trainer_upvotes",
   {
     product_id: bigint({ mode: "number" }).references(
-      () => products.product_id,
+      () => trainers.product_id,
       {
         onDelete: "cascade",
       }
@@ -67,7 +78,7 @@ export const reviews = pgTable(
       .primaryKey()
       .generatedAlwaysAsIdentity(),
     product_id: bigint({ mode: "number" }).references(
-      () => products.product_id,
+      () => trainers.product_id,
       {
         onDelete: "cascade",
       }

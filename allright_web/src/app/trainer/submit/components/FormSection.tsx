@@ -4,11 +4,10 @@ import InputPair from "@/components/common/InputPair";
 import SelectPair from "@/components/common/SelectPair";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { PROGRAM_TYPES, LOCATION_MODES } from "@/constants/team";
 
 interface FormValues {
-  programType: string;
-  location: string;
+  program: string;
+  proceed: string;
   schedule: string;
   price: string;
   intro: string;
@@ -18,8 +17,8 @@ interface FormValues {
 export default function FormSection() {
   const methods = useForm<FormValues>({
     defaultValues: {
-      programType: "",
-      location: "",
+      program: "",
+      proceed: "",
       schedule: "",
       price: "",
       intro: "",
@@ -40,10 +39,10 @@ export default function FormSection() {
           <SelectPair
             label="프로그램 유형"
             description="프로그램 유형을 선택하세요 (예: 1:1, 그룹, 온라인)"
-            name="programType"
+            name="program"
             required
             placeholder="프로그램 유형"
-            options={PROGRAM_TYPES.map((v) => ({ label: v, value: v }))}
+            options={["1:1 PT", "그룹 PT(2-3인)"].map((v) => ({ label: v, value: v }))}
           />
 
           <SelectPair
@@ -52,7 +51,7 @@ export default function FormSection() {
             name="location"
             required
             placeholder="장소 선택"
-            options={LOCATION_MODES.map((v) => ({ label: v, value: v }))}
+            options={["센터 방문", "방문 PT"].map((v) => ({ label: v, value: v }))}
           />
 
           <InputPair

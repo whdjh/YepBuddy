@@ -1,21 +1,21 @@
 {
-  "id": "281cfd96-b25d-45e4-b3b5-8907d9219513",
-  "prevId": "4f17c3ff-7427-4bba-a7ef-f347c4b11bd5",
+  "id": "0ad51cf1-d366-4307-a4a5-bd95aa3971e7",
+  "prevId": "1cec0009-496f-4d3b-a2f8-847361ebd93f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.partners": {
-      "name": "partners",
+    "public.categories": {
+      "name": "categories",
       "schema": "",
       "columns": {
-        "partner_id": {
-          "name": "partner_id",
+        "category_id": {
+          "name": "category_id",
           "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "partners_partner_id_seq",
+            "name": "categories_category_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",
@@ -25,72 +25,15 @@
             "cycle": false
           }
         },
-        "position": {
-          "name": "position",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "overview": {
-          "name": "overview",
+        "description": {
+          "name": "description",
           "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "responsibilities": {
-          "name": "responsibilities",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "qualifications": {
-          "name": "qualifications",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "benefits": {
-          "name": "benefits",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "gym_name": {
-          "name": "gym_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "gym_logo": {
-          "name": "gym_logo",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "gym_location": {
-          "name": "gym_location",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "partner_type": {
-          "name": "partner_type",
-          "type": "partner_type",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "partner_location": {
-          "name": "partner_location",
-          "type": "location",
-          "typeSchema": "public",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "timeRange": {
-          "name": "timeRange",
-          "type": "time_range",
-          "typeSchema": "public",
           "primaryKey": false,
           "notNull": true
         },
@@ -111,6 +54,308 @@
       },
       "indexes": {},
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.reviews": {
+      "name": "reviews",
+      "schema": "",
+      "columns": {
+        "review_id": {
+          "name": "review_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "reviews_review_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "product_id": {
+          "name": "product_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rating": {
+          "name": "rating",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "review": {
+          "name": "review",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reviews_product_id_trainers_product_id_fk": {
+          "name": "reviews_product_id_trainers_product_id_fk",
+          "tableFrom": "reviews",
+          "tableTo": "trainers",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "product_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "reviews_profile_id_profiles_profile_id_fk": {
+          "name": "reviews_profile_id_profiles_profile_id_fk",
+          "tableFrom": "reviews",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "rating_check": {
+          "name": "rating_check",
+          "value": "\"reviews\".\"rating\" BETWEEN 1 AND 5"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.trainer_upvotes": {
+      "name": "trainer_upvotes",
+      "schema": "",
+      "columns": {
+        "product_id": {
+          "name": "product_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "trainer_upvotes_product_id_trainers_product_id_fk": {
+          "name": "trainer_upvotes_product_id_trainers_product_id_fk",
+          "tableFrom": "trainer_upvotes",
+          "tableTo": "trainers",
+          "columnsFrom": [
+            "product_id"
+          ],
+          "columnsTo": [
+            "product_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "trainer_upvotes_profile_id_profiles_profile_id_fk": {
+          "name": "trainer_upvotes_profile_id_profiles_profile_id_fk",
+          "tableFrom": "trainer_upvotes",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "trainer_upvotes_product_id_profile_id_pk": {
+          "name": "trainer_upvotes_product_id_profile_id_pk",
+          "columns": [
+            "product_id",
+            "profile_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.trainers": {
+      "name": "trainers",
+      "schema": "",
+      "columns": {
+        "product_id": {
+          "name": "product_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "trainers_product_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "avatarFile": {
+          "name": "avatarFile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "program": {
+          "name": "program",
+          "type": "program",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'1:1 PT'"
+        },
+        "proceed": {
+          "name": "proceed",
+          "type": "proceed",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'센터 방문'"
+        },
+        "schedule": {
+          "name": "schedule",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "intro": {
+          "name": "intro",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stats": {
+          "name": "stats",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"views\":0,\"reviews\":0}'::jsonb"
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "trainers_profile_id_profiles_profile_id_fk": {
+          "name": "trainers_profile_id_profiles_profile_id_fk",
+          "tableFrom": "trainers",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "trainers_category_id_categories_category_id_fk": {
+          "name": "trainers_category_id_categories_category_id_fk",
+          "tableFrom": "trainers",
+          "tableTo": "categories",
+          "columnsFrom": [
+            "category_id"
+          ],
+          "columnsTo": [
+            "category_id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -279,64 +524,9 @@
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
-    },
-    "auth.users": {
-      "name": "users",
-      "schema": "auth",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
-      "checkConstraints": {},
-      "isRLSEnabled": false
     }
   },
   "enums": {
-    "public.location": {
-      "name": "location",
-      "schema": "public",
-      "values": [
-        "remote",
-        "in-person",
-        "hybrid"
-      ]
-    },
-    "public.partner_type": {
-      "name": "partner_type",
-      "schema": "public",
-      "values": [
-        "full-time",
-        "freelance",
-        "internship"
-      ]
-    },
-    "public.time_range": {
-      "name": "time_range",
-      "schema": "public",
-      "values": [
-        "00:00 - 02:00",
-        "02:00 - 04:00",
-        "04:00 - 06:00",
-        "06:00 - 08:00",
-        "08:00 - 10:00",
-        "10:00 - 12:00",
-        "12:00 - 14:00",
-        "14:00 - 16:00",
-        "16:00 - 18:00",
-        "18:00 - 20:00",
-        "20:00 - 22:00",
-        "22:00 - 24:00"
-      ]
-    },
     "public.role": {
       "name": "role",
       "schema": "public",

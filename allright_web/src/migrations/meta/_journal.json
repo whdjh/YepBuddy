@@ -5,15 +5,15 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1758647574302,
-      "tag": "0000_hard_vargas",
+      "when": 1759168060825,
+      "tag": "0000_narrow_jack_flag",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1759145458810,
-      "tag": "0001_redundant_war_machine",
+      "when": 1759168095088,
+      "tag": "0001_safe_shocker",
       "breakpoints": true
     }
   ]
