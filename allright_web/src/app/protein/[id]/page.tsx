@@ -1,5 +1,5 @@
-import HeaderSection from "./components/HeaderSection";
-import MainSection from "./components/MainSection";
+import HeaderSection from "@/app/protein/[id]/components/HeaderSection";
+import MainSection from "@/app/protein/[id]/components/MainSection";
 
 export default function ProteinId() {
   return (

@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { ChevronDownIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +9,6 @@ import {
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { SORT_OPTIONS, PERIOD_OPTIONS } from "@/constants/community";
 
 interface HeaderSectionProps {
   pathname: string;
@@ -48,7 +45,7 @@ export function HeaderSection({
                   setParam(updates);
                 }}
               >
-                {SORT_OPTIONS.map((option) => (
+                {["가격이 높은순", "가격이 낮은순"].map((option) => (
                   <DropdownMenuRadioItem
                     key={option}
                     value={option}
@@ -60,33 +57,6 @@ export function HeaderSection({
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-
-          {sorting === "인기" && (
-            <DropdownMenu>
-              <DropdownMenuTrigger className="flex items-center gap-1">
-                <span className="text-sm capitalize">{period}</span>
-                <ChevronDownIcon className="size-5" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuRadioGroup
-                  value={period}
-                  onValueChange={(value) => {
-                    setParam({ period: value });
-                  }}
-                >
-                  {PERIOD_OPTIONS.map((option) => (
-                    <DropdownMenuRadioItem
-                      key={option}
-                      value={option}
-                      className="capitalize cursor-pointer"
-                    >
-                      {option}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
         </div>
 
         <form action={pathname} className="w-2/3">

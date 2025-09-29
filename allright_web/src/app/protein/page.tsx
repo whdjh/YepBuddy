@@ -3,10 +3,10 @@
 import { Hero } from "@/components/common/Hero";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, Suspense } from "react";
-import { HeaderSection } from "./components/HeaderSection";
-import { CardSection } from "./components/CardSection";
-import { TopicSection } from "./components/TopicSection";
-import { mockPosts } from "@/mock/proteinCardData";
+import { HeaderSection } from "@/app/protein/components/HeaderSection";
+import { CardSection } from "@/app/protein/components/CardSection";
+import { TopicSection } from "@/app/protein//components/TopicSection";
+import { mockProteins } from "@/mock/proteinCardData";
 
 export default function Protein() {
   return (
@@ -21,7 +21,7 @@ function ProteinInner() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const sorting = searchParams.get("sorting") ?? "최신순";
+  const sorting = searchParams.get("sorting") ?? "가격이 낮은순";
   const period = searchParams.get("period") ?? "all";
   const q = searchParams.get("q") ?? "";
 
@@ -60,7 +60,7 @@ function ProteinInner() {
           />
 
           <div className="space-y-10">
-            <CardSection cards={mockPosts} />
+            <CardSection cards={mockProteins} />
           </div>
         </div>
 

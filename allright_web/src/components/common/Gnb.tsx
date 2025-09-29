@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Logo from "@/asset/ic/ic_logo.svg";
+import Logo from "../../../public/ic_logo.svg";
 import {
   NavigationMenu,
   NavigationMenuContent,

@@ -1,6 +1,6 @@
 import { ProteinCardProps } from "@/types/Card";
 
-export const mockPosts: ProteinCardProps[] = [
+export const mockProteins: ProteinCardProps[] = [
   {
     id: "1",
     title: "마이프로틴 WPC",
