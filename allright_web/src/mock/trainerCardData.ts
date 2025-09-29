@@ -1,6 +1,5 @@
 import type { TrainerCardProps } from "@/types/Card";
 
-// TODO: API로 교체 예정
 export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "1",

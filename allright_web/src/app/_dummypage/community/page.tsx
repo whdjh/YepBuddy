@@ -6,7 +6,7 @@ import { useCallback, Suspense } from "react";
 import { HeaderSection } from "@/app/_dummypage/community/components/HeaderSection";
 import { CardSection } from "@/app/_dummypage/community/components/CardSection";
 import { TopicSection } from "@/app/_dummypage/community/components/TopicSection";
-import { mockPosts } from "@/mock/postCardData";
+import { mockPosts } from "@/mock/proteinCardData";
 
 export default function Community() {
   return (

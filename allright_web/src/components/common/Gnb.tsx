@@ -58,6 +58,19 @@ type Menu = {
 
 const menus: Menu[] = [
   {
+    name: "운동템포",
+    href: "/tempoauto",
+    highlightLast: false,
+    items: [
+      { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
+    ],
+  },
+  {
+    name: "운동일지",
+    href: "/diary",
+  },
+  {
     name: "트레이너",
     href: "/trainer",
     highlightLast: true,
@@ -72,19 +85,6 @@ const menus: Menu[] = [
   {
     name: "헬스장",
     href: "/gym",
-  },
-  {
-    name: "운동일지",
-    href: "/diary",
-  },
-  {
-    name: "운동템포",
-    href: "/tempoauto",
-    highlightLast: false,
-    items: [
-      { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
-      { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
-    ],
   },
   {
     name: "단백질비교",
