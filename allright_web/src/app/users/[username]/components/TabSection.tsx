@@ -2,14 +2,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import About from "@/app/users/[username]/components/About";
-import Post from "@/app/users/[username]/components/Post";
+import WishProtein from "@/app/users/[username]/components/WishProtein";
 
 export default function TabSection({
   username,
   activeTab,
 }: {
   username: string;
-  activeTab: "abouts" | "posts";
+  activeTab: "abouts" | "wishs";
 }) {
   return (
     <div className="m-6">
@@ -30,17 +30,17 @@ export default function TabSection({
           asChild
           variant="outline"
           className={cn(
-            activeTab === "posts" && "bg-white/10 text-accent-foreground"
+            activeTab === "wishs" && "bg-white/10 text-accent-foreground"
           )}
-          aria-current={activeTab === "posts" ? "page" : undefined}
+          aria-current={activeTab === "wishs" ? "page" : undefined}
           role="tab"
         >
-          <Link href={`/users/${username}?tab=posts`}>쓴글 목록</Link>
+          <Link href={`/users/${username}?tab=wishs`}>쓴글 목록</Link>
         </Button>
       </div>
 
       <div className="mt-6">
-        {activeTab === "abouts" ? <About /> : <Post />}
+        {activeTab === "abouts" ? <About /> : <WishProtein />}
       </div>
     </div>
   );

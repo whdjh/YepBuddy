@@ -30,6 +30,7 @@ export default function HeaderSection() {
             <Button variant="outline" asChild>
               <Link href="/my/settings">프로필 수정</Link>
             </Button>
+            <Badge>트레이너/회원</Badge>
           </div>
           <div className="flex gap-5">
             <Button variant="outline">팔로우</Button>
@@ -50,10 +51,6 @@ export default function HeaderSection() {
               </DialogContent>
             </Dialog>
           </div>
-        </div>
-        <div className="flex flex-col tab:flex-row gap-2 items-center">
-          <span className="text-xs tab:text-sm text-muted-foreground">@wngns9807</span>
-          <Badge variant={"secondary"}>등 장인</Badge>
         </div>
       </div>
     </div>
