@@ -4,17 +4,15 @@ export default function MainSection() {
   return (
     <div className="space-y-2">
       <h2 className="text-3xl font-bold">
-        등운동은 어떤게 제일 좋나요?
+        신타6
       </h2>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>@wngns</span>
+        <span>초코맛</span>
         <DotIcon className="size-5" />
-        <span>12시간전</span>
-        <DotIcon className="size-5" />
-        <span>0개의 응답</span>
+        <span>2.5kg</span>
       </div>
       <p className="text-muted-foreground max-w-full whitespace-normal [overflow-wrap:anywhere]">
-        등 운동을 하는데 너무 안되서 고민이야. 어떤 등운동이 등 기둥을 만드는데 효과적일까? 자세히알려줘!!자세히알려줘!!자세히알려줘!!자세히알려줘!!자세히알려줘!!
+        지원예정
       </p>
     </div>
   );

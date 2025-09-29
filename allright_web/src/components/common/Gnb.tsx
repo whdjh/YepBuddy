@@ -87,7 +87,7 @@ const menus: Menu[] = [
     href: "/gym",
   },
   {
-    name: "단백질비교",
+    name: "단백질",
     href: "/protein",
   },
 ];

@@ -1,4 +1,4 @@
-import PostCard from "@/components/common/Card/ProteinCard";
+import ProteinCard from "@/components/common/Card/ProteinCard";
 import { ProteinCardProps } from "@/types/Card";
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
@@ -15,16 +15,13 @@ export function CardSection({ cards }: CardSectionProps) {
     <VirtuoInfinityScroll
       list={cards}
       item={(card) => (
-        <PostCard
+        <ProteinCard
           key={card.id}
           id={card.id}
           title={card.title}
-          author={card.author}
+          weigth={card.weigth}
           authorAvatarUrl={card.authorAvatarUrl}
-          category={card.category}
-          postedAt={card.postedAt}
-          votesCount={card.votesCount}
-          expanded
+          topic={card.topic}
         />
       )}
       emptyText="검색 결과가 없습니다."

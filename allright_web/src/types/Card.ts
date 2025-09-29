@@ -18,10 +18,7 @@ export interface GymCardProps {
 export interface ProteinCardProps {
   id: string;
   title: string;
-  author: string;
+  weigth: string;
   authorAvatarUrl: string;
-  category: string;
-  postedAt: string;
-  expanded?: boolean;
-  votesCount?: number;
+  topic: string;
 }

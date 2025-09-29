@@ -3,20 +3,20 @@
 import { Hero } from "@/components/common/Hero";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, Suspense } from "react";
-import { HeaderSection } from "@/app/_dummypage/community/components/HeaderSection";
-import { CardSection } from "@/app/_dummypage/community/components/CardSection";
-import { TopicSection } from "@/app/_dummypage/community/components/TopicSection";
+import { HeaderSection } from "./components/HeaderSection";
+import { CardSection } from "./components/CardSection";
+import { TopicSection } from "./components/TopicSection";
 import { mockPosts } from "@/mock/proteinCardData";
 
-export default function Community() {
+export default function Protein() {
   return (
     <Suspense fallback={null}>
-      <CommunityInner />
+      <ProteinInner />
     </Suspense>
   );
 }
 
-function CommunityInner() {
+function ProteinInner() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -47,11 +47,9 @@ function CommunityInner() {
 
   return (
     <div className="p-2 tab:p-5 space-y-5 tab:space-y-20">
-      <Hero title="커뮤니티 글" subtitle="커뮤니티 글 목록" />
+      <Hero title="프로틴" subtitle="프로틴 목록" />
 
-      {/* 소형 1열, tab 이상 6열 */}
       <div className="grid grid-cols-1 tab:grid-cols-6 items-start gap-40 p-2 tab:p-5">
-        {/* 메인: 소형 전체폭, tab 이상 4칸 */}
         <div className="col-span-full tab:col-span-4 space-y-10">
           <HeaderSection
             pathname={pathname}
@@ -66,10 +64,9 @@ function CommunityInner() {
           </div>
         </div>
 
-        {/* 토픽: 소형 숨김, tab 이상 표시(2칸) */}
         <div className="hidden tab:block tab:col-span-2">
           <TopicSection
-            topics={["토픽1", "토픽2", "토픽3", "토픽4", "토픽5"]}
+            topics={["WPC", "WPI", "WPC+WPI", "카제인"]}
             makeHref={makeHref}
           />
         </div>

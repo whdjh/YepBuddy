@@ -12,26 +12,26 @@ import {
 
 export default function HeaderSection() {
   const { id } = useParams();
-  
+
   return (
     <Breadcrumb>
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/community">커뮤니티</Link>
+            <Link href="/protein">단백질</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/community?topic=topic1">토픽1</Link>
+            <Link href="/protein?topic=WPI">WPI</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href={`/community/${id}`}>
-              등운동은 어떤게 제일 좋나요?
+            <Link href={`/protein/${id}`}>
+              신타6
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
