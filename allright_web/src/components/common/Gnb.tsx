@@ -96,23 +96,17 @@ const menus: Menu[] = [
     href: "/ideas",
   },
   {
-    name: "회원모집",
-    href: "/teams",
-    highlightLast: false,
-    items: [
-      { name: "모집공고", description: "회원 모집 공고 목록", href: "/teams" },
-      { name: "글쓰기", description: "회원 모집 글 작성", href: "/teams/submit" },
-    ],
-  },
-  {
-    name: "운동보조",
+    name: "운동템포",
     href: "/tempoauto",
-    highlightLast: true,
+    highlightLast: false,
     items: [
       { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
       { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
-      { name: "운동일지", description: "캘린더 형식 운동 기록", href: "/diary" },
     ],
+  },
+  {
+    name: "운동일지",
+    href: "/diary",
   },
 ];
 
