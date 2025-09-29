@@ -63,10 +63,27 @@ const menus: Menu[] = [
     highlightLast: true,
     items: [
       { name: "인기 트레이너", description: "가장 인기 있는 트레이너", href: "/trainer" },
-      { name: "카테고리별 트레이너", description: "카테고리별 트레이너 목록", href: "/trainer/categories" },
+      { name: "헬스장별 트레이너", description: "헬스장별 트레이너 목록", href: "/trainer/categories" },
       { name: "트레이너 검색", description: "이름으로 트레이너 검색", href: "/trainer/search" },
       { name: "트레이너 등록", description: "트레이너로 내 프로필 등록", href: "/trainer/submit" },
       { name: "트레이너 홍보", description: "내 활동 홍보", href: "/trainer/promote" },
+    ],
+  },
+  {
+    name: "IdeasGPT",
+    href: "/ideas",
+  },
+  {
+    name: "운동일지",
+    href: "/diary",
+  },
+  {
+    name: "운동템포",
+    href: "/tempoauto",
+    highlightLast: false,
+    items: [
+      { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
+      { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
     ],
   },
   {
@@ -90,24 +107,7 @@ const menus: Menu[] = [
       { name: "최신 글", description: "최근 게시된 글", href: "/community?sort=new" },
       { name: "글쓰기", description: "운동 이야기 공유", href: "/community/submit" },
     ],
-  },
-  {
-    name: "IdeasGPT",
-    href: "/ideas",
-  },
-  {
-    name: "운동템포",
-    href: "/tempoauto",
-    highlightLast: false,
-    items: [
-      { name: "PC 버전", description: "세밀한 템포 조절", href: "/tempoauto" },
-      { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
-    ],
-  },
-  {
-    name: "운동일지",
-    href: "/diary",
-  },
+  }
 ];
 
 export default function Gnb({
