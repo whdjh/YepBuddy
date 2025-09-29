@@ -17,11 +17,15 @@ export default function HeaderSection({
 }) {
   return (
     <div className="flex justify-between">
-      <Link href="/users/1" className="block">
       <div className="flex gap-10">
         <div className="size-30 tab:size-40 rounded-xl shadow-xl bg-red-100/50" />
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl tab:text-5xl font-bold">{title}</h1>
+          <div className="flex flex-col gap-1">
+          <Link
+            href="/users/1"
+            className="block text-2xl tab:text-5xl font-bold cursor-pointer hover:underline underline-offset-4 decoration-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/50 rounded-sm transition"
+          >
+            {title}
+          </Link>
           <p className="text-lg tab:text-2xl font-light">{location}</p>
           <div className="tab:mt-5 flex flex-col tab:flex-row tab:items-center gap-0 tab:gap-2">
             <div className="flex text-yellow-400">
@@ -38,7 +42,6 @@ export default function HeaderSection({
           </div>
         </div>
         </div>
-      </Link>
 
       <div className="flex gap-5 items-center">
         <Button size="lg" className="hidden tab:inline-flex text-lg h-14 px-10">
