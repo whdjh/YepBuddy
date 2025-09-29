@@ -37,17 +37,14 @@ const features = [
           >
             <div className="h-full overflow-hidden rounded-2xl border border-white/10">
               <ProteinCard
-                key={`protein-${index}`}
-                id={`protein-${index}`}
-                title={`단백질 카드 ${index + 1}`}
-                author={`사용자${index + 1}`}
+                key={`${index}`}
+                id={`${index}`}
+                title={`마이프로틴`}
+                weigth={`2.5kg`}
                 authorAvatarUrl=""
-                category={
-                  ["웨이", "아이솔레이트", "게이너", "비교", "가성비"][index % 5]
+                topic={
+                  ["WPC", "WPI", "WPC+WPI", "카제인"][index % 4]
                 }
-                postedAt={`2025-09-${String(index + 1).padStart(2, "0")}`}
-                expanded={false}
-                votesCount={(index + 1) * 3}
               />
             </div>
           </div>
