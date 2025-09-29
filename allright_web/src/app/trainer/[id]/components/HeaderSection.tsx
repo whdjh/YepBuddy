@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { StarIcon, ChevronUpIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,7 @@ export default function HeaderSection({
 }) {
   return (
     <div className="flex justify-between">
+      <Link href="/users/1" className="block">
       <div className="flex gap-10">
         <div className="size-30 tab:size-40 rounded-xl shadow-xl bg-red-100/50" />
         <div className="flex flex-col gap-1">
@@ -35,7 +37,8 @@ export default function HeaderSection({
             <span className="text-muted-foreground">{reviewCount} reviews</span>
           </div>
         </div>
-      </div>
+        </div>
+      </Link>
 
       <div className="flex gap-5 items-center">
         <Button size="lg" className="hidden tab:inline-flex text-lg h-14 px-10">

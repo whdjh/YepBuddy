@@ -11,9 +11,9 @@ export default function CardSection() {
       <div className="grid grid-cols-2 tab:grid-cols-4 gap-5">
         {[
           { key: "program", title: "프로그램 유형", value: "1:1 PT" },
-          { key: "mode", title: "진행 방식", value: "센터 방문" },
-          { key: "time", title: "가능 시간대", value: "평일 18:00–22:00, 토 10:00–13:00" },
-          { key: "price", title: "가격/정책", value: "10회 75만원, 유효 8주" },
+          { key: "location", title: "진행 방식", value: "센터 방문" },
+          { key: "schedule", title: "가능 시간대", value: "방문 후 확정" },
+          { key: "price", title: "가격", value: "10회 75만원" },
         ].map((item) => (
           <Card className="bg-transparent" key={item.key}>
             <CardHeader>
@@ -22,7 +22,7 @@ export default function CardSection() {
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0 font-bold text-lg tab:text-xl">
-              <p className="px-6 pb-6 pt-0">{item.value}</p>
+              <p className="px-6 pb-6 pt-0 text-sm tab:text-lg list-disc list-inside">{item.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -33,7 +33,7 @@ export default function CardSection() {
               모집 대상
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-0 font-bold text-lg tab:text-2xl">
+          <CardContent className="p-0 font-medium text-sm tab:text-lg">
             <ul className="text-sm tab:text-lg list-disc list-inside px-6 pb-6">
               {[
                 "체지방 감량 목표",
@@ -49,19 +49,16 @@ export default function CardSection() {
 
         <Card className="bg-transparent col-span-2">
           <CardHeader>
-            <CardTitle className="text-lg tab:text-2xl font-medium text-muted-foreground">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+
               프로그램 소개
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0 font-medium text-sm tab:text-lg">
             <div className="px-6 pb-6 space-y-3">
-              <p>
+              <p className="text-sm tab:text-lg list-disc list-inside">
                 체형교정/감량 특화 1:1 PT입니다. 프리웨이트 중심으로 기본 움직임 패턴을 교정하고,
                 주당 루틴과 식단 가이드를 함께 제공합니다. 처음 시작하시는 분도 안전하게 진행합니다.
-              </p>
-              <p className="text-base text-muted-foreground">
-                <span className="block"><strong>트레이너 소개:</strong> NASM-CPT, 5년 경력(체형교정/감량)</span>
-                <span className="block"><strong>연락:</strong> 카톡 @trainer_jh</span>
               </p>
             </div>
           </CardContent>

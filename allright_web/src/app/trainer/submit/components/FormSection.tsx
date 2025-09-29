@@ -1,154 +1,102 @@
 "use client";
 
-import { useState } from "react";
-import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
-import Image from "next/image";
-import { ImageIcon } from "lucide-react";
 import InputPair from "@/components/common/InputPair";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import SelectPair from "@/components/common/SelectPair";
+import { FormProvider, useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { PROGRAM_TYPES, LOCATION_MODES } from "@/constants/team";
 
 interface FormValues {
-  name: string;
-  tags: string;
+  programType: string;
+  location: string;
+  schedule: string;
+  price: string;
+  intro: string;
   description: string;
-  category: string;
-  icon: File | null;
 };
 
 export default function FormSection() {
   const methods = useForm<FormValues>({
-    mode: "all",
     defaultValues: {
-      name: "",
-      tags: "",
+      programType: "",
+      location: "",
+      schedule: "",
+      price: "",
+      intro: "",
       description: "",
-      category: "",
-      icon: null,
     },
+    mode: "onBlur",
   });
 
-  const { handleSubmit, setValue, setError, clearErrors } = methods;
-  const [iconPreview, setIconPreview] = useState<string | null>(null);
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-
-    if (!file) {
-      setIconPreview(null);
-      setValue("icon", null, { shouldValidate: true });
-      return;
-    }
-
-    const isOkType = ["image/png", "image/jpeg"].includes(file.type);
-    const isOkSize = file.size <= 1_000_000;
-
-    if (!isOkType) {
-      setError("icon", { message: "PNG 또는 JPEG 파일만 업로드하세요." });
-      return;
-    }
-    if (!isOkSize) {
-      setError("icon", { message: "파일 크기는 최대 1MB까지 허용됩니다." });
-      return;
-    }
-
-    clearErrors("icon");
-    setIconPreview(URL.createObjectURL(file));
-    setValue("icon", file, { shouldValidate: true });
-  };
-
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    // 여기서 서버 액션 호출/업로드 로직 연결
-    console.log("submit:", data);
-  };
+  const onSubmit = methods.handleSubmit((values) => {
+    console.log("submit:", values);
+    // TODO: 서버 전송
+  });
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-10 max-w-screen-lg mx-auto">
-        <div className="space-y-5">
-          <InputPair
-            name="name"
-            label="이름"
-            description="실명으로 입력해주세요"
-            placeholder="이름을 입력하세요"
-            rules={{ required: "이름은 필수 입력입니다." }}
-          />
-
-          <InputPair
-            name="tags"
-            label="태그"
-            description="태그 60자 이하"
-            placeholder="간결하게 표현할 태그를 입력하세요"
-            maxLength={60}
-          />
-
-          <InputPair
-            name="description"
-            label="자기소개"
-            description="300자 이내로 간단한 소개를 작성하세요."
-            isTextArea
-            maxLength={300}
+      <form onSubmit={onSubmit} className="max-w-screen-2xl flex flex-col items-center gap-10 mx-auto">
+        <div className="grid grid-cols-1 tab:grid-cols-3 w-full gap-10">
+          <SelectPair
+            label="프로그램 유형"
+            description="프로그램 유형을 선택하세요 (예: 1:1, 그룹, 온라인)"
+            name="programType"
+            required
+            placeholder="프로그램 유형"
+            options={PROGRAM_TYPES.map((v) => ({ label: v, value: v }))}
           />
 
           <SelectPair
-            label="카테고리"
-            description="카테고리를 선택하세요."
-            name="category"
+            label="진행 방식/장소"
+            description="진행 방식을 선택하세요 (예: 센터 방문, 방문 PT, 온라인)"
+            name="location"
             required
-            placeholder="카테고리를 고르세요"
-            options={[
-              { label: "가슴", value: "chest" },
-              { label: "등", value: "back" },
-              { label: "하체", value: "leg" },
-              { label: "어깨", value: "shoulder" },
-              { label: "팔", value: "arm" },
-            ]}
+            placeholder="장소 선택"
+            options={LOCATION_MODES.map((v) => ({ label: v, value: v }))}
           />
 
-          <Button type="submit" className="w-full" size="lg">
-            제출하기
-          </Button>
-        </div>
-
-        <div className="flex flex-col items-start space-y-2">
-          <div className="relative size-40 rounded-xl overflow-hidden border border-white/15 shadow-xl">
-            {iconPreview ? (
-              <Image
-                src={iconPreview}
-                alt="프로필 미리보기"
-                fill
-                sizes="160px"
-                className="object-cover"
-                unoptimized
-                priority
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/10 text-gray-300">
-                <ImageIcon className="size-8 opacity-70" />
-              </div>
-            )}
-          </div>
-
-          <Label className="flex flex-col items-start gap-1">
-            프로필 사진
-            <small className="text-muted-foreground">프로필 사진을 넣어주세요</small>
-          </Label>
-
-          <Input
-            type="file"
-            accept="image/png, image/jpeg"
-            className="w-1/2"
-            onChange={onFileChange}
+          <InputPair
+            label="가능 시간대"
+            description="가능한 요일과 시간을 입력하세요 (예: 평일 18–22시, 토 10–13시)"
+            name="schedule"
+            maxLength={120}
+            placeholder="예) 평일 18:00–22:00, 토 10:00–13:00"
+            rules={{ required: "필수 입력입니다." }}
           />
 
-          <div className="flex flex-col text-xs">
-            <span className="text-muted-foreground">추천 사이즈: 128x128px</span>
-            <span className="text-muted-foreground">허용 파일 포맷: PNG, JPEG</span>
-            <span className="text-muted-foreground">최대 파일 크기: 1MB</span>
-          </div>
+          <InputPair
+            label="가격"
+            description="가격 조건을 입력하세요 (예: 회당 가격)"
+            name="price"
+            maxLength={400}
+            placeholder="예) 10회 75만원"
+            rules={{ required: "필수 입력입니다." }}
+          />
+
+          <InputPair
+            label="모집대상"
+            description="모집 대상을 입력하세요 (예: 체형교정/감량, 주 2회 이상 참여가능, 초보자 환영, 자세 교정 위주)"
+            name="intro"
+            maxLength={400}
+            isTextArea
+            placeholder="예) NASM-CPT, 5년 경력(체형교정/감량)"
+            rules={{ required: "필수 입력입니다." }}
+          />
+
+          <InputPair
+            label="프로그램 소개"
+            description="프로그램 내용을 소개하세요 (예: 프로그램 목적, 특징, 진행 방식)"
+            name="description"
+            maxLength={400}
+            isTextArea
+            rules={{ required: "필수 입력입니다." }}
+          />
+
         </div>
+
+        <Button type="submit" className="w-full max-w-sm" size="lg">
+          트레이너 공고 올리기
+        </Button>
       </form>
     </FormProvider>
   );
