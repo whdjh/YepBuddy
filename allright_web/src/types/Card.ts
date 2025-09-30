@@ -18,7 +18,7 @@ export interface GymCardProps {
 export interface ProteinCardProps {
   id: string;
   title: string;
-  weigth: string;
+  weight: string;
   avatarFile: string;
   topic: string;
   taste: string;

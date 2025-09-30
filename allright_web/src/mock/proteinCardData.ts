@@ -4,7 +4,7 @@ export const mockProteins: ProteinCardProps[] = [
   {
     id: "1",
     title: "마이프로틴 WPC",
-    weigth: "2.5kg",
+    weight: "2.5kg",
     avatarFile: "",
     topic: "WPC",
     taste: "초코",
@@ -14,7 +14,7 @@ export const mockProteins: ProteinCardProps[] = [
   {
     id: "2",
     title: "마이프로틴 WPI",
-    weigth: "2.5kg",
+    weight: "2.5kg",
     avatarFile: "",
     topic: "WPI",
     taste: "초코",
@@ -24,7 +24,7 @@ export const mockProteins: ProteinCardProps[] = [
   {
     id: "3",
     title: "다이마타이즈 엘리트 카제인",
-    weigth: "2.5kg",
+    weight: "2.5kg",
     avatarFile: "",
     topic: "카제인",
     taste: "초코",
@@ -34,7 +34,7 @@ export const mockProteins: ProteinCardProps[] = [
   {
     id: "4",
     title: "옵티멈 골드",
-    weigth: "2.5kg",
+    weight: "2.5kg",
     avatarFile: "",
     topic: "식물성",
     taste: "초코",
@@ -44,7 +44,7 @@ export const mockProteins: ProteinCardProps[] = [
   {
     id: "5",
     title: "컴뱃",
-    weigth: "2.5kg",
+    weight: "2.5kg",
     avatarFile: "",
     topic: "WPI+WPC",
     taste: "초코",

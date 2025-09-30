@@ -19,7 +19,7 @@ export function CardSection({ cards }: CardSectionProps) {
           key={card.id}
           id={card.id}
           title={card.title}
-          weigth={card.weigth}
+          weight={card.weight}
           avatarFile={card.avatarFile}
           topic={card.topic}
           taste={card.taste}

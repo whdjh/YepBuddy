@@ -13,7 +13,7 @@ export const gyms = pgTable("gyms", {
   gym_id: bigint({ mode: "number" })
     .primaryKey()
     .generatedAlwaysAsIdentity(),
-  gym: text().notNull(),
+  title: text().notNull(),
   views: integer().notNull().default(0),
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),

@@ -11,7 +11,7 @@ import { ProteinCardProps } from "@/types/Card";
 export default function ProteinCard({
   id,
   title,
-  weigth,
+  weight,
   avatarFile,
   topic,
   taste,
@@ -32,7 +32,7 @@ export default function ProteinCard({
                 {title.length > 15 ? `${title.slice(0, 15)}...` : title}
               </CardTitle>
               <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
-                <span>{weigth}</span>
+                <span>{weight}</span>
                 <DotIcon className="size-5" />
                 <span>{topic}</span>
                 <DotIcon className="size-5" />
