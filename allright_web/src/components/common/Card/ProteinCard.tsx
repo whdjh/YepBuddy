@@ -1,35 +1,53 @@
+// TODO: 저점일때만 뱃지형식으로 보여지게
 import Link from "next/link";
 import {
   Card, CardHeader, CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { DotIcon } from "lucide-react";
+import { DotIcon, HeartIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { ProteinCardProps } from "@/types/Card";
 
 export default function ProteinCard({
   id,
   title,
   weigth,
-  authorAvatarUrl,
+  avatarFile,
   topic,
+  taste,
+  price,
+  likesCount,
 }: ProteinCardProps) {
   return (
     <Card className="bg-transparent hover:bg-[#26262c]">
       <Link href={`/protein/${id}`} className="block">
-        <CardHeader className="flex flex-row items-center gap-2">
-          <Avatar className="size-14">
-            <AvatarFallback>N</AvatarFallback>
-            {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
-          </Avatar>
-          <div className="space-y-2 whitespace-nowrap">
-            <CardTitle>
-              {title.length > 15 ? `${title.slice(0, 15)}...` : title}
-            </CardTitle>
-            <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
-              <span>{weigth}</span>
-              <DotIcon className="size-5" />
-              <span>{topic}</span>
-            </div>
+        <CardHeader className="flex justify-between items-center">
+          <div className="flex items-center gap-4">
+            <Avatar className="size-14">
+              <AvatarFallback>N</AvatarFallback>
+              {avatarFile && <AvatarImage src={avatarFile} />}
+            </Avatar>
+            <div className="space-y-2 whitespace-nowrap">
+              <CardTitle>
+                {title.length > 15 ? `${title.slice(0, 15)}...` : title}
+              </CardTitle>
+              <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
+                <span>{weigth}</span>
+                <DotIcon className="size-5" />
+                <span>{topic}</span>
+                <DotIcon className="size-5" />
+                <span>{taste}</span>
+              </div>
+              </div>
+          </div>
+          <div className="flex flex-col justify-end gap-3">
+            {/** 계산 로직 필요 */}
+            <span>그람당 가격</span>
+            <span>{price}</span>
+            <Button variant="outline" className="border border-white/10">
+              <HeartIcon className="w-4 h-4" />
+              <span>{likesCount}</span>
+            </Button>
           </div>
         </CardHeader>
       </Link>

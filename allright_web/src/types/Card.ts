@@ -19,6 +19,9 @@ export interface ProteinCardProps {
   id: string;
   title: string;
   weigth: string;
-  authorAvatarUrl: string;
+  avatarFile: string;
   topic: string;
+  taste: string;
+  price: string;
+  likesCount: number;
 }

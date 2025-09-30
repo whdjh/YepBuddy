@@ -20,8 +20,11 @@ export function CardSection({ cards }: CardSectionProps) {
           id={card.id}
           title={card.title}
           weigth={card.weigth}
-          authorAvatarUrl={card.authorAvatarUrl}
+          avatarFile={card.avatarFile}
           topic={card.topic}
+          taste={card.taste}
+          price={card.price}
+          likesCount={card.likesCount}
         />
       )}
       emptyText="검색 결과가 없습니다."
