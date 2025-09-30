@@ -8,9 +8,8 @@ interface TopicSectionProps {
 
 export function TopicSection({ topics, makeHref }: TopicSectionProps) {
   return (
-    <div className="col-span-2 space-y-5">
-      <span className="text-sm font-bold text-muted-foreground">토픽</span>
-      <div className="flex flex-col gap-2 items-start">
+    <div className="space-y-5">
+      <div className="flex gap-2 items-start">
         {topics.map((category) => (
           <Button asChild variant="link" key={category} className="pl-0">
             <Link href={makeHref({ topic: category })}>{category}</Link>

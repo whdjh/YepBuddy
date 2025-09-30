@@ -49,27 +49,21 @@ function ProteinInner() {
     <div className="p-2 tab:p-5 space-y-5 tab:space-y-20">
       <Hero title="프로틴" subtitle="프로틴 목록" />
 
-      <div className="grid grid-cols-1 tab:grid-cols-6 items-start gap-40 p-2 tab:p-5">
-        <div className="col-span-full tab:col-span-4 space-y-10">
-          <HeaderSection
-            pathname={pathname}
-            sorting={sorting}
-            period={period}
-            q={q}
-            setParam={setParam}
-          />
+      <div className="flex flex-col gap-10">
+        <TopicSection
+          topics={["WPC", "WPI", "WPC+WPI", "카제인", "식물성"]}
+          makeHref={makeHref}
+        />
 
-          <div className="space-y-10">
-            <CardSection cards={mockProteins} />
-          </div>
-        </div>
+        <HeaderSection
+          pathname={pathname}
+          sorting={sorting}
+          period={period}
+          q={q}
+          setParam={setParam}
+        />
 
-        <div className="hidden tab:block tab:col-span-2">
-          <TopicSection
-            topics={["WPC", "WPI", "WPC+WPI", "카제인"]}
-            makeHref={makeHref}
-          />
-        </div>
+        <CardSection cards={mockProteins} />
       </div>
     </div>
   );
