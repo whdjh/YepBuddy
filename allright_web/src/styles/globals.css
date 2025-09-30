@@ -11,8 +11,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --breakpoint-tab: 840px;
-  --breakpoint-pc: 1280px;
+  --breakpoint-mob: 480px;
+  --breakpoint-tab: 768px;
+  --breakpoint-pc: 1200px;
 }
 
 :root {

@@ -9,7 +9,7 @@ export default function IdeasDashboard() {
       </div>
       <SideInventory />
       <div className="flex-1">
-        <h1 className="text-2xl font-semibold mb-6">내가 찜한 프로틴 가격 추이</h1>
+        <h1 className="text-2xl font-semibold mb-6">내가 좋아요 누른 헬스장</h1>
       </div>
     </SidebarProvider>
   );
