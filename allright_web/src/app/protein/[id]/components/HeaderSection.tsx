@@ -24,14 +24,14 @@ export default function HeaderSection() {
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/protein?topic=WPI">WPI</Link>
+            <Link href="/protein?topic=WPI">WPC</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
             <Link href={`/protein/${id}`}>
-              신타6
+              마이프로틴
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
