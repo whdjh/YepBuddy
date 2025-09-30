@@ -2,7 +2,7 @@
 
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ButtonSection from '@/app/tempoauto/components/ButtonSection';
 import InputSection from '@/app/tempoauto/components/InputSection';
@@ -14,25 +14,52 @@ export default function TempoAuto() {
   const router = useRouter();
   const { selected, setSelected, tempoFormValues } = useTempoStore();
   const [isSubmit, setIsSubmit] = useState(false);
-  
+
   const methods = useForm<TempoFormValues>({
     mode: 'onChange',
     defaultValues: tempoFormValues,
     shouldUnregister: false,
   });
 
-  const onSubmit: SubmitHandler<TempoFormValues> = (data) => {
-    if (isSubmit) {
-      return;
-    }
+  // 모든 필드를 구독
+  const w = methods.watch(['concentric', 'eccentric', 'reps', 'sets', 'rests', 'name']);
 
+  const allFilled = useMemo(() => {
+    const [concentric, eccentric, reps, sets, rests, name] = w;
+
+    // 문자열/숫자 섞여 들어오므로 항상 안전 파싱
+    const nCon = Number(concentric);
+    const nEcc = Number(eccentric);
+    const nReps = Number(reps);
+    const nSets = Number(sets);
+    const nRests = Number(rests);
+
+    const isPosInt = (n: number) => Number.isFinite(n) && n >= 1;
+    const isNonNegInt = (n: number) => Number.isFinite(n) && n >= 0;
+
+    const nameOk = String(name ?? '').trim().length > 0;
+
+    // 필드별 기준
+    const tempoOk = isPosInt(nCon) && isPosInt(nEcc);
+    const countOk = isPosInt(nReps) && isPosInt(nSets);
+    const restOk = isNonNegInt(nRests); // 0 허용
+
+    return tempoOk && countOk && restOk && nameOk;
+  }, [w]);
+
+  const canSubmit = Boolean(selected) && allFilled;
+
+  const onSubmit: SubmitHandler<TempoFormValues> = (data) => {
+    if (isSubmit) return;
     setIsSubmit(true);
 
-    const payload = {
-      ...data,
-      flag: selected,
-    };
-    console.log(payload);
+    // 최신 폼값을 Zustand에 저장 -> Exercise 페이지에서 동일 값 사용
+    useTempoStore.setState((prev) => ({
+      ...prev,
+      tempoFormValues: data,
+    }));
+
+    console.log({ ...data, flag: selected });
     router.push('/tempoauto/exercise');
   };
 
@@ -48,7 +75,11 @@ export default function TempoAuto() {
         >
           <ButtonSection selected={selected} setSelected={setSelected} />
           <InputSection />
-          <Button type="submit" disabled={!(methods.formState.isValid && selected)} className='h-[3rem] w-[21rem]'>
+          <Button
+            type="submit"
+            disabled={!canSubmit}
+            className="h-[3rem] w-[21rem]"
+          >
             운동시작
           </Button>
         </form>

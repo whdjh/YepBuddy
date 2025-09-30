@@ -43,7 +43,7 @@ export default function TempoManual() {
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col gap-6 p-6"
+          className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
         >
           {/* 운동 종목 */}
           <InputPair
