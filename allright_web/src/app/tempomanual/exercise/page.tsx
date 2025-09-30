@@ -43,7 +43,9 @@ export default function Exercise() {
     <div className="flex flex-col gap-6 p-6">
       {!isFinished && (
         <div className="bg-red-500 text-black p-3 rounded-md text-center font-bold">
-          ⚠️ 운동 시작 버튼을 누르고 10초뒤 재생됩니다. 버튼을 클릭 후 카운트시작에 맞춰 시작하세요.
+          <p>운동 시작 버튼을 누르고 10초뒤 재생됩니다.</p>
+          <p>버튼을 클릭 후 카운트시작에 맞춰 시작하세요.</p>
+          <p>카운트가 시작할때 운동 시작하고 다음 카운트까지 동작을 준비하세요!</p>
         </div>
       )}
 
