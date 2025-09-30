@@ -21,7 +21,7 @@ export default function ProteinCard({
   return (
     <Card className="bg-transparent hover:bg-[#26262c]">
       <Link href={`/protein/${id}`} className="block">
-        <CardHeader className="flex justify-between items-center">
+        <CardHeader className="flex flex-col items-start mob:flex-row mob:justify-between mob:items-center">
           <div className="flex items-center gap-4">
             <Avatar className="size-14">
               <AvatarFallback>N</AvatarFallback>
@@ -40,7 +40,7 @@ export default function ProteinCard({
               </div>
               </div>
           </div>
-          <div className="flex flex-col justify-end gap-3">
+          <div className="flex mob:flex-col items-center justify-end gap-3">
             {/** 계산 로직 필요 */}
             <span>그람당 가격</span>
             <span>{price}</span>
