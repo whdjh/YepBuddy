@@ -18,7 +18,7 @@ const proceeds = pgEnum("proceed", ["센터 방문", "방문 PT"]);
 
 
 export const trainers = pgTable("trainers", {
-  product_id: bigint({ mode: "number" })
+  trainer_id: bigint({ mode: "number" })
     .primaryKey()
     .generatedAlwaysAsIdentity(),
   
@@ -58,8 +58,8 @@ export const categories = pgTable("categories", {
 export const trainer_upvotes = pgTable(
   "trainer_upvotes",
   {
-    product_id: bigint({ mode: "number" }).references(
-      () => trainers.product_id,
+    trainer_id: bigint({ mode: "number" }).references(
+      () => trainers.trainer_id,
       {
         onDelete: "cascade",
       }
@@ -68,7 +68,7 @@ export const trainer_upvotes = pgTable(
       onDelete: "cascade",
     }),
   },
-  (table) => [primaryKey({ columns: [table.product_id, table.profile_id] })]
+  (table) => [primaryKey({ columns: [table.trainer_id, table.profile_id] })]
 );
 
 export const reviews = pgTable(
@@ -77,8 +77,8 @@ export const reviews = pgTable(
     review_id: bigint({ mode: "number" })
       .primaryKey()
       .generatedAlwaysAsIdentity(),
-    product_id: bigint({ mode: "number" }).references(
-      () => trainers.product_id,
+    trainer_id: bigint({ mode: "number" }).references(
+      () => trainers.trainer_id,
       {
         onDelete: "cascade",
       }
