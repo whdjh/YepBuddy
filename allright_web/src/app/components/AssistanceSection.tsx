@@ -39,12 +39,13 @@ const features = [
               <ProteinCard
                 key={`${index}`}
                 id={`${index}`}
-                title={`마이프로틴`}
-                weigth={`2.5kg`}
-                authorAvatarUrl=""
-                topic={
-                  ["WPC", "WPI", "WPC+WPI", "카제인"][index % 4]
-                }
+                title="마이프로틴"
+                weight="2.5kg"
+                avatarFile=""
+                topic="WPC"
+                taste="초코"
+                price="20,000원"
+                likesCount={123}
               />
             </div>
           </div>
