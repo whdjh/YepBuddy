@@ -6,14 +6,14 @@ import {
 import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
-  avatarUrl: string;
+  avatarFile: string;
   avatarFallback: string;
   content: string;
   isCurrentUser?: boolean;
 }
 
 export default function MessageBubble({
-  avatarUrl,
+  avatarFile,
   avatarFallback,
   content,
   isCurrentUser = false,
@@ -26,7 +26,7 @@ export default function MessageBubble({
       )}
     >
       <Avatar>
-        <AvatarImage src={avatarUrl} />
+        <AvatarImage src={avatarFile} />
         <AvatarFallback>{avatarFallback}</AvatarFallback>
       </Avatar>
       <div

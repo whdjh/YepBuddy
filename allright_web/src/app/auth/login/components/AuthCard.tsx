@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
-
-type LoginForm = { email: string; password: string };
+import { LoginForm } from "@/types/Form";
 
 export default function AuthCard() {
   const methods = useForm<LoginForm>({

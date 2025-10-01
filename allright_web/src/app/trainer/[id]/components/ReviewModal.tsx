@@ -13,14 +13,10 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-
-type ReviewForm = {
-  rating: number;
-  review: string;
-};
+import { ReviewFormValue } from "@/types/Form";
 
 export default function ReviewModal() {
-  const methods = useForm<ReviewForm>({
+  const methods = useForm<ReviewFormValue>({
     mode: "onChange",
     defaultValues: {
       rating: 0,
@@ -38,7 +34,7 @@ export default function ReviewModal() {
   const [hoveredStar, setHoveredStar] = useState<number>(0);
   const rating = watch("rating", 0);
 
-  const onSubmit = (data: ReviewForm) => {
+  const onSubmit = (data: ReviewFormValue) => {
     console.log("review submit:", data);
   };
 

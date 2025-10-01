@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { TempoFormValues } from '@/types/Tempo';
+import { AutoTempoFormValues } from '@/types/Form';
 
 interface TemponState { 
   selected: "concentric" | "eccentric" | null;
-  tempoFormValues: TempoFormValues;
+  tempoFormValues: AutoTempoFormValues;
   setSelected: (id: "concentric" | "eccentric") => void;
-  setFormValue: (key: keyof TempoFormValues, value: string) => void;
+  setFormValue: (key: keyof AutoTempoFormValues, value: string) => void;
   reset: () => void;
 }
 

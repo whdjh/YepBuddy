@@ -12,20 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { EyeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface NotificationCardProps {
-  avatarUrl: string;
-  avatarFallback: string;
-  userName: string;
-  message: string;
-  timestamp: string;
-  seen: boolean;
-}
+import { NotificationCardProps } from "@/types/Card";
 
 export default function NotificationCard({
-  avatarUrl,
+  avatarFile,
   avatarFallback,
-  userName,
+  name,
   message,
   timestamp,
   seen,
@@ -34,12 +26,12 @@ export default function NotificationCard({
     <Card className={cn("w-full min-w-0 bg-transparent", seen ? "" : "border-yellow-500/60")}>
       <CardHeader className="flex flex-row gap-5 space-y-0 items-start">
         <Avatar className="">
-          <AvatarImage src={avatarUrl} />
+          <AvatarImage src={avatarFile} />
           <AvatarFallback>{avatarFallback}</AvatarFallback>
         </Avatar>
         <div>
           <CardTitle className="text-lg space-y-0 font-bold">
-            <span>{userName}</span>
+            <span>{name}</span>
             <span>{message}</span>
           </CardTitle>
           <small className="text-muted-foreground text-sm">{timestamp}</small>

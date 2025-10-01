@@ -9,13 +9,10 @@ import {
 } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import InputPair from "@/components/common/InputPair";
-
-interface FormValues {
-  introduction: string;
-}
+import { SideCardFormValues } from "@/types/Form";
 
 export default function SideCard() {
-  const methods = useForm<FormValues>({
+  const methods = useForm<SideCardFormValues>({
     defaultValues: {
       introduction: "",
     },

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
-import TrainerCard from "@/components/common/Card/TrainerCard";
+import TrainerCard from "@/app/trainer/components/TrainerCard";
 import { Button } from "@/components/ui/button";
 
 export default function TrainerSection() {
@@ -22,8 +22,9 @@ export default function TrainerSection() {
           <TrainerCard
             key={`${index}`}
             id={`${index}`}
-            name="이주훈"
-            description="개발자입니다."
+            avatarFile=""
+            name="트레이너명"
+            description="프로그램소개"
             commentsCount={12}
             viewsCount={12}
             votesCount={120}

@@ -31,6 +31,7 @@ interface InputPairProps extends InputHTMLAttributes<HTMLInputElement> {
   /** 최대 입력 글자수 */
   maxLength?: number;
 }
+
 function InputPair({
   name,
   label,

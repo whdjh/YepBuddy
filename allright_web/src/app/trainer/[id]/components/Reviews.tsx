@@ -22,9 +22,9 @@ export default function ProductReviewsPage() {
           {Array.from({ length: 10 }).map((_, i) => (
             <ReviewCard
               key={i}
-              username="이주훈"
+              name="리뷰자"
               handle="@wngns9807"
-              avatarUrl="https://github.com/gym.png"
+              avatarFile="https://github.com/gym.png"
               rating={5}
               content="너무 친절히 알려줘요"
               postedAt="10일전"

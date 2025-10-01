@@ -4,7 +4,7 @@ import { useState } from 'react';
 import BodyPartsSelector from './ExerciseDiaryTab/BodyPartsSelector';
 import ExerciseControls from './ExerciseDiaryTab/ExerciseControls';
 import ExerciseTable from './ExerciseDiaryTab/ExerciseTable';
-import { Exercise, ExerciseData } from '@/types/Exercise';
+import { Exercise, ExerciseData } from '@/types/Diary';
 
 interface ExerciseDiaryTabProps {
   data?: ExerciseData;

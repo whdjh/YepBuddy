@@ -25,7 +25,7 @@ export default function MessageRoom() {
               <AvatarFallback>S</AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-0">
-              <CardTitle className="text-xl">이주훈</CardTitle>
+              <CardTitle className="text-xl">사용자명</CardTitle>
               <CardDescription>2일전</CardDescription>
             </div>
           </CardHeader>
@@ -34,7 +34,7 @@ export default function MessageRoom() {
         <div className="flex-1 min-h-0 overflow-y-auto py-10 flex flex-col gap-5">
           <MessageBubble
             key={1}
-            avatarUrl="https://github.com/stevejobs.png"
+            avatarFile="https://github.com/stevejobs.png"
             avatarFallback="S"
             content="메세지 내용."
           />

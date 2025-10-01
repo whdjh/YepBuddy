@@ -4,18 +4,10 @@ import InputPair from "@/components/common/InputPair";
 import SelectPair from "@/components/common/SelectPair";
 import { FormProvider, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-
-interface FormValues {
-  program: string;
-  proceed: string;
-  schedule: string;
-  price: string;
-  intro: string;
-  description: string;
-};
+import { TrainerSubmitFormValues } from "@/types/Form";
 
 export default function FormSection() {
-  const methods = useForm<FormValues>({
+  const methods = useForm<TrainerSubmitFormValues>({
     defaultValues: {
       program: "",
       proceed: "",

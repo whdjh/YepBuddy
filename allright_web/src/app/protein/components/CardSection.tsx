@@ -1,4 +1,4 @@
-import ProteinCard from "@/components/common/Card/ProteinCard";
+import ProteinCard from "@/app/protein/components/ProteinCard";
 import { ProteinCardProps } from "@/types/Card";
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
@@ -19,9 +19,12 @@ export function CardSection({ cards }: CardSectionProps) {
           key={card.id}
           id={card.id}
           title={card.title}
-          weigth={card.weigth}
-          authorAvatarUrl={card.authorAvatarUrl}
+          weight={card.weight}
+          avatarFile={card.avatarFile}
           topic={card.topic}
+          taste={card.taste}
+          price={card.price}
+          likesCount={card.likesCount}
         />
       )}
       emptyText="검색 결과가 없습니다."

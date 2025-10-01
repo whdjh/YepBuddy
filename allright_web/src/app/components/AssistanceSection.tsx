@@ -3,7 +3,7 @@ import { BellIcon, CalendarIcon, MonitorSpeakerIcon, TabletSmartphoneIcon } from
 import { Calendar } from "@/components/ui/calendar";
 import { BentoCard, BentoGrid } from "@/components/ui/bento-grid";
 import { Marquee } from "@/components/ui/marquee";
-import ProteinCard from "@/components/common/Card/ProteinCard";
+import ProteinCard from "@/app/protein/components/ProteinCard";
 
 const utc = (y: number, m: number, d: number) =>
   new Date(Date.UTC(y, m, d, 0, 0, 0));
@@ -39,12 +39,13 @@ const features = [
               <ProteinCard
                 key={`${index}`}
                 id={`${index}`}
-                title={`마이프로틴`}
-                weigth={`2.5kg`}
-                authorAvatarUrl=""
-                topic={
-                  ["WPC", "WPI", "WPC+WPI", "카제인"][index % 4]
-                }
+                title="마이프로틴"
+                weight="2.5kg"
+                avatarFile=""
+                topic="WPC"
+                taste="초코"
+                price="20,000원"
+                likesCount={123}
               />
             </div>
           </div>

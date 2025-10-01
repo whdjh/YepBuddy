@@ -1,7 +1,7 @@
 'use client';
 
 import { GymCardProps } from '@/types/Card';
-import GymCard from '@/components/common/Card/GymCard';
+import GymCard from '@/app/gym/components/GymCard';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
@@ -22,6 +22,7 @@ export default function CardSection({ cards }: CardSectionProps) {
           id={card.id}
           key={card.id}
           title={card.title}
+          location={card.location}
           viewsCount={card.viewsCount}
           postedAt={card.postedAt}
           likesCount={card.likesCount}
