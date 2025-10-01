@@ -22,44 +22,60 @@ export default function TempoAuto() {
   });
 
   // 모든 필드를 구독
-  const w = methods.watch(['concentric', 'eccentric', 'reps', 'sets', 'rests', 'name']);
+  const watchedFields = methods.watch([
+    'concentric',
+    'eccentric',
+    'reps',
+    'sets',
+    'rests',
+    'name',
+  ]);
 
-  const allFilled = useMemo(() => {
-    const [concentric, eccentric, reps, sets, rests, name] = w;
+  const allFieldsValid = useMemo(() => {
+    const [
+      concentricInput,
+      eccentricInput,
+      repsInput,
+      setsInput,
+      restsInput,
+      nameInput,
+    ] = watchedFields;
 
     // 문자열/숫자 섞여 들어오므로 항상 안전 파싱
-    const nCon = Number(concentric);
-    const nEcc = Number(eccentric);
-    const nReps = Number(reps);
-    const nSets = Number(sets);
-    const nRests = Number(rests);
+    const concentricSeconds = Number(concentricInput);
+    const eccentricSeconds = Number(eccentricInput);
+    const repsCount = Number(repsInput);
+    const setsCount = Number(setsInput);
+    const restSeconds = Number(restsInput);
 
-    const isPosInt = (n: number) => Number.isFinite(n) && n >= 1;
-    const isNonNegInt = (n: number) => Number.isFinite(n) && n >= 0;
+    const isPositiveInteger = (n: number) => Number.isFinite(n) && n >= 1;
+    const isNonNegativeInteger = (n: number) => Number.isFinite(n) && n >= 0;
 
-    const nameOk = String(name ?? '').trim().length > 0;
+    const nameIsValid = String(nameInput ?? '').trim().length > 0;
 
     // 필드별 기준
-    const tempoOk = isPosInt(nCon) && isPosInt(nEcc);
-    const countOk = isPosInt(nReps) && isPosInt(nSets);
-    const restOk = isNonNegInt(nRests); // 0 허용
+    const tempoIsValid =
+      isPositiveInteger(concentricSeconds) && isPositiveInteger(eccentricSeconds);
+    const countIsValid =
+      isPositiveInteger(repsCount) && isPositiveInteger(setsCount);
+    const restIsValid = isNonNegativeInteger(restSeconds); // 0 허용
 
-    return tempoOk && countOk && restOk && nameOk;
-  }, [w]);
+    return tempoIsValid && countIsValid && restIsValid && nameIsValid;
+  }, [watchedFields]);
 
-  const canSubmit = Boolean(selected) && allFilled;
+  const canSubmit = Boolean(selected) && allFieldsValid;
 
-  const onSubmit: SubmitHandler<AutoTempoFormValues> = (data) => {
+  const onSubmit: SubmitHandler<AutoTempoFormValues> = (formData) => {
     if (isSubmit) return;
     setIsSubmit(true);
 
     // 최신 폼값을 Zustand에 저장 -> Exercise 페이지에서 동일 값 사용
     useTempoStore.setState((prev) => ({
       ...prev,
-      tempoFormValues: data,
+      tempoFormValues: formData,
     }));
 
-    console.log({ ...data, flag: selected });
+    console.log({ ...formData, flag: selected });
     router.push('/tempoauto/exercise');
   };
 
