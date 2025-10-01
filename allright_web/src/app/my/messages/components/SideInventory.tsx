@@ -16,7 +16,7 @@ export default function SideInventory() {
               <MessageCard
                 key={index}
                 id={index.toString()}
-                name={`이주훈`}
+                name={`사용자명`}
                 lastMessage={`최근 메세지 ${index}`}
                 avatarFile={`https://github.com/gym.png`}
               />

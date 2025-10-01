@@ -42,13 +42,13 @@ import { cn } from "@/lib/utils";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { useState } from "react";
 
-type SubItem = {
+interface SubItem {
   name: string;
   description?: string;
   href: string;
 };
 
-type Menu = {
+interface Menu {
   name: string;
   href: string;
   items?: SubItem[];

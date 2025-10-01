@@ -7,23 +7,13 @@ import SelectPair from "@/components/common/SelectPair";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { UserSettingFormValues } from "@/types/Form";
 
 const ACCEPTED_TYPES = ["image/png", "image/jpeg"];
 const MAX_SIZE = 1 * 1024 * 1024;
 
-interface FormValues {
-  name: string;
-  role: string;
-  location: string;
-  history: string;
-  qualifications: string;
-  description: string;
-  avatar?: File | null;
-  avatarFile?: FileList | null; // 폼 내부 바인딩용이니 서버로 보내지 않도록 주의
-}
-
 export default function FormSection() {
-  const methods = useForm<FormValues>({
+  const methods = useForm<UserSettingFormValues>({
     mode: "all",
     shouldUnregister: true, // 숨긴 필드는 폼/검증에서 제외
     defaultValues: {
@@ -33,8 +23,8 @@ export default function FormSection() {
       history: "",
       qualifications: "",
       description: "",
-      avatar: null,
       avatarFile: null,
+      avatar: null,
     },
   });
 
@@ -50,15 +40,15 @@ export default function FormSection() {
 
   const role = watch("role");
   const isTrainer = role === "trainer";
-  const avatar = watch("avatar");
+  const avatarFile = watch("avatarFile");
   useEffect(() => {
-    if (!avatar) { setPreview(null); return; }
-    const url = URL.createObjectURL(avatar);
+    if (!avatarFile) { setPreview(null); return; }
+    const url = URL.createObjectURL(avatarFile);
     setPreview(url);
     return () => URL.revokeObjectURL(url);
-  }, [avatar]);
+  }, [avatarFile]);
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
+  const onSubmit: SubmitHandler<UserSettingFormValues> = (data) => {
     console.log("submit:", data);
   };
 
@@ -139,7 +129,7 @@ export default function FormSection() {
 
           {/* 프로필 이미지 업로더: 회원/트레이너 공통 */}
           <div className="col-span-full tab:col-span-2 p-6 rounded-lg border border-white/10 shadow-md">
-            <Label htmlFor="avatarFile" className="flex flex-col gap-1">
+            <Label htmlFor="avatar" className="flex flex-col gap-1">
               프로필
               <small className="text-muted-foreground">프로필 이미지를 업로드 해보세요.</small>
             </Label>
@@ -162,22 +152,22 @@ export default function FormSection() {
               </div>
 
               <Input
-                id="avatarFile"
+                id="avatar"
                 type="file"
                 accept="image/png,image/jpeg"
-                {...register("avatarFile", {
+                {...register("avatar", {
                   validate: (fl) => validateFile(fl?.[0] ?? null),
                   onChange: (e) => {
                     const input = e.target as HTMLInputElement;
                     const file = input.files?.[0] ?? null;
-                    setValue("avatar", file, { shouldValidate: true, shouldDirty: true });
+                    setValue("avatarFile", file, { shouldValidate: true, shouldDirty: true });
                     input.value = ""; // 동일 파일 재선택 허용
                   },
                 })}
               />
-              {formState.errors.avatarFile && (
+              {formState.errors.avatar && (
                 <p className="text-xs text-red-500">
-                  {String(formState.errors.avatarFile.message)}
+                  {String(formState.errors.avatar.message)}
                 </p>
               )}
 

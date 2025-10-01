@@ -32,6 +32,7 @@ export default function GymSection() {
                       key={`gym-${index}`}
                       id={`gym-${index}`}
                       title="헬스장명"
+                      location="헬스장위치"
                       viewsCount={123}
                       postedAt="2시간전"
                       likesCount={12}
@@ -49,6 +50,7 @@ export default function GymSection() {
                       key={`gym-${index}`}
                       id={`gym-${index}`}
                       title="헬스장명"
+                      location="헬스장위치"
                       viewsCount={123}
                       postedAt="2시간전"
                       likesCount={12}
@@ -66,6 +68,7 @@ export default function GymSection() {
                       key={`gym-${index}`}
                       id={`gym-${index}`}
                       title="헬스장명"
+                      location="헬스장위치"
                       viewsCount={123}
                       postedAt="2시간전"
                       likesCount={12}

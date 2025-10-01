@@ -1,7 +1,7 @@
 import HeaderSection from "@/app/users/[username]/components/HeaderSection";
 import TabSection from "@/app/users/[username]/components/TabSection";
 
-type PageProps = {
+interface PageProps {
   params: Promise<{ username: string }>;
   searchParams: Promise<{ tab?: string }>;
 };

@@ -7,7 +7,10 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 
-type Option = { label: string; value: string };
+interface Option {
+  label: string;
+  value: string
+};
 
 export default function SelectPair({
   name,

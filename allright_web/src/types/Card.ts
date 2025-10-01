@@ -49,3 +49,12 @@ export interface NotificationCardProps {
   timestamp: string;
   seen: boolean;
 }
+
+export interface ReviewCardProps {
+  name: string;
+  handle: string;
+  avatarFile: string;
+  rating: number;
+  content: string;
+  postedAt: string;
+}

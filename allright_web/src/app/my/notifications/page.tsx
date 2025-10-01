@@ -8,7 +8,7 @@ export default function Notification() {
         <NotificationCard
           avatarFile="https://github.com/gym.png"
           avatarFallback="S"
-          name="이주훈"
+          name="사용자명"
           message=" 팔로우 신청"
           timestamp="2일전"
           seen={true}

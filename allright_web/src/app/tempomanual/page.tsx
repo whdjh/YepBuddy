@@ -6,11 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import InputPair from '@/components/common/InputPair';
 import { Hero } from '@/components/common/Hero';
-
-interface ManualFormValues {
-  name: string;
-  reps: number | null;
-}
+import { ManualTempoFormValues } from '@/types/Form';
 
 export default function TempoManual() {
   const router = useRouter();
@@ -18,7 +14,7 @@ export default function TempoManual() {
 
   const availableReps = [8, 10, 12, 15, 18, 20];
 
-  const methods = useForm<ManualFormValues>({
+  const methods = useForm<ManualTempoFormValues>({
     defaultValues: {
       name: '',
       reps: null,
@@ -31,7 +27,7 @@ export default function TempoManual() {
   const nameValue = watch('name') ?? '';
   const selectedReps = watch('reps');
 
-  const onSubmit = (data: ManualFormValues) => {
+  const onSubmit = (data: ManualTempoFormValues) => {
     // 최신 폼 값을 Zustand에 저장
     setFormValue('name', data.name);
     setFormValue('reps', data.reps !== null ? String(data.reps) : '0');

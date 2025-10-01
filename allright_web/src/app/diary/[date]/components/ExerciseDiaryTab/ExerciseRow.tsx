@@ -1,7 +1,7 @@
 "use client";
 
 import { memo } from 'react';
-import { Exercise } from '@/types/Exercise';
+import { Exercise } from '@/types/Diary';
 
 interface ExerciseRowProps {
   exercise: Exercise;

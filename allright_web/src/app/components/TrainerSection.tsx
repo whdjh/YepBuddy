@@ -22,6 +22,7 @@ export default function TrainerSection() {
           <TrainerCard
             key={`${index}`}
             id={`${index}`}
+            avatarFile=""
             name="트레이너명"
             description="프로그램소개"
             commentsCount={12}

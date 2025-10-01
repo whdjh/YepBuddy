@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ButtonSection from '@/app/tempoauto/components/ButtonSection';
 import InputSection from '@/app/tempoauto/components/InputSection';
-import { TempoFormValues } from '@/types/Tempo';
+import { AutoTempoFormValues } from '@/types/Form';
 import { useTempoStore } from '@/stores/useTempo';
 import { Hero } from '@/components/common/Hero';
 
@@ -15,7 +15,7 @@ export default function TempoAuto() {
   const { selected, setSelected, tempoFormValues } = useTempoStore();
   const [isSubmit, setIsSubmit] = useState(false);
 
-  const methods = useForm<TempoFormValues>({
+  const methods = useForm<AutoTempoFormValues>({
     mode: 'onChange',
     defaultValues: tempoFormValues,
     shouldUnregister: false,
@@ -49,7 +49,7 @@ export default function TempoAuto() {
 
   const canSubmit = Boolean(selected) && allFilled;
 
-  const onSubmit: SubmitHandler<TempoFormValues> = (data) => {
+  const onSubmit: SubmitHandler<AutoTempoFormValues> = (data) => {
     if (isSubmit) return;
     setIsSubmit(true);
 

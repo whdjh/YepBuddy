@@ -4,20 +4,12 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
-
-interface ReviewCardProps {
-  username: string;
-  handle: string;
-  avatarUrl: string;
-  rating: number;
-  content: string;
-  postedAt: string;
-}
+import { ReviewCardProps } from "@/types/Card";
 
 export function ReviewCard({
-  username,
+  name,
   handle,
-  avatarUrl,
+  avatarFile,
   rating,
   content,
   postedAt,
@@ -26,11 +18,11 @@ export function ReviewCard({
     <div className="space-y-5">
       <div className="flex items-center gap-2">
         <Avatar>
-          <AvatarFallback>{username[0]}</AvatarFallback>
-          <AvatarImage src={avatarUrl} />
+          <AvatarFallback>{name[0]}</AvatarFallback>
+          <AvatarImage src={avatarFile} />
         </Avatar>
         <div>
-          <h4 className="text-lg font-bold">{username}</h4>
+          <h4 className="text-lg font-bold">{name}</h4>
           <p className="text-sm text-muted-foreground">{handle}</p>
         </div>
       </div>

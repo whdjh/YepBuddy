@@ -5,12 +5,11 @@ import { Button } from "@/components/ui/button";
 import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
-
-type JoinForm = { username: string; email: string; password: string };
+import { JoinForm } from "@/types/Form";
 
 export default function AuthCard() {
   const methods = useForm<JoinForm>({
-    defaultValues: { username: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "" },
     mode: "onSubmit",
   });
 
@@ -29,8 +28,8 @@ export default function AuthCard() {
             <h1 className="text-2xl font-semibold">회원가입</h1>
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
               <InputPair
-                name="username"
-                id="username"
+                name="name"
+                id="name"
                 label="이름"
                 description="이름을 입력하세요."
                 placeholder="이주훈"
