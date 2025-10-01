@@ -1,6 +1,6 @@
 import { Hero } from "@/components/common/Hero";
 import CardSection from "@/app/gym/components/CardSection";
-import { mockGymsCards } from "@/mock/gymCardData";
+import { mockGymsCards } from "@/app/gym/components/_mock/gymCardData";
 
 export default function Gym() {
   return (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import GymCard from "@/components/common/Card/GymCard";
+import GymCard from "@/app/gym/components/GymCard";
 import { Button } from "@/components/ui/button";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Marquee } from "@/components/ui/marquee";

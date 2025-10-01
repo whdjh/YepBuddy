@@ -11,17 +11,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { MessageCardProps } from "@/types/Card";
 
-interface MessageCardProps {
-  id: string;
-  avatarUrl?: string;
-  name: string;
-  lastMessage: string;
-}
 
 export function MessageCard({
   id,
-  avatarUrl,
+  avatarFile,
   name,
   lastMessage,
 }: MessageCardProps) {
@@ -38,7 +33,7 @@ export function MessageCard({
         <Link href={`/my/messages/${id}`}>
           <div className="flex items-center gap-2">
             <Avatar>
-              <AvatarImage src={avatarUrl} />
+              <AvatarImage src={avatarFile} />
               <AvatarFallback>{name[0]}</AvatarFallback>
             </Avatar>
             <div className="flex flex-col">

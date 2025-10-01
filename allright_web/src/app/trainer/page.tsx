@@ -1,6 +1,6 @@
 import { Hero } from "@/components/common/Hero";
 import CardSection from "@/app/trainer/components/CardSection";
-import { mockTrainerCards } from "@/mock/trainerCardData";
+import { mockTrainerCards } from "@/app/trainer/components/_mock/trainerCardData";
 
 export default function Trainer() {
   return (

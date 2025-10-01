@@ -1,7 +1,7 @@
 'use client';
 
 import { TrainerCardProps } from '@/types/Card';
-import TrainerCard from '@/components/common/Card/TrainerCard';
+import TrainerCard from '@/app/trainer/components/TrainerCard';
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 
 interface CardSectionProps {
@@ -23,6 +23,7 @@ export default function CardSection({ cards }: CardSectionProps) {
         <TrainerCard
           id={card.id}
           key={card.id}
+          avatarFile={card.avatarFile}
           name={card.name}
           description={card.description}
           commentsCount={card.commentsCount}
@@ -33,6 +34,7 @@ export default function CardSection({ cards }: CardSectionProps) {
       emptyText="검색 결과가 없습니다."
       onInView={handleLoadMore}
       hasMore={true}
+      layout="flex"
     />
   );
 }

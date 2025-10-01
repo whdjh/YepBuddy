@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BlurFade } from "@/components/ui/blur-fade";
-import TrainerCard from "@/components/common/Card/TrainerCard";
+import TrainerCard from "@/app/trainer/components/TrainerCard";
 import { Button } from "@/components/ui/button";
 
 export default function TrainerSection() {

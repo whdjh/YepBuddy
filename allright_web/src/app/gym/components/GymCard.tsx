@@ -13,6 +13,7 @@ import { GymCardProps } from "@/types/Card";
 export default function GymCard({
   id,
   title,
+  location,
   viewsCount,
   postedAt,
   likesCount
@@ -21,10 +22,9 @@ export default function GymCard({
     <Card className="bg-transparent hover:bg-[#26262c] border-white/10">
       <CardHeader>
         <Link href={`/gym/${id}`}>
-          <CardTitle className="text-xl">
-            <span>
-              {title}
-            </span>
+          <CardTitle className="flex flex-col gap-3">
+            <p className="text-xl">{title}</p>
+            <p className="text-md">{location}</p>
           </CardTitle>
         </Link>
       </CardHeader>

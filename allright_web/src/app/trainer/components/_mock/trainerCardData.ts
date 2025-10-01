@@ -3,6 +3,7 @@ import type { TrainerCardProps } from "@/types/Card";
 export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "1",
+    avatarFile: "이미지",
     name: "박재훈",
     description: "하체전문",
     commentsCount: 14,
@@ -11,6 +12,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   },
   {
     id: "2",
+    avatarFile: "이미지",
     name: "황철순",
     description: "상체전문",
     commentsCount: 8,
@@ -19,6 +21,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   },
   {
     id: "3",
+    avatarFile: "이미지",
     name: "김민수",
     description: "피지크",
     commentsCount: 21,
@@ -27,6 +30,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   },
   {
     id: "4",
+    avatarFile: "이미지",
     name: "우형재",
     description: "어깨전문",
     commentsCount: 5,
@@ -35,6 +39,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   },
   {
     id: "5",
+    avatarFile: "이미지",
     name: "이승철",
     description: "오픈",
     commentsCount: 11,
@@ -43,6 +48,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   },
   {
     id: "6",
+    avatarFile: "이미지",
     name: "이용승",
     description: "컨디셔닝",
     commentsCount: 4,
@@ -52,6 +58,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "7",
     name: "최한진",
+    avatarFile: "이미지",
     description: "연예인PT",
     commentsCount: 13,
     viewsCount: 430,
@@ -60,6 +67,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "8",
     name: "정대진",
+    avatarFile: "이미지",
     description: "포징",
     commentsCount: 7,
     viewsCount: 312,
@@ -68,6 +76,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "9",
     name: "장성엽",
+    avatarFile: "이미지",
     description: "팔전문",
     commentsCount: 2,
     viewsCount: 151,
@@ -76,6 +85,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "10",
     name: "김건우",
+    avatarFile: "이미지",
     description: "등전문",
     commentsCount: 6,
     viewsCount: 289,
@@ -84,6 +94,7 @@ export const mockTrainerCards: TrainerCardProps[] = [
   {
     id: "11",
     name: "김강민",
+    avatarFile: "이미지",
     description: "스트렝스",
     commentsCount: 19,
     viewsCount: 803,

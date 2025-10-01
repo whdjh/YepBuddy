@@ -6,7 +6,7 @@ import { useCallback, Suspense } from "react";
 import { HeaderSection } from "@/app/protein/components/HeaderSection";
 import { CardSection } from "@/app/protein/components/CardSection";
 import { TopicSection } from "@/app/protein//components/TopicSection";
-import { mockProteins } from "@/mock/proteinCardData";
+import { mockProteins } from "@/app/protein/components/_mock/proteinCardData";
 
 export default function Protein() {
   return (

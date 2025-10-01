@@ -4,7 +4,7 @@ import {
   SidebarGroup,
   SidebarMenu,
 } from "@/components/ui/sidebar";
-import { MessageCard } from "@/components/common/Card/MessageCard";
+import { MessageCard } from "@/app/my/messages/components/MessageCard";
 
 export default function SideInventory() {
   return (
@@ -18,7 +18,7 @@ export default function SideInventory() {
                 id={index.toString()}
                 name={`이주훈`}
                 lastMessage={`최근 메세지 ${index}`}
-                avatarUrl={`https://github.com/gym.png`}
+                avatarFile={`https://github.com/gym.png`}
               />
             ))}
           </SidebarMenu>

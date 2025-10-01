@@ -1,7 +1,7 @@
 import { Hero } from "@/components/common/Hero";
 import SearchSection from "@/app/trainer/search/components/SearchSection";
 import CardSection from "@/app/trainer/components/CardSection";
-import { mockTrainerCards } from "@/mock/trainerCardData";
+import { mockTrainerCards } from "@/app/trainer/components/_mock/trainerCardData";
 
 type PageProps = {
   searchParams: Promise<{ query?: string }>;

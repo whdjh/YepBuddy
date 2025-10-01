@@ -6,22 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { CategoryCardProps } from "@/types/Card";
 
-interface CategoryCardProps {
-  id: string;
-  name: string;
-  description: string;
-}
-
-export default function CategoryCard({ id, name, description }: CategoryCardProps) {
+export default function CategoryCard({ id, title, location }: CategoryCardProps) {
   return (
     <Link href={`/trainer/categories/${id}`} className="block">
       <Card className="bg-transparent border">
         <CardHeader>
           <CardTitle className="flex">
-            {name} <ChevronRightIcon className="size-6" />
+            {title} <ChevronRightIcon className="size-6" />
           </CardTitle>
-          <CardDescription className="text-base">{description}</CardDescription>
+          <CardDescription className="text-base">{location}</CardDescription>
         </CardHeader>
       </Card>
     </Link>

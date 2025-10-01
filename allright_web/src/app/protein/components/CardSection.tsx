@@ -1,4 +1,4 @@
-import ProteinCard from "@/components/common/Card/ProteinCard";
+import ProteinCard from "@/app/protein/components/ProteinCard";
 import { ProteinCardProps } from "@/types/Card";
 import VirtuoInfinityScroll from '@/components/common/VirtuoInfinityScroll';
 

@@ -14,6 +14,7 @@ export const gyms = pgTable("gyms", {
     .primaryKey()
     .generatedAlwaysAsIdentity(),
   title: text().notNull(),
+  location: text().notNull(),
   views: integer().notNull().default(0),
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
