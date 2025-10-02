@@ -7,10 +7,9 @@ import { Button } from '@/components/ui/button';
 interface DiaryHeaderProps {
   date: Date;
   onBack?: () => void;
-  onSave?: () => void;
 }
 
-export default function DiaryHeader({ date, onBack, onSave }: DiaryHeaderProps) {
+export default function DiaryHeader({ date, onBack }: DiaryHeaderProps) {
   const router = useRouter();
 
   const formattedDate = date.toLocaleDateString('ko-KR', {
@@ -30,12 +29,15 @@ export default function DiaryHeader({ date, onBack, onSave }: DiaryHeaderProps) 
 
   return (
     <div className="flex justify-center items-center gap-2">
-      <button onClick={handleBack} className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+      <button
+        type="button"
+        onClick={handleBack}
+        className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
         <ArrowLeft />
       </button>
       <h1 className="text-xl font-semibold text-white">{formattedDate}</h1>
       <Button 
-        onClick={onSave}
+        type="submit"
         className="h-[2rem] px-4 text-sm"
       >
         저장

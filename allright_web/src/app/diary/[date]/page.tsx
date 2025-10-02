@@ -1,134 +1,71 @@
 "use client";
 
-import { use, useState } from 'react';
+import { use } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import useQueryTab from '@/hooks/useQueryTab';
 import DiaryHeader from '@/app/diary/[date]/components/DiaryHeader';
 import DiaryTabNavigation from '@/app/diary/[date]/components/DiaryTabNavigation';
-import StatusCheckTab from '@/app/diary/[date]/components/StatusCheckTab';
 import ExerciseDiaryTab from '@/app/diary/[date]/components/ExerciseDiaryTab';
 import EvaluationTab from '@/app/diary/[date]/components/EvaluationTab';
+import VideoTab from '@/app/diary/[date]/components/VideoTab';
+
+interface ExerciseSet {
+  weight: string;
+  reps: string;
+}
+
+interface ExerciseItem {
+  id: string;
+  name: string;
+  sets: ExerciseSet[];
+}
+interface ExerciseData {
+  selectedBodyParts: string[];
+  exercises: ExerciseItem[];
+}
+interface DiaryForm {
+  exercise: ExerciseData;
+}
 
 export default function DiaryDate({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);
-  
-  const adjustedDateParam = new Date(dateParam);
-  adjustedDateParam.setDate(adjustedDateParam.getDate());
-  const date = adjustedDateParam;
-  
-  const { activeTab, setTab } = useQueryTab<'status' | 'exercise' | 'evaluation'>(
+  const date = new Date(dateParam);
+
+  const { activeTab, setTab } = useQueryTab<'exercise' | 'evaluation' | 'video'>(
     'tab',
-    'status',
-    ['status', 'exercise', 'evaluation']
+    'exercise',
+    ['exercise', 'evaluation', 'video']
   );
 
-  // 각 탭의 데이터 상태 관리
-  const labels = ["숙면상태", "컨디션", "활동강도"];
-
-
-  const [exerciseData, setExerciseData] = useState({
-    selectedBodyParts: ['chest'] as string[],
-    exercises: [] as Array<{
-      id: string;
-      name: string;
-      sets: Array<{ weight: string; reps: string }>;
-    }>
-  });
-
-  const [evaluationData, setEvaluationData] = useState({
-    trainerComment: '',
-    feedback: '',
-    signatureData: ''
-  });
-
-  // FormProvider 설정
-  const methods = useForm({
+  const methods = useForm<DiaryForm>({
+    mode: 'onChange',
     defaultValues: {
-      // ExerciseDiaryTab의 동적 필드들을 위한 기본값
-      exercises: {},
-      // 다른 탭들의 필드들도 추가 가능
-      status: labels,
-      evaluation: evaluationData
-    }
+      exercise: { selectedBodyParts: ['chest'], exercises: [] },
+    },
   });
 
-  const handleTabChange = (tab: 'status' | 'exercise' | 'evaluation') => {
-    setTab(tab);
+  const onSubmit = () => {
+    const exerciseOnly = methods.getValues('exercise');
+    console.log(exerciseOnly);
   };
-
-  const handleSaveAll = () => {
-    // 폼 데이터 가져오기
-    const formData = methods.getValues();
-    
-    // 운동일지 데이터에서 0인 세트 필터링
-    const filteredExerciseData = {
-      ...exerciseData,
-      exercises: exerciseData.exercises.map(exercise => ({
-        ...exercise,
-        sets: exercise.sets.filter(set => 
-          set.weight !== '0' && set.weight !== '' && 
-          set.reps !== '0' && set.reps !== ''
-        )
-      })).filter(exercise => 
-        exercise.name.trim() !== '' && exercise.sets.length > 0
-      )
-    };
-    
-    // 모든 탭 데이터를 통합 저장
-    const diaryData = {
-      date: date.toISOString().split('T')[0],
-      status: labels,
-      exercise: filteredExerciseData,
-      evaluation: evaluationData,
-      formData // 폼 데이터도 포함
-    };
-
-    console.log('=== 운동일지 저장 데이터 ===');
-    console.log('날짜:', diaryData.date);
-    console.log('상태체크 데이터:', diaryData.status);
-    console.log('운동일지 데이터:', diaryData.exercise);
-    console.log('   - 선택된 운동 부위:', diaryData.exercise.selectedBodyParts);
-    console.log('   - 운동 목록:', diaryData.exercise.exercises);
-    console.log('평가 데이터:', diaryData.evaluation);
-    
-    alert('운동일지가 저장되어 console 확인');
-  };
-
-  // TODO: 페이지 로드 시 기존 데이터 불러오기
-  // TODO: 날짜 변경 시 데이터 초기화 또는 불러오기
-  // TODO: 탭 변경 시 데이터 유지
-  // TODO: 브라우저 뒤로가기/앞으로가기 처리
-  // TODO: 데이터 유효성 검사
-  // TODO: 자동 저장 기능 (선택사항)
-  // TODO: 데이터 백업 기능
 
   return (
     <FormProvider {...methods}>
-      <div className="flex flex-col mb-6">
-        <DiaryHeader date={date} onSave={handleSaveAll} />
-        <DiaryTabNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-        
-        {/* 탭별 콘텐츠 */}
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col mb-6 p-5">
+        <DiaryHeader date={date} />
+        <DiaryTabNavigation activeTab={activeTab} onTabChange={setTab} />
+
         <div className="mt-4">
-          {activeTab === 'status' && (
-            <StatusCheckTab 
-              labels={labels}
-            />
-          )}
           {activeTab === 'exercise' && (
-            <ExerciseDiaryTab 
-              data={exerciseData} 
-              onChange={setExerciseData} 
+            <ExerciseDiaryTab
+              data={methods.getValues('exercise')}
+              onChange={(next) => methods.setValue('exercise', next, { shouldDirty: true })}
             />
           )}
-          {activeTab === 'evaluation' && (
-            <EvaluationTab 
-              data={evaluationData} 
-              onChange={setEvaluationData} 
-            />
-          )}
+          {activeTab === 'evaluation' && <VideoTab />}
+          {activeTab === 'video' && <VideoTab />}
         </div>
-      </div>
+      </form>
     </FormProvider>
   );
 }

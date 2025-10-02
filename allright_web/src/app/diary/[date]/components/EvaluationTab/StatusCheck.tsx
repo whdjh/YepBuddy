@@ -14,7 +14,7 @@ interface StatusCheckTabProps {
   labels: string[];
 }
 
-export default function StatusCheckTab({ labels }: StatusCheckTabProps) {
+export default function StatusCheck({ labels }: StatusCheckTabProps) {
   // 각 label별 선택값을 상태로 관리
   const [values, setValues] = useState<Record<string, string>>(
     Object.fromEntries(labels.map((label) => [label, "중"]))
@@ -28,7 +28,7 @@ export default function StatusCheckTab({ labels }: StatusCheckTabProps) {
   };
 
   return (
-    <div className="p-3 flex gap-5 justify-center items-center">
+    <div className="p-3 flex gap-5 justify-center items-center tab:justify-start">
       {labels.map((label) => (
         <DropdownMenu key={label}>
           <DropdownMenuTrigger asChild>

@@ -101,14 +101,11 @@ export default function ExerciseDiaryTab({ data, onChange }: ExerciseDiaryTabPro
 
       {/* 운동 기록 */}
       <div className="mb-4">
-        <ExerciseControls
+        <ExerciseTable
+          exercises={exercises}
           onAddExercise={handleAddExercise}
           onRemoveLastExercise={handleRemoveLastExercise}
           canRemove={exercises.length > 1}
-        />
-
-        <ExerciseTable
-          exercises={exercises}
           onUpdateExerciseName={handleUpdateExerciseName}
           onUpdateSet={handleUpdateSet}
           onInputFocus={handleInputFocus}
