@@ -1,8 +1,8 @@
-export interface EventData {
+export interface DiaryDatas {
   id: string;
+  name: string;
   date: string;
-  title: string;
-  type: 'event' | 'holiday' | 'task';
+  color: string;
 }
 
 export interface Exercise {

@@ -3,17 +3,7 @@
 import { useRouter } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
-
-interface EventData {
-  id: string
-  date: string
-  title: string
-  color?: string
-}
-
-const events: EventData[] = [
-  { id: "1", date: "2025-10-02", title: "하체, 유산소", color: "bg-[#a3167a]" },
-]
+import { mockDiary } from "../_mock/diaryData";
 
 export default function DiaryCalendar() {
   const router = useRouter();
@@ -25,7 +15,7 @@ export default function DiaryCalendar() {
 
     const dateString = date.toLocaleDateString("sv-SE") 
 
-    return events.filter((e) => e.date === dateString);
+    return mockDiary.filter((e) => e.date === dateString);
   }
 
   return (
@@ -58,12 +48,12 @@ export default function DiaryCalendar() {
                       <div
                         key={event.id}
                         className={cn(
-                          "w-full truncate text-[0.65rem] px-1 py-0.5 rounded-full",
+                          "w-full whitespace-pre-line break-words text-[0.65rem] px-1 py-0.5 rounded-sm",
                           event.color || "bg-[#16a34a]"
                         )}
-                        title={event.title}
+                        title={event.name}
                       >
-                        {event.title}
+                        {event.name.split(",").join("\n")}
                       </div>
                     ))}
                   </div>

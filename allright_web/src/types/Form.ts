@@ -51,3 +51,10 @@ export interface TrainerSubmitFormValues {
   intro: string;
   description: string;
 };
+
+export interface ExerciseFormValue {
+  id: string;
+  name: string;
+  date: string;
+  color: string;
+}
