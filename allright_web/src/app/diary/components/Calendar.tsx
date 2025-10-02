@@ -1,3 +1,5 @@
+"use client";
+
 import { useRouter } from "next/navigation"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"

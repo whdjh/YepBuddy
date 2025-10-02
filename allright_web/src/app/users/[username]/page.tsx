@@ -1,5 +1,11 @@
 import HeaderSection from "@/app/users/[username]/components/HeaderSection";
 import TabSection from "@/app/users/[username]/components/TabSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 유저데이터",
+  description: "유저데이터를 수정하는 페이지 입니다.",
+};
 
 interface PageProps {
   params: Promise<{ username: string }>;

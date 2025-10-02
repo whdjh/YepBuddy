@@ -1,5 +1,11 @@
 import { Hero } from "@/components/common/Hero";
 import MainSection from "@/app/gym/[id]/components/MainSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 헬스장 상세",
+  description: "해당 헬스장 내부기구를 확인할 수 있는 페이지 입니다.",
+};
 
 export default async function GymId() {
   return (

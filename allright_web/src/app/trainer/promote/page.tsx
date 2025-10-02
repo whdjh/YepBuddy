@@ -1,7 +1,11 @@
-"use client";
-
 import { Hero } from "@/components/common/Hero";
 import FormSection from "@/app/trainer/promote/components/FormSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 트레이너 홍보",
+  description: "트레이너 홍보 페이지 입니다.",
+};
 
 export default function Promote() {
   return (

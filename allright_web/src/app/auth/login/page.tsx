@@ -1,5 +1,12 @@
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import AuthCard from "@/app/auth/login/components/AuthCard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 로그인",
+  description: "로그인 페이지 입니다.",
+};
+
 
 export default function Login() {
   return (

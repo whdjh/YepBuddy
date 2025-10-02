@@ -1,6 +1,12 @@
 import { Hero } from "@/components/common/Hero";
 import CardSection from "@/app/trainer/categories/components/CardSection";
 import { mockCategoriesCards } from "@/app/trainer/categories/components/_mock/categoryCardData";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 헬스장별 트레이너",
+  description: "헬스장별 트레이너 페이지 입니다.",
+};
 
 export default function Categories() {
   return (

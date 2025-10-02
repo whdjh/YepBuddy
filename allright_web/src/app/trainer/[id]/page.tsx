@@ -1,5 +1,11 @@
 import HeaderSection from "@/app/trainer/[id]/components/HeaderSection";
 import TabSection from "@/app/trainer/[id]/components/TabSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Allright | 트레이너 상세",
+  description: "트레이너 상세 페이지 입니다.",
+};
 
 type PageProps = {
   params: Promise<{ id: string }>;
