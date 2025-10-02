@@ -1,18 +1,17 @@
 'use client';
 
 import { useTempoStore } from '@/stores/useTempo';
-import { useForm, FormProvider, Controller } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import InputPair from '@/components/common/InputPair';
+import SelectPair from '@/components/common/SelectPair';
 import { Hero } from '@/components/common/Hero';
 import { ManualTempoFormValues } from '@/types/Form';
 
 export default function TempoManual() {
   const router = useRouter();
   const { setFormValue } = useTempoStore();
-
-  const availableReps = [8, 10, 12, 15, 18, 20];
 
   const methods = useForm<ManualTempoFormValues>({
     defaultValues: {
@@ -23,7 +22,7 @@ export default function TempoManual() {
     shouldUnregister: false,
   });
 
-  const { handleSubmit, control, watch } = methods;
+  const { handleSubmit, watch } = methods;
   const nameValue = watch('name') ?? '';
   const selectedReps = watch('reps');
 
@@ -41,14 +40,14 @@ export default function TempoManual() {
 
   return (
     <>
-      <div className="hidden tab:block">
+      <div className="hidden mob:block">
         <Hero title="모바일 버전" subtitle="간단한 카운팅" />
       </div>
 
       <FormProvider {...methods}>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
+          className="w-full h-full flex flex-col gap-10 p-5 justify-center"
         >
           {/* 운동 종목 */}
           <InputPair
@@ -57,41 +56,25 @@ export default function TempoManual() {
             required
             id="name"
             name="name"
+            className='w-full'
             rules={{ required: "운동 이름을 입력하세요." }}
           />
 
-          {/* 반복 횟수 선택 */}
-          <div className="w-full max-w-md">
-            <p className="font-medium mb-2">반복 횟수</p>
-            <Controller
-              name="reps"
-              control={control}
-              rules={{ required: '반복 횟수를 선택해주세요.' }}
-              render={({ field }) => (
-                <div className="flex flex-wrap gap-3">
-                  {availableReps.map((r) => {
-                    const checked = field.value === r;
-                    return (
-                      <label
-                        key={r}
-                        className={`cursor-pointer px-3 py-2 rounded-lg border ${checked ? 'border-emerald-600 ring-1 ring-emerald-600' : 'border-white/10'
-                          }`}
-                      >
-                        <input
-                          type="radio"
-                          className="mr-2"
-                          value={r}
-                          checked={checked}
-                          onChange={() => field.onChange(r)}
-                        />
-                        {r}회
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-            />
-          </div>
+          {/* 운동 횟수 */}
+          <SelectPair
+            label="운동 횟수"
+            description="운동 횟수를 고르세요."
+            name="reps"
+            placeholder="8회"
+            options={[
+              { label: "8회", value: "8" },
+              { label: "10회", value: "10" },
+              { label: "12회", value: "12" },
+              { label: "15회", value: "15" },
+              { label: "18회", value: "18" },
+              { label: "20회", value: "20" },
+            ]}
+          />
 
           {/* 운동 시작 버튼 */}
           <Button type="submit" disabled={!canSubmit}>

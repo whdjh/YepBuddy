@@ -23,11 +23,8 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
   );
 
   // 각 탭의 데이터 상태 관리
-  const [statusData, setStatusData] = useState({
-    sleepStatus: 'medium' as 'high' | 'medium' | 'low',
-    condition: 'medium' as 'high' | 'medium' | 'low',
-    activityLevel: 'medium' as 'high' | 'medium' | 'low'
-  });
+  const labels = ["숙면상태", "컨디션", "활동강도"];
+
 
   const [exerciseData, setExerciseData] = useState({
     selectedBodyParts: ['chest'] as string[],
@@ -50,7 +47,7 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
       // ExerciseDiaryTab의 동적 필드들을 위한 기본값
       exercises: {},
       // 다른 탭들의 필드들도 추가 가능
-      status: statusData,
+      status: labels,
       evaluation: evaluationData
     }
   });
@@ -80,7 +77,7 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
     // 모든 탭 데이터를 통합 저장
     const diaryData = {
       date: date.toISOString().split('T')[0],
-      status: statusData,
+      status: labels,
       exercise: filteredExerciseData,
       evaluation: evaluationData,
       formData // 폼 데이터도 포함
@@ -115,8 +112,7 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
         <div className="mt-4">
           {activeTab === 'status' && (
             <StatusCheckTab 
-              data={statusData} 
-              onChange={setStatusData} 
+              labels={labels}
             />
           )}
           {activeTab === 'exercise' && (

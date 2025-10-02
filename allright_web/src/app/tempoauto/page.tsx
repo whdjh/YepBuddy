@@ -87,7 +87,7 @@ export default function TempoAuto() {
       <FormProvider {...methods}>
         <form
           onSubmit={methods.handleSubmit(onSubmit)}
-          className="w-full h-full flex flex-col gap-10 p-1 justify-center items-center"
+          className="w-full h-full flex flex-col gap-10 p-3 justify-center items-center"
         >
           <ButtonSection selected={selected} setSelected={setSelected} />
           <InputSection />

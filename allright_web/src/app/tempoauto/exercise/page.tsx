@@ -19,7 +19,7 @@ export default function Exercise() {
 
   useEffect(() => {
     const startExercise = async () => {
-      await new Promise(res => setTimeout(res, 5000));
+      await new Promise(res => setTimeout(res, 10000));
 
       let tempSet = 0;
 
@@ -106,6 +106,10 @@ export default function Exercise() {
       ) : (
         // 운동 진행 UI
         <>
+          <div className="bg-red-500 text-black p-3 rounded-md text-center font-bold">
+            <p>10초뒤 자동으로 재생됩니다.</p>
+          </div>
+
           <div className="bg-emerald-600/80 p-6 rounded-2xl">
             <p className="text-white text-xl font-semibold text-center">현재 운동 종목</p>
             <p className="text-white text-3xl font-bold text-center">{tempoFormValues.name}</p>
