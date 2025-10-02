@@ -18,7 +18,7 @@ export default function TempoManual() {
       name: '',
       reps: null,
     },
-    mode: 'onChange',
+    mode: 'all',
     shouldUnregister: false,
   });
 
@@ -51,13 +51,19 @@ export default function TempoManual() {
         >
           {/* 운동 종목 */}
           <InputPair
-            label="운동 이름"
-            description="운동 이름을 적어보세요."
+            label="운동명"
+            description="운동명을 적어보세요."
             required
             id="name"
             name="name"
             className='w-full'
-            rules={{ required: "운동 이름을 입력하세요." }}
+            rules={{
+              required: "운동명을 입력하세요",
+              pattern: {
+                value: /^[A-Za-z가-힣\s]+$/,
+                message: "운동 이름은 영어와 한국어만 가능합니다",
+              },
+            }}
           />
 
           {/* 운동 횟수 */}

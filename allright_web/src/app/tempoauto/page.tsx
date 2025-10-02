@@ -16,7 +16,7 @@ export default function TempoAuto() {
   const [isSubmit, setIsSubmit] = useState(false);
 
   const methods = useForm<AutoTempoFormValues>({
-    mode: 'onChange',
+    mode: 'all',
     defaultValues: tempoFormValues,
     shouldUnregister: false,
   });
