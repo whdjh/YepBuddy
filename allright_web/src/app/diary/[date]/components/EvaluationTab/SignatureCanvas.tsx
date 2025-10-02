@@ -4,10 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 interface SignatureCanvasProps {
+  value?: string;               // dataURL 초기값
   onSave?: (signatureData: string) => void;
 }
 
-export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
+export default function SignatureCanvas({ value, onSave }: SignatureCanvasProps) {
   const [isDrawing, setIsDrawing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
@@ -16,7 +17,7 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const resizeCanvas = () => {
+    const setup = () => {
       const rect = canvas.getBoundingClientRect();
       const scale = window.devicePixelRatio || 1;
 
@@ -25,31 +26,30 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
       canvas.style.width = `${rect.width}px`;
       canvas.style.height = `${rect.height}px`;
 
-      const context = canvas.getContext("2d");
-      if (!context) return;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-      context.scale(scale, scale);
-      context.lineCap = "round";
-      context.strokeStyle = "#16a34a";
-      context.lineWidth = 2;
-      contextRef.current = context;
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#16a34a";
+      ctx.lineWidth = 2;
+      contextRef.current = ctx;
+
+      if (value) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        };
+        img.src = value;
+      }
     };
 
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    const preventScroll = (e: TouchEvent) => e.preventDefault();
-    canvas.addEventListener("touchstart", preventScroll, { passive: false });
-    canvas.addEventListener("touchmove", preventScroll, { passive: false });
-    canvas.addEventListener("touchend", preventScroll, { passive: false });
-
-    return () => {
-      window.removeEventListener("resize", resizeCanvas);
-      canvas.removeEventListener("touchstart", preventScroll);
-      canvas.removeEventListener("touchmove", preventScroll);
-      canvas.removeEventListener("touchend", preventScroll);
-    };
-  }, []);
+    setup();
+    const onResize = () => setup();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [value]);
 
   const handleStartDrawing = (event: React.MouseEvent | React.TouchEvent) => {
     if (!("touches" in event)) event.preventDefault();
@@ -85,7 +85,8 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
 
   const handleClearSignature = () => {
     if (!contextRef.current || !canvasRef.current) return;
-    contextRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    const c = canvasRef.current;
+    contextRef.current.clearRect(0, 0, c.width, c.height);
   };
 
   const handleSaveSignature = () => {
@@ -113,10 +114,19 @@ export default function SignatureCanvas({ onSave }: SignatureCanvasProps) {
       </div>
 
       <div className="flex gap-2 justify-center items-center">
-        <Button variant="outline" onClick={handleClearSignature} className="h-[2rem] text-sm w-[10rem]">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleClearSignature}
+          className="h-[2rem] text-sm w-[10rem]"
+        >
           지우기
         </Button>
-        <Button onClick={handleSaveSignature} className="h-[2rem] text-sm w-[10rem]">
+        <Button
+          type="button"
+          onClick={handleSaveSignature}
+          className="h-[2rem] text-sm w-[10rem]"
+        >
           저장
         </Button>
       </div>

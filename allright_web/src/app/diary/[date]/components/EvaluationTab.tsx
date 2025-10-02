@@ -1,41 +1,24 @@
 "use client";
 
-import { useState } from "react";
 import { Label } from "@/components/ui/label";
 import InputPair from "@/components/common/InputPair";
 import SignatureCanvas from "@/app/diary/[date]/components/EvaluationTab/SignatureCanvas";
 import StatusCheck from "@/app/diary/[date]/components/EvaluationTab/StatusCheck";
 import { useToastStore } from "@/stores/useToastStore";
-
-interface EvaluationData {
-  comment: string;
-  signatureData: string;
-  status?: Record<string, string>;
-}
+import type { EvaluationData, EvaluationStatus } from "@/types/Diary";
 
 interface EvaluationTabProps {
-  data?: EvaluationData;
-  onChange?: (data: EvaluationData) => void;
+  data: EvaluationData;
+  onChange: (data: EvaluationData) => void;
 }
 
 export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
-  const [comment, setComment] = useState(data?.comment || "");
-  const [signatureData, setSignatureData] = useState<string>(data?.signatureData || "");
   const { show: showToast } = useToastStore();
 
-  const handleDataChange = (newData: Partial<EvaluationData>) => {
-    const updatedData = { comment, signatureData, ...newData };
-    onChange?.(updatedData);
-  };
-
-  const handleCommentChange = (value: string) => {
-    setComment(value);
-    handleDataChange({ comment: value });
-  };
-
-  const handleSignatureSave = (data: string) => {
-    setSignatureData(data);
-    handleDataChange({ signatureData: data });
+  const setStatus = (next: EvaluationStatus) => onChange({ ...data, status: next });
+  const setComment = (value: string) => onChange({ ...data, comment: value });
+  const setSignature = (png: string) => {
+    onChange({ ...data, signatureData: png });
     showToast("사인이 저장되었습니다");
   };
 
@@ -44,6 +27,8 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
       <div className="flex flex-col gap-6">
         <StatusCheck
           labels={["숙면상태", "컨디션", "활동강도"]}
+          value={data.status}
+          onChange={setStatus}
         />
 
         <InputPair
@@ -53,8 +38,8 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
           id="comment"
           name="comment"
           isTextArea
-          value={comment}
-          onChange={(e) => handleCommentChange(e.target.value)}
+          value={data.comment}
+          onChange={(e) => setComment(e.target.value)}
           rules={{ required: "코멘트를 입력하세요" }}
         />
 
@@ -64,7 +49,7 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
             <small className="text-muted-foreground">PT 회원의 사인을 받아 PT 확인을 받으세요.</small>
           </Label>
           <div className="border border-gray-600 rounded-md p-4 h-[150px]">
-            <SignatureCanvas onSave={handleSignatureSave} />
+            <SignatureCanvas value={data.signatureData} onSave={setSignature} />
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,22 +8,20 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { EvaluationStatus } from "@/types/Diary";
 
-interface StatusCheckTabProps {
-  labels: string[];
+interface StatusCheckProps {
+  labels: Array<keyof EvaluationStatus>;
+  value: EvaluationStatus;
+  onChange: (next: EvaluationStatus) => void;
 }
 
-export default function StatusCheck({ labels }: StatusCheckTabProps) {
-  // 각 label별 선택값을 상태로 관리
-  const [values, setValues] = useState<Record<string, string>>(
-    Object.fromEntries(labels.map((label) => [label, "중"]))
-  );
-
-  const handleChange = (label: string, newValue: string) => {
-    setValues((prev) => ({
-      ...prev,
+export default function StatusCheck({ labels, value, onChange }: StatusCheckProps) {
+  const handleChange = (label: keyof EvaluationStatus, newValue: string) => {
+    onChange({
+      ...value,
       [label]: newValue,
-    }));
+    } as EvaluationStatus);
   };
 
   return (
@@ -33,12 +30,12 @@ export default function StatusCheck({ labels }: StatusCheckTabProps) {
         <DropdownMenu key={label}>
           <DropdownMenuTrigger asChild>
             <Button variant="outline">
-              {label}: {values[label]}
+              {label}: {value[label]}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-full">
             <DropdownMenuRadioGroup
-              value={values[label]}
+              value={value[label]}
               onValueChange={(val) => handleChange(label, val)}
             >
               <DropdownMenuRadioItem value="상">상</DropdownMenuRadioItem>

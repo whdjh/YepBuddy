@@ -8,85 +8,86 @@ import DiaryTabNavigation from "@/app/diary/[date]/components/DiaryTabNavigation
 import ExerciseDiaryTab from "@/app/diary/[date]/components/ExerciseDiaryTab";
 import EvaluationTab from "@/app/diary/[date]/components/EvaluationTab";
 import VideoTab from "@/app/diary/[date]/components/VideoTab";
+import type { ExerciseData, EvaluationData, EvaluationStatus } from "@/types/Diary";
 
-interface ExerciseSet {
-  weight: string;
-  reps: string;
-}
-interface ExerciseItem {
-  id: string;
-  name: string;
-  sets: ExerciseSet[];
-}
-interface ExerciseData {
-  selectedBodyParts: string[];
-  exercises: ExerciseItem[];
-}
 interface DiaryForm {
+  dateISO: string;
   exercise: ExerciseData;
+  evaluation: EvaluationData;
+  videos: string[];
 }
 
-export default function DiaryDate({
-  params,
-}: {
-  params: Promise<{ date: string }>;
-}) {
+const DEFAULT_STATUS: EvaluationStatus = { 숙면상태: "중", 컨디션: "중", 활동강도: "중" };
+
+export default function DiaryDate({ params }: { params: Promise<{ date: string }> }) {
   const { date: dateParam } = use(params);
   const date = new Date(dateParam);
 
-  const { activeTab, setTab } = useQueryTab<
-    "exercise" | "evaluation" | "video"
-  >("tab", "exercise", ["exercise", "evaluation", "video"]);
+  const { activeTab, setTab } = useQueryTab<"exercise" | "evaluation" | "video">(
+    "tab",
+    "exercise",
+    ["exercise", "evaluation", "video"]
+  );
 
   const methods = useForm<DiaryForm>({
     mode: "onChange",
+    shouldUnregister: false,
     defaultValues: {
+      dateISO: date.toISOString().split("T")[0],
       exercise: { selectedBodyParts: ["chest"], exercises: [] },
+      evaluation: { status: DEFAULT_STATUS, comment: "", signatureData: "" },
+      videos: [],
     },
   });
 
-  // 버튼 비활성화
+  // watch로 값을 구독해야 렌더가 갱신된다
   const exercise = methods.watch("exercise");
+  const evaluation = methods.watch("evaluation");
+
   const canSave = (() => {
-    if (!exercise) return false;
-    if (!exercise.exercises || exercise.exercises.length === 0) return false;
+    if (!exercise || !exercise.exercises?.length) return false;
     return exercise.exercises.some((ex) => {
       const hasName = ex.name.trim() !== "";
       const hasValidSet =
-        Array.isArray(ex.sets) &&
-        ex.sets.some(
+        ex.sets?.some(
           (s) =>
             (s.weight.trim() !== "" && s.weight !== "0") ||
             (s.reps.trim() !== "" && s.reps !== "0")
-        );
+        ) ?? false;
       return hasName || hasValidSet;
     });
   })();
 
   const onSubmit = () => {
-    const exerciseOnly = methods.getValues("exercise");
-    console.log(exerciseOnly);
+    const payload = methods.getValues();
+    console.log("SAVE PAYLOAD:", payload);
   };
 
   return (
     <FormProvider {...methods}>
-      <form
-        onSubmit={methods.handleSubmit(onSubmit)}
-        className="flex flex-col mb-6 p-5"
-      >
+      <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col mb-6 p-5">
         <DiaryHeader date={date} saveDisabled={!canSave} />
         <DiaryTabNavigation activeTab={activeTab} onTabChange={setTab} />
 
         <div className="mt-4">
           {activeTab === "exercise" && (
             <ExerciseDiaryTab
-              data={methods.getValues("exercise")}
+              data={exercise}
               onChange={(next) =>
                 methods.setValue("exercise", next, { shouldDirty: true })
               }
             />
           )}
-          {activeTab === "evaluation" && <EvaluationTab />}
+
+          {activeTab === "evaluation" && (
+            <EvaluationTab
+              data={evaluation}
+              onChange={(next) =>
+                methods.setValue("evaluation", next, { shouldDirty: true })
+              }
+            />
+          )}
+
           {activeTab === "video" && <VideoTab />}
         </div>
       </form>
