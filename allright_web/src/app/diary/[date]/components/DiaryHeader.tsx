@@ -1,45 +1,44 @@
 "use client";
 
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface DiaryHeaderProps {
   date: Date;
   onBack?: () => void;
+  saveDisabled?: boolean;
 }
 
-export default function DiaryHeader({ date, onBack }: DiaryHeaderProps) {
+export default function DiaryHeader({ date, onBack, saveDisabled }: DiaryHeaderProps) {
   const router = useRouter();
-
-  const formattedDate = date.toLocaleDateString('ko-KR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'long'
+  const formattedDate = date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "long",
   });
 
   const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      router.push('/diary');
-    }
+    if (onBack) onBack();
+    else router.push("/diary");
   };
 
   return (
     <div className="flex justify-center items-center gap-2">
-      <button
+      <Button
         type="button"
         onClick={handleBack}
-        className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+        className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+        variant={"destructive"}
+      >
         <ArrowLeft />
-      </button>
+      </Button>
       <h1 className="text-xl font-semibold text-white">{formattedDate}</h1>
-      <Button 
+      <Button
         type="submit"
         className="h-[2rem] px-4 text-sm"
-      >
+        disabled={saveDisabled}>
         저장
       </Button>
     </div>

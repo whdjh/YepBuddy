@@ -47,8 +47,8 @@ export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
         />
 
         <InputPair
-          label="트레이너 코멘트"
-          description="운동에 대한 한줄평을 적어주세요."
+          label="코멘트"
+          description="운동에 대한 코멘트를 적어주세요."
           required
           id="comment"
           name="comment"
