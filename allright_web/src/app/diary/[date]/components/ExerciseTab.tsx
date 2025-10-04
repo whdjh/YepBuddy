@@ -7,7 +7,7 @@ interface ExerciseDiaryViewProps {
   maxSets?: number;
 }
 
-export default function ExerciseSection({ data, maxSets = 10 }: ExerciseDiaryViewProps) {
+export default function ExerciseTab({ data, maxSets = 10 }: ExerciseDiaryViewProps) {
   const partsLabel: Record<string, string> = {
     chest: "가슴",
     back: "등",

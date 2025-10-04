@@ -12,7 +12,6 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
     <div>
       <DiaryHeader date={date} />
       <DiaryTabSection />
-
     </div>
   );
 }

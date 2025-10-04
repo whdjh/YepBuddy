@@ -1,8 +1,16 @@
 "use client";
 
 import useQueryTab from "@/hooks/useQueryTab";
-import ExerciseSection from "./ExerciseSection";
+import ExerciseTab from "./ExerciseTab";
 import type { ExerciseData } from "@/types/Diary";
+import EvaluationTab from "./EvaluationTab";
+import type { EvaluationData } from "@/types/Diary";
+
+const mockEval: EvaluationData = {
+  status: { 숙면상태: "중", 컨디션: "상", 활동강도: "중" },
+  comment: "오늘은 벤치 프레스 중량이 잘 나왔어요.",
+  signatureData: "",
+};
 
 const mock: ExerciseData = {
   selectedBodyParts: ["chest", "arms"],
@@ -60,11 +68,11 @@ export default function DiaryTabSection() {
       </div>
       <div className="mt-4">
         {activeTab === "exercise" && (
-          <ExerciseSection data={mock} maxSets={10} />
+          <ExerciseTab data={mock} maxSets={10} />
         )}
 
         {activeTab === "evaluation" && (
-          <div>평가</div>
+          <EvaluationTab data={mockEval} />
         )}
 
         {activeTab === "video" && (
