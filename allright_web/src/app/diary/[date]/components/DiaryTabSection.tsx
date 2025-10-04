@@ -5,6 +5,8 @@ import ExerciseTab from "./ExerciseTab";
 import type { ExerciseData } from "@/types/Diary";
 import EvaluationTab from "./EvaluationTab";
 import type { EvaluationData } from "@/types/Diary";
+import VideoTab from "./VideoTab";
+import WorkDoneTab from "./WorkDoneTab";
 
 const mockEval: EvaluationData = {
   status: { 숙면상태: "중", 컨디션: "상", 활동강도: "중" },
@@ -16,8 +18,8 @@ const mock: ExerciseData = {
   selectedBodyParts: ["chest", "arms"],
   exercises: [
     {
-      id: "e1",
-      name: "벤치프레스",
+      id: "1",
+      name: "플라이",
       sets: [
         { weight: "60", reps: "10" },
         { weight: "70", reps: "8" },
@@ -25,8 +27,8 @@ const mock: ExerciseData = {
       ],
     },
     {
-      id: "e2",
-      name: "덤벨컬",
+      id: "2",
+      name: "렛풀다운",
       sets: [
         { weight: "12.5", reps: "12" },
         { weight: "12.5", reps: "10" },
@@ -34,6 +36,10 @@ const mock: ExerciseData = {
     },
   ],
 };
+
+const videos: string[] = [];
+const photos: string[] = [];
+
 
 export default function DiaryTabSection() {
   const { activeTab, setTab } = useQueryTab<"exercise" | "evaluation" | "video" | "wod">(
@@ -76,11 +82,11 @@ export default function DiaryTabSection() {
         )}
 
         {activeTab === "video" && (
-          <div>운동영상</div>
+          <VideoTab urls={videos} />
         )}
 
         {activeTab === "wod" && (
-          <div>오운완</div>
+          <WorkDoneTab urls={photos} />
         )}
       </div>
     </>
