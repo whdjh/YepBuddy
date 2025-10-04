@@ -38,7 +38,7 @@ export default function HeaderSection({
                 />
               ))}
             </div>
-            <span className="text-muted-foreground">{reviewCount} reviews</span>
+            <span className="text-muted-foreground">{reviewCount}개 리뷰</span>
           </div>
         </div>
         </div>

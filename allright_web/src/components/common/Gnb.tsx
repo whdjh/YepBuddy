@@ -257,9 +257,9 @@ export default function Gnb({
                       <DropdownMenuContent className="w-[300px]">
                         <DropdownMenuLabel className="flex flex-col">
                           {/** 실제 API로 변경 */}
-                          <span className="font-medium">이주훈</span>
+                          <span className="font-medium">사용자명</span>
                           {/** 실제 API로 변경 */}
-                          <span className="text-xs text-muted-foreground">@wngns9807</span>
+                          <span className="text-xs text-muted-foreground">@idididid</span>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
@@ -336,9 +336,9 @@ export default function Gnb({
               <DropdownMenuContent className="w-[300px]">
                 <DropdownMenuLabel className="flex flex-col">
                   {/** 실제 API로 변경 */}
-                  <span className="font-medium">이주훈</span>
+                  <span className="font-medium">사용자명</span>
                   {/** 실제 API로 변경 */}
-                  <span className="text-xs text-muted-foreground">@wngns9807</span>
+                  <span className="text-xs text-muted-foreground">@idididididi</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
