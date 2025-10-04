@@ -1,12 +1,12 @@
 "use client";
 
 import useQueryTab from "@/hooks/useQueryTab";
-import ExerciseTab from "./ExerciseTab";
+import ExerciseTab from "@/app/diary/[date]/components/ExerciseTab";
+import EvaluationTab from "@/app/diary/[date]/components/EvaluationTab";
+import VideoTab from "@/app/diary/[date]/components/VideoTab";
+import WorkDoneTab from "@/app/diary/[date]/components/WorkDoneTab";
 import type { ExerciseData } from "@/types/Diary";
-import EvaluationTab from "./EvaluationTab";
 import type { EvaluationData } from "@/types/Diary";
-import VideoTab from "./VideoTab";
-import WorkDoneTab from "./WorkDoneTab";
 
 const mockEval: EvaluationData = {
   status: { 숙면상태: "중", 컨디션: "상", 활동강도: "중" },
