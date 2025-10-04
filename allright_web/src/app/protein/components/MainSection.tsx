@@ -9,6 +9,7 @@ import { mockProteins } from "@/app/protein/components/_mock/proteinCardData";
 import useQueryTab from "@/hooks/useQueryTab";
 
 type TabKey = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
+
 export default function MainSection() {
   const pathname = usePathname();
     const searchParams = useSearchParams();

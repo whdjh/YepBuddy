@@ -1,6 +1,7 @@
 import { Hero } from "@/components/common/Hero";
 import MainSection from "./components/MainSection";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "단백질 | Allright",
@@ -11,7 +12,9 @@ export default function Protein() {
   return (
     <div className="p-2 tab:p-5 space-y-5 tab:space-y-20">
       <Hero title="프로틴" subtitle="프로틴 목록" />
-      <MainSection />
+      <Suspense fallback={null}>
+        <MainSection />
+      </Suspense>
     </div>
   );
 }
