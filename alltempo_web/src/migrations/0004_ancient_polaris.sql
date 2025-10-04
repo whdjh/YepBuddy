@@ -1,1 +1,0 @@
-ALTER TABLE "gyms" RENAME COLUMN "idea" TO "gym";
