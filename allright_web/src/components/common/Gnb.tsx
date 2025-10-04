@@ -67,6 +67,14 @@ const menus: Menu[] = [
     ],
   },
   {
+    name: "단백질",
+    href: "/protein",
+  },
+  {
+    name: "헬스장",
+    href: "/gym",
+  },
+  {
     name: "운동일지",
     href: "/diary",
   },
@@ -81,14 +89,6 @@ const menus: Menu[] = [
       { name: "트레이너 등록", description: "트레이너로 내 프로필 등록", href: "/trainer/submit" },
       { name: "트레이너 홍보", description: "내 활동 홍보", href: "/trainer/promote" },
     ],
-  },
-  {
-    name: "헬스장",
-    href: "/gym",
-  },
-  {
-    name: "단백질",
-    href: "/protein",
   },
 ];
 
