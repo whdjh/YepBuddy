@@ -18,7 +18,7 @@ export default function ExerciseTab({ data, maxSets = 10 }: ExerciseTabProps) {
   };
 
   return (
-    <div className="text-white max-w-[940px]">
+    <div className="max-w-[930px]">
       <div className="mb-6">
         <label className="text-base font-medium mb-3 block">오늘 운동 부위</label>
         <div className="flex gap-2 flex-wrap">
@@ -33,17 +33,17 @@ export default function ExerciseTab({ data, maxSets = 10 }: ExerciseTabProps) {
         </div>
       </div>
 
-      <div className="border border-gray-700 rounded-lg overflow-hidden">
+      <div className="border border-white/10 rounded-lg overflow-hidden">
         <div className="overflow-x-auto hide-scrollbar">
           {/* 헤더 1행: 제목 셀 + 세트 번호 */}
           <div className="flex">
-            <div className="w-32 py-2 text-center text-xs font-medium text-gray-300 flex-shrink-0 border-r border-gray-700 flex items-center justify-center">
+            <div className="w-32 py-2 text-center text-xs font-medium flex-shrink-0 border-r border-white/10 flex items-center justify-center">
               운동종목
             </div>
             {Array.from({ length: maxSets }, (_, i) => i + 1).map((setNum) => (
               <div
                 key={`h1-${setNum}`}
-                className="w-20 px-1 py-2 text-center text-xs font-medium text-gray-300 flex-shrink-0 border-b border-gray-700 border-r"
+                className="w-20 px-1 py-2 text-center text-xs font-medium flex-shrink-0 border-b border-white/10 border-r"
               >
                 {setNum}세트
               </div>
@@ -52,11 +52,11 @@ export default function ExerciseTab({ data, maxSets = 10 }: ExerciseTabProps) {
 
           {/* 헤더 2행: 무게/횟수 라벨 */}
           <div className="flex">
-            <div className="w-32 px-3 py-1 flex-shrink-0 border-r border-gray-700 border-b" />
+            <div className="w-32 px-3 py-1 flex-shrink-0 border-r border-white/10 border-b" />
             {Array.from({ length: maxSets }, (_, i) => i + 1).map((setNum) => (
               <div
                 key={`h2-${setNum}`}
-                className="w-20 px-1 py-1 text-center text-xs font-medium text-gray-300 flex-shrink-0 border-b border-gray-700 border-r"
+                className="w-20 px-1 py-1 text-center text-xs font-medium flex-shrink-0 border-b border-white/10 border-r"
               >
                 <div className="flex gap-1 justify-center">
                   <span className="w-8">무게</span>
@@ -67,8 +67,8 @@ export default function ExerciseTab({ data, maxSets = 10 }: ExerciseTabProps) {
           </div>
 
           {(data.exercises ?? []).map((ex) => (
-            <div key={ex.id} className="flex border-b border-gray-700 last:border-b-0">
-              <div className="w-32 px-3 py-2 flex-shrink-0 border-r border-gray-700 text-xs">
+            <div key={ex.id} className="flex border-b border-white/10 last:border-b-0">
+              <div className="w-32 px-3 py-2 flex-shrink-0 border-r border-white/10 text-xs">
                 {ex.name}
               </div>
 
@@ -84,13 +84,13 @@ export default function ExerciseTab({ data, maxSets = 10 }: ExerciseTabProps) {
                 return (
                   <div
                     key={`r-${ex.id}-${idx}`}
-                    className="w-20 px-1 py-2 flex-shrink-0 border-r border-gray-700"
+                    className="w-20 px-1 py-2 flex-shrink-0 border-r border-white/10"
                   >
                     <div className="flex gap-1 justify-center text-xs">
-                      <span className="w-8 text-gray-200 text-center">
+                      <span className="w-8 text-center">
                         {isEmpty ? "-" : weight}
                       </span>
-                      <span className="w-8 text-gray-200 text-center">
+                      <span className="w-8 text-center">
                         {isEmpty ? "-" : reps}
                       </span>
                     </div>
