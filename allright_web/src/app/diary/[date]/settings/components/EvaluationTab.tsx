@@ -2,8 +2,8 @@
 
 import { Label } from "@/components/ui/label";
 import InputPair from "@/components/common/InputPair";
-import SignatureCanvas from "@/app/diary/[date]/components/EvaluationTab/SignatureCanvas";
-import StatusCheck from "@/app/diary/[date]/components/EvaluationTab/StatusCheck";
+import SignatureCanvas from "@/app/diary/[date]/settings/components/EvaluationTab/SignatureCanvas";
+import StatusCheck from "@/app/diary/[date]/settings/components/EvaluationTab/StatusCheck";
 import { useToastStore } from "@/stores/useToastStore";
 import type { EvaluationData, EvaluationStatus } from "@/types/Diary";
 

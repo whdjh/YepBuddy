@@ -7,9 +7,10 @@ import { Button } from "@/components/ui/button";
 interface DiaryHeaderProps {
   date: Date;
   onBack?: () => void;
+  saveDisabled?: boolean;
 }
 
-export default function DiaryHeader({ date, onBack }: DiaryHeaderProps) {
+export default function DiaryHeader({ date, onBack, saveDisabled }: DiaryHeaderProps) {
   const router = useRouter();
   const formattedDate = date.toLocaleDateString("ko-KR", {
     year: "numeric",
@@ -27,11 +28,7 @@ export default function DiaryHeader({ date, onBack }: DiaryHeaderProps) {
 
   const handleBack = () => {
     if (onBack) onBack();
-    else router.push("/diary");
-  };
-
-  const handleEdit = () => {
-    router.push(`/diary/${toYmd(date)}/settings`);
+    else router.push(`/diary/${toYmd(date)}`);
   };
 
   return (
@@ -46,11 +43,11 @@ export default function DiaryHeader({ date, onBack }: DiaryHeaderProps) {
       </Button>
       <h1 className="text-xl font-semibold text-white">{formattedDate}</h1>
       <Button
-        type="button"
-        onClick={handleEdit}
+        type="submit"
         className="h-[2rem] px-4 text-sm"
+        disabled={saveDisabled}
       >
-        수정
+        저장
       </Button>
     </div>
   );
