@@ -5,6 +5,7 @@ import {
   text,
   timestamp,
   uuid,
+  date
 } from "drizzle-orm/pg-core";
 import { profiles } from "../users/[username]/schema";
 
@@ -16,6 +17,7 @@ export const proteins = pgTable("proteins", {
   title: text().notNull(),
   weight: text().notNull(),
   avatarFile: text().notNull(),
+  date: date({ mode: "string" }).notNull(),
   topic: text().notNull(),
   taste: text().notNull(),
   price: text().notNull(),

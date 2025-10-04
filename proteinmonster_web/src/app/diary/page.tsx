@@ -7,7 +7,6 @@ export const metadata: Metadata = {
   description: "운동일지 페이지 입니다.",
 };
 
-
 export default function Diary() {
   return (
     <>

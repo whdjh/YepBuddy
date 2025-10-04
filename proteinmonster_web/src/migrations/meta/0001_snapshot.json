@@ -1,9 +1,278 @@
 {
-  "id": "0ad51cf1-d366-4307-a4a5-bd95aa3971e7",
-  "prevId": "1cec0009-496f-4d3b-a2f8-847361ebd93f",
+  "id": "b7367b49-15f5-4878-85d1-a6f67e0ee793",
+  "prevId": "1114b159-60e0-460e-9dfa-83560b54e3d9",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
+    "public.gyms": {
+      "name": "gyms",
+      "schema": "",
+      "columns": {
+        "gym_id": {
+          "name": "gym_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "gyms_gym_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "views": {
+          "name": "views",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.gyms_likes": {
+      "name": "gyms_likes",
+      "schema": "",
+      "columns": {
+        "gym_id": {
+          "name": "gym_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "gyms_likes_gym_id_gyms_gym_id_fk": {
+          "name": "gyms_likes_gym_id_gyms_gym_id_fk",
+          "tableFrom": "gyms_likes",
+          "tableTo": "gyms",
+          "columnsFrom": [
+            "gym_id"
+          ],
+          "columnsTo": [
+            "gym_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "gyms_likes_profile_id_profiles_profile_id_fk": {
+          "name": "gyms_likes_profile_id_profiles_profile_id_fk",
+          "tableFrom": "gyms_likes",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "gyms_likes_gym_id_profile_id_pk": {
+          "name": "gyms_likes_gym_id_profile_id_pk",
+          "columns": [
+            "gym_id",
+            "profile_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.proteins": {
+      "name": "proteins",
+      "schema": "",
+      "columns": {
+        "protein_id": {
+          "name": "protein_id",
+          "type": "bigint",
+          "primaryKey": true,
+          "notNull": true,
+          "identity": {
+            "type": "always",
+            "name": "proteins_protein_id_seq",
+            "schema": "public",
+            "increment": "1",
+            "startWith": "1",
+            "minValue": "1",
+            "maxValue": "9223372036854775807",
+            "cache": "1",
+            "cycle": false
+          }
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "weight": {
+          "name": "weight",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "avatarFile": {
+          "name": "avatarFile",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topic": {
+          "name": "topic",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "taste": {
+          "name": "taste",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "price": {
+          "name": "price",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.proteins_likes": {
+      "name": "proteins_likes",
+      "schema": "",
+      "columns": {
+        "protein_id": {
+          "name": "protein_id",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "profile_id": {
+          "name": "profile_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "proteins_likes_protein_id_proteins_protein_id_fk": {
+          "name": "proteins_likes_protein_id_proteins_protein_id_fk",
+          "tableFrom": "proteins_likes",
+          "tableTo": "proteins",
+          "columnsFrom": [
+            "protein_id"
+          ],
+          "columnsTo": [
+            "protein_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "proteins_likes_profile_id_profiles_profile_id_fk": {
+          "name": "proteins_likes_profile_id_profiles_profile_id_fk",
+          "tableFrom": "proteins_likes",
+          "tableTo": "profiles",
+          "columnsFrom": [
+            "profile_id"
+          ],
+          "columnsTo": [
+            "profile_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "proteins_likes_protein_id_profile_id_pk": {
+          "name": "proteins_likes_protein_id_profile_id_pk",
+          "columns": [
+            "protein_id",
+            "profile_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.categories": {
       "name": "categories",
       "schema": "",
@@ -81,8 +350,8 @@
             "cycle": false
           }
         },
-        "product_id": {
-          "name": "product_id",
+        "trainer_id": {
+          "name": "trainer_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
@@ -122,15 +391,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "reviews_product_id_trainers_product_id_fk": {
-          "name": "reviews_product_id_trainers_product_id_fk",
+        "reviews_trainer_id_trainers_trainer_id_fk": {
+          "name": "reviews_trainer_id_trainers_trainer_id_fk",
           "tableFrom": "reviews",
           "tableTo": "trainers",
           "columnsFrom": [
-            "product_id"
+            "trainer_id"
           ],
           "columnsTo": [
-            "product_id"
+            "trainer_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -164,8 +433,8 @@
       "name": "trainer_upvotes",
       "schema": "",
       "columns": {
-        "product_id": {
-          "name": "product_id",
+        "trainer_id": {
+          "name": "trainer_id",
           "type": "bigint",
           "primaryKey": false,
           "notNull": false
@@ -179,15 +448,15 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "trainer_upvotes_product_id_trainers_product_id_fk": {
-          "name": "trainer_upvotes_product_id_trainers_product_id_fk",
+        "trainer_upvotes_trainer_id_trainers_trainer_id_fk": {
+          "name": "trainer_upvotes_trainer_id_trainers_trainer_id_fk",
           "tableFrom": "trainer_upvotes",
           "tableTo": "trainers",
           "columnsFrom": [
-            "product_id"
+            "trainer_id"
           ],
           "columnsTo": [
-            "product_id"
+            "trainer_id"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -207,10 +476,10 @@
         }
       },
       "compositePrimaryKeys": {
-        "trainer_upvotes_product_id_profile_id_pk": {
-          "name": "trainer_upvotes_product_id_profile_id_pk",
+        "trainer_upvotes_trainer_id_profile_id_pk": {
+          "name": "trainer_upvotes_trainer_id_profile_id_pk",
           "columns": [
-            "product_id",
+            "trainer_id",
             "profile_id"
           ]
         }
@@ -224,14 +493,14 @@
       "name": "trainers",
       "schema": "",
       "columns": {
-        "product_id": {
-          "name": "product_id",
+        "trainer_id": {
+          "name": "trainer_id",
           "type": "bigint",
           "primaryKey": true,
           "notNull": true,
           "identity": {
             "type": "always",
-            "name": "trainers_product_id_seq",
+            "name": "trainers_trainer_id_seq",
             "schema": "public",
             "increment": "1",
             "startWith": "1",

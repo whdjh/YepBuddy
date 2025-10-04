@@ -1,0 +1,1 @@
+ALTER TABLE "proteins" ADD COLUMN "date" date NOT NULL;
