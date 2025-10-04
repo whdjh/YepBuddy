@@ -66,7 +66,10 @@ export default function FormSection() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-2 tab:p-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-20 p-2 tab:p-5"
+      >
         <div className="grid grid-cols-1 tab:grid-cols-6 gap-10">
           <div className="col-span-full tab:col-span-4 space-y-10">
             <h2 className="text-2xl font-semibold">프로필 수정하기</h2>

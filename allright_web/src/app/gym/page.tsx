@@ -4,7 +4,7 @@ import { mockGymsCards } from "@/app/gym/components/_mock/gymCardData";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Allright | 헬스장",
+  title: "헬스장 | Allright",
   description: "헬스장 목록 페이지 입니다.",
 };
 

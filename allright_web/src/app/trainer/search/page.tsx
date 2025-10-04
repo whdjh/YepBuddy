@@ -5,7 +5,7 @@ import { mockTrainerCards } from "@/app/trainer/components/_mock/trainerCardData
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Allright | 트레이너 검색",
+  title: "트레이너 검색 | Allright",
   description: "이름으로 트레이너 검색하는 페이지 입니다.",
 };
 
@@ -23,7 +23,10 @@ export default async function Search({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-5 tab:space-y-20 p-2 tab:p-5">
-      <Hero title="트레이너 검색" subtitle="이름으로 트레이너 검색" />
+      <Hero
+        title="트레이너 검색"
+        subtitle="이름으로 트레이너 검색"
+      />
       <SearchSection />
       <CardSection cards={filtered} />
     </div>

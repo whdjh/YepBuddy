@@ -1,4 +1,11 @@
 import NotificationCard from "@/app/my/notifications/components/NotificationCard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "알림 | Allright",
+  description: "알림 페이지 입니다.",
+};
+
 
 export default function Notification() {
   return (

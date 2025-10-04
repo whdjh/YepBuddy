@@ -3,7 +3,7 @@ import { Hero } from '@/components/common/Hero';
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Allright | 운동일지",
+  title: "운동일지 | Allright",
   description: "운동일지 페이지 입니다.",
 };
 

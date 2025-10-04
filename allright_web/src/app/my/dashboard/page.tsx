@@ -1,6 +1,13 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SideInventory from "@/app/my/dashboard/components/SideInventory";
 import ProfileChart from "@/app/my/dashboard/components/ProfileChart";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "대쉬보드 | Allright",
+  description: "대쉬보드 페이지 입니다.",
+};
+
 
 export default function Dashboard() {
   return (

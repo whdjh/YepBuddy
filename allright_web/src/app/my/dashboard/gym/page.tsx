@@ -1,5 +1,11 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import SideInventory from "@/app/my/dashboard/components/SideInventory";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "좋아요 누른 헬스장 | Allright",
+  description: "좋아요 누른 헬스장 페이지 입니다.",
+};
 
 export default function IdeasDashboard() {
   return (

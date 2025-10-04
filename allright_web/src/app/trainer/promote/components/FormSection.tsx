@@ -66,7 +66,10 @@ export default function FormSection() {
         </p>
       </div>
 
-      <Button type="button" disabled={!isComplete || !meetsMin}>
+      <Button
+        type="button"
+        disabled={!isComplete || !meetsMin}
+      >
         결제하러가기 (${price})
       </Button>
     </form>
