@@ -1,0 +1,1 @@
+ALTER TABLE "trainers" RENAME COLUMN "avatarFile" TO "avatar_file";

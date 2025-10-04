@@ -16,7 +16,7 @@ export const proteins = pgTable("proteins", {
   
   title: text().notNull(),
   weight: text().notNull(),
-  avatarFile: text().notNull(),
+  avatar_file: text().notNull(),
   date: date({ mode: "string" }).notNull(),
   topic: text().notNull(),
   taste: text().notNull(),

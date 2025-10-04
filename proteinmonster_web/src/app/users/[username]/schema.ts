@@ -28,7 +28,7 @@ export const profiles = pgTable("profiles", {
   location: text(),
   history: text(),
   qualifications: text().notNull(),
-  avatarFile: text(),
+  avatar_file: text(),
   views: jsonb(),
   stats: jsonb().$type<{
     followers: number;

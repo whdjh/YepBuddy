@@ -22,7 +22,7 @@ export const trainers = pgTable("trainers", {
     .primaryKey()
     .generatedAlwaysAsIdentity(),
   
-  avatarFile: text(),
+  avatar_file: text(),
   name: text().notNull(),
   location: text(),
 
