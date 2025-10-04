@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import type { DateRange } from "react-day-picker";
-import { DateTime } from "../../../../../node_modules/@types/luxon";
+import { DateTime } from "luxon";
 
 const MIN_DAYS = 3;
 const PRICE_PER_DAY = 20;
