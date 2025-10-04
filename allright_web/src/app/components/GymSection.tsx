@@ -16,7 +16,7 @@ export default function GymSection() {
             내부 머신을 쉽게 찾아보세요!
           </p>
           <Button variant="link" asChild className="text-lg p-0">
-            <Link href="/community">헬스장 전체 보기 &rarr;</Link>
+            <Link href="/gym">헬스장 전체 보기 &rarr;</Link>
           </Button>
         </div>
         <div className="relative col-span-2 flex flex-col tab:[perspective:500px] tab:pb-40  overflow-hidden tab:*:[transform:translateZ(-0px)_rotateY(-20deg)_rotateZ(10deg)]">

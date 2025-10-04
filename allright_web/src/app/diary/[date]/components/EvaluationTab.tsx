@@ -1,106 +1,57 @@
 "use client";
 
-import { useState } from 'react';
-import { Textarea } from '@/components/ui/textarea';
-import SignatureCanvas from './SignatureCanvas';
-import { useToastStore } from '@/stores/useToastStore';
+import type { EvaluationData, EvaluationStatus } from "@/types/Diary";
 
-interface EvaluationData {
-  trainerComment: string;
-  feedback: string;
-  signatureData: string;
+interface EvaluationViewProps {
+  data: EvaluationData;
 }
 
-interface EvaluationTabProps {
-  data?: EvaluationData;
-  onChange?: (data: EvaluationData) => void;
-}
+const LABELS: Array<keyof EvaluationStatus> = ["숙면상태", "컨디션", "활동강도"];
 
-const textareaFields = [
-  { 
-    key: 'trainerComment' as const, 
-    label: '트레이너의 한줄평', 
-    placeholder: '한줄평을 작성해주세요.',
-    rows: 3 
-  },
-  { 
-    key: 'feedback' as const, 
-    label: '피드백', 
-    placeholder: '피드백을 작성해주세요',
-    rows: 5 
-  }
-];
-
-export default function EvaluationTab({ data, onChange }: EvaluationTabProps) {
-  const [trainerComment, setTrainerComment] = useState(data?.trainerComment || '');
-  const [feedback, setFeedback] = useState(data?.feedback || '');
-  const [signatureData, setSignatureData] = useState<string>(data?.signatureData || '');
-  const { show: showToast } = useToastStore();
-
-  // TODO: 데이터 변경 시 부모 컴포넌트에 알림
-  const handleDataChange = (newData: Partial<EvaluationData>) => {
-    const updatedData = {
-      trainerComment,
-      feedback,
-      signatureData,
-      ...newData
-    };
-    onChange?.(updatedData);
-  };
-
-  const handleTextareaChange = (field: keyof Pick<EvaluationData, 'trainerComment' | 'feedback'>, value: string) => {
-    // 상태 업데이트
-    switch (field) {
-      case 'trainerComment':
-        setTrainerComment(value);
-        break;
-      case 'feedback':
-        setFeedback(value);
-        break;
-    }
-    
-    // 부모 컴포넌트에 알림
-    handleDataChange({ [field]: value });
-  };
-
-  const getTextareaValue = (field: keyof Pick<EvaluationData, 'trainerComment' | 'feedback'>) => {
-    switch (field) {
-      case 'trainerComment':
-        return trainerComment;
-      case 'feedback':
-        return feedback;
-    }
-  };
-
-  const handleSignatureSave = (data: string) => {
-    setSignatureData(data);
-    handleDataChange({ signatureData: data });
-    showToast('사인이 저장되었습니다');
-  };
+export default function EvaluationView({ data }: EvaluationViewProps) {
+  const { status, comment, signatureData } = data;
 
   return (
-    <div className="text-white">
-      <div className="flex flex-col gap-4">
-        {/* Textarea 필드들 */}
-        {textareaFields.map((field) => (
-          <div key={field.key}>
-            <p className="text-md font-medium text-white mb-4">{field.label}</p>
-            <Textarea
-              value={getTextareaValue(field.key)}
-              onChange={(e) => handleTextareaChange(field.key, e.target.value)}
-              placeholder={field.placeholder}
-            />
-          </div>
-        ))}
-
-        {/* PT 확인 사인 */}
-        <div>
-          <p className="text-md font-medium text-white mb-4">PT 확인 사인</p>
-          <div className="border border-gray-600 rounded-md p-4 h-[150px]">
-            <SignatureCanvas onSave={handleSignatureSave} />
-          </div>
+    <div className="text-white space-y-6">
+      <section>
+        <h3 className="mb-3 text-base font-medium">오늘 상태</h3>
+        <div className="flex flex-wrap gap-2">
+          {LABELS.map((k) => (
+            <span
+              key={k}
+              className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-sm"
+            >
+              <span className="text-muted-foreground">{k}</span>
+              <strong className="text-white">{status[k]}</strong>
+            </span>
+          ))}
         </div>
-      </div>
+      </section>
+
+      {/* 코멘트 */}
+      <section>
+        <h3 className="mb-3 text-base font-medium">코멘트</h3>
+        <div className="rounded-md border border-white/10 bg-white/5 p-4 text-sm leading-6">
+          {comment?.trim() ? comment : <span className="text-gray-400">코멘트가 없습니다.</span>}
+        </div>
+      </section>
+
+      {/* 사인 이미지 */}
+      <section>
+        <h3 className="mb-3 text-base font-medium">PT 확인 사인</h3>
+        <div className="flex items-center justify-center rounded-md border border-white/10 bg-white p-4">
+          {signatureData ? (
+            // dataURL 또는 이미지 URL 모두 표시 가능
+            <img
+              src={signatureData}
+              alt="서명 이미지"
+              className="max-h-40 object-contain"
+            />
+          ) : (
+            <span className="text-sm text-gray-500">사인이 없습니다.</span>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

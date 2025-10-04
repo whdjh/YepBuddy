@@ -96,7 +96,7 @@ function InputPair({
         <small className="text-muted-foreground">{description}</small>
       </Label>
       {isTextArea ? (
-        <Textarea rows={4} className="resize-none" {...rest} />
+        <Textarea rows={4} className="resize-none" {...rest} ref={ref} />
       ) : (
           <Input
             id={name}

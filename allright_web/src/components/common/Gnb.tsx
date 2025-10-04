@@ -67,6 +67,14 @@ const menus: Menu[] = [
     ],
   },
   {
+    name: "단백질",
+    href: "/protein",
+  },
+  {
+    name: "헬스장",
+    href: "/gym",
+  },
+  {
     name: "운동일지",
     href: "/diary",
   },
@@ -81,14 +89,6 @@ const menus: Menu[] = [
       { name: "트레이너 등록", description: "트레이너로 내 프로필 등록", href: "/trainer/submit" },
       { name: "트레이너 홍보", description: "내 활동 홍보", href: "/trainer/promote" },
     ],
-  },
-  {
-    name: "헬스장",
-    href: "/gym",
-  },
-  {
-    name: "단백질",
-    href: "/protein",
   },
 ];
 
@@ -257,9 +257,9 @@ export default function Gnb({
                       <DropdownMenuContent className="w-[300px]">
                         <DropdownMenuLabel className="flex flex-col">
                           {/** 실제 API로 변경 */}
-                          <span className="font-medium">이주훈</span>
+                          <span className="font-medium">사용자명</span>
                           {/** 실제 API로 변경 */}
-                          <span className="text-xs text-muted-foreground">@wngns9807</span>
+                          <span className="text-xs text-muted-foreground">@idididid</span>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
@@ -336,9 +336,9 @@ export default function Gnb({
               <DropdownMenuContent className="w-[300px]">
                 <DropdownMenuLabel className="flex flex-col">
                   {/** 실제 API로 변경 */}
-                  <span className="font-medium">이주훈</span>
+                  <span className="font-medium">사용자명</span>
                   {/** 실제 API로 변경 */}
-                  <span className="text-xs text-muted-foreground">@wngns9807</span>
+                  <span className="text-xs text-muted-foreground">@idididididi</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>

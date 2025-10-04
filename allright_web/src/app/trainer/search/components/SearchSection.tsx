@@ -16,7 +16,10 @@ export default function SearchSection() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="flex justify-center h-14 max-w-screen-sm items-center gap-2 mx-auto">
+    <form
+      onSubmit={onSubmit}
+      className="flex justify-center h-14 max-w-screen-sm items-center gap-2 mx-auto"
+    >
       <Input
         name="query"
         defaultValue={defaultQuery}
@@ -26,7 +29,9 @@ export default function SearchSection() {
         enterKeyHint="search"
         aria-label="트레이너 검색어"
       />
-      <Button type="submit">검색</Button>
+      <Button type="submit">
+        검색
+      </Button>
     </form>
   );
 }

@@ -35,7 +35,7 @@ export default function TabSection({
           aria-current={activeTab === "wishs" ? "page" : undefined}
           role="tab"
         >
-          <Link href={`/users/${username}?tab=wishs`}>쓴글 목록</Link>
+          <Link href={`/users/${username}?tab=wishs`}>단백질</Link>
         </Button>
       </div>
 

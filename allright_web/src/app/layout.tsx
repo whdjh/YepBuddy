@@ -5,7 +5,10 @@ import ScrollController from "@/components/common/ScrollController";
 import Toast from "@/components/common/Toast";
 
 export const metadata: Metadata = {
-  title: "allright",
+  title: "Allright",
+  icons: {
+    icon: '/favicon.ico',
+  },
   description: "운동템포 조절",
 };
 

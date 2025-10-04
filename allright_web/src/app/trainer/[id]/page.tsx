@@ -1,5 +1,11 @@
 import HeaderSection from "@/app/trainer/[id]/components/HeaderSection";
 import TabSection from "@/app/trainer/[id]/components/TabSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "트레이너 상세 | Allright",
+  description: "트레이너 상세 페이지 입니다.",
+};
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -20,7 +26,10 @@ export default async function TrainerId({ params, searchParams }: PageProps) {
         reviewCount={100}
         voteCount={100}
       />
-      <TabSection id={id} activeTab={activeTab} />
+      <TabSection
+        id={id}
+        activeTab={activeTab}
+      />
     </div>
   );
 }

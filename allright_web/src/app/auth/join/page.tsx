@@ -1,5 +1,11 @@
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import AuthCard from "@/app/auth/join/components/AuthCard";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "회원가입 | Allright",
+  description: "회원가입 페이지 입니다.",
+};
 
 export default function Join() {
   return (

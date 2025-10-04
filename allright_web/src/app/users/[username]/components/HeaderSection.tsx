@@ -26,7 +26,7 @@ export default function HeaderSection() {
       <div className="space-y-5">
         <div className="flex flex-col gap-2">
           <div className="flex gap-5 flex-col tab:flex-row">
-            <h1 className="text-lg tab:text-2xl font-semibold">이주훈</h1>
+            <h1 className="text-lg tab:text-2xl font-semibold">사용자명</h1>
             <Button variant="outline" asChild>
               <Link href="/my/settings">프로필 수정</Link>
             </Button>

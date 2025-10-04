@@ -23,7 +23,7 @@ export default function ProductReviewsPage() {
             <ReviewCard
               key={i}
               name="리뷰자"
-              handle="@wngns9807"
+              handle="@ididid"
               avatarFile="https://github.com/gym.png"
               rating={5}
               content="너무 친절히 알려줘요"

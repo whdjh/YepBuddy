@@ -28,7 +28,7 @@ export default function ProfileChart() {
   return (
     <Card className="w-1/2">
       <CardHeader>
-        <CardTitle>A프로틴 가격 그래프</CardTitle>
+        <CardTitle>방문자수</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>

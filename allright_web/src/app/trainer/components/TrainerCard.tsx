@@ -50,7 +50,10 @@ export default function TrainerCard({
           </div>
         </CardHeader>
         <CardFooter>
-          <Button variant="outline" className="flex flex-col h-14 border">
+          <Button
+            variant="outline"
+            className="flex flex-col h-14 border"
+          >
             <ChevronUpIcon className="size-4 shrink-0" />
             <span>{votesCount}</span>
           </Button>

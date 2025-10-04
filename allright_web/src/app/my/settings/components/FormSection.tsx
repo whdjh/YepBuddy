@@ -9,13 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { UserSettingFormValues } from "@/types/Form";
 
-const ACCEPTED_TYPES = ["image/png", "image/jpeg"];
-const MAX_SIZE = 1 * 1024 * 1024;
-
 export default function FormSection() {
   const methods = useForm<UserSettingFormValues>({
     mode: "all",
-    shouldUnregister: true, // 숨긴 필드는 폼/검증에서 제외
+    shouldUnregister: true,
     defaultValues: {
       name: "",
       role: "",
@@ -29,9 +26,17 @@ export default function FormSection() {
   });
 
   const validateFile = (file?: File | null) => {
-    if (!file) return true;
-    if (!ACCEPTED_TYPES.includes(file.type)) return "PNG 또는 JPEG만 허용";
-    if (file.size > MAX_SIZE) return "최대 1MB까지 업로드 가능";
+    if (!file) {
+      return true;
+    }
+
+    if (!["image/png", "image/jpeg"].includes(file.type)) {
+      return "PNG 또는 JPEG만 허용";
+    }
+
+    if (file.size > 1 * 1024 * 1024) {
+      return "최대 1MB까지 업로드 가능";
+    }
     return true;
   };
 
@@ -41,10 +46,17 @@ export default function FormSection() {
   const role = watch("role");
   const isTrainer = role === "trainer";
   const avatarFile = watch("avatarFile");
+
   useEffect(() => {
-    if (!avatarFile) { setPreview(null); return; }
+    if (!avatarFile) {
+      setPreview(null);
+      return;
+    }
+
     const url = URL.createObjectURL(avatarFile);
+
     setPreview(url);
+    
     return () => URL.revokeObjectURL(url);
   }, [avatarFile]);
 
@@ -54,7 +66,10 @@ export default function FormSection() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-2 tab:p-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-20 p-2 tab:p-5"
+      >
         <div className="grid grid-cols-1 tab:grid-cols-6 gap-10">
           <div className="col-span-full tab:col-span-4 space-y-10">
             <h2 className="text-2xl font-semibold">프로필 수정하기</h2>

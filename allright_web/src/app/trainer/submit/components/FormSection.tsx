@@ -26,7 +26,10 @@ export default function FormSection() {
 
   return (
     <FormProvider {...methods}>
-      <form onSubmit={onSubmit} className="max-w-screen-2xl flex flex-col items-center gap-10 mx-auto">
+      <form
+        onSubmit={onSubmit}
+        className="max-w-screen-2xl flex flex-col items-center gap-10 mx-auto"
+      >
         <div className="grid grid-cols-1 tab:grid-cols-3 w-full gap-10">
           <SelectPair
             label="프로그램 유형"
@@ -85,7 +88,11 @@ export default function FormSection() {
 
         </div>
 
-        <Button type="submit" className="w-full max-w-sm" size="lg">
+        <Button
+          type="submit"
+          className="w-full max-w-sm"
+          size="lg"
+        >
           트레이너 공고 올리기
         </Button>
       </form>

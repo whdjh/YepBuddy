@@ -12,7 +12,8 @@ const BODY_PARTS = [
   { value: 'back', label: '등' },
   { value: 'legs', label: '하체' },
   { value: 'arms', label: '팔' },
-  { value: 'shoulders', label: '어깨' }
+  { value: 'shoulders', label: '어깨' },
+  { value: 'carbo', label: '유산소' }
 ];
 
 export default function BodyPartsSelector({ selectedBodyParts, onToggleBodyPart }: BodyPartsSelectorProps) {
@@ -22,6 +23,7 @@ export default function BodyPartsSelector({ selectedBodyParts, onToggleBodyPart 
       <div className="flex gap-2 flex-wrap">
         {BODY_PARTS.map((part) => (
           <Button
+            type="button"
             key={part.value}
             variant={selectedBodyParts.includes(part.value) ? "default" : "outline"}
             onClick={() => onToggleBodyPart(part.value)}

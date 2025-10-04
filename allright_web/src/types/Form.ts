@@ -1,3 +1,5 @@
+import { ExerciseData, EvaluationData } from "@/types/Diary";
+
 export interface LoginForm {
   email: string;
   password: string;
@@ -51,3 +53,18 @@ export interface TrainerSubmitFormValues {
   intro: string;
   description: string;
 };
+
+export interface ExerciseFormValue {
+  id: string;
+  name: string;
+  date: string;
+  color: string;
+}
+
+export interface DiaryForm {
+  dateISO: string;
+  exercise: ExerciseData;
+  evaluation: EvaluationData;
+  videos: string[];
+  photos: string[];
+}

@@ -1,5 +1,11 @@
 import HeaderSection from "@/app/users/[username]/components/HeaderSection";
 import TabSection from "@/app/users/[username]/components/TabSection";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "개인정보 | Allright",
+  description: "개인정보 페이지 입니다.",
+};
 
 interface PageProps {
   params: Promise<{ username: string }>;
@@ -15,7 +21,10 @@ export default async function UserProfile({ params, searchParams }: PageProps) {
     <>
       <div className="space-y-10 p-2 tab:p-5">
         <HeaderSection />
-        <TabSection username={username} activeTab={activeTab} />
+        <TabSection
+          username={username}
+          activeTab={activeTab}
+        />
       </div>
     </>
       );

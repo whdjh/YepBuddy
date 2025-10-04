@@ -1,6 +1,12 @@
 import { Hero } from "@/components/common/Hero";
 import CardSection from "@/app/gym/components/CardSection";
 import { mockGymsCards } from "@/app/gym/components/_mock/gymCardData";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "헬스장 | Allright",
+  description: "헬스장 목록 페이지 입니다.",
+};
 
 export default function Gym() {
   return (

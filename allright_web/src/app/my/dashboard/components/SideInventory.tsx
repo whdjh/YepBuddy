@@ -35,13 +35,13 @@ export default function SideInventory() {
           </SidebarMenu>
         </SidebarGroup>
         <SidebarGroup>
-          <SidebarGroupLabel>프로틴 가격 분석</SidebarGroupLabel>
+          <SidebarGroupLabel>회원 분석</SidebarGroupLabel>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <Link href="/my/dashboard/1">
                   <RocketIcon className="size-4" />
-                  <span>프로틴</span>
+                  <span>회원1</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
