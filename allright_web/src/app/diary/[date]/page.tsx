@@ -8,6 +8,7 @@ import DiaryTabNavigation from "@/app/diary/[date]/components/DiaryTabNavigation
 import ExerciseDiaryTab from "@/app/diary/[date]/components/ExerciseDiaryTab";
 import EvaluationTab from "@/app/diary/[date]/components/EvaluationTab";
 import VideoTab from "@/app/diary/[date]/components/VideoTab";
+import WorkDoneTab from "@/app/diary/[date]/components/WorkDoneTab";
 import type { ExerciseData, EvaluationData, EvaluationStatus } from "@/types/Diary";
 
 interface DiaryForm {
@@ -15,6 +16,7 @@ interface DiaryForm {
   exercise: ExerciseData;
   evaluation: EvaluationData;
   videos: string[];
+  photos: string[]; // 오운완 사진 미리보기 object URL 배열
 }
 
 const DEFAULT_STATUS: EvaluationStatus = { 숙면상태: "중", 컨디션: "중", 활동강도: "중" };
@@ -23,10 +25,10 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
   const { date: dateParam } = use(params);
   const date = new Date(dateParam);
 
-  const { activeTab, setTab } = useQueryTab<"exercise" | "evaluation" | "video">(
+  const { activeTab, setTab } = useQueryTab<"exercise" | "evaluation" | "video" | "wod">(
     "tab",
     "exercise",
-    ["exercise", "evaluation", "video"]
+    ["exercise", "evaluation", "video", "wod"]
   );
 
   const methods = useForm<DiaryForm>({
@@ -37,12 +39,15 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
       exercise: { selectedBodyParts: ["chest"], exercises: [] },
       evaluation: { status: DEFAULT_STATUS, comment: "", signatureData: "" },
       videos: [],
+      photos: [],
     },
   });
 
-  // watch로 값을 구독해야 렌더가 갱신된다
+  // watch로 값을 구독해야 렌더가 갱신
   const exercise = methods.watch("exercise");
   const evaluation = methods.watch("evaluation");
+  const videos = methods.watch("videos");
+  const photos = methods.watch("photos");
 
   const canSave = (() => {
     if (!exercise || !exercise.exercises?.length) return false;
@@ -88,7 +93,23 @@ export default function DiaryDate({ params }: { params: Promise<{ date: string }
             />
           )}
 
-          {activeTab === "video" && <VideoTab />}
+          {activeTab === "video" && (
+            <VideoTab
+              urls={videos}
+              onChange={(nextUrls) =>
+                methods.setValue("videos", nextUrls, { shouldDirty: true })
+              }
+            />
+          )}
+
+          {activeTab === "wod" && (
+            <WorkDoneTab
+              urls={photos}
+              onChange={(nextUrls) =>
+                methods.setValue("photos", nextUrls, { shouldDirty: true })
+              }
+            />
+          )}
         </div>
       </form>
     </FormProvider>

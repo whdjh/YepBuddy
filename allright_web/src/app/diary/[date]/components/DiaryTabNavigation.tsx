@@ -1,15 +1,14 @@
-
-
 interface DiaryTabNavigationProps {
-  activeTab: 'exercise' | 'evaluation' | 'video';
-  onTabChange: (tab: 'exercise' | 'evaluation' | 'video') => void;
+  activeTab: 'exercise' | 'evaluation' | 'video' | 'wod';
+  onTabChange: (tab: 'exercise' | 'evaluation' | 'video' | 'wod') => void;
 }
 
 export default function DiaryTabNavigation({ activeTab, onTabChange }: DiaryTabNavigationProps) {
   const tabs = [
     { id: 'exercise' as const, label: '운동일지' },
     { id: 'evaluation' as const, label: '평가' },
-    { id: 'video' as const, label: '영상' }
+    { id: 'video' as const, label: '영상' },
+    { id: 'wod' as const, label: '오운완' }
   ];
 
   return (
