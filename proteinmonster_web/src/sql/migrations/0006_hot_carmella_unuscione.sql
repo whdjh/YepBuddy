@@ -1,1 +1,0 @@
-ALTER TABLE "proteins" RENAME COLUMN "avatarFile" TO "avatar_file";
