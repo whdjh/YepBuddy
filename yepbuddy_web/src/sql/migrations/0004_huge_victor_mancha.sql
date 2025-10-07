@@ -1,0 +1,1 @@
+ALTER TABLE "profiles" RENAME COLUMN "avatarFile" TO "avatar_file";
