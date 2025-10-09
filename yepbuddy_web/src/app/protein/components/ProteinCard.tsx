@@ -23,7 +23,7 @@ export default function ProteinCard({
       <Link href={`/protein/${id}`} className="block">
         <CardHeader className="flex flex-col items-start mob:flex-row mob:justify-between mob:items-center">
           <div className="flex items-center gap-4">
-            <Avatar className="size-14">
+            <Avatar className="size-20 mob:size-30 rounded-none">
               <AvatarFallback>N</AvatarFallback>
               {avatarFile && <AvatarImage src={avatarFile} />}
             </Avatar>
@@ -31,8 +31,8 @@ export default function ProteinCard({
               <CardTitle>
                 {title.length > 15 ? `${title.slice(0, 15)}...` : title}
               </CardTitle>
-              <div className="flex gap-2 text-sm leading-tight text-muted-foreground whitespace-nowrap">
-                <span>{weight}</span>
+              <div className="flex text-sm leading-tight text-muted-foreground whitespace-nowrap">
+                <span>{weight}g</span>
                 <DotIcon className="size-5" />
                 <span>{topic}</span>
                 <DotIcon className="size-5" />
@@ -42,8 +42,8 @@ export default function ProteinCard({
           </div>
           <div className="flex mob:flex-col items-center justify-end gap-3">
             {/** 계산 로직 필요 */}
-            <span>그람당 가격</span>
-            <span>{price}</span>
+            <span className="text-sm">그람당 가격</span>
+            <span className="text-md">{price}</span>
             <Button variant="outline" className="border border-white/10">
               <HeartIcon className="w-4 h-4" />
               <span>{likesCount}</span>
