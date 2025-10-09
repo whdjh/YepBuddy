@@ -5,6 +5,7 @@ import { useProteinById } from "@/hooks/queries/protein/useProteinById";
 import { useProteinByIdPrice } from "@/hooks/queries/protein/useProteinByIdPrice";
 import Image from "next/image";
 import { DotIcon } from "lucide-react";
+import PriceHistoryChart from "./PriceHistoryChart";
 
 export default function MainSection() {
   const params = useParams<{ id: string }>();
@@ -90,10 +91,16 @@ export default function MainSection() {
           </div>
         </div>
 
-        <div className="bg-white/10 rounded-3xl p-8">
-          <div className="aspect-square max-w-md mx-auto flex items-center justify-center">
-            <p>그래프 자리</p>
-          </div>
+        <div>
+          
+            {prices && prices.length > 0 ? (
+              <PriceHistoryChart data={prices} />
+            ) : (
+              <div className="bg-white/10 rounded-3xl p-8 text-center text-sm text-gray-400">
+                가격 이력이 없어요
+              </div>
+            )}
+          
         </div>
       </div>
     </div>
