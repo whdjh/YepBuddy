@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 export default function Gym() {
   return (
     <div className="p-2 tab:p-5 space-y-5 tab:space-y-20">
-      <Hero title="헬스장" subtitle="내부 머신을 쉽게 찾아보세요" />
+      <Hero title="헬스장" subtitle="내부 머신 목록" />
       <CardSection cards={mockGymsCards} />
     </div>
   );
