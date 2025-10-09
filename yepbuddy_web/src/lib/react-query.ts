@@ -1,5 +1,6 @@
 import { QueryClient, QueryCache, MutationCache } from "@tanstack/react-query";
 
+/** 필요 시 옵션만 수정해서 재사용 */
 function createClient() {
   return new QueryClient({
     queryCache: new QueryCache(),
@@ -13,9 +14,14 @@ function createClient() {
         refetchOnMount: false,
         refetchOnReconnect: false,
       },
+      mutations: {
+        retry: 0,
+      },
     },
   });
 }
 
-// 개발 중 HMR에도 단일 인스턴스 유지
-export const queryClient: QueryClient = (globalThis as any).__rqc__ ?? ((globalThis as any).__rqc__ = createClient());
+/** 단순 모듈 스코프 싱글턴 */
+export const queryClient: QueryClient = createClient();
+
+export default queryClient;
