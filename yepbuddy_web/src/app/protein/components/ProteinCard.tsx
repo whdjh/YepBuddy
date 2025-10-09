@@ -16,6 +16,7 @@ export default function ProteinCard({
   topic,
   taste,
   price,
+  priceText,
   likesCount,
 }: ProteinCardProps) {
   return (
@@ -41,8 +42,7 @@ export default function ProteinCard({
               </div>
           </div>
           <div className="flex mob:flex-col items-center justify-end gap-3">
-            {/** 계산 로직 필요 */}
-            <span className="text-sm">그람당 가격</span>
+            <span className="text-sm">{priceText}</span>
             <span className="text-md">{price}</span>
             <Button variant="outline" className="border border-white/10">
               <HeartIcon className="w-4 h-4" />

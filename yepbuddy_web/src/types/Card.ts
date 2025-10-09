@@ -24,7 +24,8 @@ export interface ProteinCardProps {
   avatarFile: string;
   topic: string;
   taste: string;
-  price: string;
+  price: string;      // 총가격 텍스트
+  priceText: string;  // 단백질 g당 가격 텍스트
   likesCount: number;
 }
 

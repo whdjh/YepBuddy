@@ -24,6 +24,7 @@ export function CardSection({ cards }: CardSectionProps) {
           topic={card.topic}
           taste={card.taste}
           price={card.price}
+          priceText={card.priceText}
           likesCount={card.likesCount}
         />
       )}
