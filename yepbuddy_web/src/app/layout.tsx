@@ -3,6 +3,7 @@ import "../styles/globals.css";
 import Gnb from "@/components/common/Gnb";
 import ScrollController from "@/components/common/ScrollController";
 import Toast from "@/components/common/Toast";
+import Providers from "./providers";
 
 export const metadata: Metadata = {
   title: "엡버디",
@@ -23,7 +24,9 @@ export default function RootLayout({
         <ScrollController />
         <Gnb isLoggedIn={true} hasMessages={true} hasNotifications={true} username={"1"} />
         <main className="mt-[5.5rem] p-0 tab:p-5">
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </main>
         <Toast />
       </body>
