@@ -8,9 +8,9 @@ export const runtime = "nodejs";
 /** GET /api/proteins/:id/price?limit=180 */
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }     // ← Promise
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;                         // ← await
+  const { id } = await params;
   const numId = Number(id);
   if (!Number.isFinite(numId)) {
     return NextResponse.json({ ok: false, error: "invalid id" }, { status: 400 });

@@ -62,6 +62,7 @@ export const proteinPricesDaily = pgTable(
     observed_date: date({ mode: "string" }).notNull(),
     price: integer().notNull(),
     available: boolean().notNull().default(true),
+    sale: integer().notNull().default(1),
 
     created_at: timestamp().notNull().defaultNow(),
   },

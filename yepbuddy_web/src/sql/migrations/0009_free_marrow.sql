@@ -1,0 +1,1 @@
+ALTER TABLE "protein_prices_daily" RENAME COLUMN "available" TO "sale";

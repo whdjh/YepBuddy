@@ -1,0 +1,1 @@
+ALTER TABLE "protein_prices_daily" ADD COLUMN "sale" integer DEFAULT 1 NOT NULL;

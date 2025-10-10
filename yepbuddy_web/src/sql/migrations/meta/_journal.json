@@ -64,6 +64,27 @@
       "when": 1759801510180,
       "tag": "0008_goofy_iron_monger",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1760067866242,
+      "tag": "0009_free_marrow",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1760067966367,
+      "tag": "0010_smiling_union_jack",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1760067989685,
+      "tag": "0011_uneven_scalphunter",
+      "breakpoints": true
     }
   ]
 }
