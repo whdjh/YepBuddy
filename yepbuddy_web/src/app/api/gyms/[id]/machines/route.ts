@@ -8,15 +8,17 @@ export const runtime = "nodejs";
 /**
  * GET /api/gyms/[id]/machines
  * - 특정 헬스장의 보유 기구 목록을 반환한다
- * - 머신 마스터 정보와 매핑 정보(quantity, notes)를 함께 내려준다
  */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const gymId = Number(params.id);
+export async function GET(
+  _req: NextRequest,
+  ctx: { params: Promise<{ id: string }> } // params는 Promise이므로 await 필요
+) {
+  const { id } = await ctx.params; // params를 먼저 await
+  const gymId = Number(id);
   if (Number.isNaN(gymId)) {
     return NextResponse.json({ ok: false, error: "잘못된 gym id" }, { status: 400 });
   }
 
-  // 헬스장 존재 확인
   const exists = await db
     .select({ id: gyms.gym_id })
     .from(gyms)

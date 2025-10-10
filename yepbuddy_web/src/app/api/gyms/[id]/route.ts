@@ -8,10 +8,13 @@ export const runtime = "nodejs";
 /**
  * GET /api/gyms/[id]
  * - 헬스장 단건 상세를 반환한다
- * - 좋아요 수, 보유 기구 수를 함께 포함한다
  */
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
-  const gymId = Number(params.id);
+export async function GET(
+  _req: NextRequest,
+  ctx: { params: Promise<{ id: string }> } // params는 Promise이므로 await 필요
+) {
+  const { id } = await ctx.params; // params를 먼저 await
+  const gymId = Number(id);
   if (Number.isNaN(gymId)) {
     return NextResponse.json({ ok: false, error: "잘못된 gym id" }, { status: 400 });
   }

@@ -6,7 +6,10 @@ export const metadata: Metadata = {
   description: "해당 헬스장 내부기구를 확인할 수 있는 페이지 입니다.",
 };
 
-export default function GymIdPage({ params }: { params: { id: string } }) {
-  const gymId = Number(params.id);
+export default async function GymIdPage(
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const gymId = Number(id);
   return <GymDetailClient gymId={gymId} />;
 }
