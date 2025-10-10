@@ -40,23 +40,32 @@ export default function MainSection() {
     priceDisplay = `${displayPrice.toLocaleString()}원`;
 
     if (weight > 0 && scoop && scoop > 0 && proteinPerScoop && proteinPerScoop > 0) {
-      const totalProteinGrams = weight * (proteinPerScoop / scoop); // 제품 전체 단백질 총량 g
+      const totalProteinGrams = weight * (proteinPerScoop / scoop);
       if (totalProteinGrams > 0) {
         const perProteinGram = Math.round(displayPrice / totalProteinGrams);
         perProteinGramText = `${perProteinGram.toLocaleString()}원/g`;
       }
     } else if (weight > 0) {
-      // 보조 데이터 없으면 총중량 기준 g당 가격으로 폴백
       const perGram = Math.round(displayPrice / weight);
       perProteinGramText = `${perGram.toLocaleString()}원/g`;
     }
   }
 
   const imageSrc = String(protein.avatar_file || "").replace(/\n/g, "");
+  const hasDescription = !!(protein.description && protein.description.trim().length > 0);
+
+  // 특징 파싱 (쉼표/유사 구분자/줄바꿈까지 처리)
+  const features = hasDescription
+    ? protein.description!
+      .split(/[,，、ㆍ·;|\n\r]+/g)
+      .map((s: string) => s.replace(/\s+/g, " ").trim())
+      .filter((s: string) => s.length > 0)
+    : [];
 
   return (
     <div className="min-h-screen text-white flex items-center justify-center p-6">
       <div className="max-w-4xl w-full flex flex-col gap-5">
+        {/* 이미지 */}
         <div className="p-8">
           <div className="relative w-full max-w-md mx-auto aspect-square">
             {imageSrc ? (
@@ -86,26 +95,38 @@ export default function MainSection() {
           <span>{protein.taste}</span>
         </div>
 
+        {/* 특징 리스트 */}
+        {features.length > 0 && (
+          <section className="bg-white/10 rounded-xl p-4 text-gray-200">
+            <h3 className="mb-2 text-base font-semibold">특징</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              {features.map((f: string, i: number) => (
+                <li key={`${i}-${f.slice(0, 16)}`}>{f}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {/* 가격/그래프 영역 */}
         <div className="flex items-end justify-between">
           <div className="text-right">
             <div className="text-sm text-gray-400">
-              현재가 <span className="text-3xl font-bold text-white ml-2">{priceDisplay}</span>
+              현재가{" "}
+              <span className="text-3xl font-bold text-white ml-2">{priceDisplay}</span>
               (<span className="text-white">{perProteinGramText}</span>)
             </div>
           </div>
         </div>
 
+        {/* 그래프 */}
         <div>
-          
-            {prices && prices.length > 0 ? (
-              <PriceHistoryChart data={prices} />
-            ) : (
-              <div className="bg-white/10 rounded-3xl p-8 text-center text-sm text-gray-400">
-                가격 이력이 없어요
-              </div>
-            )}
-          
+          {prices && prices.length > 0 ? (
+            <PriceHistoryChart data={prices} />
+          ) : (
+            <div className="bg-white/10 rounded-3xl p-8 text-center text-sm text-gray-400">
+              가격 이력이 없어요
+            </div>
+          )}
         </div>
       </div>
     </div>
