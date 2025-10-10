@@ -22,16 +22,16 @@ function toYM(iso: string) {
 }
 
 export default function PriceHistoryChart({ data }: Props) {
-  // 1️⃣ 세일가 반영: price * (1 - sale / 100)
+  // 세일가 반영: price * (1 - sale / 100)
   const rows = data
     .slice()
     .reverse()
     .map((d) => ({
       x: d.observed_date,
-      price: Math.round(Number(d.price) * (1 - Number(d.sale ?? 0) / 100)), // ✅ 세일가 계산
+      price: Math.round(Number(d.price) * (1 - Number(d.sale) / 100)),
     }));
 
-  // 2️⃣ 월별로 하나씩만 x축 라벨 표시
+  // 월별로 하나씩만 x축 라벨 표시
   const seen = new Set<string>();
   const monthTicks: string[] = [];
   for (const r of rows) {
