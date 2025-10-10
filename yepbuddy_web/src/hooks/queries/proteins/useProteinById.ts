@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getProteinById } from "@/lib/protein/getProteinById";
+import { getProteinById } from "@/lib/proteins/getProteinById";
 
 export function useProteinById(id?: number) {
   return useQuery({

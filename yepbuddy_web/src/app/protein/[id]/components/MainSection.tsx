@@ -7,10 +7,10 @@ import { DotIcon } from "lucide-react";
 import PriceHistoryChart from "@/app/protein/[id]/components/PriceHistoryChart";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useProteinById } from "@/hooks/queries/protein/useProteinById";
-import { useProteinByIdPrice } from "@/hooks/queries/protein/useProteinByIdPrice";
-import { useProteinFlavors } from "@/hooks/queries/protein/useProteinFlavors";
-import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
+import { useProteinById } from "@/hooks/queries/proteins/useProteinById";
+import { useProteinByIdPrice } from "@/hooks/queries/proteins/useProteinByIdPrice";
+import { useProteinFlavors } from "@/hooks/queries/proteins/useProteinFlavors";
+import { useProteinPriceStats } from "@/hooks/queries/proteins/useProteinPriceStats";
 import { computeDisplayPrice, computePerProteinGram } from "@/lib/pricing";
 import { decideBadge, type Badge as PriceBadge } from "@/lib/priceBadge";
 

@@ -7,7 +7,7 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart";
-import { ProteinPrice } from "@/lib/protein/getProteinByIdPrice";
+import { ProteinPrice } from "@/lib/proteins/getProteinByIdPrice";
 
 type Props = { data: ProteinPrice[] };
 

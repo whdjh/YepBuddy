@@ -1,4 +1,4 @@
-import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
+import { useProteinPriceStats } from "@/hooks/queries/proteins/useProteinPriceStats";
 
 export function useProteinPriceStatsById(proteinId: number) {
   const { data, ...rest } = useProteinPriceStats();

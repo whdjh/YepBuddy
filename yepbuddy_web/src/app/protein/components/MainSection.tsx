@@ -6,9 +6,9 @@ import { HeaderSection } from "@/app/protein/components/HeaderSection";
 import { CardSection } from "@/app/protein/components/CardSection";
 import { TabSection } from "@/app/protein/components/TabSection";
 import useQueryTab from "@/hooks/useQueryTab";
-import { useProteins } from "@/hooks/queries/protein/useProteins";
-import { useProteinPrice } from "@/hooks/queries/protein/useProteinPrice";
-import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
+import { useProteins } from "@/hooks/queries/proteins/useProteins";
+import { useProteinPrice } from "@/hooks/queries/proteins/useProteinPrice";
+import { useProteinPriceStats } from "@/hooks/queries/proteins/useProteinPriceStats";
 import { decideBadge } from "@/lib/priceBadge";
 
 type TabKey = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
