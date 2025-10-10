@@ -1,12 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import db from "@/app/db";
 import { proteinFlavors } from "@/app/protein/schema";
 import { eq, asc } from "drizzle-orm";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_req: Request, { params }: any) {
   const id = Number(params.id);
   if (Number.isNaN(id)) {
     return NextResponse.json({ ok: false, error: "Invalid id" }, { status: 400 });

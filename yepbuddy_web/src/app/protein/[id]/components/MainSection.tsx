@@ -165,6 +165,7 @@ export default function MainSection() {
           return (
             <section className="bg-white/10 rounded-xl p-4 text-gray-200">
               <h1 className="mb-2 text-base font-semibold">맛 (개발자 주관)</h1>
+              <p className="mb-1 text-sm">CU4H-R3(마이프로틴 추천인인데..해주면 압도적 감사..!)</p>
 
               <Section title="티어1" items={t1} />
               <Section title="티어2" items={t2} />
