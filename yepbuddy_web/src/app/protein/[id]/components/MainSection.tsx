@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useProteinById } from "@/hooks/queries/protein/useProteinById";
 import { useProteinByIdPrice } from "@/hooks/queries/protein/useProteinByIdPrice";
+import { useProteinFlavors } from "@/hooks/queries/protein/useProteinFlavors"; // ★ 추가
 import Image from "next/image";
 import { DotIcon } from "lucide-react";
 import PriceHistoryChart from "./PriceHistoryChart";
@@ -16,6 +17,9 @@ export default function MainSection() {
 
   // 가격 히스토리: 최근 180개
   const { data: prices } = useProteinByIdPrice(id, 180);
+
+  // 맛 목록 (있을 때만 섹션 노출)
+  const { data: flavors } = useProteinFlavors(id); // ★ 추가
 
   if (!protein) return null;
 
@@ -31,7 +35,8 @@ export default function MainSection() {
   // 단백질 g당 가격 = price / (weight * (protein_per_scoop / scoop))
   const weight = Number(protein.weight); // 총중량 g
   const scoop = protein.scoop != null ? Number(protein.scoop) : null; // 한 스쿱 g
-  const proteinPerScoop = protein.protein_per_scoop != null ? Number(protein.protein_per_scoop) : null; // 스쿱당 단백질 g
+  const proteinPerScoop =
+    protein.protein_per_scoop != null ? Number(protein.protein_per_scoop) : null; // 스쿱당 단백질 g
 
   let priceDisplay = "-";
   let perProteinGramText = "-";
@@ -64,7 +69,7 @@ export default function MainSection() {
 
   return (
     <div className="min-h-screen text-white flex items-center justify-center p-6">
-      <div className="max-w-4xl w-full flex flex-col gap-5">
+      <div className="max-w-4xl w-full flex flex-col gap-5 pb-20">
         {/* 이미지 */}
         <div className="p-8">
           <div className="relative w-full max-w-md mx-auto aspect-square">
@@ -127,6 +132,60 @@ export default function MainSection() {
               가격 이력이 없어요
             </div>
           )}
+        </div>
+
+        {/* 마이프로틴 맛 후기 */}
+        {Array.isArray(flavors) && flavors.length > 0 && (() => {
+          const t1 = flavors.filter(f => !f.polarizing && f.tier === "T1");
+          const t2 = flavors.filter(f => !f.polarizing && f.tier === "T2");
+          const t3 = flavors.filter(f => !f.polarizing && f.tier === "T3");
+          const polar = flavors.filter(f => f.polarizing);
+
+          const Section = ({
+            title,
+            items,
+          }: {
+            title: string;
+            items: typeof flavors;
+          }) =>
+            items.length > 0 ? (
+              <div className="mt-3">
+                <h3 className="text-lg font-bold opacity-90">{title}</h3>
+                <ul className="list-disc pl-5 space-y-1 mt-1">
+                  {items.map((f) => (
+                    <li key={f.flavorId}>
+                      {f.name}
+                      {f.note ? ` - ${f.note}` : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null;
+
+          return (
+            <section className="bg-white/10 rounded-xl p-4 text-gray-200">
+              <h1 className="mb-2 text-base font-semibold">맛 (개발자 주관)</h1>
+
+              <Section title="티어1" items={t1} />
+              <Section title="티어2" items={t2} />
+              <Section title="티어3" items={t3} />
+              <Section title="호불호" items={polar} />
+            </section>
+          );
+        })()}
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/70 backdrop-blur">
+        <div className="mx-auto max-w-4xl px-4 py-3">
+          <a
+            href={protein.url}
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+            className="block w-full rounded-xl px-4 py-3 text-center text-base font-semibold hover:opacity-90"
+            style={{ background: "#16a34a", color: "white" }}
+          >
+            구매하러 가기
+          </a>
         </div>
       </div>
     </div>

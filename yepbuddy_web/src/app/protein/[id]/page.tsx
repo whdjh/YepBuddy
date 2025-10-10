@@ -7,12 +7,18 @@ export const metadata: Metadata = {
   description: "단백질 가격비교 상세 페이지입니다.",
 };
 
-
 export default function ProteinId() {
   return (
-    <div className="p-2 tab:p-5">
-      <HeaderSection />
-      <MainSection />
-    </div>
+    <>
+      <div className="bg-red-600 text-xs text-center mob:text-lg">
+        이 포스팅은 쿠팡 파트너스 활동의 일환으로,
+        <br className="mob:hidden" />
+        이에 따른 일정액의 수수료를 제공받습니다.
+      </div>
+      <div className="p-2 tab:p-5">
+        <HeaderSection />
+        <MainSection />
+      </div>
+    </>
   );
 }
