@@ -21,6 +21,8 @@ export const proteinTopic = pgEnum("protein_topic", [
   "beta-alanine",
 ]);
 
+export const flavorTier = pgEnum("flavor_tier", ["T1", "T2", "T3"]);
+
 export const proteins = pgTable(
   "proteins",
   {
@@ -39,6 +41,7 @@ export const proteins = pgTable(
     protein_per_scoop: integer(),
     base_pack_count: integer().notNull().default(1),
     base_date: date({ mode: "string" }).notNull(),
+    url: text().notNull(),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -86,5 +89,29 @@ export const proteinsLikes = pgTable(
   },
   (t) => [
     primaryKey({ columns: [t.protein_id, t.profile_id], name: "proteins_likes_pk" }),
+  ]
+);
+
+export const proteinFlavors = pgTable(
+  "protein_flavors",
+  {
+    flavor_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+
+    protein_id: bigint({ mode: "number" })
+      .references(() => proteins.protein_id, { onDelete: "cascade" })
+      .notNull(),
+
+    name: text().notNull(),
+    tier: flavorTier(),
+    polarizing: boolean().notNull().default(false),
+    note: text(),
+
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+  },
+  (t) => [
+    uniqueIndex("protein_flavors_unique_per_protein").on(t.protein_id, t.name),
   ]
 );

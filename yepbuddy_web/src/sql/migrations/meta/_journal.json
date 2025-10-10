@@ -85,6 +85,13 @@
       "when": 1760067989685,
       "tag": "0011_uneven_scalphunter",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1760092678940,
+      "tag": "0012_green_bug",
+      "breakpoints": true
     }
   ]
 }
