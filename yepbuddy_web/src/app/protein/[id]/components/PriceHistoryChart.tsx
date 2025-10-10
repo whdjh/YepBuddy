@@ -22,20 +22,23 @@ function toYM(iso: string) {
 }
 
 export default function PriceHistoryChart({ data }: Props) {
-  // 1) 원본 날짜 그대로 x축 값으로 사용
-  const rows = data.slice().reverse().map((d) => ({
-    x: d.observed_date,   // ISO 날짜 그대로
-    price: d.price,
-  }));
+  // 1️⃣ 세일가 반영: price * (1 - sale / 100)
+  const rows = data
+    .slice()
+    .reverse()
+    .map((d) => ({
+      x: d.observed_date,
+      price: Math.round(Number(d.price) * (1 - Number(d.sale ?? 0) / 100)), // ✅ 세일가 계산
+    }));
 
-  // 2) X축에 표시할 '틱'은 월별로 한 개씩만 뽑기 (해당 월의 첫 데이터)
+  // 2️⃣ 월별로 하나씩만 x축 라벨 표시
   const seen = new Set<string>();
   const monthTicks: string[] = [];
   for (const r of rows) {
     const ym = toYM(r.x);
     if (!seen.has(ym)) {
       seen.add(ym);
-      monthTicks.push(r.x); // 실제 X값(ISO)을 틱으로 등록
+      monthTicks.push(r.x);
     }
   }
 
@@ -45,19 +48,23 @@ export default function PriceHistoryChart({ data }: Props) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="x"
-          ticks={monthTicks}                         // 월별 한 개만 라벨
-          tickFormatter={(value: string) => toYM(value)} // 라벨을 YY-MM로 표시 (예: 25-05)
+          ticks={monthTicks}
+          tickFormatter={(value: string) => toYM(value)}
           tickMargin={8}
           minTickGap={16}
           interval="preserveStartEnd"
         />
-        <YAxis tickFormatter={(v) => v.toLocaleString()} tickMargin={8} width={60} />
+        <YAxis
+          tickFormatter={(v) => v.toLocaleString()}
+          tickMargin={8}
+          width={60}
+        />
         <ChartTooltip
           content={
             <ChartTooltipContent
               indicator="line"
               labelKey="x"
-              labelFormatter={(value: string) => toYM(value)} // 툴팁 라벨도 YY-MM
+              labelFormatter={(value: string) => toYM(value)}
               formatter={(value) => (
                 <span className="font-mono">{Number(value).toLocaleString()} 원</span>
               )}
@@ -67,7 +74,7 @@ export default function PriceHistoryChart({ data }: Props) {
         <Line
           type="monotone"
           dataKey="price"
-          name="가격"
+          name="세일가"
           stroke="var(--color-price, #22c55e)"
           dot={false}
           strokeWidth={2}

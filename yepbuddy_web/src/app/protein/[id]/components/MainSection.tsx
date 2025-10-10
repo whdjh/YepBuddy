@@ -22,6 +22,11 @@ export default function MainSection() {
   // 최신가: 히스토리를 최신순으로 내려주고 있다면 0번째가 최신
   const latest = prices?.[0];
   const latestPrice = latest?.price != null ? Number(latest.price) : null;
+  const salePercent = latest?.sale != null ? Number(latest.sale) : 0; // 할인율 %
+
+  // 실제 표시가격 = 정가 × (1 - 할인율 / 100)
+  const displayPrice =
+    latestPrice != null ? Math.round(latestPrice * (1 - salePercent / 100)) : null;
 
   // 단백질 g당 가격 = price / (weight * (protein_per_scoop / scoop))
   const weight = Number(protein.weight); // 총중량 g
@@ -31,18 +36,18 @@ export default function MainSection() {
   let priceDisplay = "-";
   let perProteinGramText = "-";
 
-  if (latestPrice != null && latestPrice > 0) {
-    priceDisplay = `${latestPrice.toLocaleString()}원`;
+  if (displayPrice != null && displayPrice > 0) {
+    priceDisplay = `${displayPrice.toLocaleString()}원`;
 
     if (weight > 0 && scoop && scoop > 0 && proteinPerScoop && proteinPerScoop > 0) {
-      const totalProteinGrams = weight * (proteinPerScoop / scoop); // 제품 전체에 들어있는 단백질 총량 g
+      const totalProteinGrams = weight * (proteinPerScoop / scoop); // 제품 전체 단백질 총량 g
       if (totalProteinGrams > 0) {
-        const perProteinGram = Math.round(latestPrice / totalProteinGrams);
+        const perProteinGram = Math.round(displayPrice / totalProteinGrams);
         perProteinGramText = `${perProteinGram.toLocaleString()}원/g`;
       }
     } else if (weight > 0) {
       // 보조 데이터 없으면 총중량 기준 g당 가격으로 폴백
-      const perGram = Math.round(latestPrice / weight);
+      const perGram = Math.round(displayPrice / weight);
       perProteinGramText = `${perGram.toLocaleString()}원/g`;
     }
   }

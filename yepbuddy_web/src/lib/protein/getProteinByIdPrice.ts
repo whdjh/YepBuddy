@@ -1,6 +1,7 @@
 export interface ProteinPrice {
   observed_date: string;
   price: number;
+  sale: number;
   available: boolean;
   protein_id: number;
 }

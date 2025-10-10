@@ -45,44 +45,51 @@ export default function MainSection() {
   const cards = useMemo(() => {
     const items = proteins ?? [];
 
-    const priceMap = new Map<number, { price: number; observed_date: string; available: boolean }>();
+    const priceMap = new Map<
+      number,
+      { price: number; observed_date: string; available: boolean; sale: number }
+    >();
+
     (latestPrices ?? []).forEach((p) => {
       priceMap.set(Number(p.protein_id), {
         price: Number(p.price),
         observed_date: p.observed_date,
         available: Boolean(p.available),
+        sale: Number(p.sale), // 할인율 (%)
       });
     });
 
     return items.map((p: any) => {
       const priceInfo = priceMap.get(Number(p.protein_id));
-      const latestPrice = priceInfo?.price ?? null;
+      const basePrice = priceInfo?.price ?? null;
+      const salePercent = priceInfo?.sale ?? 0;
+
+      // 실제 표시용 가격 = 정가 × (1 - 할인율/100)
+      const latestPrice =
+        basePrice != null ? Math.round(basePrice * (1 - salePercent / 100)) : null;
 
       const weight = Number(p.weight);
       const scoop = p.scoop != null ? Number(p.scoop) : null;
       const proteinPerScoop = p.protein_per_scoop != null ? Number(p.protein_per_scoop) : null;
 
-      // 기본 표시값
-      let priceDisplay = "-";      // 총가격
-      let perProteinGramText = "-"; // 단백질 g당 가격
+      let priceDisplay = "-";
+      let perProteinGramText = "-";
 
       if (latestPrice != null && latestPrice > 0) {
         priceDisplay = `${latestPrice.toLocaleString()}원`;
 
         // 공식: price / (weight * (protein_per_scoop / scoop))
         if (weight > 0 && scoop && scoop > 0 && proteinPerScoop && proteinPerScoop > 0) {
-          const totalProteinGrams = weight * (proteinPerScoop / scoop); // 총 단백질(g)
+          const totalProteinGrams = weight * (proteinPerScoop / scoop);
           if (totalProteinGrams > 0) {
             const perProteinGram = Math.round(latestPrice / totalProteinGrams);
             perProteinGramText = `${perProteinGram.toLocaleString()}원/g`;
           }
         } else if (weight > 0) {
-          // 보조정보가 없으면 제품 g당 가격으로 폴백
           const perGram = Math.round(latestPrice / weight);
           perProteinGramText = `${perGram.toLocaleString()}원/g`;
         }
       }
-      console.log(perProteinGramText);
 
       return {
         id: String(p.protein_id),
@@ -97,7 +104,6 @@ export default function MainSection() {
       };
     });
   }, [proteins, latestPrices]);
-
 
   return (
     <div className="flex flex-col gap-5">
