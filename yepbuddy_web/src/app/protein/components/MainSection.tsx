@@ -9,7 +9,7 @@ import useQueryTab from "@/hooks/useQueryTab";
 import { useProteins } from "@/hooks/queries/protein/useProteins";
 import { useProteinPrice } from "@/hooks/queries/protein/useProteinPrice";
 import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
-import { decideBadge, diffFromMedianPct } from "@/lib/protein/priceBadge";
+import { decideBadge } from "@/lib/protein/priceBadge";
 
 type TabKey = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
 
@@ -108,7 +108,6 @@ export default function MainSection() {
       // 저/중/고 배지
       const stats = statsMap.get(pid);
       const badge = stats ? decideBadge(latestPrice, stats) : null;
-      const medianDiff = stats && latestPrice ? diffFromMedianPct(latestPrice, stats.p50) : null;
 
       return {
         id: String(p.protein_id),
@@ -120,8 +119,7 @@ export default function MainSection() {
         price: priceDisplay,
         priceText: perProteinGramText,
         likesCount: 0,
-        badge,                 // { kind: 'low'|'mid'|'high', color: 'green'|'blue'|'red', reason: string } | null
-        medianDiffPct: medianDiff, // number | null
+        badge,
       };
     });
   }, [proteins, latestPrices, priceStats]);

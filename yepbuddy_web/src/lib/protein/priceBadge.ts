@@ -1,6 +1,10 @@
-// src/lib/priceBadge.ts
 export type Badge = { kind: "low" | "mid" | "high"; color: "green" | "blue" | "red"; reason: string };
 
+/**
+ * 저점: 누적 분포 20% 이하 → 현재가 ≤ P20
+ * 중간: 20% 초과 ~ 80% 미만 → P20 < 현재가 < P80
+ * 고점: 80% 이상 → 현재가 ≥ P80
+ */
 export function decideBadge(
   currentPrice: number | null | undefined,
   stats: { p20?: number | null; p50?: number | null; p80?: number | null; min?: number | null; max?: number | null; sample_count?: number | null }
@@ -29,9 +33,4 @@ export function decideBadge(
   }
 
   return null;
-}
-
-export function diffFromMedianPct(currentPrice: number, p50?: number | null) {
-  if (!p50 || p50 <= 0) return null;
-  return ((currentPrice - p50) / p50) * 100;
 }
