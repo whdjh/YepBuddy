@@ -1,12 +1,18 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import { useParams } from "next/navigation";
+import { DotIcon } from "lucide-react";
+import PriceHistoryChart from "@/app/protein/[id]/components/PriceHistoryChart";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useProteinById } from "@/hooks/queries/protein/useProteinById";
 import { useProteinByIdPrice } from "@/hooks/queries/protein/useProteinByIdPrice";
-import { useProteinFlavors } from "@/hooks/queries/protein/useProteinFlavors"; // ★ 추가
-import Image from "next/image";
-import { DotIcon } from "lucide-react";
-import PriceHistoryChart from "./PriceHistoryChart";
+import { useProteinFlavors } from "@/hooks/queries/protein/useProteinFlavors";
+import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
+import { computeDisplayPrice, computePerProteinGram } from "@/lib/pricing";
+import { decideBadge, type Badge as PriceBadge } from "@/lib/priceBadge";
 
 export default function MainSection() {
   const params = useParams<{ id: string }>();
@@ -19,18 +25,24 @@ export default function MainSection() {
   const { data: prices } = useProteinByIdPrice(id, 180);
 
   // 맛 목록 (있을 때만 섹션 노출)
-  const { data: flavors } = useProteinFlavors(id); // ★ 추가
+  const { data: flavors } = useProteinFlavors(id);
+
+  // 180일 분포 통계(리스트와 동일한 기준을 상세에서도 공유)
+  const { data: allStats } = useProteinPriceStats();
+  const stats = (allStats ?? []).find((s) => Number(s.protein_id) === id);
 
   if (!protein) return null;
 
-  // 최신가: 히스토리를 최신순으로 내려주고 있다면 0번째가 최신
-  const latest = prices?.[0];
+  // 최신가: 히스토리를 최신순으로 내려주고 있다면 0번째가 최신 → 정렬 가정하지 말고 날짜로 정렬해서 가장 최근 선택
+  const latest = (prices ?? [])
+    .slice()
+    .sort((a, b) => (a.observed_date < b.observed_date ? 1 : -1))[0];
+
   const latestPrice = latest?.price != null ? Number(latest.price) : null;
   const salePercent = latest?.sale != null ? Number(latest.sale) : 0; // 할인율 %
 
   // 실제 표시가격 = 정가 × (1 - 할인율 / 100)
-  const displayPrice =
-    latestPrice != null ? Math.round(latestPrice * (1 - salePercent / 100)) : null;
+  const displayPrice = computeDisplayPrice(latestPrice, salePercent);
 
   // 단백질 g당 가격 = price / (weight * (protein_per_scoop / scoop))
   const weight = Number(protein.weight); // 총중량 g
@@ -38,21 +50,17 @@ export default function MainSection() {
   const proteinPerScoop =
     protein.protein_per_scoop != null ? Number(protein.protein_per_scoop) : null; // 스쿱당 단백질 g
 
+  const perProtein = displayPrice != null
+    ? computePerProteinGram(displayPrice, weight, scoop, proteinPerScoop)
+    : null;
+
   let priceDisplay = "-";
   let perProteinGramText = "-";
 
   if (displayPrice != null && displayPrice > 0) {
     priceDisplay = `${displayPrice.toLocaleString()}원`;
-
-    if (weight > 0 && scoop && scoop > 0 && proteinPerScoop && proteinPerScoop > 0) {
-      const totalProteinGrams = weight * (proteinPerScoop / scoop);
-      if (totalProteinGrams > 0) {
-        const perProteinGram = Math.round(displayPrice / totalProteinGrams);
-        perProteinGramText = `${perProteinGram.toLocaleString()}원/g`;
-      }
-    } else if (weight > 0) {
-      const perGram = Math.round(displayPrice / weight);
-      perProteinGramText = `${perGram.toLocaleString()}원/g`;
+    if (perProtein != null) {
+      perProteinGramText = `${perProtein.toLocaleString()}원/g`;
     }
   }
 
@@ -67,32 +75,49 @@ export default function MainSection() {
       .filter((s: string) => s.length > 0)
     : [];
 
+  // 상세도 리스트와 동일 기준(P20/P50/P80)으로 배지 결정
+  const badge: PriceBadge | null = stats ? decideBadge(displayPrice, stats) : null;
+
+  // 배지 variant 매핑(통일)
+  const badgeVariant =
+    badge?.color === "green" ? "default" :
+      badge?.color === "red" ? "red" :
+        badge ? "blue" : null;
+
+  const badgeLabel =
+    badge?.kind === "low" ? "저점" :
+      badge?.kind === "high" ? "고점" :
+        badge ? "중간" : null;
+
   return (
     <div className="min-h-screen text-white flex items-center justify-center p-6">
       <div className="max-w-4xl w-full flex flex-col gap-5 pb-20">
         {/* 이미지 */}
         <div className="p-8">
           <div className="relative w-full max-w-md mx-auto aspect-square">
-            {imageSrc ? (
-              <Image
-                src={imageSrc}
-                alt={protein.title}
-                fill
-                className="object-contain"
-                sizes="(max-width: 768px) 80vw, 400px"
-                priority
-              />
-            ) : (
-              <p>이미지 자리</p>
-            )}
+            <Image
+              src={imageSrc}
+              alt={protein.title}
+              fill
+              className="object-contain"
+              sizes="(max-width: 768px) 80vw, 400px"
+              priority
+            />
           </div>
         </div>
 
-        {/* 제품명 */}
-        <h1 className="text-4xl font-bold">{protein.title}</h1>
+        {/* 제품명 + 배지(동일 기준) */}
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl mob:text-4xl font-bold">{protein.title}</h1>
+          {badge && badgeVariant && badgeLabel && (
+            <Badge variant={badgeVariant as any} title={badge.reason} aria-label={badge.reason}>
+              {badgeLabel}
+            </Badge>
+          )}
+        </div>
 
         {/* 제품 정보 */}
-        <div className="flex items-center gap-2 text-gray-300">
+        <div className="flex items-center gap-2 text-gray-300 text-md mob:text-2xl">
           <span>{protein.weight}g</span>
           <DotIcon className="size-5" />
           <span>{protein.topic}</span>
@@ -103,8 +128,8 @@ export default function MainSection() {
         {/* 특징 리스트 */}
         {features.length > 0 && (
           <section className="bg-white/10 rounded-xl p-4 text-gray-200">
-            <h3 className="mb-2 text-base font-semibold">특징</h3>
-            <ul className="list-disc pl-5 space-y-1">
+            <h3 className="mb-2 text-md tab:text-xl font-semibold">특징</h3>
+            <ul className="list-disc pl-5 space-y-1 text-sm tab:text-lg">
               {features.map((f: string, i: number) => (
                 <li key={`${i}-${f.slice(0, 16)}`}>{f}</li>
               ))}
@@ -165,7 +190,7 @@ export default function MainSection() {
           return (
             <section className="bg-white/10 rounded-xl p-4 text-gray-200">
               <h1 className="mb-2 text-base font-semibold">맛 (개발자 주관)</h1>
-              <p className="mb-1 text-sm">CU4H-R3(마이프로틴 추천인인데..해주면 압도적 감사..!)</p>
+              <p className="mb-1 text-xs">CU4H-R3(마이프로틴 추천인인데..해주면 압도적 감사...!)</p>
 
               <Section title="티어1" items={t1} />
               <Section title="티어2" items={t2} />
@@ -176,17 +201,24 @@ export default function MainSection() {
         })()}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-black/70 backdrop-blur">
+      {/* 하단 스티키 구매 버튼 */}
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10">
         <div className="mx-auto max-w-4xl px-4 py-3">
-          <a
-            href={protein.url}
-            target="_blank"
-            rel="nofollow noopener noreferrer"
-            className="block w-full rounded-xl px-4 py-3 text-center text-base font-semibold hover:opacity-90"
-            style={{ background: "#16a34a", color: "white" }}
+          <Button
+            asChild
+            variant="default"
+            size="lg"
+            className="w-full rounded-xl text-base font-semibold"
+            aria-label="구매하러 가기"
           >
-            구매하러 가기
-          </a>
+            <Link
+              href={protein.url ?? "#"}
+              target="_blank"
+              rel="nofollow noopener noreferrer"
+            >
+              구매하러 가기
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

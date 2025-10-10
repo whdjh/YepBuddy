@@ -1,4 +1,3 @@
-// TODO: 저점일때만 뱃지형식으로 보여지게
 import Link from "next/link";
 import {
   Card, CardHeader, CardTitle,

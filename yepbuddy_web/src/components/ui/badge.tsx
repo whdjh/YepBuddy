@@ -23,6 +23,10 @@ const badgeVariants = cva(
         // 테두리만
         outline:
           "border-white/15 bg-transparent text-gray-100 [a&]:hover:bg-white/10",
+        blue:
+          "border-transparent bg-blue-500 text-white [a&]:hover:brightness-110",
+        red:
+          "border-transparent bg-red-500 text-white [a&]:hover:brightness-110",
       },
     },
     defaultVariants: {

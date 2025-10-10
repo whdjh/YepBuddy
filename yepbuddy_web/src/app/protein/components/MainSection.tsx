@@ -9,7 +9,7 @@ import useQueryTab from "@/hooks/useQueryTab";
 import { useProteins } from "@/hooks/queries/protein/useProteins";
 import { useProteinPrice } from "@/hooks/queries/protein/useProteinPrice";
 import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
-import { decideBadge } from "@/lib/protein/priceBadge";
+import { decideBadge } from "@/lib/priceBadge";
 
 type TabKey = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
 
