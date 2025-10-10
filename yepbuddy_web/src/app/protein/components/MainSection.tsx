@@ -8,6 +8,8 @@ import { TabSection } from "@/app/protein/components/TabSection";
 import useQueryTab from "@/hooks/useQueryTab";
 import { useProteins } from "@/hooks/queries/protein/useProteins";
 import { useProteinPrice } from "@/hooks/queries/protein/useProteinPrice";
+import { useProteinPriceStats } from "@/hooks/queries/protein/useProteinPriceStats";
+import { decideBadge, diffFromMedianPct } from "@/lib/protein/priceBadge";
 
 type TabKey = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
 
@@ -35,36 +37,48 @@ export default function MainSection() {
     [pathname, searchParams]
   );
 
-  const { data: proteins } = useProteins({
-    q,
-    topic: activeTab,
-  });
-
+  // 목록 + 최신가
+  const { data: proteins } = useProteins({ q, topic: activeTab });
   const { data: latestPrices } = useProteinPrice();
+
+  // 180일 분포 통계 (p20/p50/p80 등)
+  const { data: priceStats } = useProteinPriceStats();
 
   const cards = useMemo(() => {
     const items = proteins ?? [];
 
+    // 최신가 맵
     const priceMap = new Map<
       number,
       { price: number; observed_date: string; available: boolean; sale: number }
     >();
-
     (latestPrices ?? []).forEach((p) => {
       priceMap.set(Number(p.protein_id), {
         price: Number(p.price),
         observed_date: p.observed_date,
         available: Boolean(p.available),
-        sale: Number(p.sale), // 할인율 (%)
+        sale: Number(p.sale), // %
       });
     });
 
+    // 통계 맵
+    const statsMap = new Map<
+      number,
+      { p20?: number | null; p50?: number | null; p80?: number | null; min?: number | null; max?: number | null; sample_count?: number | null }
+    >();
+    (priceStats ?? []).forEach((s) => {
+      // s.protein_id가 string/number 혼재 가능성 방지
+      statsMap.set(Number(s.protein_id), s);
+    });
+
     return items.map((p: any) => {
-      const priceInfo = priceMap.get(Number(p.protein_id));
+      const pid = Number(p.protein_id);
+
+      const priceInfo = priceMap.get(pid);
       const basePrice = priceInfo?.price ?? null;
       const salePercent = priceInfo?.sale ?? 0;
 
-      // 실제 표시용 가격 = 정가 × (1 - 할인율/100)
+      // 실제 표시가 = 정가 × (1 - 할인율/100)
       const latestPrice =
         basePrice != null ? Math.round(basePrice * (1 - salePercent / 100)) : null;
 
@@ -78,7 +92,7 @@ export default function MainSection() {
       if (latestPrice != null && latestPrice > 0) {
         priceDisplay = `${latestPrice.toLocaleString()}원`;
 
-        // 공식: price / (weight * (protein_per_scoop / scoop))
+        // price / (weight * (protein_per_scoop / scoop))
         if (weight > 0 && scoop && scoop > 0 && proteinPerScoop && proteinPerScoop > 0) {
           const totalProteinGrams = weight * (proteinPerScoop / scoop);
           if (totalProteinGrams > 0) {
@@ -91,6 +105,11 @@ export default function MainSection() {
         }
       }
 
+      // 저/중/고 배지
+      const stats = statsMap.get(pid);
+      const badge = stats ? decideBadge(latestPrice, stats) : null;
+      const medianDiff = stats && latestPrice ? diffFromMedianPct(latestPrice, stats.p50) : null;
+
       return {
         id: String(p.protein_id),
         title: p.title,
@@ -101,9 +120,11 @@ export default function MainSection() {
         price: priceDisplay,
         priceText: perProteinGramText,
         likesCount: 0,
+        badge,                 // { kind: 'low'|'mid'|'high', color: 'green'|'blue'|'red', reason: string } | null
+        medianDiffPct: medianDiff, // number | null
       };
     });
-  }, [proteins, latestPrices]);
+  }, [proteins, latestPrices, priceStats]);
 
   return (
     <div className="flex flex-col gap-5">
