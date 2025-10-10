@@ -108,7 +108,7 @@ export default function MainSection() {
   return (
     <div className="flex flex-col gap-5">
       <TabSection activeTab={activeTab} makeHref={makeHref} />
-      <HeaderSection pathname={pathname} q={q} />
+      <HeaderSection pathname={pathname} q={q} activeTab={activeTab} />
       <CardSection cards={cards} />
     </div>
   );
