@@ -20,7 +20,22 @@ EXCEPTION
   WHEN duplicate_object THEN NULL;
 END $$;
 
--- ===== TABLES =====
+-- ===== users는 app 스키마에 생성 =====
+CREATE SCHEMA IF NOT EXISTS "app";
+
+CREATE TABLE IF NOT EXISTS "app"."users" (
+  "id" uuid PRIMARY KEY NOT NULL,
+  "email" text NOT NULL,
+  "password_hash" text NOT NULL,
+  "email_verified_at" timestamp,
+  "created_at" timestamp DEFAULT now() NOT NULL,
+  "updated_at" timestamp DEFAULT now() NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS "uq_app_users_email"
+  ON "app"."users" ("email");
+
+-- ===== TABLES (public) =====
 CREATE TABLE "gyms" (
   "gym_id" bigint PRIMARY KEY GENERATED ALWAYS AS IDENTITY (sequence name "gyms_gym_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 1 CACHE 1),
   "title" text NOT NULL,
@@ -166,6 +181,7 @@ ALTER TABLE "follows"
   ADD CONSTRAINT "follows_following_id_profiles_profile_id_fk"
   FOREIGN KEY ("following_id") REFERENCES "public"."profiles"("profile_id") ON DELETE cascade ON UPDATE no action;
 
+-- ✅ 핵심: profiles → app.users FK
 ALTER TABLE "profiles"
   ADD CONSTRAINT "profiles_profile_id_users_id_fk"
-  FOREIGN KEY ("profile_id") REFERENCES "auth"."users"("id") ON DELETE cascade ON UPDATE no action;
+  FOREIGN KEY ("profile_id") REFERENCES "app"."users"("id") ON DELETE cascade ON UPDATE no action;

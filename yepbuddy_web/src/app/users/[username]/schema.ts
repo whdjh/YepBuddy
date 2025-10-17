@@ -9,12 +9,24 @@ import {
   text,
   timestamp,
   uuid,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { trainers } from "@/app/trainer/schema";
 
-const users = pgSchema("auth").table("users", {
-  id: uuid().primaryKey(),
-});
+const app = pgSchema("app");
+
+export const users = app.table(
+  "users",
+  {
+    id: uuid().primaryKey(),
+    email: text().notNull(),
+    password_hash: text().notNull(),
+    email_verified_at: timestamp(),
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+  },
+  (t) => [uniqueIndex("uq_app_users_email").on(t.email)]
+);
 
 export const roles = pgEnum("role", ["trainer", "member"]);
 
@@ -23,11 +35,11 @@ export const profiles = pgTable("profiles", {
     .primaryKey()
     .references(() => users.id, { onDelete: "cascade" }),
   name: text().notNull(),
-  role: roles().default("trainer").notNull(),
-  description: text().notNull(),
+  role: roles().default("member").notNull(),
+  description: text(),
   location: text(),
   history: text(),
-  qualifications: text().notNull(),
+  qualifications: text(),
   avatar_file: text(),
   views: jsonb(),
   stats: jsonb().$type<{
