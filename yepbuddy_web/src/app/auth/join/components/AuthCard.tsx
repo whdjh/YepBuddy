@@ -8,10 +8,11 @@ import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { JoinForm } from "@/types/Form";
+import { useJoinMutation } from "@/hooks/queries/auth/useJoin";
 
 export default function AuthCard() {
   const router = useRouter();
-
+  const joinMutation = useJoinMutation();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const methods = useForm<JoinForm>({
@@ -23,32 +24,29 @@ export default function AuthCard() {
     handleSubmit,
     formState: { isSubmitting },
     setError,
-    reset
+    reset,
   } = methods;
 
   const onSubmit = async (data: JoinForm) => {
     setServerError(null);
 
-    try {
-      const res = await fetch("/api/auth/join", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
+    const res = await joinMutation.mutateAsync({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
 
-      if (!res.ok) {
-        const msg = res.status === 409 ? "이미 가입된 이메일입니다." : "회원가입에 실패했습니다.";
-        setServerError(msg);
-        setError("root", { type: "server", message: msg });
-        return;
-      }
-      reset({ email: "", password: "" });
-
-      router.push("/auth/login?joined=1");
-    } catch (e) {
-      setServerError("네트워크 오류가 발생했습니다.");
-      setError("root", { type: "server", message: "네트워크 오류가 발생했습니다." });
+    if (!res.ok) {
+      setServerError(res.error);
+      setError("root", { type: "server", message: res.error });
+      return;
     }
+
+    // 폼 일부 초기화(입력값 남지 않게)
+    reset({ name: "", email: "", password: "" });
+
+    // 로그인 페이지로 이동
+    router.push("/auth/login?joined=1");
   };
 
   return (
@@ -57,9 +55,11 @@ export default function AuthCard() {
         <div className="flex flex-col relative items-center justify-start tab:h-full">
           <div className="flex items-center flex-col justify-center w-full max-w-md gap-10">
             <h1 className="text-2xl font-semibold">회원가입</h1>
+
             {serverError && (
               <p className="w-full text-sm text-red-500">{serverError}</p>
             )}
+
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
               <InputPair
                 name="name"
@@ -67,9 +67,7 @@ export default function AuthCard() {
                 label="이름"
                 description="이름을 입력하세요."
                 placeholder="이름을 입력하세요."
-                rules={{
-                  required: "필수 입력 사항입니다.",
-                }}
+                rules={{ required: "필수 입력 사항입니다." }}
               />
               <InputPair
                 name="email"
@@ -94,20 +92,22 @@ export default function AuthCard() {
                 placeholder="••••••••"
                 rules={{
                   required: "필수 입력 사항입니다.",
-                  minLength: {
-                    value: 8,
-                    message: "비밀번호는 8자 이상이어야 합니다.",
-                  },
+                  minLength: { value: 8, message: "비밀번호는 8자 이상이어야 합니다." },
                 }}
               />
 
-              <Button className="w-full" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "회웝가입 중" : "회원가입"}
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={isSubmitting || joinMutation.isPending}
+              >
+                {isSubmitting || joinMutation.isPending ? "회원가입 중…" : "회원가입"}
               </Button>
             </form>
           </div>
         </div>
       </FormProvider>
+
       <div className="w-full flex flex-col items-center tab:gap-8 gap-3 mt-5 tab:mt-0">
         <div className="w-full flex flex-col items-center gap-2">
           <hr className="w-full border-white/10" />
