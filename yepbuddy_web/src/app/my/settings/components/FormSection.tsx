@@ -2,20 +2,23 @@
 
 import { useEffect, useState } from "react";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import { Button } from "@/components/ui/button";
 import InputPair from "@/components/common/InputPair";
 import SelectPair from "@/components/common/SelectPair";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { UserSettingFormValues } from "@/types/Form";
+import { useProfileUpdate } from "@/hooks/queries/profile/useProfileUpdate";
 
 export default function FormSection() {
+  const { mutateAsync: updateProfile, isPending } = useProfileUpdate();
+
   const methods = useForm<UserSettingFormValues>({
     mode: "all",
     shouldUnregister: true,
     defaultValues: {
       name: "",
-      role: "",
+      role: "member",
       location: "",
       history: "",
       qualifications: "",
@@ -24,21 +27,6 @@ export default function FormSection() {
       avatar: null,
     },
   });
-
-  const validateFile = (file?: File | null) => {
-    if (!file) {
-      return true;
-    }
-
-    if (!["image/png", "image/jpeg"].includes(file.type)) {
-      return "PNG 또는 JPEG만 허용";
-    }
-
-    if (file.size > 1 * 1024 * 1024) {
-      return "최대 1MB까지 업로드 가능";
-    }
-    return true;
-  };
 
   const { handleSubmit, register, watch, setValue, formState } = methods;
   const [preview, setPreview] = useState<string | null>(null);
@@ -52,30 +40,48 @@ export default function FormSection() {
       setPreview(null);
       return;
     }
-
     const url = URL.createObjectURL(avatarFile);
-
     setPreview(url);
-    
     return () => URL.revokeObjectURL(url);
   }, [avatarFile]);
 
-  const onSubmit: SubmitHandler<UserSettingFormValues> = (data) => {
-    console.log("submit:", data);
+  const onSubmit: SubmitHandler<UserSettingFormValues> = async (data) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("role", data.role);
+    formData.append("location", data.location ?? "");
+    formData.append("history", data.history ?? "");
+    formData.append("qualifications", data.qualifications ?? "");
+    formData.append("description", data.description ?? "");
+    if (data.avatarFile) formData.append("avatarFile", data.avatarFile);
+
+    try {
+      const res = await updateProfile(formData);
+      if (!res.ok) {
+        alert(res.error || "프로필 수정 실패");
+        return;
+      }
+      alert("프로필이 수정되었습니다!");
+    } catch {
+      alert("서버 오류가 발생했습니다.");
+    }
+  };
+
+  const validateFile = (file?: File | null) => {
+    if (!file) return true;
+    if (!["image/png", "image/jpeg"].includes(file.type)) return "PNG 또는 JPEG만 허용";
+    if (file.size > 1 * 1024 * 1024) return "최대 1MB까지 업로드 가능";
+    return true;
   };
 
   return (
     <FormProvider {...methods}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-20 p-2 tab:p-5"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-20 p-2 tab:p-5">
         <div className="grid grid-cols-1 tab:grid-cols-6 gap-10">
           <div className="col-span-full tab:col-span-4 space-y-10">
             <h2 className="text-2xl font-semibold">프로필 수정하기</h2>
 
             <div className="flex flex-col gap-5">
-              {/* 공통 필드: 회원/트레이너 모두 */}
               <InputPair
                 label="이름"
                 description="이름을 입력하세요"
@@ -105,10 +111,8 @@ export default function FormSection() {
                 rules={{ required: "자기소개를 입력하세요" }}
               />
 
-              {/* 트레이너 전용 필드 */}
               {isTrainer && (
                 <>
-                  {/* 장소 api로 변경 예정 */}
                   <InputPair
                     label="근무지"
                     description="근무지를 적어보세요."
@@ -118,7 +122,6 @@ export default function FormSection() {
                     placeholder="근무지를 입력하세요"
                     rules={{ required: "근무지를 입력하세요" }}
                   />
-                  {/* 데이터값 보낼 때, 콤마를 기점으로 보내기 */}
                   <InputPair
                     label="경력"
                     description="콤마(,)로 구분하여 경력을 적어주세요."
@@ -142,7 +145,6 @@ export default function FormSection() {
             </div>
           </div>
 
-          {/* 프로필 이미지 업로더: 회원/트레이너 공통 */}
           <div className="col-span-full tab:col-span-2 p-6 rounded-lg border border-white/10 shadow-md">
             <Label htmlFor="avatar" className="flex flex-col gap-1">
               프로필
@@ -153,11 +155,7 @@ export default function FormSection() {
               <div className="flex justify-center">
                 <div className="size-40 rounded-full overflow-hidden bg-black/10">
                   {preview ? (
-                    <img
-                      src={preview}
-                      alt="avatar preview"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={preview} alt="avatar preview" className="w-full h-full object-cover" />
                   ) : (
                     <span className="flex items-center justify-center w-full h-full text-xs text-muted-foreground">
                       미리보기 없음
@@ -176,32 +174,27 @@ export default function FormSection() {
                     const input = e.target as HTMLInputElement;
                     const file = input.files?.[0] ?? null;
                     setValue("avatarFile", file, { shouldValidate: true, shouldDirty: true });
-                    input.value = ""; // 동일 파일 재선택 허용
+                    input.value = "";
                   },
                 })}
               />
+
               {formState.errors.avatar && (
-                <p className="text-xs text-red-500">
-                  {String(formState.errors.avatar.message)}
-                </p>
+                <p className="text-xs text-red-500">{String(formState.errors.avatar.message)}</p>
               )}
 
-              <div className="flex flex-col text-xs">
-                <span className="text-muted-foreground">추천 사이즈: 128x128px</span>
-                <span className="text-muted-foreground">허용 형식: PNG, JPEG</span>
-                <span className="text-muted-foreground">최대 파일 크기: 1MB</span>
+              <div className="flex flex-col text-xs text-muted-foreground">
+                <span>추천 사이즈: 128x128px</span>
+                <span>허용 형식: PNG, JPEG</span>
+                <span>최대 파일 크기: 1MB</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="flex justify-start">
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={!formState.isValid || formState.isSubmitting}
-          >
-            {formState.isSubmitting ? "저장 중..." : "프로필 수정하기"}
+          <Button type="submit" className="w-full" disabled={!formState.isValid || isPending}>
+            {isPending ? "저장 중..." : "프로필 수정하기"}
           </Button>
         </div>
       </form>

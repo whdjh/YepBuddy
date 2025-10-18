@@ -17,7 +17,7 @@ export default function GnbAuthBridge() {
   const isLoggedIn = !!accessToken;
 
   // 로그인된 경우에만 me API 호출
-  const { data, isFetching } = useMe();
+  const { data } = useMe();
 
   const { mutateAsync: logoutMutate, isPending: loggingOut } = useLogout();
 
