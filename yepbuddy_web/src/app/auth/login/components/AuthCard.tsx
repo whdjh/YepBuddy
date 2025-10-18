@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button";
 import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
-import { LoginForm } from "@/types/Form";
-import { useAuthStore } from "@/stores/useAuthStore";
+import type { LoginForm } from "@/types/Form";
+import { useLogin } from "@/hooks/queries/auth/useLogin";
 
 export default function AuthCard() {
   const router = useRouter();
-  const { login, loading } = useAuthStore();
+  const loginMutation = useLogin();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const methods = useForm<LoginForm>({
@@ -30,17 +30,22 @@ export default function AuthCard() {
   const onSubmit = async (data: LoginForm) => {
     setServerError(null);
 
-    const res = await login(data.email.trim().toLowerCase(), data.password);
-    if (!res.ok) {
-      const msg = res.error ?? "로그인에 실패했습니다.";
+    const res = await loginMutation.mutateAsync({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (!("ok" in res) || !res.ok) {
+      const msg = (res as any)?.error ?? "로그인에 실패했습니다.";
       setServerError(msg);
       setError("root", { type: "server", message: msg });
       return;
     }
 
+    // 폼 클리어
     reset({ email: "", password: "" });
 
-    // 성공 시 원하는 경로로 이동
+    // 성공 시 이동
     router.push("/");
   };
 
@@ -51,7 +56,6 @@ export default function AuthCard() {
           <div className="flex items-center flex-col justify-center w-full max-w-md gap-10">
             <h1 className="text-2xl font-semibold">로그인</h1>
 
-            {/* 서버 에러 표시 */}
             {serverError && (
               <p className="w-full text-sm text-red-500">{serverError}</p>
             )}
@@ -94,9 +98,9 @@ export default function AuthCard() {
               <Button
                 className="w-full"
                 type="submit"
-                disabled={isSubmitting || loading}
+                disabled={isSubmitting || loginMutation.isPending}
               >
-                {isSubmitting || loading ? "로그인 중…" : "로그인"}
+                {isSubmitting || loginMutation.isPending ? "로그인 중…" : "로그인"}
               </Button>
             </form>
           </div>

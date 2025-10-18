@@ -8,11 +8,11 @@ import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { JoinForm } from "@/types/Form";
-import { useJoinMutation } from "@/hooks/queries/auth/useJoin";
+import { useJoin } from "@/hooks/queries/auth/useJoin";
 
 export default function AuthCard() {
   const router = useRouter();
-  const joinMutation = useJoinMutation();
+  const joinMutation = useJoin();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const methods = useForm<JoinForm>({

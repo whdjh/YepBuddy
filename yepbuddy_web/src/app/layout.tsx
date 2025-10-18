@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
-import Gnb from "@/components/common/Gnb";
 import ScrollController from "@/components/common/ScrollController";
 import Toast from "@/components/common/Toast";
 import Providers from "./providers";
@@ -11,9 +10,7 @@ export const metadata: Metadata = {
   title: "옙버디",
   description:
     "운동 템포 조절, 프로틴 가격 비교, 헬스장 안내 및 운동일지를 투명하게 트레이너와 공유해보세요.",
-  icons: {
-    icon: "/favicon.ico",
-  },
+  icons: { icon: "/favicon.ico" },
   openGraph: {
     title: "옙버디",
     description:
@@ -47,27 +44,25 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
-  alternates: {
-    canonical: "https://www.yepbuddy.co.kr",
-  },
+  alternates: { canonical: "https://www.yepbuddy.co.kr" },
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="ko">
       <body>
-        <AuthInit />
-        <ScrollController />
-        <GnbAuthBridge />
+        <Providers>
+          <AuthInit />
+          <ScrollController />
+          <GnbAuthBridge />
 
-        <main className="mt-[5.5rem] p-0 tab:p-5">
-          <Providers>{children}</Providers>
-        </main>
-        <Toast />
+          <main className="mt-[5.5rem] p-0 tab:p-5">{children}</main>
+          <Toast />
+        </Providers>
       </body>
     </html>
   );
