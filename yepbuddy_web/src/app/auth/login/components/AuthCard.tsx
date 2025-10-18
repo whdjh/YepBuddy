@@ -1,23 +1,47 @@
 "use client";
 
+import { useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import InputPair from "@/components/common/InputPair";
 import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { LoginForm } from "@/types/Form";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 export default function AuthCard() {
+  const router = useRouter();
+  const { login, loading } = useAuthStore();
+  const [serverError, setServerError] = useState<string | null>(null);
+
   const methods = useForm<LoginForm>({
     defaultValues: { email: "", password: "" },
     mode: "onSubmit",
   });
 
-  const { handleSubmit, formState: { isSubmitting } } = methods;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    setError,
+    reset,
+  } = methods;
 
-  const onSubmit = (data: LoginForm) => {
-    // TODO: 로그인 요청
-    console.log("submit:", data);
+  const onSubmit = async (data: LoginForm) => {
+    setServerError(null);
+
+    const res = await login(data.email.trim().toLowerCase(), data.password);
+    if (!res.ok) {
+      const msg = res.error ?? "로그인에 실패했습니다.";
+      setServerError(msg);
+      setError("root", { type: "server", message: msg });
+      return;
+    }
+
+    reset({ email: "", password: "" });
+
+    // 성공 시 원하는 경로로 이동
+    router.push("/");
   };
 
   return (
@@ -26,13 +50,23 @@ export default function AuthCard() {
         <div className="flex flex-col relative items-center justify-center h-full">
           <div className="flex items-center flex-col justify-center w-full max-w-md gap-10">
             <h1 className="text-2xl font-semibold">로그인</h1>
-            <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
+
+            {/* 서버 에러 표시 */}
+            {serverError && (
+              <p className="w-full text-sm text-red-500">{serverError}</p>
+            )}
+
+            <form
+              className="w-full space-y-4"
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+            >
               <InputPair
                 name="email"
                 id="email"
                 label="이메일"
                 description="이메일을 입력하세요."
-                placeholder="proteinmoster@proteinmoster.com"
+                placeholder="yepbuddy@yepbuddy.co.kr"
                 rules={{
                   required: "필수 입력 사항입니다.",
                   pattern: {
@@ -48,16 +82,27 @@ export default function AuthCard() {
                 description="비밀번호를 입력하세요."
                 type="password"
                 placeholder="••••••••"
-                rules={{ required: "필수 입력 사항입니다." }}
+                rules={{
+                  required: "필수 입력 사항입니다.",
+                  minLength: {
+                    value: 8,
+                    message: "비밀번호는 8자 이상이어야 합니다.",
+                  },
+                }}
               />
 
-              <Button className="w-full" type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "로그인 중" : "로그인"}
+              <Button
+                className="w-full"
+                type="submit"
+                disabled={isSubmitting || loading}
+              >
+                {isSubmitting || loading ? "로그인 중…" : "로그인"}
               </Button>
             </form>
           </div>
         </div>
       </FormProvider>
+
       <div className="w-full flex flex-col items-center gap-8">
         <div className="w-full flex flex-col items-center gap-2">
           <hr className="w-full border-white/10" />
@@ -65,7 +110,6 @@ export default function AuthCard() {
             소셜 로그인
           </span>
           <hr className="w-full border-white/10" />
-
         </div>
         <div className="w-full flex flex-col gap-2">
           <Button variant="outline" className="w-full" asChild>

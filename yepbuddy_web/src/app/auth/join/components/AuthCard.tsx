@@ -19,7 +19,12 @@ export default function AuthCard() {
     mode: "onSubmit",
   });
 
-  const { handleSubmit, formState: { isSubmitting }, setError } = methods;
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    setError,
+    reset
+  } = methods;
 
   const onSubmit = async (data: JoinForm) => {
     setServerError(null);
@@ -37,6 +42,7 @@ export default function AuthCard() {
         setError("root", { type: "server", message: msg });
         return;
       }
+      reset({ email: "", password: "" });
 
       router.push("/auth/login?joined=1");
     } catch (e) {
