@@ -1,19 +1,29 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Gnb from "@/components/common/Gnb";
 import { useAuthStore } from "@/stores/useAuthStore";
 
 /**
- * zustand의 인증 상태를 읽어서 Gnb에 전달하는 브릿지.
- * - accessToken 존재 여부로 로그인 여부만 우선 반영
- * - username은 /api/me 구현 전까지 임시 값으로 처리
+ * zustand 인증 상태를 Gnb로 전달하고,
+ * 즉시 로그아웃(onLogout) 콜백을 제공한다.
  */
 export default function GnbAuthBridge() {
+  const router = useRouter();
   const accessToken = useAuthStore((s) => s.accessToken);
+  const logoutServer = useAuthStore((s) => s.logoutServer);
+
   const isLoggedIn = !!accessToken;
 
-  // TODO: /api/me 구현 후 실제 닉네임/아이디로 교체
+  // TODO: /api/me 붙이면 실제 값으로 대체
   const username = isLoggedIn ? "me" : "";
+  const displayName = isLoggedIn ? "사용자명" : undefined;
+  const avatarUrl = undefined;
+
+  const onLogout = async () => {
+    await logoutServer(); // POST /api/auth/logout + zustand 초기화
+    router.refresh();     // 헤더/페이지 즉시 리프레시
+  };
 
   return (
     <Gnb
@@ -21,6 +31,9 @@ export default function GnbAuthBridge() {
       hasMessages={false}
       hasNotifications={false}
       username={username}
+      displayName={displayName}
+      avatarUrl={avatarUrl}
+      onLogout={onLogout}
     />
   );
 }

@@ -5,15 +5,14 @@ import { create } from "zustand";
 type AuthState = {
   accessToken: string | null;
   loading: boolean;
-
   // setters / actions
   setAccessToken: (t: string | null) => void;
   setLoading: (v: boolean) => void;
-
   // server interactions
   login: (email: string, password: string) => Promise<{ ok: boolean; error?: string }>;
   refreshFromServer: () => Promise<void>;
-  logoutLocal: () => void; // 클라 상태만 초기화 (쿠키 삭제는 서버 API 필요)
+  logoutLocal: () => void;
+  logoutServer: () => Promise<void>;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -69,8 +68,16 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
 
-  // 클라이언트 상태만 초기화 (로그아웃 API 붙이면 여기서 호출)
   logoutLocal() {
     set({ accessToken: null });
+  },
+
+  // 서버 로그아웃: 쿠키 삭제 + 세션 revoke → 클라 상태 초기화
+  async logoutServer() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      set({ accessToken: null });
+    }
   },
 }));

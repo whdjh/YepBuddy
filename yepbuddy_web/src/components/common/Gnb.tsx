@@ -28,7 +28,7 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 import {
   BarChart3Icon,
   BellIcon,
@@ -46,15 +46,14 @@ interface SubItem {
   name: string;
   description?: string;
   href: string;
-};
+}
 
 interface Menu {
   name: string;
   href: string;
   items?: SubItem[];
-  /** 마지막 항목을 2칸 확장 + 초록 강조로 보여줄지 여부 */
   highlightLast?: boolean;
-};
+}
 
 const menus: Menu[] = [
   {
@@ -66,18 +65,9 @@ const menus: Menu[] = [
       { name: "모바일 버전", description: "간단한 카운팅", href: "/tempomanual" },
     ],
   },
-  {
-    name: "단백질",
-    href: "/protein",
-  },
-  {
-    name: "헬스장",
-    href: "/gym",
-  },
-  {
-    name: "운동일지",
-    href: "/diary",
-  },
+  { name: "단백질", href: "/protein" },
+  { name: "헬스장", href: "/gym" },
+  { name: "운동일지", href: "/diary" },
   {
     name: "트레이너",
     href: "/trainer",
@@ -97,13 +87,36 @@ export default function Gnb({
   hasNotifications,
   hasMessages,
   username,
+  displayName,
+  avatarUrl,
+  onLogout,
 }: {
   isLoggedIn: boolean;
   hasNotifications: boolean;
   hasMessages: boolean;
   username: string;
+  displayName?: string;
+  avatarUrl?: string;
+  onLogout?: () => void;
 }) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const nameForDisplay = displayName || username || "사용자";
+  const handleForDisplay = username ? `@${username}` : "@user";
+
+  const logoutItem = onLogout ? (
+    <DropdownMenuItem className="cursor-pointer" onClick={onLogout}>
+      <LogOutIcon className="mr-2 size-4" />
+      로그아웃
+    </DropdownMenuItem>
+  ) : (
+    <DropdownMenuItem asChild className="cursor-pointer">
+      <Link href="/auth/logout">
+        <LogOutIcon className="mr-2 size-4" />
+        로그아웃
+      </Link>
+    </DropdownMenuItem>
+  );
 
   return (
     <nav className="fixed top-0 left-0 z-50 h-[4.5rem] w-full bg-[#191919]/80 backdrop-blur">
@@ -250,16 +263,14 @@ export default function Gnb({
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Avatar>
-                          <AvatarImage src="https://github.com/evilrabbit.png" />
-                          <AvatarFallback>N</AvatarFallback>
+                          <AvatarImage src={avatarUrl} />
+                          <AvatarFallback>{nameForDisplay[0]?.toUpperCase() || "U"}</AvatarFallback>
                         </Avatar>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent className="w-[300px]">
                         <DropdownMenuLabel className="flex flex-col">
-                          {/** 실제 API로 변경 */}
-                          <span className="font-medium">사용자명</span>
-                          {/** 실제 API로 변경 */}
-                          <span className="text-xs text-muted-foreground">@idididid</span>
+                          <span className="font-medium">{nameForDisplay}</span>
+                          <span className="text-xs text-muted-foreground">{handleForDisplay}</span>
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
@@ -283,22 +294,21 @@ export default function Gnb({
                           </DropdownMenuItem>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem asChild className="cursor-pointer">
-                          <Link href="/auth/logout" onClick={() => setIsSheetOpen(false)}>
-                            <LogOutIcon className="mr-2 size-4" />
-                            로그아웃
-                          </Link>
-                        </DropdownMenuItem>
+                        {logoutItem}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 ) : (
                   <div className="flex justify-end gap-2">
                     <Button asChild variant="secondary">
-                        <Link href="/auth/login" onClick={() => setIsSheetOpen(false)}>로그인</Link>
+                      <Link href="/auth/login" onClick={() => setIsSheetOpen(false)}>
+                        로그인
+                      </Link>
                     </Button>
                     <Button asChild variant="secondary">
-                        <Link href="/auth/join" onClick={() => setIsSheetOpen(false)}>회원가입</Link>
+                      <Link href="/auth/join" onClick={() => setIsSheetOpen(false)}>
+                        회원가입
+                      </Link>
                     </Button>
                   </div>
                 )}
@@ -329,16 +339,14 @@ export default function Gnb({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar>
-                  <AvatarImage src="https://github.com/evilrabbit.png" />
-                  <AvatarFallback>N</AvatarFallback>
+                  <AvatarImage src={avatarUrl} />
+                  <AvatarFallback>{nameForDisplay[0]?.toUpperCase() || "U"}</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[300px]">
                 <DropdownMenuLabel className="flex flex-col">
-                  {/** 실제 API로 변경 */}
-                  <span className="font-medium">사용자명</span>
-                  {/** 실제 API로 변경 */}
-                  <span className="text-xs text-muted-foreground">@idididididi</span>
+                  <span className="font-medium">{nameForDisplay}</span>
+                  <span className="text-xs text-muted-foreground">{handleForDisplay}</span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -362,12 +370,7 @@ export default function Gnb({
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/auth/logout">
-                    <LogOutIcon className="mr-2 size-4" />
-                    로그아웃
-                  </Link>
-                </DropdownMenuItem>
+                {logoutItem}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
