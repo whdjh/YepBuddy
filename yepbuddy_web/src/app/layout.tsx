@@ -4,6 +4,8 @@ import Gnb from "@/components/common/Gnb";
 import ScrollController from "@/components/common/ScrollController";
 import Toast from "@/components/common/Toast";
 import Providers from "./providers";
+import AuthInit from "./_providers/AuthInit";
+import GnbAuthBridge from "./_bridges/GnbAuthBridge";
 
 export const metadata: Metadata = {
   title: "옙버디",
@@ -58,13 +60,10 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
+        <AuthInit />
         <ScrollController />
-        <Gnb
-          isLoggedIn={false}
-          hasMessages={true}
-          hasNotifications={true}
-          username={"1"}
-        />
+        <GnbAuthBridge />
+
         <main className="mt-[5.5rem] p-0 tab:p-5">
           <Providers>{children}</Providers>
         </main>
