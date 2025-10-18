@@ -60,7 +60,7 @@ export default function RootLayout({
       <body>
         <ScrollController />
         <Gnb
-          isLoggedIn={true}
+          isLoggedIn={false}
           hasMessages={true}
           hasNotifications={true}
           username={"1"}
