@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://www.yepbuddy.co.kr
+
+# Sitemaps
+Sitemap: https://www.yepbuddy.co.kr/sitemap.xml

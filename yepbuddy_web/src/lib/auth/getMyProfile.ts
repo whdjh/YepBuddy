@@ -22,7 +22,7 @@ export async function getMyProfile(token: string | null): Promise<MeGetResp> {
   try {
     json = await res.json();
   } catch {
-    //
+    // non-JSON 응답(프록시/웹서버 에러 등) 대비
   }
 
   if (!res.ok || !json?.ok) {
