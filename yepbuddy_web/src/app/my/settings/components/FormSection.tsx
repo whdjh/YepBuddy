@@ -9,8 +9,15 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { UserSettingFormValues } from "@/types/Form";
 import { useProfileUpdate } from "@/hooks/queries/profile/useProfileUpdate";
+import { useRouter } from "next/navigation";
+import { useMe } from "@/hooks/queries/auth/useMe";
+import { useProfileRefresh } from "@/stores/useProfileRefresh";
 
 export default function FormSection() {
+  const router = useRouter();
+  const { data: meData } = useMe();
+  const bump = useProfileRefresh((s) => s.bump);
+
   const { mutateAsync: updateProfile, isPending } = useProfileUpdate();
 
   const methods = useForm<UserSettingFormValues>({
@@ -45,13 +52,21 @@ export default function FormSection() {
     return () => URL.revokeObjectURL(url);
   }, [avatarFile]);
 
+  // 콤마 입력을 백엔드 저장용 문자열(줄바꿈)으로 정규화
+  const normalizeCommaToMultiline = (s?: string | null) =>
+    (s ?? "")
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .join("\n");
+
   const onSubmit: SubmitHandler<UserSettingFormValues> = async (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("role", data.role);
     formData.append("location", data.location ?? "");
-    formData.append("history", data.history ?? "");
-    formData.append("qualifications", data.qualifications ?? "");
+    formData.append("history", normalizeCommaToMultiline(data.history));
+    formData.append("qualifications", normalizeCommaToMultiline(data.qualifications));
     formData.append("description", data.description ?? "");
     if (data.avatarFile) formData.append("avatarFile", data.avatarFile);
 
@@ -61,7 +76,13 @@ export default function FormSection() {
         alert(res.error || "프로필 수정 실패");
         return;
       }
+      bump();
       alert("프로필이 수정되었습니다!");
+
+      const username = meData?.ok ? meData.user.username : null;
+      if (username) {
+        router.push(`/users/${username}?tab=abouts`);
+      }
     } catch {
       alert("서버 오류가 발생했습니다.");
     }

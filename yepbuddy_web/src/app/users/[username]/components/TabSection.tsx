@@ -40,7 +40,7 @@ export default function TabSection({
       </div>
 
       <div className="mt-6">
-        {activeTab === "abouts" ? <About /> : <WishProtein />}
+        {activeTab === "abouts" ? <About username={username} /> : <WishProtein />}
       </div>
     </div>
   );

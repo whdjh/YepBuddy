@@ -47,7 +47,7 @@ export default function HeaderSection({ username }: Props) {
 
       <div className="space-y-5">
         <div className="flex flex-col gap-2">
-          <div className="flex gap-5 flex-col tab:flex-row items-center justify-start">
+          <div className="flex gap-5 flex-col tab:flex-row items-start tab:items-center justify-start ">
             <h1 className="text-lg tab:text-2xl font-semibold">
               {isLoading ? "로딩중..." : displayName}
             </h1>
