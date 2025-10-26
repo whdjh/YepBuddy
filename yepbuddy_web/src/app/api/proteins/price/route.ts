@@ -17,7 +17,8 @@ export async function GET() {
         observed_date,
         price,
         available,
-        sale
+        sale,
+        url
       FROM protein_prices_daily
       ORDER BY protein_id, observed_date DESC
     `);

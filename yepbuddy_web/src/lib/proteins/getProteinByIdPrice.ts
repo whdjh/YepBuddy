@@ -4,6 +4,7 @@ export interface ProteinPrice {
   sale: number;
   available: boolean;
   protein_id: number;
+  url?: string; // 파트너스 추적 링크
 }
 
 export async function getProteinByIdPrice(id: number, limit = 90): Promise<ProteinPrice[]> {

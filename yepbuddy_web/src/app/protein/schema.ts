@@ -41,7 +41,7 @@ export const proteins = pgTable(
     protein_per_scoop: integer(),
     base_pack_count: integer().notNull().default(1),
     base_date: date({ mode: "string" }).notNull(),
-    url: text().notNull(),
+    url: text(), // nullable로 변경: 날짜별 URL은 protein_prices_daily에 저장
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -66,6 +66,7 @@ export const proteinPricesDaily = pgTable(
     price: integer().notNull(),
     available: boolean().notNull().default(true),
     sale: integer().notNull().default(1),
+    url: text(), // 파트너스 추적 링크 (날짜별로 최신 URL 저장)
 
     created_at: timestamp().notNull().defaultNow(),
   },

@@ -40,6 +40,7 @@ export default function MainSection() {
 
   const latestPrice = latest?.price != null ? Number(latest.price) : null;
   const salePercent = latest?.sale != null ? Number(latest.sale) : 0; // 할인율 %
+  const latestUrl = latest?.url ?? protein.url ?? "#"; // 최신 URL 우선, 없으면 protein.url 사용
 
   // 실제 표시가격 = 정가 × (1 - 할인율 / 100)
   const displayPrice = computeDisplayPrice(latestPrice, salePercent);
@@ -212,7 +213,7 @@ export default function MainSection() {
             aria-label="구매하러 가기"
           >
             <Link
-              href={protein.url ?? "#"}
+              href={latestUrl}
               target="_blank"
               rel="nofollow noopener noreferrer"
             >
