@@ -9,9 +9,29 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useProteinById } from "@/hooks/queries/proteins/useProteinById";
+
+type ProteinTopic = "wpc" | "wpi" | "wpcwpi" | "creatine" | "beta-alanine";
+
+const topicDisplayMap: Record<ProteinTopic, string> = {
+  wpc: "WPC",
+  wpi: "WPI",
+  wpcwpi: "WPC + WPI",
+  creatine: "크레아틴",
+  "beta-alanine": "베타알라닌",
+};
 
 export default function HeaderSection() {
   const { id } = useParams();
+  const proteinId = Number(id);
+  const { data: protein } = useProteinById(proteinId);
+
+  if (!protein) {
+    return null;
+  }
+
+  const topic = protein.topic as ProteinTopic;
+  const topicDisplay = topicDisplayMap[topic] || topic;
 
   return (
     <Breadcrumb>
@@ -24,15 +44,13 @@ export default function HeaderSection() {
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href="/protein?topic=WPI">WPC</Link>
+            <Link href={`/protein?topic=${topic}`}>{topicDisplay}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
-            <Link href={`/protein/${id}`}>
-              마이프로틴
-            </Link>
+            <Link href={`/protein/${id}`}>{protein.title}</Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
       </BreadcrumbList>
