@@ -79,8 +79,13 @@ export default function MainSection() {
       const salePercent = priceInfo?.sale ?? 0;
 
       // 실제 표시가 = 정가 × (1 - 할인율/100)
+      // sale이 1이면 할인 무시 (마이프로틴 제품만 sale 사용, 나머지는 1로 설정되어 있음)
       const latestPrice =
-        basePrice != null ? Math.round(basePrice * (1 - salePercent / 100)) : null;
+        basePrice != null
+          ? salePercent === 1
+            ? basePrice
+            : Math.round(basePrice * (1 - salePercent / 100))
+          : null;
 
       const weight = Number(p.weight);
       const scoop = p.scoop != null ? Number(p.scoop) : null;

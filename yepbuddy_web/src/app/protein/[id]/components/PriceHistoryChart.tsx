@@ -23,13 +23,18 @@ function toYM(iso: string) {
 
 export default function PriceHistoryChart({ data }: Props) {
   // 세일가 반영: price * (1 - sale / 100)
+  // sale이 1이면 할인 무시 (마이프로틴 제품만 sale 사용, 나머지는 1로 설정되어 있음)
   const rows = data
     .slice()
     .reverse()
-    .map((d) => ({
-      x: d.observed_date,
-      price: Math.round(Number(d.price) * (1 - Number(d.sale) / 100)),
-    }));
+    .map((d) => {
+      const price = Number(d.price);
+      const sale = Number(d.sale);
+      return {
+        x: d.observed_date,
+        price: sale === 1 ? price : Math.round(price * (1 - sale / 100)),
+      };
+    });
 
   // 월별로 하나씩만 x축 라벨 표시
   const seen = new Set<string>();
