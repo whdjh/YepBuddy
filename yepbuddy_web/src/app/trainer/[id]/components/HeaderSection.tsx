@@ -19,7 +19,7 @@ export default function HeaderSection({
     <div className="flex justify-between">
       <div className="flex gap-10">
         <div className="size-30 tab:size-40 rounded-xl shadow-xl bg-red-100/50" />
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1">
           <Link
             href="/users/1"
             className="block text-2xl tab:text-5xl font-bold cursor-pointer hover:underline underline-offset-4 decoration-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/50 rounded-sm transition"
@@ -41,13 +41,6 @@ export default function HeaderSection({
             <span className="text-muted-foreground">{reviewCount}개 리뷰</span>
           </div>
         </div>
-        </div>
-
-      <div className="flex gap-5 items-center">
-        <Button size="lg" className="hidden tab:inline-flex text-lg h-14 px-10">
-          <ChevronUpIcon className="size-4" />
-          투표하기 ({voteCount})
-        </Button>
       </div>
     </div>
   );

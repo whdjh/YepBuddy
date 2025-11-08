@@ -30,6 +30,11 @@ export const diaryEntries = pgTable(
     condition_level: level().notNull().default("mid"),
     activity_level: level().notNull().default("mid"),
 
+    /** 캘린더/목록에 노출할 간단 요약 */
+    summary: text(),
+    /** 사용자 정의 색상(hex 등) */
+    color: text(),
+
     comment: text(),
     signature_data: text(),
 
@@ -54,6 +59,7 @@ export const diaryExercises = pgTable(
       .notNull(), // ← 필수
 
     name: text().notNull(),
+    order_index: bigint({ mode: "number" }).notNull().default(0),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -112,5 +118,31 @@ export const diarySelectedBodyParts = pgTable(
     index("pk_diary_bodypart").on(t.diary_id, t.body_part_id),
     index("idx_diary_bodypart_diary").on(t.diary_id),
     index("idx_diary_bodypart_part").on(t.body_part_id),
+  ]
+);
+
+export const mediaType = pgEnum("diary_media_type", ["video", "photo"]);
+
+export const diaryMedia = pgTable(
+  "diary_media",
+  {
+    media_id: bigint({ mode: "number" })
+      .primaryKey()
+      .generatedAlwaysAsIdentity(),
+
+    diary_id: bigint({ mode: "number" })
+      .references(() => diaryEntries.diary_id, { onDelete: "cascade" })
+      .notNull(),
+
+    type: mediaType().notNull(),
+    url: text().notNull(),
+    order_index: bigint({ mode: "number" }).notNull().default(0),
+
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+  },
+  (t) => [
+    index("idx_diary_media_diary").on(t.diary_id),
+    index("idx_diary_media_order").on(t.diary_id, t.order_index),
   ]
 );

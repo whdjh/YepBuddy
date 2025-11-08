@@ -70,14 +70,12 @@ const menus: Menu[] = [
   { name: "운동일지", href: "/diary" },
   {
     name: "트레이너",
-    href: "/trainer",
+    href: "/trainer/search",
     highlightLast: true,
     items: [
-      { name: "인기 트레이너", description: "가장 인기 있는 트레이너", href: "/trainer" },
-      { name: "헬스장별 트레이너", description: "헬스장별 트레이너 목록", href: "/trainer/categories" },
       { name: "트레이너 검색", description: "이름으로 트레이너 검색", href: "/trainer/search" },
+      { name: "헬스장별 트레이너", description: "헬스장별 트레이너 목록", href: "/trainer/categories" },
       { name: "트레이너 등록", description: "트레이너로 내 프로필 등록", href: "/trainer/submit" },
-      { name: "트레이너 홍보", description: "내 활동 홍보", href: "/trainer/promote" },
     ],
   },
 ];
