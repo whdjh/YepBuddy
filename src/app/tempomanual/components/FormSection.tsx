@@ -1,15 +1,15 @@
 "use client"
 
-import { useTempo } from '@/hooks/useTempo';
-import { useForm, FormProvider } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import { useTempo } from "@/hooks/useTempo";
+import { useForm, FormProvider } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import InputPair from '@/components/common/InputPair';
-import SelectPair from '@/components/common/SelectPair';
+import InputPair from "@/components/common/InputPair";
+import SelectPair from "@/components/common/SelectPair";
 
 export interface ManualTempoFormValues {
   name: string;
-  reps: number | null;
+  reps: string;
 }
 
 export default function FormSection() {
@@ -18,22 +18,24 @@ export default function FormSection() {
 
   const methods = useForm<ManualTempoFormValues>({
     defaultValues: {
-      name: '',
-      reps: null,
+      name: "",
+      reps: "",
     },
-    mode: 'all',
+    mode: "all",
     shouldUnregister: false,
   });
 
   const { handleSubmit, watch } = methods;
-  const nameValue = watch('name') ?? '';
-  const selectedReps = watch('reps');
+  const [watchedName = ""] = watch(["name"]);
+  const [watchedReps = ""] = watch(["reps"]);
+  const nameValue = watchedName ?? "";
+  const selectedReps = watchedReps ?? "";
 
   const onSubmit = (data: ManualTempoFormValues) => {
     // 최신 폼 값을 저장
-    setFormValue('name', data.name);
-    setFormValue('reps', data.reps !== null ? String(data.reps) : '0');
-    router.push('/tempomanual/exercise');
+    setFormValue("name", data.name);
+    setFormValue("reps", data.reps || "0");
+    router.push("/tempomanual/exercise");
   };
 
   return (
@@ -78,7 +80,7 @@ export default function FormSection() {
         {/* 운동 시작 버튼 */}
         <Button
           type="submit"
-          disabled={!(nameValue.trim().length > 0 && selectedReps !== null)}
+          disabled={!(nameValue.trim().length > 0 && selectedReps.trim().length > 0)}
         >
           운동 시작
         </Button>
