@@ -1,5 +1,13 @@
 import { create } from 'zustand';
-import { AutoTempoFormValues } from '@/types/Form';
+
+export interface AutoTempoFormValues {
+  concentric: string;
+  eccentric: string;
+  reps: string;
+  sets: string;
+  rests: string;
+  name: string;
+}
 
 interface TemponState { 
   selected: "concentric" | "eccentric" | null;

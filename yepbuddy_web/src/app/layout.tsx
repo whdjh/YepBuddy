@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import "../styles/globals.css";
 import ScrollController from "@/components/common/ScrollController";
-import Toast from "@/components/common/Toast";
 import Providers from "./providers";
-import AuthInit from "./_providers/AuthInit";
-import GnbAuthBridge from "./_bridges/GnbAuthBridge";
+import Gnb from "@/components/common/Gnb";
 
 export const metadata: Metadata = {
   title: "옙버디",
@@ -56,12 +54,9 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <Providers>
-          <AuthInit />
+          <Gnb />
           <ScrollController />
-          <GnbAuthBridge />
-
           <main className="mt-[5.5rem] p-0 tab:p-5">{children}</main>
-          <Toast />
         </Providers>
       </body>
     </html>

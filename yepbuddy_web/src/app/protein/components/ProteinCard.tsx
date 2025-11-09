@@ -16,7 +16,6 @@ export default function ProteinCard({
   taste,
   price,
   priceText,
-  likesCount,
 }: ProteinCardProps) {
   return (
     <Card className="bg-transparent hover:bg-[#26262c]">
@@ -43,10 +42,6 @@ export default function ProteinCard({
           <div className="flex mob:flex-col items-center justify-end gap-3">
             <span className="text-sm">{priceText}</span>
             <span className="text-md">{price}</span>
-            <Button variant="outline" className="border border-white/10">
-              <HeartIcon className="w-4 h-4" />
-              <span>{likesCount}</span>
-            </Button>
           </div>
         </CardHeader>
       </Link>

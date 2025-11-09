@@ -11,7 +11,6 @@ import {
   uniqueIndex,
   primaryKey,
 } from "drizzle-orm/pg-core";
-import { profiles } from "@/app/users/[username]/schema";
 
 export const proteinTopic = pgEnum("protein_topic", [
   "wpc",
@@ -41,7 +40,7 @@ export const proteins = pgTable(
     protein_per_scoop: integer(),
     base_pack_count: integer().notNull().default(1),
     base_date: date({ mode: "string" }).notNull(),
-    url: text(), // nullable로 변경: 날짜별 URL은 protein_prices_daily에 저장
+    url: text(),
 
     created_at: timestamp().notNull().defaultNow(),
     updated_at: timestamp().notNull().defaultNow(),
@@ -66,7 +65,7 @@ export const proteinPricesDaily = pgTable(
     price: integer().notNull(),
     available: boolean().notNull().default(true),
     sale: integer().notNull().default(1),
-    url: text(), // 파트너스 추적 링크 (날짜별로 최신 URL 저장)
+    url: text(),
 
     created_at: timestamp().notNull().defaultNow(),
   },
@@ -75,21 +74,6 @@ export const proteinPricesDaily = pgTable(
       t.protein_id,
       t.observed_date,
     ),
-  ]
-);
-
-export const proteinsLikes = pgTable(
-  "proteins_likes",
-  {
-    protein_id: bigint({ mode: "number" })
-      .references(() => proteins.protein_id, { onDelete: "cascade" })
-      .notNull(),
-    profile_id: uuid()
-      .references(() => profiles.profile_id, { onDelete: "cascade" })
-      .notNull(),
-  },
-  (t) => [
-    primaryKey({ columns: [t.protein_id, t.profile_id], name: "proteins_likes_pk" }),
   ]
 );
 

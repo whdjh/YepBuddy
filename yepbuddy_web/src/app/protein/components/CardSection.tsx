@@ -1,8 +1,18 @@
 import ProteinCard from "@/app/protein/components/ProteinCard";
-import { ProteinCardProps } from "@/types/Card";
 import VirtuoInfinityScroll from "@/components/common/VirtuoInfinityScroll";
 import type { Badge as BadgeType } from "@/lib/priceBadge";
 import { Badge } from "@/components/ui/badge";
+
+export interface ProteinCardProps {
+  id: string;
+  title: string;
+  weight: string;
+  avatarFile: string;
+  topic: string;
+  taste: string;
+  price?: string;
+  priceText?: string;
+}
 
 interface CardWithBadge extends ProteinCardProps {
   badge?: BadgeType | null;
@@ -56,7 +66,6 @@ export function CardSection({ cards }: CardSectionProps) {
               taste={card.taste}
               price={card.price}
               priceText={card.priceText}
-              likesCount={card.likesCount}
             />
           </div>
         );

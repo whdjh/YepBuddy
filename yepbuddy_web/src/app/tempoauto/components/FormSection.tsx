@@ -6,8 +6,16 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ButtonSection from '@/app/tempoauto/components/ButtonSection';
 import InputSection from '@/app/tempoauto/components/InputSection';
-import { AutoTempoFormValues } from '@/types/Form';
 import { useTempoStore } from '@/stores/useTempo';
+
+export interface AutoTempoFormValues {
+  concentric: string;
+  eccentric: string;
+  reps: string;
+  sets: string;
+  rests: string;
+  name: string;
+}
 
 export default function FormSection() {
   const router = useRouter();

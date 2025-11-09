@@ -6,7 +6,12 @@ import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
 import InputPair from '@/components/common/InputPair';
 import SelectPair from '@/components/common/SelectPair';
-import { ManualTempoFormValues } from '@/types/Form';
+
+export interface ManualTempoFormValues {
+  name: string;
+  reps: number | null;
+}
+
 
 export default function FormSection() {
   const router = useRouter();
