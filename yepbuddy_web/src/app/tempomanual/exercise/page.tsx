@@ -1,11 +1,11 @@
 'use client';
 
-import { useTempoStore } from '@/stores/useTempo';
+import { useTempo } from '@/hooks/useTempo';
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 
 export default function Exercise() {
-  const { tempoFormValues } = useTempoStore();
+  const { tempoFormValues } = useTempo();
   const reps = Number(tempoFormValues.reps);
 
   const [currentSet, setCurrentSet] = useState(0);

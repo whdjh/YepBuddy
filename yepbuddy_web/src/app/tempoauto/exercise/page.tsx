@@ -1,10 +1,10 @@
 'use client';
 
-import { useTempoStore } from "@/stores/useTempo";
+import { useTempo } from "@/hooks/useTempo";
 import { useState, useEffect } from "react";
 
 export default function Exercise() {
-  const { selected, tempoFormValues } = useTempoStore();
+  const { selected, tempoFormValues } = useTempo();
 
   const reps = Number(tempoFormValues.reps);
   const concentric = Number(tempoFormValues.concentric);

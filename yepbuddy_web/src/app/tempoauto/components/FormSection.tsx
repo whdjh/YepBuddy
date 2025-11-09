@@ -6,7 +6,7 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import ButtonSection from '@/app/tempoauto/components/ButtonSection';
 import InputSection from '@/app/tempoauto/components/InputSection';
-import { useTempoStore } from '@/stores/useTempo';
+import { useTempo } from '@/hooks/useTempo';
 
 export interface AutoTempoFormValues {
   concentric: string;
@@ -19,7 +19,7 @@ export interface AutoTempoFormValues {
 
 export default function FormSection() {
   const router = useRouter();
-  const { selected, setSelected, tempoFormValues } = useTempoStore();
+  const { selected, setSelected, tempoFormValues, replaceFormValues } = useTempo();
   const [isSubmit, setIsSubmit] = useState(false);
 
   const methods = useForm<AutoTempoFormValues>({
@@ -78,11 +78,8 @@ export default function FormSection() {
     if (isSubmit) return;
     setIsSubmit(true);
 
-    // 최신 폼값을 Zustand에 저장 -> Exercise 페이지에서 동일 값 사용
-    useTempoStore.setState((prev) => ({
-      ...prev,
-      tempoFormValues: formData,
-    }));
+    // 최신 폼값을 저장 -> Exercise 페이지에서 동일 값 사용
+    replaceFormValues(formData);
 
     console.log({ ...formData, flag: selected });
     router.push('/tempoauto/exercise');

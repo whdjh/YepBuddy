@@ -1,6 +1,6 @@
 "use client"
 
-import { useTempoStore } from '@/stores/useTempo';
+import { useTempo } from '@/hooks/useTempo';
 import { useForm, FormProvider } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button";
@@ -12,10 +12,9 @@ export interface ManualTempoFormValues {
   reps: number | null;
 }
 
-
 export default function FormSection() {
   const router = useRouter();
-  const { setFormValue } = useTempoStore();
+  const { setFormValue } = useTempo();
 
   const methods = useForm<ManualTempoFormValues>({
     defaultValues: {
@@ -31,7 +30,7 @@ export default function FormSection() {
   const selectedReps = watch('reps');
 
   const onSubmit = (data: ManualTempoFormValues) => {
-    // 최신 폼 값을 Zustand에 저장
+    // 최신 폼 값을 저장
     setFormValue('name', data.name);
     setFormValue('reps', data.reps !== null ? String(data.reps) : '0');
     router.push('/tempomanual/exercise');
