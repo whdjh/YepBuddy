@@ -4,12 +4,10 @@ import {
   text,
   integer,
   timestamp,
-  uuid,
   date,
   boolean,
   pgEnum,
   uniqueIndex,
-  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const proteinTopic = pgEnum("protein_topic", [

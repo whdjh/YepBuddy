@@ -3,9 +3,18 @@ import {
   Card, CardHeader, CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { DotIcon, HeartIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ProteinCardProps } from "@/types/Card";
+import { DotIcon } from "lucide-react";
+
+export interface ProteinCardProps {
+  id: string;
+  title: string;
+  weight: string;
+  avatarFile: string;
+  topic?: string;
+  taste?: string;
+  price?: string;
+  priceText?: string;
+}
 
 export default function ProteinCard({
   id,

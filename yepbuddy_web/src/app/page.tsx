@@ -39,10 +39,6 @@ const features = [
                 title="마이프로틴"
                 weight="2.5kg"
                 avatarFile=""
-                topic="WPC"
-                taste="초코"
-                price="20,000원"
-                likesCount={123}
               />
             </div>
           </div>
@@ -73,9 +69,6 @@ const features = [
                 id={`${index}`}
                 title="헬스장명"
                 location="헬스장위치"
-                viewsCount={123}
-                postedAt="2시간전"
-                likesCount={12}
               />
             </div>
           </div>

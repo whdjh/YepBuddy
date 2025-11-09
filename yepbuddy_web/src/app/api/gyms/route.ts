@@ -23,7 +23,6 @@ export async function GET(req: NextRequest) {
       views: gyms.views,
       created_at: gyms.created_at,
       updated_at: gyms.updated_at,
-      likes_count: sql<number>`COUNT(DISTINCT ${gymsLikes.profile_id})`,
       machines_count: sql<number>`COUNT(DISTINCT ${gymsMachines.machine_id})`,
     })
     .from(gyms)
