@@ -11,43 +11,81 @@ body{
   font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Pretendard',sans-serif;
   color:#FFFFFF;font-size:15px;line-height:1.4;
   -webkit-font-smoothing:antialiased;
-  position:relative;overflow:hidden;
+  position:relative;overflow-x:hidden;overflow-y:auto;
 }
 .island{width:126px;height:36px;background:#000;border-radius:20px;position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:50}
-.status{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px 28px 0;height:54px;font-size:15px;font-weight:600;color:#fff;z-index:10}
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 28px 0;height:54px;font-size:15px;font-weight:600;color:#fff;z-index:10}
 .status-r{display:flex;gap:6px;align-items:center}
 
-/* Full dark content area */
-.main{
-  width:100%;height:100%;
-  padding:100px 24px 120px;
-  display:flex;flex-direction:column;justify-content:flex-start;
-}
+/* Main scrollable content */
+.main{padding:16px 24px 0}
 
-.hr-big{display:flex;align-items:center;gap:8px;margin-bottom:40px}
+.hr-big{display:flex;align-items:center;gap:8px;margin-bottom:32px}
 .hr-num{font-size:80px;font-weight:700;color:#fff;line-height:1}
 .hr-heart{font-size:28px;color:#C8AD7E;margin-top:12px}
 
-.cal-row{display:flex;gap:48px}
+.cal-row{display:flex;gap:48px;margin-bottom:36px}
 .cal-num{font-size:44px;font-weight:700;color:#fff;line-height:1}
 .cal-label{font-size:13px;color:rgba(255,255,255,.45);margin-top:8px;font-weight:500}
 
-/* Bottom sheet - partially cut off at bottom */
-.bottom-sheet{
-  position:absolute;bottom:-20px;left:0;right:0;z-index:100;
-  background:rgba(60,55,45,.92);
-  border-radius:20px 20px 0 0;
-  padding:10px 24px 50px;
+/* Record inputs - in main area */
+.record-section{margin-bottom:20px}
+.sec-title{font-size:15px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:10px}
+.parts{display:flex;flex-wrap:wrap;gap:8px}
+.part-pill{
+  height:36px;padding:0 16px;border-radius:18px;
+  border:1.5px solid rgba(255,255,255,.15);background:transparent;
+  font-size:13px;font-weight:600;color:#E0D6C8;
+  cursor:pointer;font-family:inherit;
 }
-.sheet-handle{width:40px;height:5px;background:rgba(255,255,255,.25);border-radius:3px;margin:0 auto 16px}
-.sheet-row{display:flex;align-items:center;justify-content:center;gap:24px}
+.part-pill.on{background:#D4883A;color:#1C1C1E;border-color:#D4883A}
+.set-box{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:56px;height:44px;border-radius:12px;
+  border:1.5px solid rgba(255,255,255,.15);background:transparent;
+  font-size:22px;font-weight:700;color:#fff;
+}
+.memo-area{
+  width:100%;min-height:80px;border-radius:12px;
+  border:1.5px solid rgba(255,255,255,.15);background:transparent;
+  padding:12px;font-size:14px;color:#fff;
+  font-family:inherit;resize:none;outline:none;
+}
+.memo-area::placeholder{color:#8C7E6E}
+.memo-hint{font-size:12px;color:#8C7E6E;margin-top:6px}
+
+/* Bottom sheet - compact single bar */
+.bottom-sheet{
+  position:absolute;bottom:0;left:0;right:0;z-index:100;
+  background:rgba(60,55,45,.95);
+  border-radius:16px 16px 0 0;
+  padding:8px 16px 24px;
+}
+.sheet-handle{width:36px;height:4px;background:rgba(255,255,255,.25);border-radius:2px;margin:0 auto 8px}
+.sheet-timer{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
 .sheet-icon{
-  width:48px;height:48px;border-radius:12px;
+  width:36px;height:36px;border-radius:10px;
   background:rgba(255,255,255,.1);
   display:flex;align-items:center;justify-content:center;flex-shrink:0;
 }
-.timer{font-size:32px;font-weight:700;color:#fff;letter-spacing:.02em;font-variant-numeric:tabular-nums}
-.mini-ring{position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.timer{font-size:28px;font-weight:700;color:#fff;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.mini-ring{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sheet-actions{display:flex;flex-direction:column;gap:8px;margin-bottom:4px}
+.btn-stop{
+  width:100%;height:44px;border-radius:12px;
+  border:1.5px solid rgba(255,255,255,.15);background:transparent;
+  color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;
+}
+.btn-end{
+  width:100%;height:44px;border-radius:12px;border:none;
+  background:#D4883A;color:#1C1C1E;
+  font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;
+}
+.btn-discard{
+  width:100%;height:28px;border:none;background:transparent;
+  color:rgba(255,255,255,.35);font-size:11px;cursor:pointer;font-family:inherit;
+  text-align:center;
+}
 </style>
 </head>
 <body>
@@ -62,10 +100,13 @@ body{
 </div>
 
 <div class="main">
+  <!-- 심박수 -->
   <div class="hr-big">
     <span class="hr-num">69</span>
     <span class="hr-heart">♥</span>
   </div>
+
+  <!-- 칼로리 -->
   <div class="cal-row">
     <div>
       <div class="cal-num">0</div>
@@ -76,21 +117,52 @@ body{
       <div class="cal-label">총 킬로칼로리</div>
     </div>
   </div>
+
+  <!-- 운동 부위 -->
+  <div class="record-section">
+    <div class="sec-title">운동 부위</div>
+    <div class="parts">
+      <button class="part-pill">가슴</button>
+      <button class="part-pill">등</button>
+      <button class="part-pill">하체</button>
+      <button class="part-pill">어깨</button>
+      <button class="part-pill">팔</button>
+      <button class="part-pill">코어</button>
+    </div>
+  </div>
+
+  <!-- 세트수 -->
+  <div class="record-section">
+    <div class="sec-title">세트수</div>
+    <div class="set-box">0</div>
+  </div>
+
+  <!-- 메모 -->
+  <div class="record-section">
+    <div class="sec-title">메모</div>
+    <textarea class="memo-area" placeholder="운동 메모를 자유롭게 작성하세요..."></textarea>
+    <div class="memo-hint">운동중에도 자유롭게 기록</div>
+  </div>
 </div>
 
+<!-- 드로어: 한 줄에 타이머 + 버튼 -->
 <div class="bottom-sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-row">
+  <div class="sheet-timer">
     <div class="sheet-icon">
-      <svg width="22" height="22" viewBox="0 0 48 48" fill="none"><g stroke="#E0D6C8" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#E0D6C8"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#E0D6C8"/><rect x="10" y="20" width="4" height="8" rx="1" fill="#E0D6C8"/><rect x="34" y="20" width="4" height="8" rx="1" fill="#E0D6C8"/></g></svg>
+      <svg width="18" height="18" viewBox="0 0 48 48" fill="none"><g stroke="#E0D6C8" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#E0D6C8"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#E0D6C8"/><rect x="10" y="20" width="4" height="8" rx="1" fill="#E0D6C8"/><rect x="34" y="20" width="4" height="8" rx="1" fill="#E0D6C8"/></g></svg>
     </div>
     <div class="timer">00:32.52</div>
     <div class="mini-ring">
-      <svg width="40" height="40" viewBox="0 0 40 40">
+      <svg width="32" height="32" viewBox="0 0 40 40">
         <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="4" transform="rotate(-90 20 20)"/>
         <circle cx="20" cy="20" r="16" fill="none" stroke="rgba(200,173,126,.6)" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="75" stroke-linecap="round" transform="rotate(-90 20 20)"/>
       </svg>
     </div>
+  </div>
+  <div class="sheet-actions">
+    <button class="btn-stop">중지</button>
+    <button class="btn-end">운동 종료</button>
   </div>
 </div>
 
