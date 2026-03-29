@@ -25,11 +25,23 @@
       "memoPlaceholder": "Editable before, during, or after workout",
       "startWorkout": "Start Workout"
     },
+    "countdown": {
+      "label": "Strength Training"
+    },
     "active": {
       "title": "Working Out",
-      "countdown": "Countdown",
-      "pause": "Pause",
+      "heartRate": "Heart Rate",
+      "activeKcal": "Active Kilocalories",
+      "totalKcal": "Total Kilocalories",
+      "bodyPart": "Body Part",
+      "sets": "Sets",
+      "setsUnit": "sets",
+      "memo": "Memo",
+      "memoPlaceholder": "Write workout notes freely...",
+      "memoHint": "Record freely during workout",
+      "stop": "Stop",
       "resume": "Resume",
+      "pause": "Pause",
       "endWorkout": "End Workout",
       "discardWorkout": "Discard & Exit"
     },

@@ -25,11 +25,23 @@
       "memoPlaceholder": "운동 전·중·후 언제든 수정 가능",
       "startWorkout": "운동 시작"
     },
+    "countdown": {
+      "label": "근력 강화 운동"
+    },
     "active": {
       "title": "운동중",
-      "countdown": "카운트다운",
-      "pause": "일시정지",
+      "heartRate": "심박수",
+      "activeKcal": "활동 킬로칼로리",
+      "totalKcal": "총 킬로칼로리",
+      "bodyPart": "운동 부위",
+      "sets": "세트수",
+      "setsUnit": "세트",
+      "memo": "메모",
+      "memoPlaceholder": "운동 메모를 자유롭게 작성하세요...",
+      "memoHint": "운동중에도 자유롭게 기록",
+      "stop": "중지",
       "resume": "재개",
+      "pause": "일시정지",
       "endWorkout": "운동 종료",
       "discardWorkout": "저장하지 않고 종료하기"
     },

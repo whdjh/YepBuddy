@@ -25,6 +25,13 @@
     --yb-glass-bg: rgba(255,255,255,0.65);
     --yb-glass-border: rgba(255,255,255,0.5);
 
+    /* ── 운동 카운트다운/아이콘 ── */
+    --yb-ring-track: #EDE4D6;
+    --yb-ring-fill: #9B7E56;
+    --yb-icon-tint: #9B7E56;
+    --yb-icon-bg: #EDE4D6;
+    --yb-label-secondary: #876B45;
+
     /* ── status 컬러 (라이트) — OKLCH L 균일화 ── */
     --yb-status-success-bg: #D6FAD6;
     --yb-status-success-text: #17501D;
@@ -81,5 +88,10 @@
     --yb-surface: rgba(60,55,45,0.92);
     --yb-fg-secondary: rgba(255,255,255,0.45);
     --yb-accent: #C4A87E;
+    --yb-ring-track: rgba(155,126,86,0.25);
+    --yb-ring-fill: #C8AD7E;
+    --yb-icon-tint: #E0D6C8;
+    --yb-icon-bg: rgba(255,255,255,0.1);
+    --yb-label-secondary: rgba(255,255,255,0.6);
   }
 }
