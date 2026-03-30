@@ -36,23 +36,24 @@ export function WorkoutDrawer({
   const drawerRingTrack = (useUnstableNativeVariable("--yb-drawer-ring-track") as unknown as string) || "rgba(255,255,255,0.12)"
   const drawerRingFill = (useUnstableNativeVariable("--yb-drawer-ring-fill") as unknown as string) || "rgba(200,173,126,0.6)"
 
+  const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)
-  const translateY = useSharedValue(BUTTONS_HEIGHT)
+  const translateY = useSharedValue(collapseHeight)
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
-      const base = isDrawerOpen.value ? 0 : BUTTONS_HEIGHT
+      const base = isDrawerOpen.value ? 0 : collapseHeight
       translateY.value = Math.min(
-        BUTTONS_HEIGHT,
+        collapseHeight,
         Math.max(0, base + e.translationY),
       )
     })
     .onEnd((e) => {
-      if (e.velocityY < -200 || (e.velocityY >= -200 && e.velocityY <= 200 && translateY.value < BUTTONS_HEIGHT / 2)) {
+      if (e.velocityY < -200 || (e.velocityY >= -200 && e.velocityY <= 200 && translateY.value < collapseHeight / 2)) {
         translateY.value = withSpring(0, SPRING_CONFIG)
         isDrawerOpen.value = true
       } else {
-        translateY.value = withSpring(BUTTONS_HEIGHT, SPRING_CONFIG)
+        translateY.value = withSpring(collapseHeight, SPRING_CONFIG)
         isDrawerOpen.value = false
       }
     })
