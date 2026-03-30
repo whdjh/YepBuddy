@@ -1,9 +1,10 @@
-import { Text, View } from "react-native"
+import { Text } from "react-native"
+import { Main } from "@/shared/ui/Main"
 
 export default function ProteinPage() {
   return (
-    <View className="h-full w-full bg-yb-bg items-center justify-center">
+    <Main className="items-center justify-center">
       <Text className="text-yb-fg text-yb-body-lg">프로틴</Text>
-    </View>
+    </Main>
   )
 }

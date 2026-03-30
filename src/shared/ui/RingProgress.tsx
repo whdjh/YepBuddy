@@ -5,8 +5,8 @@ interface RingProgressProps extends Omit<ViewProps, "children"> {
   size: number
   strokeWidth?: number
   progress: number
-  trackColor?: string
-  fillColor?: string
+  trackColor: string
+  fillColor: string
   children?: React.ReactNode
 }
 
@@ -14,8 +14,8 @@ export function RingProgress({
   size,
   strokeWidth = 4,
   progress,
-  trackColor = "var(--yb-border-subtle)",
-  fillColor = "var(--yb-accent)",
+  trackColor,
+  fillColor,
   children,
   className,
   ...rest

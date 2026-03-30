@@ -25,6 +25,24 @@
     --yb-glass-bg: rgba(255,255,255,0.65);
     --yb-glass-border: rgba(255,255,255,0.5);
 
+    /* ── 심박수 ── */
+    --yb-heart: #E85854;
+
+    /* ── 운동 카운트다운/아이콘 ── */
+    --yb-ring-track: #EDE4D6;
+    --yb-ring-fill: #9B7E56;
+    --yb-icon-tint: #9B7E56;
+    --yb-icon-bg: #EDE4D6;
+    --yb-label-secondary: #876B45;
+
+    /* ── 드로어 ── */
+    --yb-drawer-bg: rgba(58,47,36,0.95);
+    --yb-drawer-handle: rgba(255,255,255,0.25);
+    --yb-drawer-fg: #FFFFFF;
+    --yb-drawer-border: rgba(255,255,255,0.15);
+    --yb-drawer-ring-track: rgba(255,255,255,0.12);
+    --yb-drawer-ring-fill: rgba(200,173,126,0.6);
+
     /* ── status 컬러 (라이트) — OKLCH L 균일화 ── */
     --yb-status-success-bg: #D6FAD6;
     --yb-status-success-text: #17501D;
@@ -61,6 +79,9 @@
     --yb-glass-bg: rgba(255,255,255,0.12);
     --yb-glass-border: rgba(255,255,255,0.18);
 
+    /* ── 드로어 (다크) ── */
+    --yb-drawer-bg: rgba(60,55,45,0.95);
+
     /* ── status 컬러 (다크) — APCA 명도대비 강화 ── */
     --yb-status-success-bg: rgba(67,194,81,0.18);
     --yb-status-success-text: #43C251;
@@ -81,5 +102,10 @@
     --yb-surface: rgba(60,55,45,0.92);
     --yb-fg-secondary: rgba(255,255,255,0.45);
     --yb-accent: #C4A87E;
+    --yb-ring-track: rgba(155,126,86,0.25);
+    --yb-ring-fill: #C8AD7E;
+    --yb-icon-tint: #E0D6C8;
+    --yb-icon-bg: rgba(255,255,255,0.1);
+    --yb-label-secondary: rgba(255,255,255,0.6);
   }
 }
