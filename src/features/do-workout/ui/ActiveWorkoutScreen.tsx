@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { ScrollView, View, useColorScheme } from "react-native"
+import { ScrollView, View } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { StatsSection } from "./StatsSection"
 import { BodyPartSelector } from "./BodyPartSelector"
@@ -15,7 +15,6 @@ const timerDisplay = "00:32.52"
 
 export function ActiveWorkoutScreen() {
   const insets = useSafeAreaInsets()
-  const isDark = useColorScheme() === "dark"
 
   const [selectedParts, setSelectedParts] = useState<Record<string, number>>({})
   const [memo, setMemo] = useState("")
@@ -40,7 +39,7 @@ export function ActiveWorkoutScreen() {
   }
 
   return (
-    <View className={`h-full w-full bg-yb-bg${isDark ? " workout-mode" : ""}`}>
+    <View className="h-full w-full bg-yb-bg workout-mode">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{

@@ -1,4 +1,4 @@
-import { Pressable, Text, View, useColorScheme } from "react-native"
+import { Pressable, Text, View } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { SymbolView } from "expo-symbols"
@@ -7,8 +7,6 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  runOnJS,
-  type SharedValue,
 } from "react-native-reanimated"
 import { RingProgress } from "@/shared/ui/RingProgress"
 
@@ -33,7 +31,6 @@ export function WorkoutDrawer({
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
-  const isDark = useColorScheme() === "dark"
 
   const isDrawerOpen = useSharedValue(true)
   const translateY = useSharedValue(0)
@@ -63,64 +60,27 @@ export function WorkoutDrawer({
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View
-        style={[
-          {
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            backgroundColor: isDark
-              ? "rgba(60,55,45,0.95)"
-              : "rgba(58,47,36,0.95)",
-            borderTopLeftRadius: 16,
-            borderTopRightRadius: 16,
-            paddingTop: 8,
-            paddingHorizontal: 16,
-            paddingBottom: bottomPadding,
-          },
-          drawerAnimatedStyle,
-        ]}
+        className="absolute bottom-0 left-0 right-0 bg-yb-drawer-bg rounded-t-yb-xl pt-yb-2 px-yb-4"
+        style={[{ paddingBottom: bottomPadding }, drawerAnimatedStyle]}
       >
         {/* 핸들 */}
         <View className="items-center mb-yb-2">
-          <View
-            style={{
-              width: 36,
-              height: 4,
-              borderRadius: 2,
-              backgroundColor: "rgba(255,255,255,0.25)",
-            }}
-          />
+          <View className="w-yb-9 h-[4px] rounded-[2px] bg-yb-drawer-handle" />
         </View>
 
         {/* 타이머 */}
         <View className="flex-row items-center justify-center gap-yb-3 mb-yb-3">
-          <View
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              backgroundColor: "rgba(255,255,255,0.1)",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
+          <View className="w-yb-9 h-yb-9 rounded-yb-md bg-[var(--yb-icon-bg)] items-center justify-center">
             <SymbolView
               name="dumbbell.fill"
               size={18}
-              tintColor="#E0D6C8"
-              style={{ width: 18, height: 18 }}
+              tintColor="var(--yb-icon-tint)"
             />
           </View>
 
           <Text
-            style={{
-              fontSize: 28,
-              fontWeight: "700",
-              color: "#FFFFFF",
-              letterSpacing: 0.02 * 28,
-              fontVariant: ["tabular-nums"],
-            }}
+            className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"
+            style={{ fontVariant: ["tabular-nums"] }}
           >
             {timerDisplay}
           </Text>
@@ -129,31 +89,18 @@ export function WorkoutDrawer({
             size={32}
             strokeWidth={4}
             progress={0.25}
-            trackColor="rgba(255,255,255,0.12)"
-            fillColor="rgba(200,173,126,0.6)"
+            trackColor="var(--yb-drawer-ring-track)"
+            fillColor="var(--yb-drawer-ring-fill)"
           />
         </View>
 
         {/* 버튼 */}
-        <View style={{ gap: BUTTON_GAP }}>
+        <View className="gap-yb-2">
           <Pressable
             onPress={onTogglePause}
-            style={{
-              height: BUTTON_HEIGHT,
-              borderRadius: 12,
-              borderWidth: 1.5,
-              borderColor: "rgba(255,255,255,0.15)",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "600",
-                color: "#FFFFFF",
-              }}
-            >
+            <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
               {isPaused
                 ? t("workout.active.resume")
                 : t("workout.active.stop")}
@@ -162,21 +109,9 @@ export function WorkoutDrawer({
 
           <Pressable
             onPress={() => router.replace("/(tabs)")}
-            style={{
-              height: BUTTON_HEIGHT,
-              borderRadius: 12,
-              backgroundColor: isDark ? "#D4883A" : "#9B7E56",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
+            className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-accent"
           >
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: "700",
-                color: isDark ? "#1C1C1E" : "#FAF7F2",
-              }}
-            >
+            <Text className="text-yb-body-sm font-bold text-yb-on-accent">
               {t("workout.active.endWorkout")}
             </Text>
           </Pressable>

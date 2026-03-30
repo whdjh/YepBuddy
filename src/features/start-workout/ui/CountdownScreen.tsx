@@ -60,12 +60,11 @@ export function CountdownScreen() {
           name="dumbbell.fill"
           size={24}
           tintColor="var(--yb-icon-tint)"
-          style={{ width: 24, height: 24 }}
         />
       </IconBox>
 
       {/* 링 프로그레스 + 카운트다운 숫자 */}
-      <View className="mt-yb-10 items-center justify-center" style={{ width: RING_SIZE, height: RING_SIZE }}>
+      <View className="mt-yb-10 items-center justify-center w-[240px] h-[240px]">
         <Svg width={RING_SIZE} height={RING_SIZE} style={{ transform: [{ rotate: "-90deg" }] }}>
           <Circle
             cx={RING_SIZE / 2}
@@ -93,7 +92,7 @@ export function CountdownScreen() {
       </View>
 
       {/* 라벨 */}
-      <Text className="mt-yb-8 text-yb-title" style={{ color: "var(--yb-label-secondary)" }}>
+      <Text className="mt-yb-8 text-yb-title text-yb-label-secondary">
         {t("workout.countdown.label")}
       </Text>
     </View>
