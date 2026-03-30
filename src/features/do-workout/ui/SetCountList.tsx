@@ -13,8 +13,8 @@ export function SetCountList({ selectedParts, onUpdate }: SetCountListProps) {
   return (
     <>
       {Object.keys(selectedParts).map((key) => (
-        <View key={key} className="px-yb-5 mt-yb-5">
-          <Text className="text-yb-fg font-bold text-yb-body-md mb-yb-2">
+        <View key={key} className="px-yb-6 mt-yb-5">
+          <Text className="text-yb-fg font-bold text-yb-body-md mb-yb-4">
             {t(`workout.bodyParts.${key}`)}
           </Text>
           <Stepper

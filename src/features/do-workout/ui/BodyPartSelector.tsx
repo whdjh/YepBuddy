@@ -15,8 +15,8 @@ export function BodyPartSelector({ selectedParts, onToggle }: BodyPartSelectorPr
   const { t } = useTranslation()
 
   return (
-    <View className="px-yb-5 mb-yb-5">
-      <Text className="text-yb-fg font-bold text-yb-body-lg mb-yb-3">
+    <View className="px-yb-6 mb-yb-5">
+      <Text className="text-yb-fg font-bold text-yb-body-lg mb-yb-4">
         {t("workout.active.bodyPart")}
       </Text>
       <Host style={{ height: 44 }}>

@@ -11,8 +11,8 @@ export function MemoSection({ value, onChangeText }: MemoSectionProps) {
   const { t } = useTranslation()
 
   return (
-    <View className="px-yb-5 mt-yb-8">
-      <Text className="text-yb-fg font-bold text-yb-body-lg mb-yb-3">
+    <View className="px-yb-6 mt-yb-8">
+      <Text className="text-yb-fg font-bold text-yb-body-lg mb-yb-4">
         {t("workout.active.memo")}
       </Text>
       <GlassTextarea

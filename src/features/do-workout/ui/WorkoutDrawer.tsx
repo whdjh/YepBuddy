@@ -12,7 +12,7 @@ import { RingProgress } from "@/shared/ui/RingProgress"
 
 // 버튼 영역 높이 (버튼 44 × 2 + gap 8)
 const BUTTON_HEIGHT = 44
-const BUTTON_GAP = 8
+const BUTTON_GAP = 12
 export const BUTTONS_HEIGHT = BUTTON_HEIGHT * 2 + BUTTON_GAP
 
 const SPRING_CONFIG = { damping: 20, stiffness: 200 }
@@ -95,7 +95,7 @@ export function WorkoutDrawer({
         </View>
 
         {/* 버튼 */}
-        <View className="gap-yb-2">
+        <View className="gap-yb-3">
           <Pressable
             onPress={onTogglePause}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
