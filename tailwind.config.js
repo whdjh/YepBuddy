@@ -41,6 +41,11 @@ module.exports = {
           'on-strong':     'var(--yb-on-strong)',
           'glass-bg':      'var(--yb-glass-bg)',
           'glass-border':  'var(--yb-glass-border)',
+          'label-secondary':'var(--yb-label-secondary)',
+          'drawer-bg':     'var(--yb-drawer-bg)',
+          'drawer-handle': 'var(--yb-drawer-handle)',
+          'drawer-fg':     'var(--yb-drawer-fg)',
+          'drawer-border': 'var(--yb-drawer-border)',
           // ═══ Status Semantic (CSS 변수 — light/dark 자동 전환) ═══
           'status-success-bg':      'var(--yb-status-success-bg)',
           'status-success-text':    'var(--yb-status-success-text)',
@@ -75,15 +80,19 @@ module.exports = {
         'yb-display':    ['30px', { lineHeight: '1.25', fontWeight: '700' }],
         'yb-num-xs':     ['22px', { lineHeight: '1', fontWeight: '700' }],
         'yb-num-sm':     ['24px', { lineHeight: '1', fontWeight: '700' }],
+        'yb-num-28':     ['28px', { lineHeight: '1', fontWeight: '700' }],
         'yb-num-md':     ['32px', { lineHeight: '1', fontWeight: '700' }],
         'yb-num-lg':     ['40px', { lineHeight: '1', fontWeight: '700' }],
+        'yb-num-44':     ['44px', { lineHeight: '1', fontWeight: '700' }],
         'yb-num-xl':     ['72px', { lineHeight: '1', fontWeight: '700' }],
+        'yb-num-80':     ['80px', { lineHeight: '1', fontWeight: '700' }],
         'yb-num-2xl':    ['96px', { lineHeight: '1', fontWeight: '700' }],
       },
 
       // ═══ L1: Letter Spacing ═══
       letterSpacing: {
         'yb-tight': '-0.03em',
+        'yb-wide':  '0.02em',
       },
 
       // ═══ L1: Spacing (4px base) ═══

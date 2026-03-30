@@ -43,3 +43,4 @@ src/
 | 앱 명세서 | `.claude/app-spec.md` | 전체 기능 명세 (3개 메뉴, 기술 스택) |
 | FSD 가이드 | `.claude/fsd-architecture.md` | 폴더 구조 및 의존성 규칙 |
 | 디자인 토큰 | `.claude/design-tokens.md` | 컴포넌트별 className 사용법 |
+| 디자인 원칙 | `.claude/design-principles.md` | 여백, 터치 영역, 그리드 시스템 원칙 |
