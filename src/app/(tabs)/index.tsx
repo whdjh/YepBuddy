@@ -10,8 +10,8 @@ export default function SummaryPage() {
       <Text className="text-yb-fg text-yb-body-lg">메인화면 (요약)</Text>
       <Button
         variant="primary"
-        label="운동 기록"
-        onPress={() => router.push("/workout/record")}
+        label="운동 시작"
+        onPress={() => router.push("/workout/countdown")}
       />
     </View>
   )

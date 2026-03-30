@@ -1,4 +1,4 @@
-import { Pressable, Text, View, type ViewProps } from "react-native"
+import { Pressable, Text, View, useColorScheme, type ViewProps } from "react-native"
 import { Host, HStack, VStack, Button as SwiftButton, Text as SwiftText } from "@expo/ui/swift-ui"
 import {
   buttonStyle,
@@ -43,6 +43,7 @@ export function Stepper({
   const hasJump = jumpStep != null
   const atMin = min != null && value <= min
   const atMax = max != null && value >= max
+  const isDark = useColorScheme() === "dark"
 
   if (variant === "glass") {
     return (
@@ -60,10 +61,10 @@ export function Stepper({
             ]}
           />
           <VStack modifiers={[frame({ maxWidth: 9999 })]}>
-            <SwiftText modifiers={[foregroundStyle("#A8A29E")]}>
+            <SwiftText modifiers={[foregroundStyle(isDark ? "#A8A29E" : "#876B45")]}>
               {label}
             </SwiftText>
-            <SwiftText modifiers={[foregroundStyle("#FFFFFF")]}>
+            <SwiftText modifiers={[foregroundStyle(isDark ? "#FFFFFF" : "#3A2A1A")]}>
               {`${value}${unit}`}
             </SwiftText>
           </VStack>
