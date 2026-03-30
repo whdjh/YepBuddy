@@ -25,6 +25,9 @@
     --yb-glass-bg: rgba(255,255,255,0.65);
     --yb-glass-border: rgba(255,255,255,0.5);
 
+    /* ── 심박수 ── */
+    --yb-heart: #E85854;
+
     /* ── 운동 카운트다운/아이콘 ── */
     --yb-ring-track: #EDE4D6;
     --yb-ring-fill: #9B7E56;

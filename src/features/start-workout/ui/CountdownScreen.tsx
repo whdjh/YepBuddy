@@ -9,6 +9,7 @@ import Animated, {
   withTiming,
   Easing,
 } from "react-native-reanimated"
+import { useUnstableNativeVariable } from "nativewind"
 import Svg, { Circle } from "react-native-svg"
 import { IconBox } from "@/shared/ui/IconBox"
 import { Main } from "@/shared/ui/Main"
@@ -23,6 +24,9 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
 export function CountdownScreen() {
   const { t } = useTranslation()
+  const ringTrack = (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
+  const ringFill = (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
+  const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
 
   const [count, setCount] = useState(COUNTDOWN_FROM)
   const countRef = useRef(COUNTDOWN_FROM)
@@ -60,7 +64,7 @@ export function CountdownScreen() {
         <SymbolView
           name="dumbbell.fill"
           size={24}
-          tintColor="var(--yb-icon-tint)"
+          tintColor={iconTint}
         />
       </IconBox>
 
@@ -72,7 +76,7 @@ export function CountdownScreen() {
             cy={RING_SIZE / 2}
             r={RADIUS}
             fill="none"
-            stroke="var(--yb-ring-track)"
+            stroke={ringTrack}
             strokeWidth={STROKE_WIDTH}
           />
           <AnimatedCircle
@@ -80,7 +84,7 @@ export function CountdownScreen() {
             cy={RING_SIZE / 2}
             r={RADIUS}
             fill="none"
-            stroke="var(--yb-ring-fill)"
+            stroke={ringFill}
             strokeWidth={STROKE_WIDTH}
             strokeDasharray={CIRCUMFERENCE}
             strokeLinecap="round"

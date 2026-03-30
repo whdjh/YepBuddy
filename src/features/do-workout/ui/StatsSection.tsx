@@ -1,5 +1,6 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 
 interface StatsSectionProps {
@@ -10,6 +11,7 @@ interface StatsSectionProps {
 
 export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionProps) {
   const { t } = useTranslation()
+  const heartColor = (useUnstableNativeVariable("--yb-heart") as unknown as string) || "#E85854"
 
   return (
     <>
@@ -22,7 +24,7 @@ export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionP
           <SymbolView
             name="heart.fill"
             size={24}
-            tintColor="var(--yb-accent)"
+            tintColor={heartColor}
           />
         </View>
       </View>

@@ -8,6 +8,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated"
+import { useUnstableNativeVariable } from "nativewind"
 import { RingProgress } from "@/shared/ui/RingProgress"
 
 // 버튼 영역 높이 (버튼 44 × 2 + gap 8)
@@ -31,9 +32,12 @@ export function WorkoutDrawer({
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
+  const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
+  const drawerRingTrack = (useUnstableNativeVariable("--yb-drawer-ring-track") as unknown as string) || "rgba(255,255,255,0.12)"
+  const drawerRingFill = (useUnstableNativeVariable("--yb-drawer-ring-fill") as unknown as string) || "rgba(200,173,126,0.6)"
 
-  const isDrawerOpen = useSharedValue(true)
-  const translateY = useSharedValue(0)
+  const isDrawerOpen = useSharedValue(false)
+  const translateY = useSharedValue(BUTTONS_HEIGHT)
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -74,7 +78,7 @@ export function WorkoutDrawer({
             <SymbolView
               name="dumbbell.fill"
               size={18}
-              tintColor="var(--yb-icon-tint)"
+              tintColor={iconTint}
             />
           </View>
 
@@ -89,8 +93,8 @@ export function WorkoutDrawer({
             size={32}
             strokeWidth={4}
             progress={0.25}
-            trackColor="var(--yb-drawer-ring-track)"
-            fillColor="var(--yb-drawer-ring-fill)"
+            trackColor={drawerRingTrack}
+            fillColor={drawerRingFill}
           />
         </View>
 
