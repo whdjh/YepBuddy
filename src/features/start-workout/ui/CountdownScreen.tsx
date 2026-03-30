@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated"
 import Svg, { Circle } from "react-native-svg"
 import { IconBox } from "@/shared/ui/IconBox"
+import { Main } from "@/shared/ui/Main"
 
 const COUNTDOWN_FROM = 3
 const RING_SIZE = 240
@@ -53,7 +54,7 @@ export function CountdownScreen() {
   }))
 
   return (
-    <View className="flex-1 items-center justify-center bg-yb-bg workout-mode">
+    <Main className="workout-mode items-center justify-center">
       {/* 덤벨 아이콘 */}
       <IconBox size="md" className="bg-[var(--yb-icon-bg)]">
         <SymbolView
@@ -95,6 +96,6 @@ export function CountdownScreen() {
       <Text className="mt-yb-8 text-yb-title text-yb-label-secondary">
         {t("workout.countdown.label")}
       </Text>
-    </View>
+    </Main>
   )
 }

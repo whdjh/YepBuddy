@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { ScrollView, View } from "react-native"
+import { ScrollView } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { Main } from "@/shared/ui/Main"
 import { StatsSection } from "./StatsSection"
 import { BodyPartSelector } from "./BodyPartSelector"
 import { SetCountList } from "./SetCountList"
@@ -39,11 +40,11 @@ export function ActiveWorkoutScreen() {
   }
 
   return (
-    <View className="h-full w-full bg-yb-bg workout-mode">
+    <Main className="workout-mode">
       <ScrollView
         className="flex-1"
         contentContainerStyle={{
-          paddingTop: insets.top + 16,
+          paddingTop: 16,
           paddingBottom: 84 + BUTTONS_HEIGHT + bottomPadding,
         }}
         showsVerticalScrollIndicator={false}
@@ -73,6 +74,6 @@ export function ActiveWorkoutScreen() {
         onTogglePause={() => setIsPaused((v) => !v)}
         bottomPadding={bottomPadding}
       />
-    </View>
+    </Main>
   )
 }
