@@ -1,4 +1,5 @@
 import { ScrollView, Text, View } from "react-native"
+import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { Main } from "@/shared/ui/Main"
@@ -27,6 +28,11 @@ export function SummaryScreen() {
 
   return (
     <Main>
+      <LinearGradient
+        colors={["#FAF7F2", "#EDE4D6", "#DDD2BF", "#EDE4D6", "#FAF7F2"]}
+        locations={[0, 0.25, 0.5, 0.75, 1]}
+        className="absolute inset-0"
+      />
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-yb-5 pb-[120px]"

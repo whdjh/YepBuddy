@@ -1,10 +1,16 @@
-import { Pressable, Text, View } from "react-native"
+import { Pressable, useColorScheme } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
-import { SymbolView } from "expo-symbols"
-import { Card } from "@/shared/ui/Card"
-import { RingProgress } from "@/shared/ui/RingProgress"
+import { Host, HStack, VStack, Text as SwiftText, Gauge, Image, Spacer } from "@expo/ui/swift-ui"
+import {
+  glassEffect,
+  frame,
+  font,
+  foregroundStyle,
+  padding,
+  gaugeStyle,
+  tint,
+} from "@expo/ui/swift-ui/modifiers"
 
 interface TodayWorkoutCardProps {
   bodyParts: string
@@ -14,36 +20,56 @@ interface TodayWorkoutCardProps {
 
 export function TodayWorkoutCard({ bodyParts, totalSets, targetSets }: TodayWorkoutCardProps) {
   const router = useRouter()
-
   const { t } = useTranslation()
+  const isDark = useColorScheme() === "dark"
 
-  const ringTrack = (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
-  const ringFill = (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
-  const fgSecondary = (useUnstableNativeVariable("--yb-fg-secondary") as unknown as string) || "#876B45"
+  const fgColor = isDark ? "#FFFFFF" : "#3A2A1A"
+  const fgSecondary = isDark ? "#EDE4D6" : "#876B45"
+  const accentColor = isDark ? "#D4883A" : "#9B7E56"
+  const progress = targetSets > 0 ? totalSets / targetSets : 0
 
   return (
     <Pressable onPress={() => router.push("/calendar")}>
-      <Card variant="glass">
-        <View className="flex-row items-center justify-between">
-          <RingProgress
-            size={90}
-            strokeWidth={10}
-            progress={targetSets > 0 ? totalSets / targetSets : 0}
-            trackColor={ringTrack}
-            fillColor={ringFill}
+      <Host style={{ minHeight: 130 }}>
+        <HStack
+          spacing={16}
+          modifiers={[
+            padding({ top: 20, leading: 20, bottom: 20, trailing: 20 }),
+            frame({ maxWidth: 9999, minHeight: 130 }),
+            glassEffect({
+              glass: { variant: "regular", interactive: true },
+              shape: "roundedRectangle",
+              cornerRadius: 16,
+            }),
+          ]}
+        >
+          <Gauge
+            value={progress}
+            modifiers={[
+              gaugeStyle("circularCapacity"),
+              frame({ width: 90, height: 90 }),
+              tint(accentColor),
+            ]}
           >
-            <Text className="text-yb-fg text-yb-num-sm">{totalSets}</Text>
-          </RingProgress>
-          <View className="gap-yb-1">
-            <Text className="text-yb-fg-secondary text-yb-label">{t("summary.todayWorkout")}</Text>
-            <Text className="text-yb-fg text-yb-heading-lg">{bodyParts}</Text>
-            <Text className="text-yb-accent text-yb-heading-lg">
-              {totalSets}{t("summary.setsUnit")}
-            </Text>
-          </View>
-          <SymbolView name="chevron.right" size={18} tintColor={fgSecondary} />
-        </View>
-      </Card>
+            <SwiftText modifiers={[font({ size: 24, weight: "bold", design: "rounded" }), foregroundStyle(fgColor)]}>
+              {String(totalSets)}
+            </SwiftText>
+          </Gauge>
+          <VStack alignment="leading" spacing={4}>
+            <SwiftText modifiers={[font({ size: 13, weight: "medium" }), foregroundStyle(fgSecondary)]}>
+              {t("summary.todayWorkout")}
+            </SwiftText>
+            <SwiftText modifiers={[font({ size: 22, weight: "bold" }), foregroundStyle(fgColor)]}>
+              {bodyParts}
+            </SwiftText>
+            <SwiftText modifiers={[font({ size: 22, weight: "bold" }), foregroundStyle(accentColor)]}>
+              {`${totalSets}${t("summary.setsUnit")}`}
+            </SwiftText>
+          </VStack>
+          <Spacer />
+          <Image systemName="chevron.right" size={18} color={fgSecondary} />
+        </HStack>
+      </Host>
     </Pressable>
   )
 }
