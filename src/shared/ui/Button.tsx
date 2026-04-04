@@ -1,10 +1,11 @@
-import { Pressable, Text, View, type PressableProps } from "react-native"
+import { Pressable, Text, View, useColorScheme, type PressableProps } from "react-native"
 import { Host, HStack, Button as SwiftButton } from "@expo/ui/swift-ui"
 import {
   buttonStyle,
   disabled as disabledMod,
   glassEffect,
   frame,
+  font,
   foregroundStyle,
 } from "@expo/ui/swift-ui/modifiers"
 
@@ -39,7 +40,12 @@ const labelStyles: Record<Exclude<ButtonVariant, "glass">, string> = {
 }
 
 export function Button({ variant = "primary", label, className, disabled, onPress, ...rest }: ButtonProps) {
+  const isDark = useColorScheme() === "dark"
+
   if (variant === "glass") {
+    // semantic.fg-secondary → dark: cream.200, light: khaki.400
+    const fgColor = isDark ? "#EDE4D6" : "#876B45"
+
     return (
       <Host style={{ height: 52 }}>
         <HStack
@@ -53,7 +59,8 @@ export function Button({ variant = "primary", label, className, disabled, onPres
             onPress={onPress}
             modifiers={[
               buttonStyle("plain"),
-              foregroundStyle("#FFFFFF"),
+              font({ weight: "bold", size: 16 }),
+              foregroundStyle(fgColor),
               frame({ maxWidth: Infinity }),
               disabledMod(!!disabled),
             ]}

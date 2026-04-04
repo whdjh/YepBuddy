@@ -79,9 +79,9 @@ export function SummaryScreen() {
         </View>
 
         {/* 하단 버튼 */}
-        <View className="border-t border-yb-border-subtle pt-yb-6 gap-yb-3">
-          <Button variant="ghost" label={t("summary.editSummary")} onPress={() => {}} />
-          <Button variant="ghost" label={t("summary.allCategories")} onPress={() => {}} />
+        <View className="pt-yb-6 gap-yb-3">
+          <Button variant="glass" label={t("summary.editSummary")} onPress={() => {}} />
+          <Button variant="glass" label={t("summary.allCategories")} onPress={() => {}} />
         </View>
       </ScrollView>
     </Main>
