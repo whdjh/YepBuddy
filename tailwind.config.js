@@ -136,12 +136,14 @@ module.exports = {
         'yb-num-input':  '56px',
         'yb-drawer-btn': '56px',
         'yb-drawer-lg':  '64px',
+        'yb-icon-xl':    '64px',
       },
       width: {
         'yb-icon-btn':  '44px',
         'yb-icon-sm':   '44px',
         'yb-icon-md':   '48px',
         'yb-icon-lg':   '56px',
+        'yb-icon-xl':   '64px',
         'yb-num-input': '72px',
       },
       minHeight: {
