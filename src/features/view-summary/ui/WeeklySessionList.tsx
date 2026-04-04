@@ -37,7 +37,7 @@ export function WeeklySessionList({ sessions, onMorePress }: WeeklySessionListPr
   const estimatedHeight = 40 + 32 + sessions.length * 68
 
   return (
-    <Host style={{ minHeight: estimatedHeight }}>
+    <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: estimatedHeight }}>
       <VStack
         spacing={0}
         modifiers={[

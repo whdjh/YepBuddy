@@ -30,7 +30,7 @@ export function TodayWorkoutCard({ bodyParts, totalSets, targetSets }: TodayWork
 
   return (
     <Pressable onPress={() => router.push("/calendar")}>
-      <Host style={{ minHeight: 130 }}>
+      <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: 130 }}>
         <HStack
           spacing={16}
           modifiers={[

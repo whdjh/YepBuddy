@@ -23,7 +23,7 @@ export function StatCard({ label, subtitle, value, unit }: StatCardProps) {
   const accentColor = isDark ? "#D4883A" : "#9B7E56"
 
   return (
-    <Host style={{ minHeight: 120 }}>
+    <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: 120 }}>
       <VStack
         alignment="leading"
         modifiers={[

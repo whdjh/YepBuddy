@@ -33,7 +33,7 @@ export function WorkoutLinkCard({ disabled = false }: WorkoutLinkCardProps) {
       disabled={disabled}
       className={disabled ? "opacity-40" : ""}
     >
-      <Host style={{ minHeight: 200 }}>
+      <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: 200 }}>
         <VStack
           spacing={0}
           modifiers={[

@@ -29,7 +29,7 @@ export function SessionLinkCard({ bodyPart, kcal, day }: SessionLinkCardProps) {
 
   return (
     <Pressable onPress={() => {}}>
-      <Host style={{ minHeight: 200 }}>
+      <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: 200 }}>
         <VStack
           alignment="leading"
           spacing={0}
