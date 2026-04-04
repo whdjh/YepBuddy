@@ -1,20 +1,20 @@
-import { PillNav } from "@/shared/ui/PillNav"
+import { NativeTabs } from "expo-router/unstable-native-tabs"
 
 export default function TabLayout() {
   return (
-    <PillNav tintColor="#D4883A">
-      <PillNav.Item name="index">
-        <PillNav.Item.Icon sf="book.fill" />
-        <PillNav.Item.Label>일지</PillNav.Item.Label>
-      </PillNav.Item>
-      <PillNav.Item name="tempo">
-        <PillNav.Item.Icon sf="timer" />
-        <PillNav.Item.Label>템포</PillNav.Item.Label>
-      </PillNav.Item>
-      <PillNav.Item name="protein">
-        <PillNav.Item.Icon sf="waterbottle.fill" />
-        <PillNav.Item.Label>프로틴</PillNav.Item.Label>
-      </PillNav.Item>
-    </PillNav>
+    <NativeTabs tintColor="#D4883A">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf="book.fill" />
+        <NativeTabs.Trigger.Label>일지</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="tempo">
+        <NativeTabs.Trigger.Icon sf="timer" />
+        <NativeTabs.Trigger.Label>템포</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="protein">
+        <NativeTabs.Trigger.Icon sf="waterbottle.fill" />
+        <NativeTabs.Trigger.Label>프로틴</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   )
 }
