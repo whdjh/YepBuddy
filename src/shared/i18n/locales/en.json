@@ -63,7 +63,7 @@
     }
   },
   "summary": {
-    "title": "Summary",
+    "title": "Exercise Diary",
     "todayWorkout": "Today's Workout",
     "workoutTime": "Workout Time",
     "sets": "Sets",
@@ -75,7 +75,6 @@
     "thisWeekSessions": "This Week",
     "moreLink": "More",
     "editSummary": "Edit Summary",
-    "allCategories": "All Categories",
     "minuteUnit": "min",
     "setsUnit": "sets",
     "kcalUnit": "KCAL"

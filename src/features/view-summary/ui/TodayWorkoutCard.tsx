@@ -1,16 +1,7 @@
-import { Pressable, useColorScheme } from "react-native"
+import { Pressable } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { Host, HStack, VStack, Text as SwiftText, Gauge, Image, Spacer } from "@expo/ui/swift-ui"
-import {
-  glassEffect,
-  frame,
-  font,
-  foregroundStyle,
-  padding,
-  gaugeStyle,
-  tint,
-} from "@expo/ui/swift-ui/modifiers"
+import { Card } from "@/shared/ui/Card"
 
 interface TodayWorkoutCardProps {
   bodyParts: string
@@ -20,56 +11,25 @@ interface TodayWorkoutCardProps {
 
 export function TodayWorkoutCard({ bodyParts, totalSets, targetSets }: TodayWorkoutCardProps) {
   const router = useRouter()
-  const { t } = useTranslation()
-  const isDark = useColorScheme() === "dark"
 
-  const fgColor = isDark ? "#FFFFFF" : "#3A2A1A"
-  const fgSecondary = isDark ? "#EDE4D6" : "#876B45"
-  const accentColor = isDark ? "#D4883A" : "#9B7E56"
-  const progress = targetSets > 0 ? totalSets / targetSets : 0
+  const { t } = useTranslation()
 
   return (
     <Pressable onPress={() => router.push("/calendar")}>
-      <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={{ minHeight: 130 }}>
-        <HStack
-          spacing={16}
-          modifiers={[
-            padding({ top: 20, leading: 20, bottom: 20, trailing: 20 }),
-            frame({ maxWidth: 9999, minHeight: 130 }),
-            glassEffect({
-              glass: { variant: "regular", interactive: true },
-              shape: "roundedRectangle",
-              cornerRadius: 16,
-            }),
-          ]}
-        >
-          <Gauge
-            value={progress}
-            modifiers={[
-              gaugeStyle("circularCapacity"),
-              frame({ width: 90, height: 90 }),
-              tint(accentColor),
-            ]}
-          >
-            <SwiftText modifiers={[font({ size: 24, weight: "bold", design: "rounded" }), foregroundStyle(fgColor)]}>
-              {String(totalSets)}
-            </SwiftText>
-          </Gauge>
-          <VStack alignment="leading" spacing={4}>
-            <SwiftText modifiers={[font({ size: 13, weight: "medium" }), foregroundStyle(fgSecondary)]}>
-              {t("summary.todayWorkout")}
-            </SwiftText>
-            <SwiftText modifiers={[font({ size: 22, weight: "bold" }), foregroundStyle(fgColor)]}>
-              {bodyParts}
-            </SwiftText>
-            <SwiftText modifiers={[font({ size: 22, weight: "bold" }), foregroundStyle(accentColor)]}>
-              {`${totalSets}${t("summary.setsUnit")}`}
-            </SwiftText>
-          </VStack>
-          <Spacer />
-          <Image systemName="chevron.right" size={18} color={fgSecondary} />
-        </HStack>
-      </Host>
+      <Card variant="glass" minHeight={130}>
+        <Card.Row spacing={16}>
+          <Card.Gauge current={totalSets} target={targetSets}>
+            <Card.Title size={24} design="rounded">{String(totalSets)}</Card.Title>
+          </Card.Gauge>
+          <Card.Column alignment="leading" spacing={4}>
+            <Card.Label>{t("summary.todayWorkout")}</Card.Label>
+            <Card.Title size={22}>{bodyParts}</Card.Title>
+            <Card.Accent size={22}>{`${totalSets}${t("summary.setsUnit")}`}</Card.Accent>
+          </Card.Column>
+          <Card.Spacer />
+          <Card.Chevron />
+        </Card.Row>
+      </Card>
     </Pressable>
   )
 }

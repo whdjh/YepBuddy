@@ -63,7 +63,7 @@
     }
   },
   "summary": {
-    "title": "요약",
+    "title": "운동일지",
     "todayWorkout": "오늘의 운동",
     "workoutTime": "운동시간",
     "sets": "세트수",
@@ -75,7 +75,6 @@
     "thisWeekSessions": "이번 주 세션",
     "moreLink": "더보기",
     "editSummary": "요약 편집",
-    "allCategories": "모든 카테고리 보기",
     "minuteUnit": "분",
     "setsUnit": "세트",
     "kcalUnit": "KCAL"
