@@ -2,7 +2,7 @@ import { Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
-import Svg, { Path } from "react-native-svg"
+import { SymbolView } from "expo-symbols"
 import { Main } from "@/shared/ui/Main"
 import { IconButton } from "@/shared/ui/IconButton"
 
@@ -15,9 +15,7 @@ export default function SessionsPage() {
     <Main>
       <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-4 gap-yb-3">
         <IconButton variant="back-square" onPress={() => router.back()}>
-          <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
-            <Path d="M15 19l-7-7 7-7" stroke={fgColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-          </Svg>
+          <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
         <Text className="text-yb-fg text-yb-title">{t("sessions.title")}</Text>
       </View>
