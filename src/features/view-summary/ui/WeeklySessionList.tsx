@@ -1,4 +1,5 @@
 import { Fragment } from "react"
+import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/shared/ui/Card"
 
@@ -19,11 +20,12 @@ export function WeeklySessionList({ sessions, onMorePress }: WeeklySessionListPr
   const { t } = useTranslation()
 
   return (
+    <Pressable onPress={onMorePress}>
     <Card variant="glass">
       <Card.Header
         label={t("summary.thisWeekSessions")}
         more={t("summary.moreLink")}
-        onMorePress={onMorePress}
+        chevron
       />
       <Card.Spacer size={12} />
 
@@ -51,5 +53,6 @@ export function WeeklySessionList({ sessions, onMorePress }: WeeklySessionListPr
         </Fragment>
       ))}
     </Card>
+    </Pressable>
   )
 }
