@@ -50,8 +50,18 @@
       "calories": "활동 칼로리",
       "totalSets": "세트수",
       "avgHeartRate": "평균 심박수",
-      "heartRateChart": "심박수 차트",
-      "location": "운동 위치"
+      "heartRateChart": "심박수",
+      "location": "운동 위치",
+      "statsTitle": "운동 세부사항",
+      "mapTitle": "지도",
+      "memoPlaceholder": "메모를 입력하세요",
+      "strengthTraining": "근력 강화 운동",
+      "unspecified": "미지정",
+      "caloriesUnit": "KCAL",
+      "setsUnit": "세트",
+      "heartRateUnit": "BPM",
+      "avgPrefix": "평균",
+      "noData": "데이터가 없습니다."
     },
     "bodyParts": {
       "chest": "가슴",
