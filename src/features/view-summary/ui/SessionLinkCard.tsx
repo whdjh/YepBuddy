@@ -1,4 +1,5 @@
 import { Pressable } from "react-native"
+import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/shared/ui/Card"
 
@@ -9,10 +10,12 @@ interface SessionLinkCardProps {
 }
 
 export function SessionLinkCard({ bodyPart, kcal, day }: SessionLinkCardProps) {
+  const router = useRouter()
+
   const { t } = useTranslation()
 
   return (
-    <Pressable onPress={() => {}}>
+    <Pressable onPress={() => router.push("/workout/mock-session")}>
       <Card variant="glass" minHeight={200}>
         <Card.Column alignment="leading" spacing={0}>
           <Card.Header label={t("summary.session")} chevron />
