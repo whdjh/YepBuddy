@@ -43,7 +43,7 @@ const chipLabel: Record<ChipVariant, string> = {
 export function Chip({ variant = "default", label, ...rest }: ChipProps) {
   return (
     <Pressable className={chipContainer[variant]} {...rest}>
-      {variant === "glass" && <GlassBackground glassStyle="clear" />}
+      {variant === "glass" && <GlassBackground />}
       <Text className={chipLabel[variant]}>{label}</Text>
     </Pressable>
   )
