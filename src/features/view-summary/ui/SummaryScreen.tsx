@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { Main } from "@/shared/ui/Main"
 import { Button } from "@/shared/ui/Button"
 import { TodayWorkoutCard } from "./TodayWorkoutCard"
-import { StatCard } from "./StatCard"
+import { StatCard } from "@/shared/ui/StatCard"
 import { SessionLinkCard } from "./SessionLinkCard"
 import { WorkoutLinkCard } from "./WorkoutLinkCard"
 import { WeeklySessionList } from "./WeeklySessionList"
@@ -34,7 +34,7 @@ export function SummaryScreen() {
         className="absolute inset-0"
       />
       <ScrollView
-        className="flex-1"
+        className="grow"
         contentContainerClassName="px-yb-5 pb-[120px]"
         showsVerticalScrollIndicator={false}
       >
