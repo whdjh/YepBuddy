@@ -111,6 +111,7 @@ module.exports = {
         'yb-9':   '36px',
         'yb-10':  '40px',
         'yb-12':  '48px',
+        'yb-30':  '120px',
       },
 
       // ═══ L1: Border Radius (outer = inner × 2) ═══

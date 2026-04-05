@@ -35,7 +35,7 @@ export function SummaryScreen() {
       />
       <ScrollView
         className="grow"
-        contentContainerClassName="px-yb-5 pb-[120px]"
+        contentContainerClassName="px-yb-5 pb-yb-30"
         showsVerticalScrollIndicator={false}
       >
         {/* 헤더 */}
