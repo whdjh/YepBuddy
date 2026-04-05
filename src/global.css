@@ -79,6 +79,10 @@
     --yb-glass-bg: rgba(255,255,255,0.12);
     --yb-glass-border: rgba(255,255,255,0.18);
 
+    /* ── 링 프로그레스 (다크) ── */
+    --yb-ring-track: rgba(212,136,58,0.15);
+    --yb-ring-fill: #D4883A;
+
     /* ── 드로어 (다크) ── */
     --yb-drawer-bg: rgba(60,55,45,0.95);
 
