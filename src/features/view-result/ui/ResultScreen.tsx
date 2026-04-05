@@ -10,8 +10,9 @@ import { GlassTextarea } from "@/shared/ui/Input"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
+import { formatDuration, formatTime } from "@/shared/lib/format"
 
-// TODO: 실제 데이터 연동 시 props/hook으로 교체
+// TODO: HealthKit + AsyncStorage 연동
 const MOCK = {
   date: "3월 15일",
   bodyPartLabel: "가슴",
@@ -19,11 +20,11 @@ const MOCK = {
   endTime: "오후 7:52",
   location: "용인시",
   memo: "벤치 80(8) 100(3) 90(6)",
-  duration: "0:41:33",
+  duration: 2493,
   calories: 273,
   totalSets: 18,
   heartRateData: Array.from({ length: 40 }, (_, i) => ({
-    time: i,
+    startDate: new Date(2026, 2, 15, 19, 11 + i).toISOString(),
     bpm: 100 + Math.round(Math.sin(i * 0.3) * 20 + ((i * 7 + 3) % 15)),
   })),
   coords: { lat: 37.2411, lng: 127.1776 },
@@ -43,6 +44,10 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
     data.heartRateData.length > 0
       ? Math.round(data.heartRateData.reduce((s, d) => s + d.bpm, 0) / data.heartRateData.length)
       : null
+
+  const chartData = data.heartRateData.map((d, i) => ({ time: i, bpm: d.bpm }))
+  const startTimeLabel = data.heartRateData.length > 0 ? formatTime(data.heartRateData[0].startDate) : ""
+  const endTimeLabel = data.heartRateData.length > 0 ? formatTime(data.heartRateData[data.heartRateData.length - 1].startDate) : ""
 
   return (
     <Main>
@@ -80,7 +85,7 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
           {t("workout.result.statsTitle")}
         </Text>
         <StatsGrid
-          duration={data.duration}
+          duration={formatDuration(data.duration)}
           calories={data.calories}
           totalSets={data.totalSets}
           avgHeartRate={avgHeartRate}
@@ -91,10 +96,10 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
           {t("workout.result.heartRateChart")}
         </Text>
         <HeartRateChart
-          data={data.heartRateData}
+          data={chartData}
           avgBpm={avgHeartRate}
-          startTimeLabel="7:11"
-          endTimeLabel="7:52"
+          startTimeLabel={startTimeLabel}
+          endTimeLabel={endTimeLabel}
         />
 
         {/* Map */}
