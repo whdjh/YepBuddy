@@ -4,7 +4,7 @@ import i18next from "i18next"
 export function formatDateWithDay(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0")
   const d = String(date.getDate()).padStart(2, "0")
-  const dayName = i18next.t(`sessions.days.${date.getDay()}`)
+  const dayName = i18next.t(`common.daysShort.${date.getDay()}`)
   return `${m}.${d} ${dayName}`
 }
 
