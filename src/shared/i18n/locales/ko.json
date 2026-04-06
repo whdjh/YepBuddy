@@ -108,7 +108,6 @@
   },
   "tempo": {
     "title": "템포",
-    "subtitle": "수축·이완 타이밍에 집중하세요",
     "contractionFirst": "수축 먼저",
     "relaxationFirst": "이완 먼저",
     "contraction": "수축",
@@ -120,7 +119,9 @@
     "waiting": "대기 중",
     "currentSet": "현재 세트",
     "currentRep": "현재 횟수",
-    "section": "구간"
+    "section": "구간",
+    "setsUnit": "세트",
+    "start": "시작"
   },
   "protein": {
     "title": "프로틴",
