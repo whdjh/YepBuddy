@@ -1,2 +1,3 @@
 export { ProteinCard } from "./ui/ProteinCard"
-export type { Protein, ProteinCategory, PriceLevel } from "./model/types"
+export { PriceTrendChart } from "./ui/PriceTrendChart"
+export type { Protein, ProteinCategory, PriceLevel, PriceHistoryPoint, ProteinDetail } from "./model/types"
