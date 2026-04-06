@@ -108,7 +108,6 @@
   },
   "tempo": {
     "title": "Tempo",
-    "subtitle": "Focus on contraction & relaxation timing",
     "contractionFirst": "Contraction First",
     "relaxationFirst": "Relaxation First",
     "contraction": "Contraction",
@@ -120,7 +119,9 @@
     "waiting": "Waiting",
     "currentSet": "Current Set",
     "currentRep": "Current Rep",
-    "section": "Section"
+    "section": "Section",
+    "setsUnit": "sets",
+    "start": "Start"
   },
   "protein": {
     "title": "Protein",
