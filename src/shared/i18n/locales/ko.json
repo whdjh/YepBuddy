@@ -134,7 +134,13 @@
       "features": "특징",
       "currentPrice": "현재가",
       "priceTrend": "가격 추이",
-      "buyNow": "구매하러 가기"
+      "buyNow": "구매하러 가기",
+      "notFound": "제품을 찾을 수 없습니다",
+      "priceUnit": "원",
+      "pricePerGram": "g당 {{value}}원",
+      "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
+      "chartHigh": "최고 {{value}}원",
+      "chartLow": "최저 {{value}}원"
     },
     "levels": {
       "low": "저점",
