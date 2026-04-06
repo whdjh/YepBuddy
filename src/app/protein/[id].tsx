@@ -1,12 +1,5 @@
-import { Text, View } from "react-native"
-import { useLocalSearchParams } from "expo-router"
+import { ProteinDetailScreen } from "@/features/view-protein-detail"
 
 export default function ProteinDetailPage() {
-  const { id } = useLocalSearchParams<{ id: string }>()
-
-  return (
-    <View className="h-full w-full bg-yb-bg items-center justify-center">
-      <Text className="text-yb-fg text-yb-body-lg">프로틴 상세 ({id})</Text>
-    </View>
-  )
+  return <ProteinDetailScreen />
 }

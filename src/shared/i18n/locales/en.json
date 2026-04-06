@@ -134,7 +134,13 @@
       "features": "Features",
       "currentPrice": "Current Price",
       "priceTrend": "Price Trend",
-      "buyNow": "Buy Now"
+      "buyNow": "Buy Now",
+      "notFound": "Product not found",
+      "priceUnit": "KRW",
+      "pricePerGram": "{{value}} KRW/g",
+      "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
+      "chartHigh": "High {{value}} KRW",
+      "chartLow": "Low {{value}} KRW"
     },
     "levels": {
       "low": "Low",

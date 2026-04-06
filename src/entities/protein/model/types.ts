@@ -11,3 +11,15 @@ export interface Protein {
   pricePerGram: number
   priceLevel: PriceLevel
 }
+
+export interface PriceHistoryPoint {
+  date: string
+  price: number
+}
+
+export interface ProteinDetail extends Protein {
+  flavor: string
+  features: string[]
+  purchaseUrl: string | null
+  priceHistory: PriceHistoryPoint[]
+}
