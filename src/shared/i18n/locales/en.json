@@ -46,7 +46,7 @@
       "sets": "Sets",
       "setsUnit": "sets",
       "memo": "Memo",
-      "memoPlaceholder": "Write workout notes freely...",
+      "memoPlaceholder": "Write workout notes freely",
       "memoHint": "Record freely during workout",
       "stop": "Stop",
       "resume": "Resume",
@@ -124,7 +124,6 @@
   },
   "protein": {
     "title": "Protein",
-    "subtitle": "Price analysis · Find the best price per gram",
     "filterAll": "All",
     "category": "Category",
     "volume": "Volume",

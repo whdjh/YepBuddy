@@ -46,7 +46,7 @@
       "sets": "세트수",
       "setsUnit": "세트",
       "memo": "메모",
-      "memoPlaceholder": "운동 메모를 자유롭게 작성하세요...",
+      "memoPlaceholder": "운동 메모를 자유롭게 작성하세요",
       "memoHint": "운동중에도 자유롭게 기록",
       "stop": "중지",
       "resume": "재개",
@@ -124,7 +124,6 @@
   },
   "protein": {
     "title": "프로틴",
-    "subtitle": "가격 분석 · g당 최저가를 찾아보세요",
     "filterAll": "전체",
     "category": "카테고리",
     "volume": "용량",
