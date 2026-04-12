@@ -117,10 +117,12 @@
     "rest": "휴식",
     "secondUnit": "초",
     "waiting": "대기 중",
+    "preparing": "준비 중",
     "currentSet": "현재 세트",
     "currentRep": "현재 횟수",
     "section": "구간",
     "setsUnit": "세트",
+    "count": "카운트",
     "start": "시작"
   },
   "protein": {

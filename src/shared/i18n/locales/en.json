@@ -117,10 +117,12 @@
     "rest": "Rest",
     "secondUnit": "s",
     "waiting": "Waiting",
+    "preparing": "Preparing",
     "currentSet": "Current Set",
     "currentRep": "Current Rep",
     "section": "Section",
     "setsUnit": "sets",
+    "count": "Count",
     "start": "Start"
   },
   "protein": {
