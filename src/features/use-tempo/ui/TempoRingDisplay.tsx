@@ -2,7 +2,7 @@ import { Text, View, useColorScheme } from "react-native"
 import { useTranslation } from "react-i18next"
 import { RingProgress } from "@/shared/ui/RingProgress"
 
-type TempoStatus = "idle" | "contraction" | "relaxation" | "rest"
+type TempoStatus = "idle" | "countdown" | "contraction" | "relaxation" | "rest" | "count"
 
 interface TempoRingDisplayProps {
   status: TempoStatus
@@ -10,6 +10,7 @@ interface TempoRingDisplayProps {
   currentSet: number
   currentRep: number
   sets: number
+  countdownRemaining?: number | null
 }
 
 export function TempoRingDisplay({
@@ -18,17 +19,22 @@ export function TempoRingDisplay({
   currentSet,
   currentRep,
   sets,
+  countdownRemaining,
 }: TempoRingDisplayProps) {
   const { t } = useTranslation()
-  
+
   const isDark = useColorScheme() === "dark"
 
   const STATUS_LABELS: Record<TempoStatus, string> = {
     idle: t("tempo.waiting"),
+    countdown: t("tempo.preparing"),
     contraction: t("tempo.contraction"),
     relaxation: t("tempo.relaxation"),
     rest: t("tempo.rest"),
+    count: t("tempo.count"),
   }
+
+  const isCountdown = status === "countdown"
 
   return (
     <>
@@ -40,16 +46,24 @@ export function TempoRingDisplay({
         <RingProgress
           size={160}
           strokeWidth={12}
-          progress={progress}
+          progress={isCountdown ? progress : progress}
           trackColor={isDark ? "#4A3A28" : "#EDE4D6"}
           fillColor={isDark ? "#D4883A" : "#9B7E56"}
         >
-          <Text className="text-yb-fg text-yb-num-44">
-            {currentSet}
-          </Text>
-          <Text className="text-yb-fg-secondary text-yb-caption">
-            {`${currentSet} / ${sets} ${t("tempo.setsUnit")}`}
-          </Text>
+          {isCountdown ? (
+            <Text className="text-yb-fg text-yb-num-44">
+              {countdownRemaining ?? 0}
+            </Text>
+          ) : (
+            <>
+              <Text className="text-yb-fg text-yb-num-44">
+                {currentSet}
+              </Text>
+              <Text className="text-yb-fg-secondary text-yb-caption">
+                {`${currentSet} / ${sets} ${t("tempo.setsUnit")}`}
+              </Text>
+            </>
+          )}
         </RingProgress>
       </View>
 
