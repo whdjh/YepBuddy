@@ -1,11 +1,10 @@
 import { TextInput, type TextInputProps } from "react-native"
-import { Host } from "@expo/ui/swift-ui"
-import { TextField as SwiftTextField } from "@expo/ui/swift-ui"
+import { Host, TextField as SwiftTextField } from "@expo/ui/swift-ui"
 import { frame, padding, glassEffect } from "@expo/ui/swift-ui/modifiers"
 
 /* Input */
 
-interface InputProps extends TextInputProps {}
+type InputProps = TextInputProps
 
 export function Input({ className, ...rest }: InputProps) {
   return (
@@ -19,7 +18,7 @@ export function Input({ className, ...rest }: InputProps) {
 
 /* Textarea */
 
-interface TextareaProps extends TextInputProps {}
+type TextareaProps = TextInputProps
 
 export function Textarea({ className, ...rest }: TextareaProps) {
   return (
@@ -38,16 +37,17 @@ export function Textarea({ className, ...rest }: TextareaProps) {
 interface GlassTextareaProps {
   placeholder?: string
   defaultValue?: string
+  value?: string
   onChangeText?: (value: string) => void
   minHeight?: number
 }
 
-export function GlassTextarea({ placeholder, defaultValue, onChangeText, minHeight = 140 }: GlassTextareaProps) {
+export function GlassTextarea({ placeholder, defaultValue, value, onChangeText, minHeight = 140 }: GlassTextareaProps) {
   return (
-    <Host style={{ minHeight: minHeight + 20 }}>
+    <Host key={value ?? defaultValue} style={{ minHeight: minHeight + 20 }}>
       <SwiftTextField
         placeholder={placeholder}
-        defaultValue={defaultValue}
+        defaultValue={value ?? defaultValue}
         onChangeText={onChangeText}
         multiline
         numberOfLines={6}
