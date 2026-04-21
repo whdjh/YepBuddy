@@ -36,3 +36,8 @@ export function getLocalDateKeyFromIso(iso: string) {
   const day = String(date.getDate()).padStart(2, "0")
   return `${year}-${month}-${day}`
 }
+
+/** ISO 시각 기준으로 지정한 시간 수만큼 지난 Date를 반환 */
+export function getDateAfterHours(iso: string, hours: number) {
+  return new Date(new Date(iso).getTime() + hours * 60 * 60 * 1000)
+}
