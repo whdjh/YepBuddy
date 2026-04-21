@@ -1,7 +1,7 @@
 /** 현재 월부터 과거 방향으로 count개의 { year, month } 배열 생성 */
-export function generateMonths(count: number): Array<{ year: number; month: number }> {
+export function generateMonths(count: number): { year: number; month: number }[] {
   const now = new Date()
-  const months: Array<{ year: number; month: number }> = []
+  const months: { year: number; month: number }[] = []
 
   let y = now.getFullYear()
   let m = now.getMonth() + 1
