@@ -68,6 +68,7 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
       : t("workout.result.unspecified")
   const startTime = stored?.startedAt ? formatTime(stored.startedAt) : "--"
   const endTime = stored?.completedAt ? formatTime(stored.completedAt) : "--"
+  const locationLabel = stored?.location ? t("workout.result.location") : null
   const totalSets =
     stored?.bodyParts.reduce((sum, item) => sum + item.setCount, 0) ?? 0
   const avgHeartRate =
@@ -122,7 +123,7 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
             bodyPartLabel={bodyPartTitle}
             startTime={startTime}
             endTime={endTime}
-            location={null}
+            location={locationLabel}
           />
 
           {/* 메모 */}
