@@ -8,6 +8,7 @@ import {
 import { Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { WorkoutProvider } from "@/entities/workout-session"
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
@@ -15,33 +16,41 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView className="flex-1">
-    <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <View className={`flex-1 ${isDark ? "dark" : ""}`}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen
-            name="workout/countdown"
-            options={{
-              headerShown: false,
-              gestureEnabled: false,
-              animation: "fade",
-            }}
-          />
-          <Stack.Screen
-            name="workout/active"
-            options={{
-              headerShown: false,
-              gestureEnabled: false,
-              animation: "fade",
-            }}
-          />
-        </Stack>
-      </View>
-    </ThemeProvider>
+      <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
+        <WorkoutProvider>
+          <View className={`flex-1 ${isDark ? "dark" : ""}`}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen
+                name="workout/countdown"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  animation: "fade",
+                }}
+              />
+              <Stack.Screen
+                name="workout/active"
+                options={{
+                  headerShown: false,
+                  gestureEnabled: false,
+                  animation: "fade",
+                }}
+              />
+              <Stack.Screen
+                name="workout/[id]"
+                options={{
+                  headerShown: false,
+                }}
+              />
+            </Stack>
+          </View>
+        </WorkoutProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   )
 }
