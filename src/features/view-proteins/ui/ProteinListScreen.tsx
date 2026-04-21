@@ -7,7 +7,7 @@ import { FilterPill } from "@/shared/ui/Chip"
 import { ProteinCard } from "@/entities/protein"
 import type { Protein, ProteinCategory } from "@/entities/protein"
 
-const CATEGORIES: Array<ProteinCategory | "all"> = ["all", "WPC", "WPI", "Blend"]
+const CATEGORIES: (ProteinCategory | "all")[] = ["all", "WPC", "WPI", "Blend"]
 
 const MOCK_PROTEINS: Protein[] = [
   { id: "p1", name: "옵티멈 골드 스탠다드 웨이", category: "WPC", volume: 2268, price: 116690, pricePerGram: 51.5, priceLevel: "mid" },

@@ -16,6 +16,7 @@ export function StatsGrid({
   avgHeartRate,
 }: StatsGridProps) {
   const { t } = useTranslation()
+  const fallbackValue = "-"
 
   return (
     <View className="gap-yb-3">
@@ -23,7 +24,7 @@ export function StatsGrid({
         <View className="basis-0 grow">
           <StatCard
             label={t("workout.result.duration")}
-            value={duration ?? t("workout.result.noData")}
+            value={duration ?? fallbackValue}
             unit=""
             minHeight={100}
             valueSize={28}
@@ -32,7 +33,7 @@ export function StatsGrid({
         <View className="basis-0 grow">
           <StatCard
             label={t("workout.result.calories")}
-            value={calories != null ? String(calories) : t("workout.result.noData")}
+            value={calories != null ? String(calories) : fallbackValue}
             unit={calories != null ? t("workout.result.caloriesUnit") : ""}
             minHeight={100}
             valueSize={28}
@@ -52,7 +53,7 @@ export function StatsGrid({
         <View className="basis-0 grow">
           <StatCard
             label={t("workout.result.avgHeartRate")}
-            value={avgHeartRate != null ? String(avgHeartRate) : t("workout.result.noData")}
+            value={avgHeartRate != null ? String(avgHeartRate) : fallbackValue}
             unit={avgHeartRate != null ? t("workout.result.heartRateUnit") : ""}
             minHeight={100}
             valueSize={28}

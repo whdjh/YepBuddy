@@ -1,7 +1,7 @@
 /** 현재 월부터 과거 방향으로 count개의 { year, month } 배열 생성 */
-export function generateMonths(count: number): Array<{ year: number; month: number }> {
+export function generateMonths(count: number): { year: number; month: number }[] {
   const now = new Date()
-  const months: Array<{ year: number; month: number }> = []
+  const months: { year: number; month: number }[] = []
 
   let y = now.getFullYear()
   let m = now.getMonth() + 1
@@ -40,4 +40,14 @@ export function getLocalDateKeyFromIso(iso: string) {
 /** ISO 시각 기준으로 지정한 시간 수만큼 지난 Date를 반환 */
 export function getDateAfterHours(iso: string, hours: number) {
   return new Date(new Date(iso).getTime() + hours * 60 * 60 * 1000)
+}
+
+/** ISO 시각 기준으로 지정한 시간 수만큼 지난 ISO 문자열을 반환 */
+export function getIsoAfterHours(iso: string, hours: number) {
+  return getDateAfterHours(iso, hours).toISOString()
+}
+
+/** 두 ISO 시각 간 절대 시간 차이(ms)를 반환 */
+export function getTimeDistanceMs(a: string, b: string) {
+  return Math.abs(new Date(a).getTime() - new Date(b).getTime())
 }

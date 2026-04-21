@@ -1,21 +1,24 @@
-import { t } from "i18next"
+import i18n from "@/shared/i18n/i18n"
 
 /** Date → "MM.DD 요일" */
 export function formatDateWithDay(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0")
   const d = String(date.getDate()).padStart(2, "0")
-  const dayName = t(`common.daysShort.${date.getDay()}`)
+  const dayName = i18n.t(`common.daysShort.${date.getDay()}`)
   return `${m}.${d} ${dayName}`
 }
 
 /** Date → "YYYY년 M월" */
 export function formatMonthYear(date: Date): string {
-  return t("sessions.monthHeader", { year: date.getFullYear(), month: date.getMonth() + 1 })
+  return i18n.t("sessions.monthHeader", {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+  })
 }
 
 /** bodyPart key → 번역된 라벨 */
 export function bodyPartLabel(key: string): string {
-  return t(`workout.bodyParts.${key}`)
+  return i18n.t(`workout.bodyParts.${key}`)
 }
 
 /** HKWorkout.duration(초) → "H:MM:SS" */
