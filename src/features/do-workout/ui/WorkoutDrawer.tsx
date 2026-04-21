@@ -1,5 +1,4 @@
 import { Pressable, Text, View } from "react-native"
-import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { SymbolView } from "expo-symbols"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
@@ -11,7 +10,7 @@ import Animated, {
 import { useUnstableNativeVariable } from "nativewind"
 import { RingProgress } from "@/shared/ui/RingProgress"
 
-// 버튼 영역 높이 (버튼 44 × 2 + gap 8)
+// 버튼 영역 높이 (버튼 44 × 2 + gap 12)
 const BUTTON_HEIGHT = 44
 const BUTTON_GAP = 12
 export const BUTTONS_HEIGHT = BUTTON_HEIGHT * 2 + BUTTON_GAP
@@ -22,6 +21,7 @@ interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
   onTogglePause: () => void
+  onEnd: () => void
   bottomPadding: number
 }
 
@@ -29,6 +29,7 @@ export function WorkoutDrawer({
   timerDisplay,
   isPaused,
   onTogglePause,
+  onEnd,
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
@@ -113,7 +114,7 @@ export function WorkoutDrawer({
           </Pressable>
 
           <Pressable
-            onPress={() => router.replace("/(tabs)")}
+            onPress={onEnd}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-accent"
           >
             <Text className="text-yb-body-sm font-bold text-yb-on-accent">

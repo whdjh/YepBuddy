@@ -4,7 +4,7 @@ import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 
 interface StatsSectionProps {
-  heartRate: number
+  heartRate: number | null
   activeKcal: number
   totalKcal: number
 }
@@ -18,7 +18,7 @@ export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionP
       {/* 심박수 */}
       <View className="flex-row items-center gap-yb-2 mb-yb-8 px-yb-6">
         <Text className="text-yb-num-80 text-yb-fg">
-          {heartRate}
+          {heartRate ?? "--"}
         </Text>
         <View className="w-yb-icon-btn h-yb-icon-btn items-center justify-center mt-yb-3">
           <SymbolView

@@ -37,6 +37,18 @@
     "countdown": {
       "label": "Strength Training"
     },
+    "calendar": {
+      "defaultTitle": "Workout",
+      "permissionTitle": "Calendar Permission Needed",
+      "permissionBody": "Allow calendar access in Settings to add workouts to your calendar.",
+      "openSettings": "Open Settings",
+      "successTitle": "Added to Calendar",
+      "successBody": "Your workout event was added to the calendar."
+    },
+    "reminder": {
+      "title": "Workout Reminder",
+      "body": "Time to log your next workout."
+    },
     "active": {
       "title": "Working Out",
       "heartRate": "Heart Rate",
