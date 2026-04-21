@@ -1,18 +1,21 @@
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { Text, View } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { SymbolView } from "expo-symbols"
 import Animated, {
-  useSharedValue,
   useAnimatedProps,
-  withTiming,
-  Easing,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
 import Svg, { Circle } from "react-native-svg"
+import {
+  cancelScheduledWorkoutReminder,
+  getWorkoutLocationOnce,
+  useWorkout,
+} from "@/entities/workout-session"
 import { IconBox } from "@/shared/ui/IconBox"
 import { Main } from "@/shared/ui/Main"
+import { useCountdown } from "../lib/useCountdown"
 
 const COUNTDOWN_FROM = 3
 const RING_SIZE = 240
@@ -24,34 +27,35 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 
 export function CountdownScreen() {
   const { t } = useTranslation()
+  const { setLocation, startCountdown, startRecording } = useWorkout()
   const ringTrack = (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
   const ringFill = (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
   const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
 
-  const [count, setCount] = useState(COUNTDOWN_FROM)
-  const countRef = useRef(COUNTDOWN_FROM)
+  const handleComplete = useCallback(() => {
+    startRecording()
+    router.replace("/workout/active")
+  }, [startRecording])
 
-  // 링 프로그레스 애니메이션
-  const progress = useSharedValue(1)
+  const { count, progress } = useCountdown(COUNTDOWN_FROM, handleComplete)
 
   useEffect(() => {
-    progress.value = withTiming(0, {
-      duration: COUNTDOWN_FROM * 1000,
-      easing: Easing.linear,
-    })
+    startCountdown()
+  }, [startCountdown])
 
-    const interval = setInterval(() => {
-      countRef.current -= 1
-      if (countRef.current <= 0) {
-        clearInterval(interval)
-        router.replace("/workout/active")
-      } else {
-        setCount(countRef.current)
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
+  useEffect(() => {
+    void cancelScheduledWorkoutReminder()
   }, [])
+
+  useEffect(() => {
+    void getWorkoutLocationOnce()
+      .then((location) => {
+        setLocation(location)
+      })
+      .catch(() => {
+        setLocation(null)
+      })
+  }, [setLocation])
 
   const animatedProps = useAnimatedProps(() => ({
     strokeDashoffset: CIRCUMFERENCE * (1 - progress.value),
