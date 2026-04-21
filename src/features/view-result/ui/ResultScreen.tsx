@@ -105,6 +105,12 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
         <View className="flex-1 items-center justify-center px-yb-5">
           <ActivityIndicator color={fgColor} />
         </View>
+      ) : !stored ? (
+        <View className="flex-1 items-center justify-center px-yb-5">
+          <Text className="text-yb-fg text-yb-heading-sm">
+            {t("workout.result.noData")}
+          </Text>
+        </View>
       ) : (
         <ScrollView
           className="grow"
