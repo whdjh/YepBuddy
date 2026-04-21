@@ -41,3 +41,13 @@ export function getLocalDateKeyFromIso(iso: string) {
 export function getDateAfterHours(iso: string, hours: number) {
   return new Date(new Date(iso).getTime() + hours * 60 * 60 * 1000)
 }
+
+/** ISO 시각 기준으로 지정한 시간 수만큼 지난 ISO 문자열을 반환 */
+export function getIsoAfterHours(iso: string, hours: number) {
+  return getDateAfterHours(iso, hours).toISOString()
+}
+
+/** 두 ISO 시각 간 절대 시간 차이(ms)를 반환 */
+export function getTimeDistanceMs(a: string, b: string) {
+  return Math.abs(new Date(a).getTime() - new Date(b).getTime())
+}

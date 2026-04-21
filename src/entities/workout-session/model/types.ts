@@ -30,3 +30,16 @@ export interface WorkoutLiveStats {
   activeKcal: number
   totalKcal: number
 }
+
+export interface WorkoutHeartRateSample {
+  bpm: number
+  startDate: string
+  endDate: string
+}
+
+export interface WorkoutHealthKitDetail {
+  activeKcal: number | null
+  duration: number | null
+  heartRateSamples: WorkoutHeartRateSample[]
+  totalKcal: number | null
+}

@@ -1,6 +1,14 @@
 import { Platform } from "react-native"
-const AppleHealthKit = require("react-native-health")
-import type { WorkoutLiveStats } from "../model/types"
+import AppleHealthKit, {
+  type HealthValue,
+  type HKWorkoutQueriedSampleType,
+} from "react-native-health"
+import { getIsoAfterHours, getTimeDistanceMs } from "@/shared/lib/date"
+import type {
+  WorkoutHealthKitDetail,
+  WorkoutHeartRateSample,
+  WorkoutLiveStats,
+} from "../model/types"
 
 const HEALTH_PERMISSIONS = {
   permissions: {
@@ -15,8 +23,72 @@ function isHealthKitAvailable() {
   return Platform.OS === "ios"
 }
 
-function hasHealthKitMethod(name: string) {
+function hasHealthKitMethod(name: keyof typeof AppleHealthKit) {
   return typeof AppleHealthKit?.[name] === "function"
+}
+
+async function getWorkoutSamples(params: {
+  endDate: string
+  startDate: string
+}) {
+  if (!hasHealthKitMethod("getAnchoredWorkouts")) {
+    return []
+  }
+
+  return new Promise<HKWorkoutQueriedSampleType[]>((resolve) => {
+    AppleHealthKit.getAnchoredWorkouts(
+      {
+        endDate: params.endDate,
+        startDate: params.startDate,
+        type: "Workout",
+      } as never,
+      (
+        error: { message?: string } | null,
+        results?: { data?: HKWorkoutQueriedSampleType[] },
+      ) => {
+        if (error) {
+          resolve([])
+          return
+        }
+
+        resolve(results?.data ?? [])
+      },
+    )
+  })
+}
+
+async function getHeartRateSamples(params: {
+  endDate: string
+  startDate: string
+}) {
+  if (!hasHealthKitMethod("getHeartRateSamples")) {
+    return []
+  }
+
+  return new Promise<WorkoutHeartRateSample[]>((resolve) => {
+    AppleHealthKit.getHeartRateSamples(
+      {
+        ascending: true,
+        endDate: params.endDate,
+        startDate: params.startDate,
+        unit: "bpm",
+      } as never,
+      (error: unknown, results?: HealthValue[]) => {
+        if (error) {
+          resolve([])
+          return
+        }
+
+        resolve(
+          (results ?? []).map((sample) => ({
+            bpm: Math.round(sample.value),
+            endDate: sample.endDate,
+            startDate: sample.startDate,
+          })),
+        )
+      },
+    )
+  })
 }
 
 export async function initHealthKit() {
@@ -107,4 +179,50 @@ export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
       },
     )
   })
+}
+
+export async function getWorkoutDetail(
+  sessionId: string,
+): Promise<WorkoutHealthKitDetail | null> {
+  const ready = await initHealthKit()
+  if (!ready) {
+    return null
+  }
+
+  const startedAtMs = new Date(sessionId).getTime()
+  if (Number.isNaN(startedAtMs)) {
+    return null
+  }
+
+  const workoutSamples = await getWorkoutSamples({
+    endDate: getIsoAfterHours(sessionId, 24),
+    startDate: sessionId,
+  })
+
+  const workout = workoutSamples
+    .filter((sample) => Boolean(sample.start))
+    .sort(
+      (left, right) =>
+        getTimeDistanceMs(left.start, sessionId) -
+        getTimeDistanceMs(right.start, sessionId),
+    )[0]
+
+  if (!workout) {
+    return null
+  }
+
+  const heartRateSamples = await getHeartRateSamples({
+    endDate: workout.end,
+    startDate: workout.start,
+  })
+
+  return {
+    activeKcal:
+      typeof workout.calories === "number" ? Math.round(workout.calories) : null,
+    duration:
+      typeof workout.duration === "number" ? Math.round(workout.duration) : null,
+    heartRateSamples,
+    totalKcal:
+      typeof workout.calories === "number" ? Math.round(workout.calories) : null,
+  }
 }
