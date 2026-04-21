@@ -2,13 +2,22 @@ import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Host, ScrollView as SwiftScrollView, HStack } from "@expo/ui/swift-ui"
 import { padding } from "@expo/ui/swift-ui/modifiers"
+import type { BodyPart } from "@/entities/workout-session/model/types"
+import { bodyPartLabel } from "@/shared/lib/format"
 import { BodyPartPill } from "@/shared/ui/Chip"
 
-const BODY_PART_KEYS = ["chest", "back", "legs", "shoulders", "arms", "core"] as const
+const BODY_PART_KEYS: BodyPart[] = [
+  "chest",
+  "back",
+  "legs",
+  "shoulders",
+  "arms",
+  "core",
+]
 
 interface BodyPartSelectorProps {
-  selectedParts: Record<string, number>
-  onToggle: (key: string) => void
+  selectedParts: BodyPart[]
+  onToggle: (key: BodyPart) => void
 }
 
 export function BodyPartSelector({ selectedParts, onToggle }: BodyPartSelectorProps) {
@@ -25,8 +34,8 @@ export function BodyPartSelector({ selectedParts, onToggle }: BodyPartSelectorPr
             {BODY_PART_KEYS.map((key) => (
               <BodyPartPill
                 key={key}
-                variant={key in selectedParts ? "active" : "default"}
-                label={t(`workout.bodyParts.${key}`)}
+                variant={selectedParts.includes(key) ? "active" : "default"}
+                label={bodyPartLabel(key)}
                 onPress={() => onToggle(key)}
               />
             ))}
