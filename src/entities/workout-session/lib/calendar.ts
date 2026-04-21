@@ -1,6 +1,6 @@
 import { Alert, Linking } from "react-native"
 import * as Calendar from "expo-calendar"
-import { t } from "i18next"
+import i18n from "@/shared/i18n/i18n"
 import type { WorkoutBodyPartSet } from "../model/types"
 
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
@@ -15,11 +15,11 @@ const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
 /** 운동 부위와 세트 수를 묶어 캘린더 이벤트 제목 문자열로 만든다. */
 function formatWorkoutCalendarTitle(bodyParts: WorkoutBodyPartSet[]) {
   if (bodyParts.length === 0) {
-    return t("workout.calendar.defaultTitle")
+    return i18n.t("workout.calendar.defaultTitle")
   }
 
   return bodyParts
-    .map(({ part, setCount }) => `${t(BODY_PART_LABEL_KEYS[part])}(${setCount})`)
+    .map(({ part, setCount }) => `${i18n.t(BODY_PART_LABEL_KEYS[part])}(${setCount})`)
     .join(", ")
 }
 
@@ -40,12 +40,12 @@ export async function registerWorkoutToCalendar(params: {
 
   if (status !== "granted") {
     Alert.alert(
-      t("workout.calendar.permissionTitle"),
-      t("workout.calendar.permissionBody"),
+      i18n.t("workout.calendar.permissionTitle"),
+      i18n.t("workout.calendar.permissionBody"),
       [
-        { text: t("common.cancel"), style: "cancel" },
+        { text: i18n.t("common.cancel"), style: "cancel" },
         {
-          text: t("workout.calendar.openSettings"),
+          text: i18n.t("workout.calendar.openSettings"),
           onPress: () => void Linking.openSettings(),
         },
       ],
@@ -71,8 +71,8 @@ export async function registerWorkoutToCalendar(params: {
   })
 
   Alert.alert(
-    t("workout.calendar.successTitle"),
-    t("workout.calendar.successBody"),
+    i18n.t("workout.calendar.successTitle"),
+    i18n.t("workout.calendar.successBody"),
   )
   return true
 }

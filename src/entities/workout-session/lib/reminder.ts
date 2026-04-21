@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications"
-import { t } from "i18next"
+import i18n from "@/shared/i18n/i18n"
 import { getDateAfterHours } from "@/shared/lib/date"
 import {
   clearWorkoutReminderId,
@@ -60,8 +60,8 @@ export async function scheduleWorkoutReminder22h(completedAtIso: string) {
 
   const identifier = await Notifications.scheduleNotificationAsync({
     content: {
-      title: t("workout.reminder.title"),
-      body: t("workout.reminder.body"),
+      title: i18n.t("workout.reminder.title"),
+      body: i18n.t("workout.reminder.body"),
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DATE,
