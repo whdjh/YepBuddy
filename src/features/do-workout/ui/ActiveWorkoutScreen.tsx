@@ -69,7 +69,9 @@ export function ActiveWorkoutScreen() {
       bodyParts: completedSession.bodyParts,
     })
     await scheduleWorkoutReminder22h(completedSession.completedAt)
-    router.replace(`/workout/${encodeURIComponent(completedSession.sessionId)}`)
+    router.replace(
+      `/workout/${encodeURIComponent(completedSession.sessionId)}?fromWorkout=1`,
+    )
   }
 
   return (

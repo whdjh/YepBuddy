@@ -22,9 +22,10 @@ import { useSessionDetail } from "../model/useSessionDetail"
 
 interface ResultScreenProps {
   sessionId: string
+  fromWorkout?: boolean
 }
 
-export function ResultScreen({ sessionId }: ResultScreenProps) {
+export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenProps) {
   const router = useRouter()
   const { t } = useTranslation()
   const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
@@ -96,7 +97,12 @@ export function ResultScreen({ sessionId }: ResultScreenProps) {
     <Main>
       {/* 네비게이션 */}
       <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-4 gap-yb-3">
-        <IconButton variant="back-square" onPress={() => router.back()}>
+        <IconButton
+          variant="back-square"
+          onPress={() =>
+            fromWorkout ? router.replace("/") : router.back()
+          }
+        >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
         <Text className="text-yb-fg text-yb-title">{dateLabel}</Text>
