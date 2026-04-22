@@ -104,6 +104,7 @@ export function ActiveWorkoutScreen() {
       <WorkoutDrawer
         timerDisplay={timerDisplay}
         isPaused={state.phase === "paused"}
+        onTempo={() => router.push("/(tabs)/tempo?fromWorkout=1")}
         onTogglePause={() => void handlePauseToggle()}
         onEnd={() => void handleComplete()}
         bottomPadding={bottomPadding}

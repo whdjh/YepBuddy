@@ -41,6 +41,7 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
 
   const startedAtRef = useRef<number | null>(null)
   const rafRef = useRef<number | null>(null)
+  const isStartingRef = useRef(false)
   const settingsRef = useRef(settings)
   settingsRef.current = settings
 
@@ -159,15 +160,27 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
   }, [stop])
 
   const start = useCallback(() => {
-    startedAtRef.current = Date.now()
-    prevPositionRef.current = null
-    setIsRunning(true)
-    rafRef.current = requestAnimationFrame(tick)
-  }, [tick])
+    if (isStartingRef.current || isRunning) {
+      return
+    }
 
-  // 오디오 초기화/정리
+    isStartingRef.current = true
+
+    void initAudio()
+      .catch((error) => {
+        console.warn("Failed to initialize tempo audio", error)
+      })
+      .finally(() => {
+        startedAtRef.current = Date.now()
+        prevPositionRef.current = null
+        setIsRunning(true)
+        rafRef.current = requestAnimationFrame(tick)
+        isStartingRef.current = false
+      })
+  }, [isRunning, tick])
+
+  // 화면을 떠날 때만 오디오 리소스를 정리한다.
   useEffect(() => {
-    initAudio()
     return () => {
       cleanupAudio()
     }

@@ -13,13 +13,16 @@ import { RingProgress } from "@/shared/ui/RingProgress"
 // 버튼 영역 높이 (버튼 44 × 2 + gap 12)
 const BUTTON_HEIGHT = 44
 const BUTTON_GAP = 12
-export const BUTTONS_HEIGHT = BUTTON_HEIGHT * 2 + BUTTON_GAP
+const BUTTON_COUNT = 3
+export const BUTTONS_HEIGHT =
+  BUTTON_HEIGHT * BUTTON_COUNT + BUTTON_GAP * (BUTTON_COUNT - 1)
 
 const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 
 interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
+  onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
   bottomPadding: number
@@ -28,6 +31,7 @@ interface WorkoutDrawerProps {
 export function WorkoutDrawer({
   timerDisplay,
   isPaused,
+  onTempo,
   onTogglePause,
   onEnd,
   bottomPadding,
@@ -102,6 +106,15 @@ export function WorkoutDrawer({
 
         {/* 버튼 */}
         <View className="gap-yb-3">
+          <Pressable
+            onPress={onTempo}
+            className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
+          >
+            <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
+              {t("tabs.tempo")}
+            </Text>
+          </Pressable>
+
           <Pressable
             onPress={onTogglePause}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"

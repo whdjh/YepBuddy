@@ -1,16 +1,29 @@
 import { useReducer } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
+import { useUnstableNativeVariable } from "nativewind"
+import { SymbolView } from "expo-symbols"
 import { Main } from "@/shared/ui/Main"
 import { Button } from "@/shared/ui/Button"
+import { IconButton } from "@/shared/ui/IconButton"
 import { tempoReducer, initialTempoState } from "../model/tempoReducer"
 import { useTempoTimer } from "../lib/useTempoTimer"
 import { TempoModeButtons } from "./TempoModeButtons"
 import { TempoRingDisplay } from "./TempoRingDisplay"
 import { TempoSettings } from "./TempoSettings"
 
-export function TempoScreen() {
+interface TempoScreenProps {
+  showBackButton?: boolean
+  onBackPress?: () => void
+}
+
+export function TempoScreen({
+  showBackButton = false,
+  onBackPress,
+}: TempoScreenProps) {
   const { t } = useTranslation()
+  const fgColor =
+    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
   const [state, dispatch] = useReducer(tempoReducer, initialTempoState)
   const timer = useTempoTimer(state)
 
@@ -20,9 +33,24 @@ export function TempoScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="px-yb-5 pt-yb-4 pb-yb-30"
       >
-        <Text className="text-yb-fg text-yb-display font-bold mb-yb-4">
-          {t("tempo.title")}
-        </Text>
+        {showBackButton && onBackPress ? (
+          <View className="flex-row items-center mb-yb-4 gap-yb-3">
+            <IconButton variant="back-square" onPress={onBackPress}>
+              <SymbolView
+                name="chevron.left"
+                size={20}
+                tintColor={fgColor}
+              />
+            </IconButton>
+            <Text className="text-yb-fg text-yb-display font-bold">
+              {t("tempo.title")}
+            </Text>
+          </View>
+        ) : (
+          <Text className="text-yb-fg text-yb-display font-bold mb-yb-4">
+            {t("tempo.title")}
+          </Text>
+        )}
 
         <View
           pointerEvents={timer.isRunning ? "none" : "auto"}
