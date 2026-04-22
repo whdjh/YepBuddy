@@ -1,30 +1,32 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { getFirstDayOfWeek, getDaysInMonth } from "@/shared/lib/date"
+import { useMonthWorkoutDates } from "../model/useMonthWorkoutDates"
 import { DayCell } from "./DayCell"
 
 interface MonthGridProps {
   year: number
   month: number
   today: { year: number; month: number; day: number }
-  workoutDates: Record<string, string>
   trackColor: string
   fillColor: string
   successColor: string
-  onDayPress: (year: number, month: number, day: number) => void
+  refreshKey: number
+  onDayPress: (sessionId: string) => void
 }
 
 export function MonthGrid({
   year,
   month,
   today,
-  workoutDates,
   trackColor,
   fillColor,
   successColor,
+  refreshKey,
   onDayPress,
 }: MonthGridProps) {
   const { t } = useTranslation()
+  const { workoutDates } = useMonthWorkoutDates(year, month, refreshKey)
 
   const firstDay = getFirstDayOfWeek(year, month)
   const daysCount = getDaysInMonth(year, month)
@@ -45,8 +47,9 @@ export function MonthGrid({
 
         {Array.from({ length: daysCount }).map((_, i) => {
           const day = i + 1
-          const dateKey = `${year}-${month}-${day}`
-          const hasWorkout = dateKey in workoutDates
+          const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+          const sessionId = workoutDates[dateKey] ?? null
+          const hasWorkout = sessionId !== null
           const isToday = year === today.year && month === today.month && day === today.day
           const isFuture =
             year > today.year ||
@@ -65,7 +68,11 @@ export function MonthGrid({
               trackColor={trackColor}
               fillColor={fillColor}
               successColor={successColor}
-              onPress={() => onDayPress(year, month, day)}
+              onPress={() => {
+                if (sessionId) {
+                  onDayPress(sessionId)
+                }
+              }}
             />
           )
         })}

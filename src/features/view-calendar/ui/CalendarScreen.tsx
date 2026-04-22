@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
@@ -6,60 +6,19 @@ import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 import { Main } from "@/shared/ui/Main"
 import { IconButton } from "@/shared/ui/IconButton"
-import { generateMonths } from "@/shared/lib/date"
+import { getDateParts } from "../lib/getTodayParts"
+import { useCalendarRefreshSignal } from "../model/useCalendarRefreshSignal"
+import { useInfiniteMonths } from "../model/useInfiniteMonths"
 import { MonthGrid } from "./MonthGrid"
 
-const INITIAL_MONTH_COUNT = 6
 const DAY_HEADER_KEYS = [0, 1, 2, 3, 4, 5, 6] as const
-
-// Mock: dates with workouts → session IDs
-const MOCK_WORKOUT_DATES: Record<string, string> = {
-  // April 2026
-  "2026-4-1": "sa1",
-  "2026-4-3": "sa2",
-  "2026-4-5": "sa3",
-  // March 2026
-  "2026-3-1": "s20",
-  "2026-3-2": "s19",
-  "2026-3-3": "s18",
-  "2026-3-5": "s8",
-  "2026-3-7": "s7",
-  "2026-3-10": "s6",
-  "2026-3-11": "s5",
-  "2026-3-12": "s4",
-  "2026-3-13": "s3",
-  "2026-3-14": "s2",
-  "2026-3-15": "s1",
-  "2026-3-17": "s22",
-  // February 2026
-  "2026-2-2": "s30",
-  "2026-2-4": "s31",
-  "2026-2-7": "s33",
-  "2026-2-9": "s34",
-  "2026-2-11": "s35",
-  "2026-2-13": "s36",
-  "2026-2-15": "s37",
-  "2026-2-17": "s38",
-  "2026-2-21": "s40",
-  "2026-2-25": "s42",
-  "2026-2-27": "s43",
-  // January 2026
-  "2026-1-3": "s50",
-  "2026-1-5": "s51",
-  "2026-1-7": "s52",
-  "2026-1-12": "s54",
-  "2026-1-14": "s55",
-  "2026-1-18": "s57",
-  "2026-1-22": "s59",
-  "2026-1-24": "s60",
-  "2026-1-28": "s62",
-  "2026-1-31": "s64",
-}
 
 export function CalendarScreen() {
   const router = useRouter()
-  
   const { t } = useTranslation()
+  const { anchorDate, refreshKey } = useCalendarRefreshSignal()
+  const months = useInfiniteMonths(anchorDate)
+  const today = getDateParts(anchorDate)
 
   const fgColor =
     (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
@@ -74,25 +33,9 @@ export function CalendarScreen() {
       "--yb-status-success-bright",
     ) as unknown as string) || "#43C251"
 
-  const today = useMemo(() => {
-    const now = new Date()
-  
-    return {
-      year: now.getFullYear(),
-      month: now.getMonth() + 1,
-      day: now.getDate(),
-    }
-  }, [])
-
-  const months = useMemo(() => generateMonths(INITIAL_MONTH_COUNT), [])
-
   const handleDayPress = useCallback(
-    (year: number, month: number, day: number) => {
-      const key = `${year}-${month}-${day}`
-      const sessionId = MOCK_WORKOUT_DATES[key]
-      if (sessionId) {
-        router.push(`/workout/${sessionId}`)
-      }
+    (sessionId: string) => {
+      router.push(`/workout/${encodeURIComponent(sessionId)}`)
     },
     [router],
   )
@@ -136,10 +79,10 @@ export function CalendarScreen() {
             year={year}
             month={month}
             today={today}
-            workoutDates={MOCK_WORKOUT_DATES}
             trackColor={ringTrackColor}
             fillColor={accentColor}
             successColor={successColor}
+            refreshKey={refreshKey}
             onDayPress={handleDayPress}
           />
         ))}
