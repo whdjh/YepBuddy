@@ -6,6 +6,9 @@ import type { StoredWorkoutSession } from "./types"
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
 // 다음 운동 리마인더 notification identifier를 저장하는 키
 export const WORKOUT_REMINDER_STORAGE_KEY = "yb:workout:reminder"
+const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
+const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
+let hasVerifiedStoredWorkoutDateKeys = false
 
 // 완료된 운동 세션 본문은 sessionId 기준으로 저장
 export const getWorkoutSessionStorageKey = (sessionId: string) =>
@@ -13,7 +16,7 @@ export const getWorkoutSessionStorageKey = (sessionId: string) =>
 
 // 날짜별 대표 운동 세션은 YYYY-MM-DD 기준으로 찾기
 export const getWorkoutDateStorageKey = (dateKey: string) =>
-  `yb:workout:date:${dateKey}`
+  `${WORKOUT_DATE_STORAGE_PREFIX}${dateKey}`
 
 /** 진행 중 운동 세션 스냅샷을 저장 */
 export async function saveCurrentWorkoutSnapshot<T>(snapshot: T) {
@@ -49,17 +52,81 @@ export async function clearWorkoutReminderId() {
   await AsyncStorage.removeItem(WORKOUT_REMINDER_STORAGE_KEY)
 }
 
+function getDateKeyFromStorageKey(storageKey: string) {
+  return storageKey.slice(WORKOUT_DATE_STORAGE_PREFIX.length)
+}
+
+function normalizeStoredDateKeys(dateKeys: string[]) {
+  return [...new Set(dateKeys)].sort((a, b) => b.localeCompare(a))
+}
+
+async function saveStoredWorkoutDateKeys(dateKeys: string[]) {
+  await AsyncStorage.setItem(
+    WORKOUT_DATES_STORAGE_KEY,
+    JSON.stringify(normalizeStoredDateKeys(dateKeys)),
+  )
+}
+
+async function getStoredWorkoutDateKeysFromIndex() {
+  const value = await AsyncStorage.getItem(WORKOUT_DATES_STORAGE_KEY)
+  if (!value) {
+    return null
+  }
+
+  const parsed = JSON.parse(value) as unknown
+  if (!Array.isArray(parsed) || parsed.some((key) => typeof key !== "string")) {
+    return null
+  }
+
+  return normalizeStoredDateKeys(parsed)
+}
+
+async function rebuildStoredWorkoutDateKeys() {
+  const dateKeys = (await AsyncStorage.getAllKeys())
+    .filter((key) => key.startsWith(WORKOUT_DATE_STORAGE_PREFIX))
+    .map(getDateKeyFromStorageKey)
+
+  const normalizedDateKeys = normalizeStoredDateKeys(dateKeys)
+  await saveStoredWorkoutDateKeys(normalizedDateKeys)
+  return normalizedDateKeys
+}
+
+async function getStoredWorkoutDateKeys() {
+  const indexedDateKeys = await getStoredWorkoutDateKeysFromIndex()
+  if (indexedDateKeys && hasVerifiedStoredWorkoutDateKeys) {
+    return indexedDateKeys
+  }
+
+  const rebuiltDateKeys = await rebuildStoredWorkoutDateKeys()
+  hasVerifiedStoredWorkoutDateKeys = true
+  return rebuiltDateKeys
+}
+
+function isDateKeyInRange(
+  dateKey: string,
+  startDateKey: string,
+  endDateKey: string,
+) {
+  return dateKey >= startDateKey && dateKey <= endDateKey
+}
+
 /** 완료 세션 본문과 날짜별 sessionId 인덱스를 함께 저장 */
 export async function saveCompletedWorkoutSession(
   session: StoredWorkoutSession,
 ) {
   const dateKey = getLocalDateKeyFromIso(session.startedAt)
+  const storedDateKeys = await getStoredWorkoutDateKeys()
+  const nextDateKeys = storedDateKeys.includes(dateKey)
+    ? storedDateKeys
+    : [...storedDateKeys, dateKey]
+
   await Promise.all([
     AsyncStorage.setItem(
       getWorkoutSessionStorageKey(session.sessionId),
       JSON.stringify(session),
     ),
     AsyncStorage.setItem(getWorkoutDateStorageKey(dateKey), session.sessionId),
+    saveStoredWorkoutDateKeys(nextDateKeys),
   ])
 }
 
@@ -84,4 +151,100 @@ export async function updateStoredWorkoutMemo(sessionId: string, memo: string) {
 /** 날짜 키로 완료 세션의 sessionId를 조회 */
 export async function getStoredWorkoutSessionIdByDate(dateKey: string) {
   return AsyncStorage.getItem(getWorkoutDateStorageKey(dateKey))
+}
+
+async function getStoredWorkoutSessionIdsByDateRange(
+  startDateKey: string,
+  endDateKey: string,
+) {
+  const [normalizedStart, normalizedEnd] =
+    startDateKey <= endDateKey
+      ? [startDateKey, endDateKey]
+      : [endDateKey, startDateKey]
+
+  const dateKeys = (await getStoredWorkoutDateKeys()).filter((dateKey) =>
+    isDateKeyInRange(dateKey, normalizedStart, normalizedEnd),
+  )
+
+  if (dateKeys.length === 0) {
+    return []
+  }
+
+  const indexEntries = await Promise.all(
+    dateKeys.map(async (dateKey) => {
+      const sessionId = await AsyncStorage.getItem(
+        getWorkoutDateStorageKey(dateKey),
+      )
+      return [dateKey, sessionId] as const
+    }),
+  )
+
+  return indexEntries
+    .map(([, sessionId]) => sessionId)
+    .filter((sessionId): sessionId is string => sessionId !== null)
+}
+
+/** 완료 세션을 날짜 키 범위 내에서 최신순으로 조회 */
+export async function getStoredWorkoutSessionsInRange(
+  startDateKey: string,
+  endDateKey: string,
+) {
+  const sessionIds = await getStoredWorkoutSessionIdsByDateRange(
+    startDateKey,
+    endDateKey,
+  )
+
+  if (sessionIds.length === 0) {
+    return []
+  }
+
+  const sessionEntries = await Promise.all(
+    sessionIds.map(async (sessionId) => {
+      const value = await AsyncStorage.getItem(
+        getWorkoutSessionStorageKey(sessionId),
+      )
+      return [sessionId, value] as const
+    }),
+  )
+
+  return sessionEntries
+    .map(([, value]) => (value ? (JSON.parse(value) as StoredWorkoutSession) : null))
+    .filter((session): session is StoredWorkoutSession => session !== null)
+}
+
+/** 저장된 완료 세션 중 가장 최신 세션을 조회 */
+export async function getLatestStoredWorkoutSession() {
+  const dateKeys = await getStoredWorkoutDateKeys()
+
+  if (dateKeys.length === 0) {
+    return null
+  }
+
+  const indexEntries = await Promise.all(
+    dateKeys.map(async (dateKey) => {
+      const sessionId = await AsyncStorage.getItem(
+        getWorkoutDateStorageKey(dateKey),
+      )
+      return [dateKey, sessionId] as const
+    }),
+  )
+  const sessionIds = indexEntries
+    .map(([, sessionId]) => sessionId)
+    .filter((sessionId): sessionId is string => sessionId !== null)
+
+  if (sessionIds.length === 0) {
+    return null
+  }
+
+  for (const sessionId of sessionIds) {
+    const value = await AsyncStorage.getItem(
+      getWorkoutSessionStorageKey(sessionId),
+    )
+    const session = value ? (JSON.parse(value) as StoredWorkoutSession) : null
+    if (session) {
+      return session
+    }
+  }
+
+  return null
 }

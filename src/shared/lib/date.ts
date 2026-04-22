@@ -37,6 +37,31 @@ export function getLocalDateKeyFromIso(iso: string) {
   return `${year}-${month}-${day}`
 }
 
+/** Date를 로컬 날짜 키(YYYY-MM-DD)로 변환 */
+export function getLocalDateKey(date: Date) {
+  return getLocalDateKeyFromIso(date.toISOString())
+}
+
+/** 이번 주 로컬 날짜 키 범위(월요일 ~ 일요일)를 반환 */
+export function getThisWeekDateRange() {
+  const now = new Date()
+  const dayOfWeek = now.getDay()
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek
+
+  const startDate = new Date(now)
+  startDate.setDate(now.getDate() + mondayOffset)
+  startDate.setHours(0, 0, 0, 0)
+
+  const endDate = new Date(startDate)
+  endDate.setDate(startDate.getDate() + 6)
+  endDate.setHours(23, 59, 59, 999)
+
+  return {
+    endDateKey: getLocalDateKey(endDate),
+    startDateKey: getLocalDateKey(startDate),
+  }
+}
+
 /** ISO 시각 기준으로 지정한 시간 수만큼 지난 Date를 반환 */
 export function getDateAfterHours(iso: string, hours: number) {
   return new Date(new Date(iso).getTime() + hours * 60 * 60 * 1000)

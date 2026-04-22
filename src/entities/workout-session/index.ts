@@ -10,7 +10,10 @@ export {
 } from "./lib/reminder"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
+  getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
+  getStoredWorkoutSessionsInRange,
+  getStoredWorkoutSessionIdByDate,
   updateStoredWorkoutMemo,
 } from "./model/sessionStorage"
 export type {
