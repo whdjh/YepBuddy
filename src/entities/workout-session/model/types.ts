@@ -43,3 +43,10 @@ export interface WorkoutHealthKitDetail {
   heartRateSamples: WorkoutHeartRateSample[]
   totalKcal: number | null
 }
+
+export interface WorkoutHealthKitWorkout {
+  startDate: string
+  endDate: string
+  duration: number
+  kcal: number
+}

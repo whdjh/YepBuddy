@@ -2,29 +2,80 @@ import { ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
+import type { StoredWorkoutSession } from "@/entities/workout-session"
+import { bodyPartLabel, formatDateWithDay } from "@/shared/lib/format"
 import { Main } from "@/shared/ui/Main"
-import { Button } from "@/shared/ui/Button"
+import { useLatestSession } from "../model/useLatestSession"
+import { useThisWeekSessions } from "../model/useThisWeekSessions"
+import { useTodayCompleted } from "../model/useTodayCompleted"
+import { useTodaySummary } from "../model/useTodaySummary"
 import { TodayWorkoutCard } from "./TodayWorkoutCard"
 import { StatCard } from "@/shared/ui/StatCard"
 import { SessionLinkCard } from "./SessionLinkCard"
 import { WorkoutLinkCard } from "./WorkoutLinkCard"
 import { WeeklySessionList } from "./WeeklySessionList"
 
-const MOCK_WEEKLY_SESSIONS = [
-  { bodyPart: "가슴", day: "일요일", durationMin: 43, sets: 18, kcal: 262 },
-  { bodyPart: "등", day: "토요일", durationMin: 51, sets: 20, kcal: 279 },
-  { bodyPart: "하체", day: "금요일", durationMin: 38, sets: 16, kcal: 232 },
-  { bodyPart: "어깨", day: "목요일", durationMin: 35, sets: 15, kcal: 210 },
-]
+function getBodyPartsLabel(
+  session: StoredWorkoutSession | null,
+  fallback: string,
+) {
+  if (!session || session.bodyParts.length === 0) {
+    return fallback
+  }
+
+  return session.bodyParts.map((item) => bodyPartLabel(item.part)).join(", ")
+}
+
+function getSessionSetCount(session: StoredWorkoutSession | null) {
+  if (!session) {
+    return 0
+  }
+
+  return session.bodyParts.reduce((sum, item) => sum + item.setCount, 0)
+}
+
+function getSessionDurationMinutes(session: StoredWorkoutSession | null) {
+  if (!session) {
+    return 0
+  }
+
+  const startedAtMs = new Date(session.startedAt).getTime()
+  const completedAtMs = new Date(session.completedAt).getTime()
+
+  if (Number.isNaN(startedAtMs) || Number.isNaN(completedAtMs)) {
+    return 0
+  }
+
+  return Math.max(0, Math.round((completedAtMs - startedAtMs) / 60000))
+}
 
 export function SummaryScreen() {
   const router = useRouter()
   const { t } = useTranslation()
+  const { data: todaySummary, isLoading: isTodaySummaryLoading } =
+    useTodaySummary()
+  const { data: latestSession } = useLatestSession()
+  const { data: weekSessions } = useThisWeekSessions()
+  const todayCompleted = useTodayCompleted()
 
   const todayDate = new Date()
-  const dateString = `${todayDate.getMonth() + 1}월 ${todayDate.getDate()}일 ${
-    ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"][todayDate.getDay()]
-  }`
+  const dateString = formatDateWithDay(todayDate)
+  const todayDurationMin = Math.round(todaySummary.totalDuration / 60)
+  const latestSessionBodyParts = getBodyPartsLabel(
+    latestSession,
+    t("workout.result.unspecified"),
+  )
+  const latestSessionDay = latestSession
+    ? formatDateWithDay(new Date(latestSession.startedAt))
+    : t("summary.today")
+  const weeklySessions = weekSessions.map((session) => ({
+    sessionId: session.sessionId,
+    bodyPart: getBodyPartsLabel(session, t("workout.result.unspecified")),
+    day: formatDateWithDay(new Date(session.startedAt)),
+    durationMin: getSessionDurationMinutes(session),
+    sets: getSessionSetCount(session),
+    kcal: "--",
+  }))
 
   return (
     <Main>
@@ -46,7 +97,14 @@ export function SummaryScreen() {
 
         {/* 오늘의 운동 카드 */}
         <View className="mb-yb-4">
-          <TodayWorkoutCard bodyParts="가슴" totalSets={18} targetSets={24} />
+          <TodayWorkoutCard
+            bodyParts={getBodyPartsLabel(
+              todaySummary.storedSession,
+              t("workout.result.unspecified"),
+            )}
+            totalSets={todaySummary.totalSets}
+            targetSets={Math.max(24, todaySummary.totalSets || 24)}
+          />
         </View>
 
         {/* 운동시간 / 세트수 */}
@@ -55,7 +113,7 @@ export function SummaryScreen() {
             <StatCard
               label={t("summary.workoutTime")}
               subtitle={t("summary.today")}
-              value={43}
+              value={isTodaySummaryLoading ? "--" : todayDurationMin}
               unit={t("summary.minuteUnit")}
             />
           </View>
@@ -63,7 +121,7 @@ export function SummaryScreen() {
             <StatCard
               label={t("summary.sets")}
               subtitle={t("summary.today")}
-              value={18}
+              value={isTodaySummaryLoading ? "--" : todaySummary.totalSets}
               unit={t("summary.setsUnit")}
             />
           </View>
@@ -72,21 +130,34 @@ export function SummaryScreen() {
         {/* 세션 카드 / 운동 카드 */}
         <View className="flex-row gap-yb-4 mb-yb-4">
           <View className="flex-1">
-            <SessionLinkCard bodyPart="가슴" kcal={262} day="토요일" />
+            <SessionLinkCard
+              bodyPart={latestSessionBodyParts}
+              kcal="--"
+              day={latestSessionDay}
+              onPress={
+                latestSession
+                  ? () =>
+                      router.push(
+                        `/workout/${encodeURIComponent(latestSession.sessionId)}`,
+                      )
+                  : undefined
+              }
+            />
           </View>
           <View className="flex-1">
-            <WorkoutLinkCard />
+            <WorkoutLinkCard disabled={todayCompleted} />
           </View>
         </View>
 
         {/* 이번 주 세션 */}
         <View className="mb-yb-6">
-          <WeeklySessionList sessions={MOCK_WEEKLY_SESSIONS} onMorePress={() => router.push("/sessions")} />
-        </View>
-
-        {/* 하단 버튼 */}
-        <View className="pt-yb-6 gap-yb-3">
-          <Button variant="glass" label={t("summary.editSummary")} onPress={() => {}} />
+          <WeeklySessionList
+            sessions={weeklySessions}
+            onMorePress={() => router.push("/sessions")}
+            onSessionPress={(sessionId) =>
+              router.push(`/workout/${encodeURIComponent(sessionId)}`)
+            }
+          />
         </View>
       </ScrollView>
     </Main>
