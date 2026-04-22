@@ -4,7 +4,8 @@ import i18n from "@/shared/i18n/i18n"
 export function formatDateWithDay(date: Date): string {
   const m = String(date.getMonth() + 1).padStart(2, "0")
   const d = String(date.getDate()).padStart(2, "0")
-  const dayName = i18n.t(`common.daysShort.${date.getDay()}`)
+  const mondayFirstDayIndex = (date.getDay() + 6) % 7
+  const dayName = i18n.t(`common.daysShort.${mondayFirstDayIndex}`)
   return `${m}.${d} ${dayName}`
 }
 

@@ -208,9 +208,16 @@ function Dot({ size = 4 }: { size?: number }) {
 }
 
 /** 셰브론 아이콘 */
-function Chevron({ size = 18 }: { size?: number }) {
+function Chevron({ size = 18, onPress }: { size?: number; onPress?: () => void }) {
   const { fgSecondary } = useCardColors()
-  return <Image systemName="chevron.right" size={size} color={fgSecondary} />
+  return (
+    <Image
+      systemName="chevron.right"
+      size={size}
+      color={fgSecondary}
+      onPress={onPress}
+    />
+  )
 }
 
 /** Spacer 래퍼 (size 없으면 flex spacer) */
