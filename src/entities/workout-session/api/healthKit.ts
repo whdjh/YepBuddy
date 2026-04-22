@@ -7,6 +7,7 @@ import { getIsoAfterHours, getTimeDistanceMs } from "@/shared/lib/date"
 import type {
   WorkoutHealthKitDetail,
   WorkoutHeartRateSample,
+  WorkoutHealthKitWorkout,
   WorkoutLiveStats,
 } from "../model/types"
 
@@ -19,14 +20,17 @@ const HEALTH_PERMISSIONS = {
 
 let healthKitInitialized = false
 
+/** 현재 런타임에서 HealthKit 사용 가능 여부를 판단 */
 function isHealthKitAvailable() {
   return Platform.OS === "ios"
 }
 
+/** 네이티브 브리지에 특정 HealthKit 메서드가 연결됐는지 확인 */
 function hasHealthKitMethod(name: keyof typeof AppleHealthKit) {
   return typeof AppleHealthKit?.[name] === "function"
 }
 
+/** 지정한 기간의 workout 샘플 목록을 읽음 */
 async function getWorkoutSamples(params: {
   endDate: string
   startDate: string
@@ -57,6 +61,20 @@ async function getWorkoutSamples(params: {
   })
 }
 
+/** 날짜 키를 해당 날짜의 로컬 시작/끝 ISO 범위로 변환 */
+function getLocalDateBounds(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map((value) => Number(value))
+
+  const startDate = new Date(year, month - 1, day, 0, 0, 0, 0)
+  const endDate = new Date(year, month - 1, day, 23, 59, 59, 999)
+
+  return {
+    endDate: endDate.toISOString(),
+    startDate: startDate.toISOString(),
+  }
+}
+
+/** 지정한 운동 구간의 심박수 샘플을 읽어 앱 타입으로 정규화 */
 async function getHeartRateSamples(params: {
   endDate: string
   startDate: string
@@ -91,12 +109,13 @@ async function getHeartRateSamples(params: {
   })
 }
 
+/** 권한 요청과 초기화를 수행하고 결과를 캐시 */
 export async function initHealthKit() {
   if (!isHealthKitAvailable() || healthKitInitialized) {
     return healthKitInitialized
   }
 
-  // 시뮬레이터나 현재 런타임에서 네이티브 메서드가 비어 있으면 false로 처리한다.
+  // 시뮬레이터나 현재 런타임에서 네이티브 메서드가 비어 있으면 false로 처리
   if (!hasHealthKitMethod("initHealthKit")) {
     return false
   }
@@ -112,20 +131,24 @@ export async function initHealthKit() {
   })
 }
 
+/** 운동 시작 시점에 HealthKit 초기화만 보장 */
 export async function startWorkoutSession() {
   await initHealthKit()
 }
 
+/** pause는 앱 상태로만 관리하고 HealthKit에는 즉시 반영하지 않음 */
 export async function pauseWorkoutSession() {
   // react-native-health만으로는 여기서 신뢰할 수 있는 실시간 pause API를 쓰기 어려우므로 우선 앱의 일시정지 상태만 유지하고, HealthKit은 종료 시점 저장으로 처리
   return
 }
 
+/** resume도 앱 상태로만 관리하고 HealthKit에는 즉시 반영하지 않음 */
 export async function resumeWorkoutSession() {
   // react-native-health만으로는 여기서 신뢰할 수 있는 실시간 pause API를 쓰기 어려우므로 우선 앱의 일시정지 상태만 유지하고, HealthKit은 종료 시점 저장으로 처리
   return
 }
 
+/** 운동 종료 시 완료 구간을 HealthKit workout 하나로 저장 */
 export async function endWorkoutSession(params: {
   startedAt: string
   endedAt: string
@@ -142,7 +165,7 @@ export async function endWorkoutSession(params: {
       {
         startDate: params.startedAt,
         endDate: params.endedAt,
-        activityType: "TraditionalStrengthTraining",
+        type: "TraditionalStrengthTraining",
         energyBurned: params.activeKcal || params.totalKcal || 0,
       } as never,
       (error: unknown) => resolve(!error),
@@ -150,6 +173,7 @@ export async function endWorkoutSession(params: {
   })
 }
 
+/** 최근 심박 샘플을 읽어 라이브 운동 수치 형태로 정리 */
 export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
   const ready = await initHealthKit()
   if (!ready || !hasHealthKitMethod("getHeartRateSamples")) {
@@ -181,6 +205,7 @@ export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
   })
 }
 
+/** sessionId 근처의 HealthKit workout 하나를 찾아 결과 화면용 상세로 변환 */
 export async function getWorkoutDetail(
   sessionId: string,
 ): Promise<WorkoutHealthKitDetail | null> {
@@ -225,4 +250,28 @@ export async function getWorkoutDetail(
     totalKcal:
       typeof workout.calories === "number" ? Math.round(workout.calories) : null,
   }
+}
+
+/** 특정 날짜의 workout 목록을 요약 카드에서 쓰기 쉬운 형태로 반환 */
+export async function getWorkoutSummariesForDate(
+  dateKey: string,
+): Promise<WorkoutHealthKitWorkout[]> {
+  const ready = await initHealthKit()
+  if (!ready) {
+    return []
+  }
+
+  const { startDate, endDate } = getLocalDateBounds(dateKey)
+  const workoutSamples = await getWorkoutSamples({ endDate, startDate })
+
+  return workoutSamples
+    .filter((sample) => Boolean(sample.start))
+    .map((sample) => ({
+      startDate: sample.start,
+      endDate: sample.end,
+      duration:
+        typeof sample.duration === "number" ? Math.round(sample.duration) : 0,
+      kcal:
+        typeof sample.calories === "number" ? Math.round(sample.calories) : 0,
+    }))
 }

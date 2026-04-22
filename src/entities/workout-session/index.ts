@@ -3,6 +3,7 @@ export {
   useWorkout,
 } from "./model/WorkoutContext"
 export { getWorkoutDetail } from "./api/healthKit"
+export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutLocationOnce } from "./lib/location"
 export {
   cancelScheduledWorkoutReminder,
@@ -20,6 +21,7 @@ export type {
   BodyPart,
   StoredWorkoutSession,
   WorkoutHealthKitDetail,
+  WorkoutHealthKitWorkout,
   WorkoutBodyPartSet,
   WorkoutHeartRateSample,
   WorkoutLiveStats,
