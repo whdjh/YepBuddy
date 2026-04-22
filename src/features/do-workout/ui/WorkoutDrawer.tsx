@@ -8,7 +8,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
-import { RingProgress } from "@/shared/ui/RingProgress"
 
 // 버튼 영역 높이 (버튼 44 × 2 + gap 12)
 const BUTTON_HEIGHT = 44
@@ -38,8 +37,12 @@ export function WorkoutDrawer({
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
   const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
-  const drawerRingTrack = (useUnstableNativeVariable("--yb-drawer-ring-track") as unknown as string) || "rgba(255,255,255,0.12)"
-  const drawerRingFill = (useUnstableNativeVariable("--yb-drawer-ring-fill") as unknown as string) || "rgba(200,173,126,0.6)"
+  const dangerColor =
+    (useUnstableNativeVariable("--yb-status-error") as unknown as string) ||
+    "#E5484D"
+  const onDangerColor =
+    (useUnstableNativeVariable("--yb-on-accent") as unknown as string) ||
+    "#FFFFFF"
 
   const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)
@@ -95,13 +98,17 @@ export function WorkoutDrawer({
             {timerDisplay}
           </Text>
 
-          <RingProgress
-            size={32}
-            strokeWidth={4}
-            progress={0.25}
-            trackColor={drawerRingTrack}
-            fillColor={drawerRingFill}
-          />
+          <Pressable
+            onPress={onEnd}
+            className="h-yb-9 w-yb-9 items-center justify-center rounded-full"
+            style={{ backgroundColor: dangerColor }}
+          >
+            <SymbolView
+              name="stop.fill"
+              size={14}
+              tintColor={onDangerColor}
+            />
+          </Pressable>
         </View>
 
         {/* 버튼 */}
