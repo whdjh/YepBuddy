@@ -4,10 +4,11 @@ import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 import { Card } from "@/shared/ui/Card"
 import { formatDateWithDay, bodyPartLabel } from "@/shared/lib/format"
+import type { BodyPart } from "@/entities/workout-session"
 
 interface SessionCardProps {
-  bodyParts: string[]
-  kcal: number
+  bodyParts: BodyPart[]
+  kcal: number | null
   date: Date
   onPress: () => void
 }
@@ -15,6 +16,10 @@ interface SessionCardProps {
 export function SessionCard({ bodyParts, kcal, date, onPress }: SessionCardProps) {
   const { t } = useTranslation()
   const accentColor = (useUnstableNativeVariable("--yb-accent") as unknown as string) || "#9B7E56"
+  const bodyPartLabelText =
+    bodyParts.length > 0
+      ? bodyParts.map(bodyPartLabel).join(" + ")
+      : t("workout.result.unspecified")
 
   return (
     <Pressable className="mb-yb-3" onPress={onPress}>
@@ -25,10 +30,10 @@ export function SessionCard({ bodyParts, kcal, date, onPress }: SessionCardProps
           </View>
           <View style={{ flex: 1 }}>
             <Text className="text-yb-fg text-yb-body-md font-bold">
-              {bodyParts.map(bodyPartLabel).join(" + ")}
+              {bodyPartLabelText}
             </Text>
             <Text className="text-yb-accent text-yb-heading-sm font-bold">
-              {kcal}
+              {kcal ?? "--"}
               <Text className="text-yb-fg-secondary text-yb-caption font-medium">
                 {` ${t("summary.kcalUnit")}`}
               </Text>

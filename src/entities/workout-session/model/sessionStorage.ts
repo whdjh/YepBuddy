@@ -212,6 +212,19 @@ export async function getStoredWorkoutSessionsInRange(
     .filter((session): session is StoredWorkoutSession => session !== null)
 }
 
+/** 특정 월의 완료 세션을 최신순으로 조회 */
+export async function getStoredWorkoutSessionsForMonth(
+  year: number,
+  month: number,
+) {
+  const startDateKey = `${year}-${String(month).padStart(2, "0")}-01`
+  const endDateKey = `${year}-${String(month).padStart(2, "0")}-${String(
+    new Date(year, month, 0).getDate(),
+  ).padStart(2, "0")}`
+
+  return getStoredWorkoutSessionsInRange(startDateKey, endDateKey)
+}
+
 /** 저장된 완료 세션 중 가장 최신 세션을 조회 */
 export async function getLatestStoredWorkoutSession() {
   const dateKeys = await getStoredWorkoutDateKeys()

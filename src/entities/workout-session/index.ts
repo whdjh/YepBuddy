@@ -4,6 +4,7 @@ export {
 } from "./model/WorkoutContext"
 export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
+export { getWorkoutSummariesForMonth } from "./api/healthKit"
 export { getWorkoutLocationOnce } from "./lib/location"
 export {
   cancelScheduledWorkoutReminder,
@@ -13,6 +14,7 @@ export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
+  getStoredWorkoutSessionsForMonth,
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
   updateStoredWorkoutMemo,

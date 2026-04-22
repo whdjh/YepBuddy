@@ -74,6 +74,17 @@ function getLocalDateBounds(dateKey: string) {
   }
 }
 
+/** 연/월을 해당 월의 로컬 시작/끝 ISO 범위로 변환 */
+function getLocalMonthBounds(year: number, month: number) {
+  const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0)
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+
+  return {
+    endDate: endDate.toISOString(),
+    startDate: startDate.toISOString(),
+  }
+}
+
 /** 지정한 운동 구간의 심박수 샘플을 읽어 앱 타입으로 정규화 */
 async function getHeartRateSamples(params: {
   endDate: string
@@ -262,6 +273,31 @@ export async function getWorkoutSummariesForDate(
   }
 
   const { startDate, endDate } = getLocalDateBounds(dateKey)
+  const workoutSamples = await getWorkoutSamples({ endDate, startDate })
+
+  return workoutSamples
+    .filter((sample) => Boolean(sample.start))
+    .map((sample) => ({
+      startDate: sample.start,
+      endDate: sample.end,
+      duration:
+        typeof sample.duration === "number" ? Math.round(sample.duration) : 0,
+      kcal:
+        typeof sample.calories === "number" ? Math.round(sample.calories) : 0,
+    }))
+}
+
+/** 특정 월의 workout 목록을 세션 목록 화면에서 쓰기 쉬운 형태로 반환 */
+export async function getWorkoutSummariesForMonth(
+  year: number,
+  month: number,
+): Promise<WorkoutHealthKitWorkout[]> {
+  const ready = await initHealthKit()
+  if (!ready) {
+    return []
+  }
+
+  const { startDate, endDate } = getLocalMonthBounds(year, month)
   const workoutSamples = await getWorkoutSamples({ endDate, startDate })
 
   return workoutSamples
