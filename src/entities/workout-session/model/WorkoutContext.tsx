@@ -60,6 +60,7 @@ interface WorkoutContextValue {
 
 // Provider 밖에서 잘못 사용할 경우를 잡기 위해 초기값은 null
 const WorkoutContext = createContext<WorkoutContextValue | null>(null)
+const ACTIVE_WORKOUT_ALLOWED_PATHS = new Set(["/workout/active", "/tempo"])
 
 export function WorkoutProvider({ children }: PropsWithChildren) {
   const pathname = usePathname()
@@ -95,10 +96,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       return
     }
 
-    if (
-      state.phase === "recording" ||
-      (state.phase === "paused" && pathname !== "/workout/active")
-    ) {
+    const isRecoverable =
+      state.phase === "recording" || state.phase === "paused"
+
+    if (isRecoverable && !ACTIVE_WORKOUT_ALLOWED_PATHS.has(pathname)) {
       router.replace("/workout/active")
     }
   }, [isHydrated, pathname, router, state.phase])

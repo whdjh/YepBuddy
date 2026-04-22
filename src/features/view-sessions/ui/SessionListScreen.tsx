@@ -1,50 +1,43 @@
 import { Fragment, useMemo, useState } from "react"
-import { ScrollView, Text, View } from "react-native"
+import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 import { Main } from "@/shared/ui/Main"
 import { IconButton } from "@/shared/ui/IconButton"
-import { FilterPill } from "@/shared/ui/Chip"
-import { formatMonthYear, bodyPartLabel } from "@/shared/lib/format"
+import { formatMonthYear } from "@/shared/lib/format"
 import { groupByMonth } from "@/shared/lib/group"
+import { filterSessions } from "../model/filterSessions"
+import { useInfiniteSessions } from "../model/useInfiniteSessions"
+import type { SessionFilterValue } from "../model/types"
+import { FilterTabs } from "./FilterTabs"
 import { SessionCard } from "./SessionCard"
-
-interface SessionItem {
-  id: string
-  bodyParts: string[]
-  kcal: number
-  date: Date
-}
-
-const BODY_PART_KEYS = ["chest", "back", "legs", "shoulders", "arms", "core"] as const
-
-// Mock data — bodyParts use i18n keys
-const MOCK_SESSIONS: SessionItem[] = [
-  { id: "s1", bodyParts: ["chest"], kcal: 262, date: new Date(2026, 2, 15) },
-  { id: "s2", bodyParts: ["back"], kcal: 279, date: new Date(2026, 2, 14) },
-  { id: "s3", bodyParts: ["legs"], kcal: 232, date: new Date(2026, 2, 13) },
-  { id: "s4", bodyParts: ["shoulders"], kcal: 210, date: new Date(2026, 2, 12) },
-  { id: "s5", bodyParts: ["chest", "back"], kcal: 328, date: new Date(2026, 2, 11) },
-  { id: "s6", bodyParts: ["back"], kcal: 270, date: new Date(2026, 2, 10) },
-  { id: "s7", bodyParts: ["legs"], kcal: 257, date: new Date(2026, 2, 7) },
-  { id: "s8", bodyParts: ["arms"], kcal: 198, date: new Date(2026, 2, 5) },
-]
 
 export function SessionListScreen() {
   const router = useRouter()
   const { t } = useTranslation()
   const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const { sessions, isLoadingInitial, isLoadingMore, loadMore } =
+    useInfiniteSessions()
 
-  const [activeFilter, setActiveFilter] = useState<string>("all")
+  const [activeFilter, setActiveFilter] = useState<SessionFilterValue>("all")
 
   const filteredSessions = useMemo(() => {
-    if (activeFilter === "all") return MOCK_SESSIONS
-    return MOCK_SESSIONS.filter((s) => s.bodyParts.includes(activeFilter))
-  }, [activeFilter])
+    return filterSessions(sessions, activeFilter)
+  }, [activeFilter, sessions])
 
   const grouped = useMemo(() => groupByMonth(filteredSessions), [filteredSessions])
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent
+    const distanceFromBottom =
+      contentSize.height - (contentOffset.y + layoutMeasurement.height)
+
+    if (distanceFromBottom < 240) {
+      void loadMore()
+    }
+  }
 
   return (
     <Main>
@@ -60,34 +53,28 @@ export function SessionListScreen() {
       </View>
 
       {/* 필터 */}
-      <View className="pt-yb-2 pb-yb-1">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerClassName="px-yb-5 gap-yb-2"
-        >
-          <FilterPill
-            label={t("sessions.filterAll")}
-            variant={activeFilter === "all" ? "active" : "default"}
-            onPress={() => setActiveFilter("all")}
-          />
-          {BODY_PART_KEYS.map((key) => (
-            <FilterPill
-              key={key}
-              label={bodyPartLabel(key)}
-              variant={activeFilter === key ? "active" : "default"}
-              onPress={() => setActiveFilter(key)}
-            />
-          ))}
-        </ScrollView>
-      </View>
+      <FilterTabs value={activeFilter} onChange={setActiveFilter} />
 
       {/* 세션 리스트 */}
       <ScrollView
         style={{ flex: 1 }}
         contentContainerClassName="px-yb-5 pt-yb-2 pb-yb-30"
         showsVerticalScrollIndicator={false}
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
       >
+        {isLoadingInitial && grouped.size === 0 ? (
+          <View className="items-center justify-center py-yb-12">
+            <ActivityIndicator color={fgColor} />
+          </View>
+        ) : null}
+
+        {!isLoadingInitial && grouped.size === 0 ? (
+          <Text className="text-yb-fg-secondary text-yb-body-sm">
+            {t("workout.result.noData")}
+          </Text>
+        ) : null}
+
         {Array.from(grouped.entries()).map(([monthKey, sessions]) => (
           <Fragment key={monthKey}>
             <Text className="text-yb-fg text-yb-heading-sm font-bold mb-yb-4">
@@ -96,15 +83,23 @@ export function SessionListScreen() {
 
             {sessions.map((session) => (
               <SessionCard
-                key={session.id}
+                key={session.sessionId}
                 bodyParts={session.bodyParts}
                 kcal={session.kcal}
                 date={session.date}
-                onPress={() => router.push(`/workout/${session.id}`)}
+                onPress={() =>
+                  router.push(`/workout/${encodeURIComponent(session.sessionId)}`)
+                }
               />
             ))}
           </Fragment>
         ))}
+
+        {isLoadingMore ? (
+          <View className="items-center py-yb-4">
+            <ActivityIndicator color={fgColor} />
+          </View>
+        ) : null}
       </ScrollView>
     </Main>
   )

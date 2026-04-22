@@ -8,18 +8,20 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
-import { RingProgress } from "@/shared/ui/RingProgress"
 
 // 버튼 영역 높이 (버튼 44 × 2 + gap 12)
 const BUTTON_HEIGHT = 44
 const BUTTON_GAP = 12
-export const BUTTONS_HEIGHT = BUTTON_HEIGHT * 2 + BUTTON_GAP
+const BUTTON_COUNT = 3
+export const BUTTONS_HEIGHT =
+  BUTTON_HEIGHT * BUTTON_COUNT + BUTTON_GAP * (BUTTON_COUNT - 1)
 
 const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 
 interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
+  onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
   bottomPadding: number
@@ -28,14 +30,19 @@ interface WorkoutDrawerProps {
 export function WorkoutDrawer({
   timerDisplay,
   isPaused,
+  onTempo,
   onTogglePause,
   onEnd,
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
   const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
-  const drawerRingTrack = (useUnstableNativeVariable("--yb-drawer-ring-track") as unknown as string) || "rgba(255,255,255,0.12)"
-  const drawerRingFill = (useUnstableNativeVariable("--yb-drawer-ring-fill") as unknown as string) || "rgba(200,173,126,0.6)"
+  const dangerColor =
+    (useUnstableNativeVariable("--yb-status-error") as unknown as string) ||
+    "#E5484D"
+  const onDangerColor =
+    (useUnstableNativeVariable("--yb-on-accent") as unknown as string) ||
+    "#FFFFFF"
 
   const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)
@@ -91,17 +98,30 @@ export function WorkoutDrawer({
             {timerDisplay}
           </Text>
 
-          <RingProgress
-            size={32}
-            strokeWidth={4}
-            progress={0.25}
-            trackColor={drawerRingTrack}
-            fillColor={drawerRingFill}
-          />
+          <Pressable
+            onPress={onEnd}
+            className="h-yb-9 w-yb-9 items-center justify-center rounded-full"
+            style={{ backgroundColor: dangerColor }}
+          >
+            <SymbolView
+              name="stop.fill"
+              size={14}
+              tintColor={onDangerColor}
+            />
+          </Pressable>
         </View>
 
         {/* 버튼 */}
         <View className="gap-yb-3">
+          <Pressable
+            onPress={onTempo}
+            className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
+          >
+            <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
+              {t("tabs.tempo")}
+            </Text>
+          </Pressable>
+
           <Pressable
             onPress={onTogglePause}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"

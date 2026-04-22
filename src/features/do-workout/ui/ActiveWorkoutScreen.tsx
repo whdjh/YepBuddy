@@ -69,7 +69,9 @@ export function ActiveWorkoutScreen() {
       bodyParts: completedSession.bodyParts,
     })
     await scheduleWorkoutReminder22h(completedSession.completedAt)
-    router.replace(`/workout/${encodeURIComponent(completedSession.sessionId)}`)
+    router.replace(
+      `/workout/${encodeURIComponent(completedSession.sessionId)}?fromWorkout=1`,
+    )
   }
 
   return (
@@ -104,6 +106,7 @@ export function ActiveWorkoutScreen() {
       <WorkoutDrawer
         timerDisplay={timerDisplay}
         isPaused={state.phase === "paused"}
+        onTempo={() => router.push("/(tabs)/tempo?fromWorkout=1")}
         onTogglePause={() => void handlePauseToggle()}
         onEnd={() => void handleComplete()}
         bottomPadding={bottomPadding}

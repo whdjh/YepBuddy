@@ -35,27 +35,45 @@ const COUNT_SOURCES = [
 let players: Record<string, AudioPlayer> | null = null
 // 카운트 전용 단일 플레이어
 let countPlayer: AudioPlayer | null = null
+let initPromise: Promise<void> | null = null
 
-/** 오디오 모드 설정 및 사운드 플레이어 사전 로드하고 템포 화면 마운트 시 1회 호출 */
+/** 오디오 모드 설정 및 사운드 플레이어를 필요할 때 1회만 준비한다. */
 export async function initAudio(): Promise<void> {
-  await setAudioModeAsync({
-    shouldPlayInBackground: true,
-    playsInSilentMode: true,
-    interruptionMode: 'mixWithOthers',
-  })
-
-  players = {
-    pip: createAudioPlayer(SOURCES.pip),
-    pik: createAudioPlayer(SOURCES.pik),
-    restStart: createAudioPlayer(SOURCES.restStart),
-    restWarning: createAudioPlayer(SOURCES.restWarning),
+  if (players && countPlayer) {
+    return
   }
 
-  countPlayer = createAudioPlayer(COUNT_SOURCES[0])
+  if (initPromise) {
+    return initPromise
+  }
+
+  initPromise = (async () => {
+    await setAudioModeAsync({
+      shouldPlayInBackground: true,
+      playsInSilentMode: true,
+      interruptionMode: 'mixWithOthers',
+    })
+
+    players = {
+      pip: createAudioPlayer(SOURCES.pip),
+      pik: createAudioPlayer(SOURCES.pik),
+      restStart: createAudioPlayer(SOURCES.restStart),
+      restWarning: createAudioPlayer(SOURCES.restWarning),
+    }
+
+    countPlayer = createAudioPlayer(COUNT_SOURCES[0])
+  })()
+
+  try {
+    await initPromise
+  } finally {
+    initPromise = null
+  }
 }
 
 /** 오디오 플레이어 정리하고 템포 화면 언마운트 시 호출 */
 export async function cleanupAudio(): Promise<void> {
+  initPromise = null
   if (players) {
     Object.values(players).forEach((p) => p.remove())
     players = null
