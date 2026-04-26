@@ -8,9 +8,6 @@ interface MonthGridProps {
   year: number
   month: number
   today: { year: number; month: number; day: number }
-  trackColor: string
-  fillColor: string
-  successColor: string
   refreshKey: number
   onDayPress: (sessionId: string) => void
 }
@@ -19,9 +16,6 @@ export function MonthGrid({
   year,
   month,
   today,
-  trackColor,
-  fillColor,
-  successColor,
   refreshKey,
   onDayPress,
 }: MonthGridProps) {
@@ -48,29 +42,25 @@ export function MonthGrid({
         {Array.from({ length: daysCount }).map((_, i) => {
           const day = i + 1
           const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
-          const sessionId = workoutDates[dateKey] ?? null
-          const hasWorkout = sessionId !== null
+          const dayWorkout = workoutDates[dateKey] ?? null
+          const bodyParts = dayWorkout?.bodyParts ?? []
           const isToday = year === today.year && month === today.month && day === today.day
           const isFuture =
             year > today.year ||
             (year === today.year && month > today.month) ||
-            (year === today.year &&
-              month === today.month &&
-              day > today.day)
+            (year === today.year && month === today.month && day > today.day)
 
           return (
             <DayCell
               key={day}
               day={day}
               isToday={isToday}
-              hasWorkout={hasWorkout}
-              disabled={isFuture || !hasWorkout}
-              trackColor={trackColor}
-              fillColor={fillColor}
-              successColor={successColor}
+              hasWorkout={dayWorkout != null}
+              bodyParts={bodyParts}
+              disabled={isFuture || !dayWorkout}
               onPress={() => {
-                if (sessionId) {
-                  onDayPress(sessionId)
+                if (dayWorkout) {
+                  onDayPress(dayWorkout.sessionId)
                 }
               }}
             />

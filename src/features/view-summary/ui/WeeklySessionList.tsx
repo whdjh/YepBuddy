@@ -1,10 +1,13 @@
 import { Fragment } from "react"
 import { useTranslation } from "react-i18next"
+import type { BodyPart } from "@/entities/workout-session"
+import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
 import { Card } from "@/shared/ui/Card"
 
 interface SessionData {
   sessionId: string
   bodyPart: string
+  representativeBodyPart: BodyPart | null
   day: string
   durationMin: number
   sets: number
@@ -42,7 +45,11 @@ export function WeeklySessionList({
         <Fragment key={session.sessionId}>
           {index > 0 && <Card.Divider />}
           <Card.Row spacing={12} paddingVertical={10} minHeight={48}>
-            <Card.Icon name="dumbbell.fill" size={18} bgSize={40} cornerRadius={8} />
+            {session.representativeBodyPart ? (
+              <BodyPartIconHost bodyPart={session.representativeBodyPart} size="sm" />
+            ) : (
+              <Card.Icon name="dumbbell.fill" size={18} bgSize={40} cornerRadius={8} />
+            )}
             <Card.Column alignment="leading" spacing={2}>
               <Card.Title>{session.bodyPart}</Card.Title>
               <Card.Row spacing={4}>

@@ -67,6 +67,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
     stored?.bodyParts && stored.bodyParts.length > 0
       ? stored.bodyParts.map(({ part }) => bodyPartLabel(part)).join(", ")
       : t("workout.result.unspecified")
+  const representativeBodyPart = stored?.bodyParts[0]?.part ?? null
   const startTime = stored?.startedAt ? formatTime(stored.startedAt) : "--"
   const endTime = stored?.completedAt ? formatTime(stored.completedAt) : "--"
   const locationLabel = stored?.location ? t("workout.result.location") : null
@@ -127,6 +128,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           {/* 세션 헤더 */}
           <SessionHeader
             bodyPartLabel={bodyPartTitle}
+            representativeBodyPart={representativeBodyPart}
             startTime={startTime}
             endTime={endTime}
             location={locationLabel}

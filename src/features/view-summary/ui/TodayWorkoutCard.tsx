@@ -1,15 +1,22 @@
 import { Pressable } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
+import type { BodyPart } from "@/entities/workout-session"
+import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
 import { Card } from "@/shared/ui/Card"
 
 interface TodayWorkoutCardProps {
   bodyParts: string
+  representativeBodyPart: BodyPart | null
   totalSets: number
   targetSets: number
 }
 
-export function TodayWorkoutCard({ bodyParts, totalSets, targetSets }: TodayWorkoutCardProps) {
+export function TodayWorkoutCard({
+  bodyParts,
+  representativeBodyPart,
+  totalSets,
+}: TodayWorkoutCardProps) {
   const router = useRouter()
 
   const { t } = useTranslation()
@@ -18,9 +25,7 @@ export function TodayWorkoutCard({ bodyParts, totalSets, targetSets }: TodayWork
     <Pressable onPress={() => router.push("/calendar")}>
       <Card variant="glass" minHeight={130}>
         <Card.Row spacing={16}>
-          <Card.Gauge current={totalSets} target={targetSets}>
-            <Card.Title size={24} design="rounded">{String(totalSets)}</Card.Title>
-          </Card.Gauge>
+          <BodyPartIconHost bodyPart={representativeBodyPart} size="xl" />
           <Card.Column alignment="leading" spacing={4}>
             <Card.Label>{t("summary.todayWorkout")}</Card.Label>
             <Card.Title size={22}>{bodyParts}</Card.Title>

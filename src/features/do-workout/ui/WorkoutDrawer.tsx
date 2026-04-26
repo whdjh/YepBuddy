@@ -8,6 +8,8 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
+import type { BodyPart } from "@/entities/workout-session"
+import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
 
 // 버튼 영역 높이 (버튼 44 × 2 + gap 12)
 const BUTTON_HEIGHT = 44
@@ -21,6 +23,7 @@ const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
+  representativeBodyPart?: BodyPart | null
   onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
@@ -30,13 +33,13 @@ interface WorkoutDrawerProps {
 export function WorkoutDrawer({
   timerDisplay,
   isPaused,
+  representativeBodyPart,
   onTempo,
   onTogglePause,
   onEnd,
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
-  const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
   const dangerColor =
     (useUnstableNativeVariable("--yb-status-error") as unknown as string) ||
     "#E5484D"
@@ -83,13 +86,7 @@ export function WorkoutDrawer({
 
         {/* 타이머 */}
         <View className="flex-row items-center justify-center gap-yb-3 mb-yb-3">
-          <View className="w-yb-9 h-yb-9 rounded-yb-md bg-[var(--yb-icon-bg)] items-center justify-center">
-            <SymbolView
-              name="dumbbell.fill"
-              size={18}
-              tintColor={iconTint}
-            />
-          </View>
+          <BodyPartIcon bodyPart={representativeBodyPart} size="drawer" />
 
           <Text
             className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"

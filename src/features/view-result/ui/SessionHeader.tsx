@@ -1,8 +1,11 @@
 import { useTranslation } from "react-i18next"
+import type { BodyPart } from "@/entities/workout-session"
+import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
 import { Card } from "@/shared/ui/Card"
 
 interface SessionHeaderProps {
   bodyPartLabel: string
+  representativeBodyPart: BodyPart | null
   startTime: string
   endTime: string
   location: string | null
@@ -10,6 +13,7 @@ interface SessionHeaderProps {
 
 export function SessionHeader({
   bodyPartLabel,
+  representativeBodyPart,
   startTime,
   endTime,
   location,
@@ -19,7 +23,11 @@ export function SessionHeader({
   return (
     <Card variant="glass" paddingSize={16} cornerRadius={16}>
       <Card.Row spacing={12} alignment="center">
-        <Card.Icon name="dumbbell.fill" size={28} bgSize={64} cornerRadius={16} />
+        {representativeBodyPart ? (
+          <BodyPartIconHost bodyPart={representativeBodyPart} size="lg" />
+        ) : (
+          <Card.Icon name="dumbbell.fill" size={28} bgSize={64} cornerRadius={16} />
+        )}
         <Card.Column alignment="leading" spacing={2}>
           <Card.Caption>{t("workout.result.strengthTraining")}</Card.Caption>
           <Card.Title size={20}>{bodyPartLabel}</Card.Title>
