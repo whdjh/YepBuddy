@@ -1,9 +1,12 @@
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
+import type { BodyPart } from "@/entities/workout-session"
+import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
 import { Card } from "@/shared/ui/Card"
 
 interface SessionLinkCardProps {
   bodyPart: string
+  representativeBodyPart: BodyPart | null
   kcal: number | string
   day: string
   onPress?: () => void
@@ -11,6 +14,7 @@ interface SessionLinkCardProps {
 
 export function SessionLinkCard({
   bodyPart,
+  representativeBodyPart,
   kcal,
   day,
   onPress,
@@ -23,7 +27,11 @@ export function SessionLinkCard({
         <Card.Column alignment="leading" spacing={0}>
           <Card.Header label={t("summary.session")} chevron />
           <Card.Spacer size={12} />
-          <Card.Icon name="dumbbell.fill" />
+          {representativeBodyPart ? (
+            <BodyPartIconHost bodyPart={representativeBodyPart} size="md" />
+          ) : (
+            <Card.Icon name="dumbbell.fill" />
+          )}
           <Card.Spacer size={10} />
           <Card.Title>{bodyPart}</Card.Title>
           <Card.Accent>{`${kcal}${t("summary.kcalUnit")}`}</Card.Accent>

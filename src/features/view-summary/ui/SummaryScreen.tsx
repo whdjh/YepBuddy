@@ -34,6 +34,10 @@ function getSessionSetCount(session: StoredWorkoutSession | null) {
   return session.bodyParts.reduce((sum, item) => sum + item.setCount, 0)
 }
 
+function getRepresentativeBodyPart(session: StoredWorkoutSession | null) {
+  return session?.bodyParts[0]?.part ?? null
+}
+
 function getSessionDurationMinutes(session: StoredWorkoutSession | null) {
   if (!session) {
     return 0
@@ -65,12 +69,18 @@ export function SummaryScreen() {
     latestSession,
     t("workout.result.unspecified"),
   )
+  const todayRepresentativeBodyPart = getRepresentativeBodyPart(
+    todaySummary.storedSession,
+  )
+  const latestSessionRepresentativeBodyPart =
+    getRepresentativeBodyPart(latestSession)
   const latestSessionDay = latestSession
     ? formatDateWithDay(new Date(latestSession.startedAt))
     : t("summary.today")
   const weeklySessions = weekSessions.map((session) => ({
     sessionId: session.sessionId,
     bodyPart: getBodyPartsLabel(session, t("workout.result.unspecified")),
+    representativeBodyPart: getRepresentativeBodyPart(session),
     day: formatDateWithDay(new Date(session.startedAt)),
     durationMin: getSessionDurationMinutes(session),
     sets: getSessionSetCount(session),
@@ -102,6 +112,7 @@ export function SummaryScreen() {
               todaySummary.storedSession,
               t("workout.result.unspecified"),
             )}
+            representativeBodyPart={todayRepresentativeBodyPart}
             totalSets={todaySummary.totalSets}
             targetSets={Math.max(24, todaySummary.totalSets || 24)}
           />
@@ -132,6 +143,7 @@ export function SummaryScreen() {
           <View className="flex-1">
             <SessionLinkCard
               bodyPart={latestSessionBodyParts}
+              representativeBodyPart={latestSessionRepresentativeBodyPart}
               kcal="--"
               day={latestSessionDay}
               onPress={
