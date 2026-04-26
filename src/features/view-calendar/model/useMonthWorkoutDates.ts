@@ -4,7 +4,7 @@ import {
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
 import { getLocalDateKeyFromIso } from "@/shared/lib/date"
-import type { MonthWorkoutDates } from "./types"
+import type { DayWorkout, MonthWorkoutDates } from "./types"
 
 function pad2(value: number) {
   return String(value).padStart(2, "0")
@@ -21,13 +21,12 @@ function getMonthRange(year: number, month: number) {
   }
 }
 
-/** 지정한 월에 저장된 완료 운동 세션을 YYYY-MM-DD -> sessionId 형태로 읽음 */
 export function useMonthWorkoutDates(
   year: number,
   month: number,
   refreshKey = 0,
 ): MonthWorkoutDates {
-  const [workoutDates, setWorkoutDates] = useState<Record<string, string>>({})
+  const [workoutDates, setWorkoutDates] = useState<Record<string, DayWorkout>>({})
 
   const range = useMemo(() => getMonthRange(year, month), [year, month])
 
@@ -48,10 +47,12 @@ export function useMonthWorkoutDates(
           return
         }
 
-        const nextWorkoutDates = sessions.reduce<Record<string, string>>(
+        const nextWorkoutDates = sessions.reduce<Record<string, DayWorkout>>(
           (accumulator, session: StoredWorkoutSession) => {
-            accumulator[getLocalDateKeyFromIso(session.startedAt)] =
-              session.sessionId
+            accumulator[getLocalDateKeyFromIso(session.startedAt)] = {
+              sessionId: session.sessionId,
+              bodyParts: session.bodyParts.map(({ part }) => part),
+            }
             return accumulator
           },
           {},
