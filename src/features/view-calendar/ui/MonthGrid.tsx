@@ -55,6 +55,7 @@ export function MonthGrid({
               key={day}
               day={day}
               isToday={isToday}
+              hasWorkout={dayWorkout != null}
               bodyParts={bodyParts}
               disabled={isFuture || !dayWorkout}
               onPress={() => {

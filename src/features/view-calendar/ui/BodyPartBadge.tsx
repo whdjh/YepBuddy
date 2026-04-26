@@ -2,7 +2,7 @@ import type { BodyPart } from "@/entities/workout-session"
 import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
 
 interface BodyPartBadgeProps {
-  bodyPart: BodyPart
+  bodyPart?: BodyPart | null
   size?: "sm" | "md"
 }
 

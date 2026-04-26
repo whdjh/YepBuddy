@@ -8,18 +8,17 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window")
 interface DayCellProps {
   day: number
   isToday: boolean
+  hasWorkout: boolean
   bodyParts: BodyPart[]
   disabled: boolean
   onPress: () => void
 }
 
-export function DayCell({ day, isToday, bodyParts, disabled, onPress }: DayCellProps) {
+export function DayCell({ day, isToday, hasWorkout, bodyParts, disabled, onPress }: DayCellProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [tooltipWidth, setTooltipWidth] = useState(0)
   const cellRef = useRef<View>(null)
-
-  const hasWorkout = bodyParts.length > 0
 
   const handleLongPress = () => {
     if (bodyParts.length <= 1) return
@@ -59,7 +58,7 @@ export function DayCell({ day, isToday, bodyParts, disabled, onPress }: DayCellP
 
         {hasWorkout && (
           <View className="flex-row items-center gap-yb-0.5">
-            <BodyPartBadge bodyPart={bodyParts[0]} />
+            <BodyPartBadge bodyPart={bodyParts[0] ?? null} />
             {bodyParts.length > 1 && (
               <Text
                 style={{
