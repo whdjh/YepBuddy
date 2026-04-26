@@ -1,3 +1,4 @@
+import { SymbolView } from "expo-symbols"
 import { Image, View, type ImageSourcePropType } from "react-native"
 import { RNHostView } from "@expo/ui/swift-ui"
 import arms from "@/assets/images/bodyparts/arms.png"
@@ -11,7 +12,7 @@ import type { BodyPart } from "@/entities/workout-session"
 type BodyPartIconSize = "xs" | "sm" | "md" | "lg" | "xl"
 
 interface BodyPartIconProps {
-  bodyPart: BodyPart
+  bodyPart?: BodyPart | null
   size?: BodyPartIconSize
   framed?: boolean
 }
@@ -56,6 +57,7 @@ export function BodyPartIcon({
 }: BodyPartIconProps) {
   const frameSize = frameSizeBySize[size]
   const iconSize = iconSizeBySize[size]
+  const iconSource = bodyPart ? iconSourceByBodyPart[bodyPart] : null
 
   return (
     <View
@@ -69,11 +71,19 @@ export function BodyPartIcon({
         width: frameSize,
       }}
     >
-      <Image
-        source={iconSourceByBodyPart[bodyPart]}
-        resizeMode="contain"
-        style={{ height: iconSize, width: iconSize }}
-      />
+      {iconSource ? (
+        <Image
+          source={iconSource}
+          resizeMode="contain"
+          style={{ height: iconSize, width: iconSize }}
+        />
+      ) : (
+        <SymbolView
+          name="dumbbell.fill"
+          size={Math.round(iconSize * 0.58)}
+          tintColor="#9B7E56"
+        />
+      )}
     </View>
   )
 }

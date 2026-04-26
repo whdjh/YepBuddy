@@ -24,11 +24,7 @@ export function SessionCard({ bodyParts, kcal, date, onPress }: SessionCardProps
     <Pressable className="mb-yb-3" onPress={onPress}>
       <Card variant="default">
         <View className="flex-row items-center gap-yb-4">
-          {representativeBodyPart ? (
-            <BodyPartIcon bodyPart={representativeBodyPart} size="md" />
-          ) : (
-            <View className="w-[56px] h-[56px] rounded-yb-md bg-yb-fill-pale" />
-          )}
+          <BodyPartIcon bodyPart={representativeBodyPart} size="md" />
           <View style={{ flex: 1 }}>
             <Text className="text-yb-fg text-yb-body-md font-bold">
               {bodyPartLabelText}

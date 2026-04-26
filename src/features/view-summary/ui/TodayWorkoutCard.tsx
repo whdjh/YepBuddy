@@ -16,7 +16,6 @@ export function TodayWorkoutCard({
   bodyParts,
   representativeBodyPart,
   totalSets,
-  targetSets,
 }: TodayWorkoutCardProps) {
   const router = useRouter()
 
@@ -26,13 +25,7 @@ export function TodayWorkoutCard({
     <Pressable onPress={() => router.push("/calendar")}>
       <Card variant="glass" minHeight={130}>
         <Card.Row spacing={16}>
-          {representativeBodyPart ? (
-            <BodyPartIconHost bodyPart={representativeBodyPart} size="xl" />
-          ) : (
-            <Card.Gauge current={totalSets} target={targetSets}>
-              <Card.Title size={24} design="rounded">{String(totalSets)}</Card.Title>
-            </Card.Gauge>
-          )}
+          <BodyPartIconHost bodyPart={representativeBodyPart} size="xl" />
           <Card.Column alignment="leading" spacing={4}>
             <Card.Label>{t("summary.todayWorkout")}</Card.Label>
             <Card.Title size={22}>{bodyParts}</Card.Title>
