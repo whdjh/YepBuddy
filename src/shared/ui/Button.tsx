@@ -1,4 +1,4 @@
-import { Pressable, Text, View, useColorScheme, type PressableProps } from "react-native"
+import { Pressable, Text, useColorScheme, type PressableProps } from "react-native"
 import { Host, HStack, Button as SwiftButton } from "@expo/ui/swift-ui"
 import {
   buttonStyle,
