@@ -5,16 +5,22 @@ import { Card } from "@/shared/ui/Card"
 
 interface WorkoutLinkCardProps {
   disabled?: boolean
+  onLongPress?: () => void
 }
 
-export function WorkoutLinkCard({ disabled = false }: WorkoutLinkCardProps) {
+export function WorkoutLinkCard({
+  disabled = false,
+  onLongPress,
+}: WorkoutLinkCardProps) {
   const router = useRouter()
   const { t } = useTranslation()
 
   return (
     <Pressable
       onPress={() => !disabled && router.push("/workout/countdown")}
-      disabled={disabled}
+      onLongPress={onLongPress}
+      delayLongPress={450}
+      disabled={disabled && !onLongPress}
       className={disabled ? "opacity-40" : ""}
     >
       <Card variant="glass" minHeight={200}>
