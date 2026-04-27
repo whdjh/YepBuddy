@@ -106,6 +106,19 @@
     "thisWeekSessions": "This Week",
     "moreLink": "More",
     "editSummary": "Edit Summary",
+    "done": "Done",
+    "add": "Add",
+    "added": "Added",
+    "noCards": "No cards are currently shown.",
+    "noAvailableCards": "No cards are available to add.",
+    "cards": {
+      "todayWorkout": "Today's Workout",
+      "workoutTime": "Workout Time",
+      "sets": "Sets",
+      "latestSession": "Latest Session",
+      "startWorkout": "Start Workout",
+      "weeklySessions": "This Week"
+    },
     "minuteUnit": "min",
     "setsUnit": "sets",
     "kcalUnit": "KCAL"
