@@ -14,7 +14,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
   return (
     <>
       <View className="flex-row gap-yb-3 mb-yb-3">
-        <View className="flex-1">
+        <View className="grow">
           <Stepper
             label={t("tempo.contraction")}
             value={state.contraction}
@@ -28,7 +28,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             }
           />
         </View>
-        <View className="flex-1">
+        <View className="grow">
           <Stepper
             label={t("tempo.relaxation")}
             value={state.relaxation}
@@ -44,7 +44,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
         </View>
       </View>
       <View className="flex-row gap-yb-3 mb-yb-3">
-        <View className="flex-1">
+        <View className="grow">
           <Stepper
             label={t("tempo.reps")}
             value={state.reps}
@@ -58,7 +58,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             }
           />
         </View>
-        <View className="flex-1">
+        <View className="grow">
           <Stepper
             label={t("tempo.setsUnit")}
             value={state.sets}

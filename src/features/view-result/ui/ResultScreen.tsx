@@ -110,11 +110,11 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
       </View>
 
       {isLoading ? (
-        <View className="flex-1 items-center justify-center px-yb-5">
+        <View className="grow items-center justify-center px-yb-5">
           <ActivityIndicator color={fgColor} />
         </View>
       ) : !stored ? (
-        <View className="flex-1 items-center justify-center px-yb-5">
+        <View className="grow items-center justify-center px-yb-5">
           <Text className="text-yb-fg text-yb-heading-sm">
             {t("workout.result.noData")}
           </Text>

@@ -15,10 +15,10 @@ export default function RootLayout() {
   const isDark = colorScheme === "dark"
 
   return (
-    <GestureHandlerRootView className="flex-1">
+    <GestureHandlerRootView className="h-full w-full">
       <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
         <WorkoutProvider>
-          <View className={`flex-1 ${isDark ? "dark" : ""}`}>
+          <View className={`grow ${isDark ? "dark" : ""}`}>
             <Stack
               screenOptions={{
                 headerShown: false,

@@ -102,7 +102,7 @@ export function Stepper({
       >
         <Text className="text-[20px] font-semibold text-yb-fg">−</Text>
       </Pressable>
-      <View className={`flex-1 items-center${hasJump ? " min-w-[80px]" : ""}`}>
+      <View className={`grow items-center${hasJump ? " min-w-[80px]" : ""}`}>
         <Text className="text-yb-caption text-yb-fg-secondary">{label}</Text>
         <Text className="text-[24px] font-bold text-yb-fg mt-[2px]">
           {value}
