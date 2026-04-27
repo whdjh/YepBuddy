@@ -77,7 +77,7 @@ export function ActiveWorkoutScreen() {
   return (
     <Main className="workout-mode">
       <ScrollView
-        className="flex-1"
+        className="grow"
         contentContainerStyle={{
           paddingTop: 16,
           paddingBottom: 84 + BUTTONS_HEIGHT + bottomPadding,

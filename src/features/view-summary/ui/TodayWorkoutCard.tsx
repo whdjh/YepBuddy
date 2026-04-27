@@ -10,19 +10,25 @@ interface TodayWorkoutCardProps {
   representativeBodyPart: BodyPart | null
   totalSets: number
   targetSets: number
+  onLongPress?: () => void
 }
 
 export function TodayWorkoutCard({
   bodyParts,
   representativeBodyPart,
   totalSets,
+  onLongPress,
 }: TodayWorkoutCardProps) {
   const router = useRouter()
 
   const { t } = useTranslation()
 
   return (
-    <Pressable onPress={() => router.push("/calendar")}>
+    <Pressable
+      onPress={() => router.push("/calendar")}
+      onLongPress={onLongPress}
+      delayLongPress={450}
+    >
       <Card variant="glass" minHeight={130}>
         <Card.Row spacing={16}>
           <BodyPartIconHost bodyPart={representativeBodyPart} size="xl" />

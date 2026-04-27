@@ -23,7 +23,7 @@ export function SegmentToggle({
         return (
           <Pressable
             key={i}
-            className={`flex-1 h-yb-btn-sm rounded-yb-md items-center justify-center${isActive ? " bg-yb-surface shadow-sm" : ""}`}
+            className={`grow h-yb-btn-sm rounded-yb-md items-center justify-center${isActive ? " bg-yb-surface shadow-sm" : ""}`}
             onPress={() => onChangeIndex?.(i)}
           >
             <Text

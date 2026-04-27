@@ -15,14 +15,14 @@ export function TempoModeButtons({
 
   return (
     <View className="flex-row gap-yb-3 mb-yb-4">
-      <View className="flex-1">
+      <View className="grow">
         <Button
           variant={modeIndex === 0 ? "accent" : "glass"}
           label={t("tempo.contractionFirst")}
           onPress={() => onChangeMode(0)}
         />
       </View>
-      <View className="flex-1">
+      <View className="grow">
         <Button
           variant={modeIndex === 1 ? "accent" : "glass"}
           label={t("tempo.relaxationFirst")}

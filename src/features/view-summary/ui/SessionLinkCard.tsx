@@ -10,6 +10,7 @@ interface SessionLinkCardProps {
   kcal: number | string
   day: string
   onPress?: () => void
+  onLongPress?: () => void
 }
 
 export function SessionLinkCard({
@@ -18,11 +19,17 @@ export function SessionLinkCard({
   kcal,
   day,
   onPress,
+  onLongPress,
 }: SessionLinkCardProps) {
   const { t } = useTranslation()
 
   return (
-    <Pressable onPress={onPress} disabled={!onPress}>
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={450}
+      disabled={!onPress && !onLongPress}
+    >
       <Card variant="glass" minHeight={200}>
         <Card.Column alignment="leading" spacing={0}>
           <Card.Header label={t("summary.session")} chevron />
@@ -34,9 +41,12 @@ export function SessionLinkCard({
           )}
           <Card.Spacer size={10} />
           <Card.Title>{bodyPart}</Card.Title>
-          <Card.Accent>{`${kcal}${t("summary.kcalUnit")}`}</Card.Accent>
           <Card.Spacer size={8} />
-          <Card.Caption>{day}</Card.Caption>
+          <Card.Row spacing={6} alignment="center">
+            <Card.Caption>{`${kcal}${t("summary.kcalUnit")}`}</Card.Caption>
+            <Card.Dot size={4} />
+            <Card.Caption>{day}</Card.Caption>
+          </Card.Row>
         </Card.Column>
       </Card>
     </Pressable>
