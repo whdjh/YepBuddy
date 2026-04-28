@@ -1,0 +1,59 @@
+# =========================================
+# Node.js & Yarn
+# =========================================
+node_modules/
+.yarn/*
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+.yarnrc.yml
+
+# =========================================
+# Build / Output
+# =========================================
+dist/
+build/
+out/
+coverage/
+.cache/
+.next/
+.vercel/
+tmp/
+temp/
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================================
+# Environment & Credentials
+# =========================================
+.env
+.env.local
+.env.*.local
+
+# Supabase & local config
+.supabase/
+.supabase/**/*
+supabase/config.toml
+supabase/.branches
+
+# =========================================
+# OS / Editor files
+# =========================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================================
+# Puppeteer / Chromium Cache
+# =========================================
+.user-data/
+.puppeteer/
+chrome-profile/

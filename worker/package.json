@@ -1,0 +1,26 @@
+{
+  "name": "protein-price-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "iherb_price_tracker.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whdjh/protein-price-tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/whdjh/protein-price-tracker/issues"
+  },
+  "homepage": "https://github.com/whdjh/protein-price-tracker#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.74.0",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3"
+  }
+}
