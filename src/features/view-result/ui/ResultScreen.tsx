@@ -137,6 +137,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           {/* 메모 */}
           <View className="mt-yb-6">
             <GlassTextarea
+              key={sessionId}
               placeholder={t("workout.result.memoPlaceholder")}
               value={memo}
               onChangeText={setMemo}
