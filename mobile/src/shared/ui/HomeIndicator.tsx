@@ -1,6 +1,6 @@
 import { View, type ViewProps } from "react-native"
 
-interface HomeIndicatorProps extends ViewProps {}
+type HomeIndicatorProps = ViewProps
 
 export function HomeIndicator({ className, ...rest }: HomeIndicatorProps) {
   return (
