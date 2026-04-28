@@ -1,22 +1,20 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { Main } from "@/shared/ui/Main"
 import { FilterPill } from "@/shared/ui/Chip"
-import { ProteinCard } from "@/entities/protein"
+import {
+  fetchLatestProteinPrices,
+  fetchProteins,
+  getProteinCategoryLabel,
+  mergeProteinListItems,
+  CoupangPartnersDisclosure,
+  ProteinCard,
+} from "@/entities/protein"
 import type { Protein, ProteinCategory } from "@/entities/protein"
 
-const CATEGORIES: (ProteinCategory | "all")[] = ["all", "WPC", "WPI", "Blend"]
-
-const MOCK_PROTEINS: Protein[] = [
-  { id: "p1", name: "옵티멈 골드 스탠다드 웨이", category: "WPC", volume: 2268, price: 116690, pricePerGram: 51.5, priceLevel: "mid" },
-  { id: "p2", name: "마이프로틴 임팩트 웨이", category: "WPC", volume: 2500, price: 52900, pricePerGram: 21.2, priceLevel: "low" },
-  { id: "p3", name: "BSN 신타-6 프로틴", category: "Blend", volume: 2270, price: 71500, pricePerGram: 31.5, priceLevel: "mid" },
-  { id: "p4", name: "머슬팜 컴뱃 100% 웨이", category: "WPC", volume: 2269, price: 62000, pricePerGram: 27.3, priceLevel: "mid" },
-  { id: "p5", name: "다이마타이즈 ISO100", category: "WPI", volume: 2300, price: 89000, pricePerGram: 38.7, priceLevel: "high" },
-  { id: "p6", name: "룰원 R1 프로틴", category: "WPI", volume: 2270, price: 82000, pricePerGram: 36.1, priceLevel: "mid" },
-]
+const CATEGORIES: (ProteinCategory | "all")[] = ["all", "wpc", "wpi", "wpcwpi", "creatine", "beta-alanine"]
 
 export function ProteinListScreen() {
   const router = useRouter()
@@ -24,11 +22,48 @@ export function ProteinListScreen() {
   const { t } = useTranslation()
 
   const [activeFilter, setActiveFilter] = useState<ProteinCategory | "all">("all")
+  const [proteins, setProteins] = useState<Protein[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadProteins() {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const [proteinItems, priceItems] = await Promise.all([
+          fetchProteins(),
+          fetchLatestProteinPrices(),
+        ])
+
+        if (!cancelled) {
+          setProteins(mergeProteinListItems(proteinItems, priceItems))
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Failed to load proteins")
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadProteins()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const filteredProteins = useMemo(() => {
-    if (activeFilter === "all") return MOCK_PROTEINS
-    return MOCK_PROTEINS.filter((p) => p.category === activeFilter)
-  }, [activeFilter])
+    if (activeFilter === "all") return proteins
+    return proteins.filter((p) => p.category === activeFilter)
+  }, [activeFilter, proteins])
 
   return (
     <Main>
@@ -47,7 +82,7 @@ export function ProteinListScreen() {
           {CATEGORIES.map((cat) => (
             <FilterPill
               key={cat}
-              label={cat === "all" ? t("protein.filterAll") : cat}
+              label={cat === "all" ? t("protein.filterAll") : getProteinCategoryLabel(cat)}
               variant={activeFilter === cat ? "active" : "default"}
               onPress={() => setActiveFilter(cat)}
             />
@@ -60,6 +95,22 @@ export function ProteinListScreen() {
         contentContainerClassName="px-yb-5 pt-yb-2 pb-yb-30"
         showsVerticalScrollIndicator={false}
       >
+        <CoupangPartnersDisclosure />
+        {loading && (
+          <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
+            불러오는 중...
+          </Text>
+        )}
+        {error && (
+          <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
+            {error}
+          </Text>
+        )}
+        {!loading && !error && filteredProteins.length === 0 && (
+          <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
+            표시할 프로틴이 없습니다
+          </Text>
+        )}
         {filteredProteins.map((protein) => (
           <ProteinCard
             key={protein.id}

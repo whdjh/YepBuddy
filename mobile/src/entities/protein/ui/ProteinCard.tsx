@@ -38,6 +38,8 @@ export function ProteinCard({ protein, onPress }: ProteinCardProps) {
   const fg = isDark ? "#FFFFFF" : "#3A2A1A"
   const fgSecondary = isDark ? "#EDE4D6" : "#876B45"
   const accent = isDark ? "#D4883A" : "#9B7E56"
+  const price = protein.price != null ? `${protein.price.toLocaleString()}원` : "-"
+  const pricePerGram = protein.pricePerGram != null ? `${protein.pricePerGram.toLocaleString()}원` : "-"
 
   return (
     <Pressable onPress={onPress} className="mb-yb-3">
@@ -67,7 +69,7 @@ export function ProteinCard({ protein, onPress }: ProteinCardProps) {
                 {t("protein.volume")}
               </SwiftText>
               <SwiftText modifiers={[font({ size: 15, weight: "bold" }), foregroundStyle(fg)]}>
-                {`${protein.volume.toLocaleString()}g`}
+                {`${protein.volume.toLocaleString()}g · ${protein.categoryLabel} · ${protein.flavor}`}
               </SwiftText>
             </Card.Row>
             <Card.Row spacing={4} alignment="firstTextBaseline">
@@ -75,7 +77,7 @@ export function ProteinCard({ protein, onPress }: ProteinCardProps) {
                 {t("protein.price")}
               </SwiftText>
               <SwiftText modifiers={[font({ size: 15, weight: "bold" }), foregroundStyle(fg)]}>
-                {`${protein.price.toLocaleString()}원`}
+                {price}
               </SwiftText>
             </Card.Row>
           </Card.Column>
@@ -87,7 +89,7 @@ export function ProteinCard({ protein, onPress }: ProteinCardProps) {
               {t("protein.pricePerGram")}
             </SwiftText>
             <SwiftText modifiers={[font({ size: 15, weight: "bold" }), foregroundStyle(accent)]}>
-              {`${protein.pricePerGram}원`}
+              {pricePerGram}
             </SwiftText>
           </Card.Column>
         </Card.Row>
