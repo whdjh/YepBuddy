@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { CartesianChart, Line, Area } from "victory-native"
+import { CartesianChart, Line } from "victory-native"
 import { useTranslation } from "react-i18next"
 
 import type { PriceHistoryPoint } from "../model/types"
@@ -20,7 +20,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
   if (data.length <= 1) return null
 
   const lineColor = isDark ? "#D4883A" : "#9B7E56"
-  const fillColor = isDark ? "rgba(212,136,58,0.15)" : "rgba(155,126,86,0.12)"
   const cardBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)"
   const cardBorder = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"
 
@@ -74,23 +73,12 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
             yAxis={[{ tickCount: 0, lineWidth: 0 }]}
           >
             {({ points, chartBounds }) => (
-              <>
-                {/* 영역 채우기 */}
-                <Area
-                  points={points.y}
-                  y0={chartBounds.bottom}
-                  color={fillColor}
-                  curveType="natural"
-                />
-
-                {/* 라인 */}
-                <Line
-                  points={points.y}
-                  color={lineColor}
-                  strokeWidth={2}
-                  curveType="natural"
-                />
-              </>
+              <Line
+                points={points.y}
+                color={lineColor}
+                strokeWidth={2}
+                curveType="natural"
+              />
             )}
           </CartesianChart>
         )}
