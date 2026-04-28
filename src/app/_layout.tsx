@@ -1,5 +1,6 @@
 import "../global.css"
 import "@/shared/i18n/i18n"
+import { useEffect } from "react"
 import {
   ThemeProvider,
   DarkTheme,
@@ -8,11 +9,22 @@ import {
 import { Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
+import * as Notifications from "expo-notifications"
+import * as Location from "expo-location"
+import { initHealthKit } from "@/entities/workout-session/api/healthKit"
 import { WorkoutProvider } from "@/entities/workout-session"
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
   const isDark = colorScheme === "dark"
+
+  useEffect(() => {
+    void Promise.all([
+      Notifications.requestPermissionsAsync(),
+      Location.requestForegroundPermissionsAsync(),
+      initHealthKit(),
+    ])
+  }, [])
 
   return (
     <GestureHandlerRootView className="h-full w-full">

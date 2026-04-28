@@ -44,7 +44,7 @@ interface GlassTextareaProps {
 
 export function GlassTextarea({ placeholder, defaultValue, value, onChangeText, minHeight = 140 }: GlassTextareaProps) {
   return (
-    <Host key={value ?? defaultValue} style={{ minHeight: minHeight + 20 }}>
+    <Host style={{ minHeight: minHeight + 20 }}>
       <SwiftTextField
         placeholder={placeholder}
         defaultValue={value ?? defaultValue}
