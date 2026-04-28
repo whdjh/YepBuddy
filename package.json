@@ -5,7 +5,8 @@
     "mobile": "bun run --env-file=../.env.local --env-file=.env.local --cwd mobile start",
     "mobile:ios": "bun run --env-file=../.env.local --env-file=.env.local --cwd mobile ios",
     "mobile:android": "bun run --env-file=../.env.local --env-file=.env.local --cwd mobile android",
-    "web": "bun run --env-file=../.env.local --env-file=.env.local --cwd web dev"
+    "web": "bun run --env-file=../.env.local --env-file=.env.local --cwd web dev",
+    "worker": "bun run --env-file=../.env.local --env-file=.env.local --cwd worker trackers/all.js"
   },
   "packageManager": "pnpm@10.0.0"
 }
