@@ -1,5 +1,6 @@
 export { ProteinCard } from "./ui/ProteinCard"
 export { PriceTrendChart } from "./ui/PriceTrendChart"
+export { CoupangPartnersDisclosure } from "./ui/CoupangPartnersDisclosure"
 export { buildProteinDetail, getProteinCategoryLabel, mergeProteinListItems } from "./model/adapters"
 export {
   fetchLatestProteinPrices,

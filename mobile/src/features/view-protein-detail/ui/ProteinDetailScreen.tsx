@@ -14,6 +14,7 @@ import {
   fetchProtein,
   fetchProteinFlavors,
   fetchProteinPrices,
+  CoupangPartnersDisclosure,
   PriceTrendChart,
 } from "@/entities/protein"
 import type { ProteinDetail } from "@/entities/protein"
@@ -118,6 +119,8 @@ export function ProteinDetailScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerClassName="px-yb-5 gap-yb-4 pb-yb-6"
       >
+        <CoupangPartnersDisclosure />
+
         {/* 현재가 */}
         <Card variant="glass" cornerRadius={20} paddingSize={20}>
           <Card.Header label={t("protein.detail.currentPrice")} />

@@ -9,6 +9,7 @@ import {
   fetchProteins,
   getProteinCategoryLabel,
   mergeProteinListItems,
+  CoupangPartnersDisclosure,
   ProteinCard,
 } from "@/entities/protein"
 import type { Protein, ProteinCategory } from "@/entities/protein"
@@ -94,6 +95,7 @@ export function ProteinListScreen() {
         contentContainerClassName="px-yb-5 pt-yb-2 pb-yb-30"
         showsVerticalScrollIndicator={false}
       >
+        <CoupangPartnersDisclosure />
         {loading && (
           <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
             불러오는 중...
