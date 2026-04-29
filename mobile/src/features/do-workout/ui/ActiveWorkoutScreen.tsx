@@ -1,8 +1,6 @@
-import { useState } from "react"
 import { ScrollView } from "react-native"
 import { router } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import type { BodyPart } from "@/entities/workout-session"
 import {
   registerWorkoutToCalendar,
   scheduleWorkoutReminder22h,
@@ -13,7 +11,6 @@ import { useWorkoutTimer } from "@/features/do-workout/lib/useWorkoutTimer"
 import { Main } from "@/shared/ui/Main"
 import { StatsSection } from "./StatsSection"
 import { BodyPartSelector } from "./BodyPartSelector"
-import { BodyPartDetailSheet } from "./BodyPartDetailSheet"
 import { SetCountList } from "./SetCountList"
 import { MemoSection } from "./MemoSection"
 import { WorkoutDrawer, BUTTONS_HEIGHT } from "./WorkoutDrawer"
@@ -30,7 +27,6 @@ export function ActiveWorkoutScreen() {
     resumeWorkout,
     completeWorkout,
   } = useWorkout()
-  const [detailSheetPart, setDetailSheetPart] = useState<BodyPart | null>(null)
   const {
     endWorkout,
     pauseWorkout: pauseHealthKit,
@@ -97,7 +93,7 @@ export function ActiveWorkoutScreen() {
         <BodyPartSelector
           selectedParts={state.bodyParts}
           onToggle={toggleBodyPart}
-          onLongPress={setDetailSheetPart}
+          onToggleDetail={toggleBodyPartDetail}
         />
         <SetCountList
           selectedParts={state.bodyParts}
@@ -108,18 +104,6 @@ export function ActiveWorkoutScreen() {
           onChangeText={updateMemo}
         />
       </ScrollView>
-
-      <BodyPartDetailSheet
-        visible={detailSheetPart !== null}
-        bodyPart={detailSheetPart}
-        selectedDetails={
-          state.bodyParts.find((bp) => bp.part === detailSheetPart)?.details ?? []
-        }
-        onToggleDetail={(detail) => {
-          if (detailSheetPart) toggleBodyPartDetail(detailSheetPart, detail)
-        }}
-        onClose={() => setDetailSheetPart(null)}
-      />
 
       <WorkoutDrawer
         timerDisplay={timerDisplay}
