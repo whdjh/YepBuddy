@@ -5,6 +5,7 @@ import {
 } from "./sessionStorage"
 import type {
   BodyPart,
+  BodyPartDetail,
   StoredWorkoutSession,
   WorkoutLiveStats,
   WorkoutLocation,
@@ -49,10 +50,14 @@ export function useWorkoutActions({
     dispatch({ type: "TOGGLE_BODY_PART", payload: part })
   }, [dispatch])
 
-  const updateSetCount = useCallback((part: BodyPart, setCount: number) => {
+  const updateSetCount = useCallback((
+    part: BodyPart,
+    setCount: number,
+    detail?: BodyPartDetail,
+  ) => {
     dispatch({
       type: "UPDATE_SET_COUNT",
-      payload: { part, setCount },
+      payload: { part, detail, setCount },
     })
   }, [dispatch])
 

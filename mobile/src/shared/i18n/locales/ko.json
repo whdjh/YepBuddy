@@ -91,6 +91,24 @@
       "shoulders": "어깨",
       "arms": "팔",
       "core": "코어"
+    },
+    "bodyPartDetails": {
+      "upper_chest": "상부",
+      "middle_chest": "중부",
+      "lower_chest": "하부",
+      "chest_fly": "체스트 플라이",
+      "upper_back": "상부",
+      "lower_back": "하부",
+      "traps": "승모",
+      "hamstrings": "대퇴이두",
+      "quads": "대퇴사두",
+      "calves": "종아리",
+      "glutes": "엉덩이",
+      "front_delts": "전면",
+      "side_delts": "측면",
+      "rear_delts": "후면",
+      "biceps": "이두",
+      "triceps": "삼두"
     }
   },
   "summary": {

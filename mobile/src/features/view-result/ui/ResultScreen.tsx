@@ -4,7 +4,10 @@ import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
-import { updateStoredWorkoutMemo } from "@/entities/workout-session"
+import {
+  getWorkoutBodyPartSetLabel,
+  updateStoredWorkoutMemo,
+} from "@/entities/workout-session"
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/Input"
 import { IconButton } from "@/shared/ui/IconButton"
@@ -14,6 +17,7 @@ import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
 import {
   bodyPartLabel,
+  bodyPartDetailLabel,
   formatDateWithDay,
   formatDuration,
   formatTime,
@@ -65,7 +69,14 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
     : t("workout.result.noData")
   const bodyPartTitle =
     stored?.bodyParts && stored.bodyParts.length > 0
-      ? stored.bodyParts.map(({ part }) => bodyPartLabel(part)).join(", ")
+      ? stored.bodyParts
+          .map((item) =>
+            getWorkoutBodyPartSetLabel(item, {
+              bodyPartLabel,
+              bodyPartDetailLabel,
+            }),
+          )
+          .join(", ")
       : t("workout.result.unspecified")
   const representativeBodyPart = stored?.bodyParts[0]?.part ?? null
   const startTime = stored?.startedAt ? formatTime(stored.startedAt) : "--"

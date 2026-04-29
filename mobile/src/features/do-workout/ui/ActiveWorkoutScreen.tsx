@@ -20,6 +20,7 @@ export function ActiveWorkoutScreen() {
   const {
     state,
     toggleBodyPart,
+    toggleBodyPartDetail,
     updateSetCount,
     updateMemo,
     pauseWorkout,
@@ -90,8 +91,9 @@ export function ActiveWorkoutScreen() {
           totalKcal={state.totalKcal}
         />
         <BodyPartSelector
-          selectedParts={state.bodyParts.map(({ part }) => part)}
+          selectedParts={state.bodyParts}
           onToggle={toggleBodyPart}
+          onToggleDetail={toggleBodyPartDetail}
         />
         <SetCountList
           selectedParts={state.bodyParts}

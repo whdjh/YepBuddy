@@ -8,7 +8,7 @@
 
 **Tech Stack:** Expo 55, @bacons/apple-targets, Swift, SwiftUI, WidgetKit, HealthKit, Expo Modules native module, Xcode 16+, bun
 
-**Priority:** 6순위 / 가장 어려움 / 네이티브 타겟과 Xcode 검증 포함
+**Priority:** 5순위 / 가장 어려움 / 네이티브 타겟과 Xcode 검증 포함
 
 **Original Phase:** 6
 
@@ -41,7 +41,7 @@
 
 > `@bacons/apple-targets`는 `app.json`에 플러그인을 1회 등록하고 `targets/*/expo-target.config.@(json|js)`를 스캔해 Xcode target을 구성한다. App Group은 메인 앱 entitlements와 widget target entitlements에 같은 값을 넣는다.
 
-### Task 19: Apple target / App Group / HealthKit capability 셋업
+### Task 25: Apple target / App Group / HealthKit capability 셋업
 
 **Files:**
 - Modify: `package.json`
@@ -60,7 +60,7 @@ Expected: `package.json`과 `bun.lock`에 `@bacons/apple-targets`가 추가된�
 
 - [ ] **Step 2: app.json에 메인 앱 entitlement / HealthKit 문구 / target plugin 추가**
 
-`app.json`에서 `expo.ios`와 `expo.plugins`가 아래 값을 포함하도록 병합한다. Phase 5에서 추가한 사진 권한 문구가 이미 있으면 유지한다:
+`app.json`에서 `expo.ios`와 `expo.plugins`가 아래 값을 포함하도록 병합한다. 오운완 공유 계획에서 추가한 사진 권한 문구가 이미 있으면 유지한다:
 
 ```json
 {
@@ -172,7 +172,7 @@ git commit -m "feat(widget): configure iOS widget target capabilities"
 
 ---
 
-### Task 20: HealthKit 월별 운동 여부 조회 + TimelineProvider
+### Task 26: HealthKit 월별 운동 여부 조회 + TimelineProvider
 
 **Files:**
 - Create: `targets/widget/WorkoutCalendarEntry.swift`
@@ -355,7 +355,7 @@ git commit -m "feat(widget): add HealthKit timeline provider"
 
 ---
 
-### Task 21: SwiftUI 월간 캘린더 위젯 UI
+### Task 27: SwiftUI 월간 캘린더 위젯 UI
 
 **Files:**
 - Create: `targets/widget/WidgetBundle.swift`
@@ -524,7 +524,7 @@ git commit -m "feat(widget): add monthly workout calendar view"
 
 ---
 
-### Task 22: WidgetCenter reloadAllTimelines 네이티브 브리지
+### Task 28: WidgetCenter reloadAllTimelines 네이티브 브리지
 
 **Files:**
 - Modify: `package.json`
@@ -635,7 +635,7 @@ git commit -m "feat(widget): add widget timeline reload bridge"
 
 ---
 
-### Task 23: 운동 종료 플로우에 위젯 갱신 연결
+### Task 29: 운동 종료 플로우에 위젯 갱신 연결
 
 **Files:**
 - Modify: `src/features/do-workout/ui/ActiveWorkoutScreen.tsx`
@@ -687,7 +687,7 @@ git commit -m "feat(workout): refresh widgets after workout completion"
 
 ---
 
-### Task 24: iOS prebuild / native target 검증
+### Task 30: iOS prebuild / native target 검증
 
 **Files:**
 - Generated: `ios/`

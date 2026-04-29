@@ -22,6 +22,11 @@ export function bodyPartLabel(key: string): string {
   return i18n.t(`workout.bodyParts.${key}`)
 }
 
+/** bodyPartDetail key → 번역된 라벨 */
+export function bodyPartDetailLabel(key: string): string {
+  return i18n.t(`workout.bodyPartDetails.${key}`)
+}
+
 /** HKWorkout.duration(초) → "H:MM:SS" */
 export function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600)
