@@ -35,6 +35,7 @@ export const BODY_PART_DETAILS: Record<BodyPart, BodyPartDetail[]> = {
 
 export interface WorkoutBodyPartSet {
   part: BodyPart
+  detail?: BodyPartDetail
   details?: BodyPartDetail[]
   setCount: number
 }

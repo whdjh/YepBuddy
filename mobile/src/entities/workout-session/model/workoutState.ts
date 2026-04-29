@@ -67,7 +67,11 @@ export type WorkoutAction =
   | { type: "TOGGLE_BODY_PART"; payload: WorkoutBodyPartSet["part"] }
   | {
       type: "UPDATE_SET_COUNT"
-      payload: { part: WorkoutBodyPartSet["part"]; setCount: number }
+      payload: {
+        part: WorkoutBodyPartSet["part"]
+        detail?: BodyPartDetail
+        setCount: number
+      }
     }
   | { type: "UPDATE_MEMO"; payload: string }
   | { type: "PAUSE"; payload: { pausedAt: string } }
@@ -153,7 +157,8 @@ export function workoutReducer(
       return {
         ...state,
         bodyParts: state.bodyParts.map((item) =>
-          item.part === action.payload.part
+          item.part === action.payload.part &&
+          item.detail === action.payload.detail
             ? { ...item, setCount: Math.max(1, action.payload.setCount) }
             : item,
         ),
@@ -203,18 +208,22 @@ export function workoutReducer(
       }
     case "TOGGLE_BODY_PART_DETAIL": {
       const { part, detail } = action.payload
+      const exists = state.bodyParts.some(
+        (bp) => bp.part === part && bp.detail === detail,
+      )
+
+      if (exists) {
+        return {
+          ...state,
+          bodyParts: state.bodyParts.filter(
+            (bp) => !(bp.part === part && bp.detail === detail),
+          ),
+        }
+      }
+
       return {
         ...state,
-        bodyParts: state.bodyParts.map((bp) => {
-          if (bp.part !== part) return bp
-          const current = bp.details ?? []
-          return {
-            ...bp,
-            details: current.includes(detail)
-              ? current.filter((d) => d !== detail)
-              : [...current, detail],
-          }
-        }),
+        bodyParts: [...state.bodyParts, { part, detail, setCount: 10 }],
       }
     }
     // 저장 상태 복구 액션 처리

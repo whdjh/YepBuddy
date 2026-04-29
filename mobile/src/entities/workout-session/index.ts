@@ -31,3 +31,9 @@ export type {
   WorkoutLocation,
 } from "./model/types"
 export { BODY_PART_DETAILS } from "./model/types"
+export {
+  getUniqueWorkoutBodyParts,
+  getWorkoutBodyPartDetails,
+  getWorkoutBodyPartSetKey,
+  getWorkoutBodyPartSetLabel,
+} from "./model/bodyPartSet"

@@ -1,6 +1,7 @@
 import { Alert, Linking } from "react-native"
 import * as Calendar from "expo-calendar"
 import i18n from "@/shared/i18n/i18n"
+import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
 import type { WorkoutBodyPartSet } from "../model/types"
 
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
@@ -19,7 +20,14 @@ function formatWorkoutCalendarTitle(bodyParts: WorkoutBodyPartSet[]) {
   }
 
   return bodyParts
-    .map(({ part, setCount }) => `${i18n.t(BODY_PART_LABEL_KEYS[part])}(${setCount})`)
+    .map((item) => {
+      const label = getWorkoutBodyPartSetLabel(item, {
+        bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
+        bodyPartDetailLabel: (detail) =>
+          i18n.t(`workout.bodyPartDetails.${detail}`),
+      })
+      return `${label}(${item.setCount})`
+    })
     .join(", ")
 }
 
