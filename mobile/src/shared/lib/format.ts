@@ -1,5 +1,4 @@
 import i18n from "@/shared/i18n/i18n"
-import type { BodyPartDetail } from "@/entities/workout-session/model/types"
 
 /** Date → "MM.DD 요일" */
 export function formatDateWithDay(date: Date): string {
@@ -24,7 +23,7 @@ export function bodyPartLabel(key: string): string {
 }
 
 /** bodyPartDetail key → 번역된 라벨 */
-export function bodyPartDetailLabel(key: BodyPartDetail): string {
+export function bodyPartDetailLabel(key: string): string {
   return i18n.t(`workout.bodyPartDetails.${key}`)
 }
 
