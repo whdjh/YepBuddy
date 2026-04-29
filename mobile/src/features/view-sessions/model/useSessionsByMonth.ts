@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import {
   getStoredWorkoutSessionsForMonth,
+  getUniqueWorkoutBodyParts,
   getWorkoutSummariesForMonth,
   type BodyPart,
   type StoredWorkoutSession,
@@ -8,7 +9,7 @@ import {
 import type { SessionListItem } from "./types"
 
 function getSessionBodyParts(session: StoredWorkoutSession): BodyPart[] {
-  return session.bodyParts.map((item) => item.part)
+  return getUniqueWorkoutBodyParts(session.bodyParts)
 }
 
 function getSessionTotalSets(session: StoredWorkoutSession) {

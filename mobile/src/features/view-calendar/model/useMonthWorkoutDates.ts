@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import {
   getStoredWorkoutSessionsInRange,
+  getUniqueWorkoutBodyParts,
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
 import { getLocalDateKeyFromIso } from "@/shared/lib/date"
@@ -51,7 +52,7 @@ export function useMonthWorkoutDates(
           (accumulator, session: StoredWorkoutSession) => {
             accumulator[getLocalDateKeyFromIso(session.startedAt)] = {
               sessionId: session.sessionId,
-              bodyParts: session.bodyParts.map(({ part }) => part),
+              bodyParts: getUniqueWorkoutBodyParts(session.bodyParts),
             }
             return accumulator
           },

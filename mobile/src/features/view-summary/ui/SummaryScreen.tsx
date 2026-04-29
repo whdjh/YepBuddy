@@ -3,8 +3,15 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import type { StoredWorkoutSession } from "@/entities/workout-session"
-import { bodyPartLabel, formatDateWithDay } from "@/shared/lib/format"
+import {
+  getWorkoutBodyPartSetLabel,
+  type StoredWorkoutSession,
+} from "@/entities/workout-session"
+import {
+  bodyPartDetailLabel,
+  bodyPartLabel,
+  formatDateWithDay,
+} from "@/shared/lib/format"
 import { Main } from "@/shared/ui/Main"
 import { useLatestSession } from "../model/useLatestSession"
 import { useThisWeekSessions } from "../model/useThisWeekSessions"
@@ -31,7 +38,14 @@ function getBodyPartsLabel(
     return fallback
   }
 
-  return session.bodyParts.map((item) => bodyPartLabel(item.part)).join(", ")
+  return session.bodyParts
+    .map((item) =>
+      getWorkoutBodyPartSetLabel(item, {
+        bodyPartLabel,
+        bodyPartDetailLabel,
+      }),
+    )
+    .join(", ")
 }
 
 function getSessionSetCount(session: StoredWorkoutSession | null) {
