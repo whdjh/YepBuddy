@@ -1,4 +1,6 @@
 import type {
+  BodyPart,
+  BodyPartDetail,
   WorkoutBodyPartSet,
   WorkoutLocation,
 } from "./types"
@@ -71,6 +73,7 @@ export type WorkoutAction =
   | { type: "PAUSE"; payload: { pausedAt: string } }
   | { type: "RESUME"; payload: { resumedAt: string } }
   | { type: "COMPLETE"; payload: { completedAt: string } }
+  | { type: "TOGGLE_BODY_PART_DETAIL"; payload: { part: BodyPart; detail: BodyPartDetail } }
   | { type: "RESET" }
   | { type: "HYDRATE"; payload: WorkoutState }
 
@@ -198,6 +201,22 @@ export function workoutReducer(
         completedAt: action.payload.completedAt,
         pausedAt: null,
       }
+    case "TOGGLE_BODY_PART_DETAIL": {
+      const { part, detail } = action.payload
+      return {
+        ...state,
+        bodyParts: state.bodyParts.map((bp) => {
+          if (bp.part !== part) return bp
+          const current = bp.details ?? []
+          return {
+            ...bp,
+            details: current.includes(detail)
+              ? current.filter((d) => d !== detail)
+              : [...current, detail],
+          }
+        }),
+      }
+    }
     // 저장 상태 복구 액션 처리
     case "HYDRATE":
       // 저장해둔 진행 중 운동 스냅샷으로 상태를 통째로 복구
