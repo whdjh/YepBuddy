@@ -18,6 +18,7 @@ import {
 } from "./sessionStorage"
 import type {
   BodyPart,
+  BodyPartDetail,
   StoredWorkoutSession,
   WorkoutLiveStats,
   WorkoutLocation,
@@ -44,8 +45,14 @@ interface WorkoutContextValue {
   setLiveStats: (stats: WorkoutLiveStats) => void
   /** 운동 부위를 선택하거나 해제 */
   toggleBodyPart: (part: BodyPart) => void
+  /** 운동 세부 부위를 선택하거나 해제 */
+  toggleBodyPartDetail: (part: BodyPart, detail: BodyPartDetail) => void
   /** 선택한 운동 부위의 세트 수를 변경 */
-  updateSetCount: (part: BodyPart, setCount: number) => void
+  updateSetCount: (
+    part: BodyPart,
+    setCount: number,
+    detail?: BodyPartDetail,
+  ) => void
   /** 운동 메모를 수정 */
   updateMemo: (memo: string) => void
   /** 운동을 일시정지 상태로 전환 */
@@ -150,10 +157,18 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     dispatch({ type: "TOGGLE_BODY_PART", payload: part })
   }, [])
 
-  const updateSetCount = useCallback((part: BodyPart, setCount: number) => {
+  const toggleBodyPartDetail = useCallback((part: BodyPart, detail: BodyPartDetail) => {
+    dispatch({ type: "TOGGLE_BODY_PART_DETAIL", payload: { part, detail } })
+  }, [])
+
+  const updateSetCount = useCallback((
+    part: BodyPart,
+    setCount: number,
+    detail?: BodyPartDetail,
+  ) => {
     dispatch({
       type: "UPDATE_SET_COUNT",
-      payload: { part, setCount },
+      payload: { part, detail, setCount },
     })
   }, [])
 
@@ -216,6 +231,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       setLocation,
       setLiveStats,
       toggleBodyPart,
+      toggleBodyPartDetail,
       updateSetCount,
       updateMemo,
       pauseWorkout,
@@ -235,6 +251,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       startRecording,
       state,
       toggleBodyPart,
+      toggleBodyPartDetail,
       updateMemo,
       updateSetCount,
     ],

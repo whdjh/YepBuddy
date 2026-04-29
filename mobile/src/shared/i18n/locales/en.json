@@ -91,6 +91,24 @@
       "shoulders": "Shoulders",
       "arms": "Arms",
       "core": "Core"
+    },
+    "bodyPartDetails": {
+      "upper_chest": "Upper",
+      "middle_chest": "Middle",
+      "lower_chest": "Lower",
+      "chest_fly": "Chest Fly",
+      "upper_back": "Upper",
+      "lower_back": "Lower",
+      "traps": "Traps",
+      "hamstrings": "Hamstrings",
+      "quads": "Quads",
+      "calves": "Calves",
+      "glutes": "Glutes",
+      "front_delts": "Front",
+      "side_delts": "Side",
+      "rear_delts": "Rear",
+      "biceps": "Biceps",
+      "triceps": "Triceps"
     }
   },
   "summary": {

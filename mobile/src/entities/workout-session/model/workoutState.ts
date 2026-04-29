@@ -1,4 +1,6 @@
 import type {
+  BodyPart,
+  BodyPartDetail,
   WorkoutBodyPartSet,
   WorkoutLocation,
 } from "./types"
@@ -65,12 +67,17 @@ export type WorkoutAction =
   | { type: "TOGGLE_BODY_PART"; payload: WorkoutBodyPartSet["part"] }
   | {
       type: "UPDATE_SET_COUNT"
-      payload: { part: WorkoutBodyPartSet["part"]; setCount: number }
+      payload: {
+        part: WorkoutBodyPartSet["part"]
+        detail?: BodyPartDetail
+        setCount: number
+      }
     }
   | { type: "UPDATE_MEMO"; payload: string }
   | { type: "PAUSE"; payload: { pausedAt: string } }
   | { type: "RESUME"; payload: { resumedAt: string } }
   | { type: "COMPLETE"; payload: { completedAt: string } }
+  | { type: "TOGGLE_BODY_PART_DETAIL"; payload: { part: BodyPart; detail: BodyPartDetail } }
   | { type: "RESET" }
   | { type: "HYDRATE"; payload: WorkoutState }
 
@@ -150,7 +157,8 @@ export function workoutReducer(
       return {
         ...state,
         bodyParts: state.bodyParts.map((item) =>
-          item.part === action.payload.part
+          item.part === action.payload.part &&
+          item.detail === action.payload.detail
             ? { ...item, setCount: Math.max(1, action.payload.setCount) }
             : item,
         ),
@@ -198,6 +206,26 @@ export function workoutReducer(
         completedAt: action.payload.completedAt,
         pausedAt: null,
       }
+    case "TOGGLE_BODY_PART_DETAIL": {
+      const { part, detail } = action.payload
+      const exists = state.bodyParts.some(
+        (bp) => bp.part === part && bp.detail === detail,
+      )
+
+      if (exists) {
+        return {
+          ...state,
+          bodyParts: state.bodyParts.filter(
+            (bp) => !(bp.part === part && bp.detail === detail),
+          ),
+        }
+      }
+
+      return {
+        ...state,
+        bodyParts: [...state.bodyParts, { part, detail, setCount: 10 }],
+      }
+    }
     // 저장 상태 복구 액션 처리
     case "HYDRATE":
       // 저장해둔 진행 중 운동 스냅샷으로 상태를 통째로 복구
