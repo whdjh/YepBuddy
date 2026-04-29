@@ -21,6 +21,7 @@ export {
 } from "./model/sessionStorage"
 export type {
   BodyPart,
+  BodyPartDetail,
   StoredWorkoutSession,
   WorkoutHealthKitDetail,
   WorkoutHealthKitWorkout,
@@ -29,3 +30,4 @@ export type {
   WorkoutLiveStats,
   WorkoutLocation,
 } from "./model/types"
+export { BODY_PART_DETAILS } from "./model/types"
