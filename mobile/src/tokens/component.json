@@ -325,11 +325,35 @@
 
     "$extended-state": {
       "end-btn":  { "bg": "rgba(255,107,90,0.15)", "color": "{status.error-bright}", "height": "{size.drawer-btn}", "radius": "{radius-rule.button}" },
+      "discard-btn": { "bg": "{status.error}", "color": "{white}", "height": "{size.drawer-btn}", "radius": "{radius-rule.button}" },
       "safe-btn": { "bg": "rgba(255,255,255,0.08)", "color": "{white}", "height": "{size.drawer-btn}", "radius": "{radius-rule.button}" },
       "lock-btn": { "bg": "rgba(255,255,255,0.08)", "color": "rgba(255,255,255,0.5)", "height": "{size.drawer-btn}", "radius": "{radius-rule.button}" }
     },
 
     "offset-y-collapsed": -20,
     "$note": "Liquid Glass 하단 시트 — expo-blur 또는 expo-glass-effect 사용"
+  },
+
+  "result-delete": {
+    "overlay": "rgba(0,0,0,0.10)",
+    "card": {
+      "bg": "{surface}",
+      "border": "rgba(255,255,255,0.80)",
+      "radius": "{radius-rule.card-outer}"
+    },
+    "confirm-btn": {
+      "bg": "{fill-pale}",
+      "border": "{border}",
+      "color": "{status.error}",
+      "height": "{size.btn-md}",
+      "radius": "{radius-rule.button}"
+    },
+    "cta-btn": {
+      "bg": "rgba(237,228,214,0.95)",
+      "border": "rgba(255,255,255,0.70)",
+      "color": "{status.error}",
+      "height": "{size.btn-md}",
+      "radius": "{radius-rule.button}"
+    }
   }
 }
