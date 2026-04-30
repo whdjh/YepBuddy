@@ -4,6 +4,7 @@ import type {
   WorkoutBodyPartSet,
   WorkoutLocation,
 } from "./types"
+import type { RoutinePart } from "./weeklyRoutine"
 
 // 운동 세션이 화면에서 어떤 단계에 있는지
 export type WorkoutPhase =
@@ -78,6 +79,7 @@ export type WorkoutAction =
   | { type: "RESUME"; payload: { resumedAt: string } }
   | { type: "COMPLETE"; payload: { completedAt: string } }
   | { type: "TOGGLE_BODY_PART_DETAIL"; payload: { part: BodyPart; detail: BodyPartDetail } }
+  | { type: "APPLY_BODY_PART_TEMPLATE"; payload: RoutinePart[] }
   | { type: "RESET" }
   | { type: "HYDRATE"; payload: WorkoutState }
 
@@ -226,6 +228,17 @@ export function workoutReducer(
         bodyParts: [...state.bodyParts, { part, detail, setCount: 10 }],
       }
     }
+    // 루틴 템플릿 적용 액션 처리
+    case "APPLY_BODY_PART_TEMPLATE":
+      // 추천된 루틴 세션의 부위로 기존 선택을 대체
+      return {
+        ...state,
+        bodyParts: action.payload.map((item) => ({
+          part: item.part,
+          details: item.details,
+          setCount: 10,
+        })),
+      }
     // 저장 상태 복구 액션 처리
     case "HYDRATE":
       // 저장해둔 진행 중 운동 스냅샷으로 상태를 통째로 복구

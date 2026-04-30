@@ -23,6 +23,7 @@ import type {
   WorkoutLiveStats,
   WorkoutLocation,
 } from "./types"
+import type { RoutinePart } from "./weeklyRoutine"
 import {
   initialWorkoutState,
   workoutReducer,
@@ -63,6 +64,8 @@ interface WorkoutContextValue {
   completeWorkout: () => Promise<StoredWorkoutSession | null>
   /** 운동 상태와 진행 중 스냅샷을 모두 초기화 */
   resetWorkout: () => Promise<void>
+  /** 추천된 루틴 부위 목록으로 운동 부위를 일괄 교체 */
+  applyBodyPartTemplate: (parts: RoutinePart[]) => void
 }
 
 // Provider 밖에서 잘못 사용할 경우를 잡기 위해 초기값은 null
@@ -221,6 +224,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     await clearCurrentWorkoutSnapshot()
   }, [])
 
+  const applyBodyPartTemplate = useCallback((parts: RoutinePart[]) => {
+    dispatch({ type: "APPLY_BODY_PART_TEMPLATE", payload: parts })
+  }, [])
+
   // Context로 넘길 값을 한 객체로 묶어 하위 화면에서 재사용
   const value = useMemo<WorkoutContextValue>(
     () => ({
@@ -238,8 +245,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       resumeWorkout,
       completeWorkout,
       resetWorkout,
+      applyBodyPartTemplate,
     }),
     [
+      applyBodyPartTemplate,
       completeWorkout,
       isHydrated,
       pauseWorkout,

@@ -1,5 +1,7 @@
+import { useState } from "react"
 import { ScrollView } from "react-native"
 import { router } from "expo-router"
+import type { BodyPart, RoutinePart } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   registerWorkoutToCalendar,
@@ -8,19 +10,29 @@ import {
 } from "@/entities/workout-session"
 import { useHealthKitWorkout } from "@/features/do-workout/lib/useHealthKitWorkout"
 import { useWorkoutTimer } from "@/features/do-workout/lib/useWorkoutTimer"
+import { useRoutineProgress } from "@/features/do-workout/model/useRoutineProgress"
 import { Main } from "@/shared/ui/Main"
 import { StatsSection } from "./StatsSection"
 import { BodyPartSelector } from "./BodyPartSelector"
+import { RoutineSessionPicker } from "./RoutineSessionPicker"
 import { SetCountList } from "./SetCountList"
 import { MemoSection } from "./MemoSection"
 import { WorkoutDrawer, BUTTONS_HEIGHT } from "./WorkoutDrawer"
 
 export function ActiveWorkoutScreen() {
   const insets = useSafeAreaInsets()
+  const routineProgress = useRoutineProgress()
+  const [expandedBodyPart, setExpandedBodyPart] = useState<BodyPart | null>(null)
+
+  const handleSelectSlot = (parts: RoutinePart[]) => {
+    applyBodyPartTemplate(parts)
+    setExpandedBodyPart(parts[0]?.part ?? null)
+  }
   const {
     state,
     toggleBodyPart,
     toggleBodyPartDetail,
+    applyBodyPartTemplate,
     updateSetCount,
     updateMemo,
     pauseWorkout,
@@ -90,10 +102,17 @@ export function ActiveWorkoutScreen() {
           activeKcal={state.activeKcal}
           totalKcal={state.totalKcal}
         />
+        {!routineProgress.isLoading && (
+          <RoutineSessionPicker
+            progress={routineProgress.progress}
+            onSelectSlot={handleSelectSlot}
+          />
+        )}
         <BodyPartSelector
           selectedParts={state.bodyParts}
           onToggle={toggleBodyPart}
           onToggleDetail={toggleBodyPartDetail}
+          expandedPart={expandedBodyPart}
         />
         <SetCountList
           selectedParts={state.bodyParts}

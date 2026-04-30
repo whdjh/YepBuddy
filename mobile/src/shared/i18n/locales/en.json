@@ -64,7 +64,10 @@
       "resume": "Resume",
       "pause": "Pause",
       "endWorkout": "End Workout",
-      "discardWorkout": "Discard & Exit"
+      "discardWorkout": "Discard & Exit",
+      "routinePicker": {
+        "title": "Which routine today?"
+      }
     },
     "result": {
       "duration": "Duration",
@@ -91,6 +94,42 @@
       "shoulders": "Shoulders",
       "arms": "Arms",
       "core": "Core"
+    },
+    "weeklyRoutine": {
+      "title": "Weekly Routine",
+      "summary": "{{completed}} of {{total}} routine sessions completed this week",
+      "remaining": "{{remaining}} routine sessions remaining",
+      "cycle": {
+        "regular": "Week {{current}} of {{total}}",
+        "deload": "Deload week · week {{current}} of {{total}}",
+        "notConfigured": "Using the default routine"
+      },
+      "settings": {
+        "title": "Weekly Routine Settings",
+        "save": "Save",
+        "placeholder": "Set this week's routine",
+        "regularWeeks": "Regular weeks",
+        "deloadWeeks": "Deload weeks",
+        "cycleHelp": "After regular weeks finish, the routine is shown as a deload week."
+      },
+      "status": {
+        "completed": "Done",
+        "partial": "Partial",
+        "pending": "Planned",
+        "deload": "Deload"
+      },
+      "prompt": {
+        "dismiss": "Later",
+        "cycleComplete": {
+          "title": "This routine cycle is complete",
+          "body": "Start a new cycle or adjust the routine.",
+          "action": "Start new cycle"
+        }
+      },
+      "suggestion": {
+        "reason": "This is an unfinished session from your weekly routine",
+        "complete": "You completed this week's routine"
+      }
     },
     "bodyPartDetails": {
       "upper_chest": "Upper",
@@ -123,6 +162,7 @@
     "startWorkout": "Start Workout",
     "thisWeekSessions": "This Week",
     "moreLink": "More",
+    "routineSettings": "Routine",
     "editSummary": "Edit Summary",
     "done": "Done",
     "add": "Add",

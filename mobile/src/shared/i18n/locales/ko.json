@@ -64,7 +64,10 @@
       "resume": "재개",
       "pause": "일시정지",
       "endWorkout": "운동 종료",
-      "discardWorkout": "저장하지 않고 종료하기"
+      "discardWorkout": "저장하지 않고 종료하기",
+      "routinePicker": {
+        "title": "오늘 어느 루틴 하실 건가요?"
+      }
     },
     "result": {
       "duration": "운동 시간",
@@ -91,6 +94,42 @@
       "shoulders": "어깨",
       "arms": "팔",
       "core": "코어"
+    },
+    "weeklyRoutine": {
+      "title": "주간 루틴",
+      "summary": "이번 주 루틴 {{total}}개 중 {{completed}}개 완료",
+      "remaining": "아직 {{remaining}}개 루틴이 남았어요",
+      "cycle": {
+        "regular": "{{total}}주 루틴 중 {{current}}주차",
+        "deload": "디로드 주차 · {{total}}주 루틴 중 {{current}}주차",
+        "notConfigured": "기본 루틴 사용 중"
+      },
+      "settings": {
+        "title": "주간 루틴 설정",
+        "save": "저장",
+        "placeholder": "이번 주 루틴을 설정하세요",
+        "regularWeeks": "일반 주차",
+        "deloadWeeks": "디로드 주차",
+        "cycleHelp": "일반 주차가 끝나면 디로드 주차로 표시됩니다."
+      },
+      "status": {
+        "completed": "완료",
+        "partial": "부분",
+        "pending": "예정",
+        "deload": "디로드"
+      },
+      "prompt": {
+        "dismiss": "나중에",
+        "cycleComplete": {
+          "title": "이번 루틴 사이클이 끝났어요",
+          "body": "새 사이클로 다시 시작하거나 루틴을 조정하세요.",
+          "action": "새 사이클 시작"
+        }
+      },
+      "suggestion": {
+        "reason": "이번 주 루틴에서 아직 완료하지 않은 세션이에요",
+        "complete": "이번 주 루틴을 모두 완료했어요"
+      }
     },
     "bodyPartDetails": {
       "upper_chest": "상부",
@@ -123,6 +162,7 @@
     "startWorkout": "운동 시작",
     "thisWeekSessions": "이번 주 세션",
     "moreLink": "더보기",
+    "routineSettings": "루틴 설정",
     "editSummary": "요약 편집",
     "done": "완료",
     "add": "추가",
