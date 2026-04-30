@@ -38,15 +38,26 @@ export {
   getWorkoutBodyPartSetLabel,
 } from "./model/bodyPartSet"
 export {
+  createDefaultWeeklyRoutineSettings,
+  DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
+  DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
+  DEFAULT_WEEKLY_ROUTINE_REGULAR_WEEKS,
   DEFAULT_WEEKLY_ROUTINE_SESSIONS,
+  normalizeWeeklyRoutineSettings,
+  resizeWeeklyRoutineSessions,
 } from "./model/weeklyRoutine"
 export type {
   RoutinePart,
+  WeeklyRoutinePromptState,
   WeeklyRoutineSession,
   WeeklyRoutineSettings,
 } from "./model/weeklyRoutine"
 export {
+  dismissWeeklyRoutineCycleRenewalPrompt,
+  dismissWeeklyRoutineOnboardingPrompt,
+  loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
+  saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
 } from "./model/weeklyRoutineStorage"
 export {
@@ -54,8 +65,17 @@ export {
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
+export {
+  getWeeklyRoutineCycleState,
+  restartWeeklyRoutineCycle,
+  shouldShowWeeklyRoutineSetupPrompt,
+} from "./lib/weeklyRoutineCycle"
 export type {
   WeeklyRoutineProgress,
   WeeklyRoutineSlotProgress,
   WeeklyRoutineSlotStatus,
 } from "./lib/weeklyRoutineProgress"
+export type {
+  WeeklyRoutineCycleState,
+  WeeklyRoutineSetupPromptKind,
+} from "./lib/weeklyRoutineCycle"

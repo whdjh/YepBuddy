@@ -1,7 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import type { WeeklyRoutineSettings } from "./weeklyRoutine"
+import {
+  DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
+  type WeeklyRoutinePromptState,
+  type WeeklyRoutineSettings,
+} from "./weeklyRoutine"
 
 const KEY = "yb:workout:weekly-routine"
+const PROMPT_KEY = "yb:workout:weekly-routine-prompt"
 
 // 주간 루틴 설정을 AsyncStorage에 저장
 export async function saveWeeklyRoutineSettings(
@@ -14,4 +19,44 @@ export async function saveWeeklyRoutineSettings(
 export async function loadWeeklyRoutineSettings(): Promise<WeeklyRoutineSettings | null> {
   const raw = await AsyncStorage.getItem(KEY)
   return raw ? (JSON.parse(raw) as WeeklyRoutineSettings) : null
+}
+
+// 루틴 안내 모달 노출 상태를 불러옴. 이전 저장값에는 기본값을 보강
+export async function loadWeeklyRoutinePromptState(): Promise<WeeklyRoutinePromptState> {
+  const raw = await AsyncStorage.getItem(PROMPT_KEY)
+  return raw
+    ? {
+        ...DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
+        ...(JSON.parse(raw) as Partial<WeeklyRoutinePromptState>),
+      }
+    : DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE
+}
+
+// 루틴 안내 모달 노출 상태를 AsyncStorage에 저장
+export async function saveWeeklyRoutinePromptState(
+  state: WeeklyRoutinePromptState,
+): Promise<void> {
+  await AsyncStorage.setItem(PROMPT_KEY, JSON.stringify(state))
+}
+
+// 최초 루틴 설정 안내 모달을 다시 보이지 않게 기록
+export async function dismissWeeklyRoutineOnboardingPrompt(
+  dismissedAt = new Date().toISOString(),
+): Promise<void> {
+  const current = await loadWeeklyRoutinePromptState()
+  await saveWeeklyRoutinePromptState({
+    ...current,
+    onboardingDismissedAt: dismissedAt,
+  })
+}
+
+// 사이클 종료 안내 모달을 해당 주차에 다시 보이지 않게 기록
+export async function dismissWeeklyRoutineCycleRenewalPrompt(
+  weekStartDateKey: string,
+): Promise<void> {
+  const current = await loadWeeklyRoutinePromptState()
+  await saveWeeklyRoutinePromptState({
+    ...current,
+    cycleRenewalDismissedForWeekStartDateKey: weekStartDateKey,
+  })
 }
