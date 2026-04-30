@@ -4,7 +4,7 @@ import type {
 } from "../model/weeklyRoutine"
 import { getElapsedWeeksBetweenDateKeys } from "@/shared/lib/date"
 
-export type WeeklyRoutineSetupPromptKind = "onboarding" | "cycleComplete"
+export type WeeklyRoutineSetupPromptKind = "cycleComplete"
 
 export interface WeeklyRoutineCycleState {
   currentWeekNumber: number
@@ -56,14 +56,14 @@ export function restartWeeklyRoutineCycle(
   }
 }
 
-// 루틴 설정 또는 사이클 갱신 안내 모달을 보여줄지 판단
+// 설정된 루틴 사이클이 끝났을 때 안내 모달을 보여줄지 판단
 export function shouldShowWeeklyRoutineSetupPrompt({
   settings,
   promptState,
   currentWeekStartDateKey,
 }: WeeklyRoutineSetupPromptInput): WeeklyRoutineSetupPromptKind | null {
   if (!settings) {
-    return promptState.onboardingDismissedAt ? null : "onboarding"
+    return null
   }
 
   const cycleState = getWeeklyRoutineCycleState(

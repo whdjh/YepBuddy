@@ -206,12 +206,14 @@ export function SummaryScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* 헤더 */}
-        <View className="flex-row items-center justify-between pt-yb-4 pb-yb-1">
-          <Text className="text-yb-fg text-yb-display tracking-yb-tight">{t("summary.title")}</Text>
-          <View className="flex-row items-center gap-yb-2">
+        <View className="flex-row items-center justify-between gap-yb-3 pt-yb-4 pb-yb-1">
+          <Text className="shrink text-yb-fg text-yb-display tracking-yb-tight">
+            {t("summary.title")}
+          </Text>
+          <View className="flex-row flex-wrap items-center justify-end gap-yb-2">
             {isEditing && (
               <Pressable
-                className="h-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
+                className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
                 onPress={() => setIsEditing(false)}
               >
                 <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
@@ -220,7 +222,15 @@ export function SummaryScreen() {
               </Pressable>
             )}
             <Pressable
-              className="h-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
+              className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
+              onPress={() => setIsWeeklyRoutineSettingsOpen(true)}
+            >
+              <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
+                {t("summary.routineSettings")}
+              </Text>
+            </Pressable>
+            <Pressable
+              className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
               onPress={() => setIsCardPickerOpen(true)}
             >
               <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
@@ -229,7 +239,9 @@ export function SummaryScreen() {
             </Pressable>
           </View>
         </View>
-        <Text className="text-yb-fg-secondary text-yb-label mb-yb-6">{dateString}</Text>
+        <Text className="mb-yb-6 text-yb-label text-yb-fg-secondary">
+          {dateString}
+        </Text>
 
         {cardRows.length === 0 && (
           <View className="mb-yb-4 rounded-yb-xl border border-yb-border bg-yb-surface/70 p-yb-6">
@@ -287,7 +299,6 @@ export function SummaryScreen() {
           !weeklyRoutinePlan.isLoading &&
           !isWeeklyRoutineSettingsOpen
         }
-        onPressSettings={() => setIsWeeklyRoutineSettingsOpen(true)}
       />
     </Main>
   )

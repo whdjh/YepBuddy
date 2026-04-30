@@ -21,7 +21,6 @@ export interface WeeklyRoutineSettings {
 }
 
 export interface WeeklyRoutinePromptState {
-  onboardingDismissedAt: string | null
   cycleRenewalDismissedForWeekStartDateKey: string | null
 }
 
@@ -50,7 +49,6 @@ const WEEKLY_ROUTINE_SESSION_PRESETS: RoutinePart[][] = [
 
 // 루틴 안내 모달의 기본 노출 상태
 export const DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE: WeeklyRoutinePromptState = {
-  onboardingDismissedAt: null,
   cycleRenewalDismissedForWeekStartDateKey: null,
 }
 

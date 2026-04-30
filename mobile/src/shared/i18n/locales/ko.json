@@ -117,11 +117,6 @@
       },
       "prompt": {
         "dismiss": "나중에",
-        "onboarding": {
-          "title": "주간 루틴을 정해두면 이번 주 진행률을 볼 수 있어요",
-          "body": "부위 조합과 루틴을 저장해 보세요.",
-          "action": "설정"
-        },
         "cycleComplete": {
           "title": "이번 루틴 사이클이 끝났어요",
           "body": "새 사이클로 다시 시작하거나 루틴을 조정하세요.",
@@ -164,6 +159,7 @@
     "startWorkout": "운동 시작",
     "thisWeekSessions": "이번 주 세션",
     "moreLink": "더보기",
+    "routineSettings": "루틴 설정",
     "editSummary": "요약 편집",
     "done": "완료",
     "add": "추가",

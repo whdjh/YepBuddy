@@ -5,13 +5,11 @@ import type { WeeklyRoutinePlanResult } from "../model/useWeeklyRoutinePlan"
 interface WeeklyRoutineSetupPromptModalProps {
   plan: WeeklyRoutinePlanResult
   visible: boolean
-  onPressSettings: () => void
 }
 
 export function WeeklyRoutineSetupPromptModal({
   plan,
   visible,
-  onPressSettings,
 }: WeeklyRoutineSetupPromptModalProps) {
   const { t } = useTranslation()
   const kind = plan.setupPromptKind
@@ -21,16 +19,11 @@ export function WeeklyRoutineSetupPromptModal({
   }
 
   const handlePrimaryPress = () => {
-    if (kind === "onboarding") {
-      onPressSettings()
-      return
-    }
-
     void plan.restartCurrentCycle()
   }
 
   const handleDismiss = () => {
-    void plan.dismissSetupPrompt(kind)
+    void plan.dismissSetupPrompt()
   }
 
   return (

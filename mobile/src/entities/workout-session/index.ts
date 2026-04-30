@@ -54,7 +54,6 @@ export type {
 } from "./model/weeklyRoutine"
 export {
   dismissWeeklyRoutineCycleRenewalPrompt,
-  dismissWeeklyRoutineOnboardingPrompt,
   loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
   saveWeeklyRoutinePromptState,

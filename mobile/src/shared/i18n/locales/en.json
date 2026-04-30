@@ -117,11 +117,6 @@
       },
       "prompt": {
         "dismiss": "Later",
-        "onboarding": {
-          "title": "Set a weekly routine to track this week's progress",
-          "body": "Save your body-part split and routine.",
-          "action": "Set up"
-        },
         "cycleComplete": {
           "title": "This routine cycle is complete",
           "body": "Start a new cycle or adjust the routine.",
@@ -164,6 +159,7 @@
     "startWorkout": "Start Workout",
     "thisWeekSessions": "This Week",
     "moreLink": "More",
+    "routineSettings": "Routine",
     "editSummary": "Edit Summary",
     "done": "Done",
     "add": "Add",

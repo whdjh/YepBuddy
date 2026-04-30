@@ -6,7 +6,6 @@ import {
   DEFAULT_WEEKLY_ROUTINE_SESSIONS,
   DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
   dismissWeeklyRoutineCycleRenewalPrompt,
-  dismissWeeklyRoutineOnboardingPrompt,
   getWeeklyRoutineCycleState,
   getStoredWorkoutSessionsInRange,
   loadWeeklyRoutineSettings,
@@ -36,7 +35,7 @@ export interface WeeklyRoutinePlanResult {
   isLoading: boolean
   reload: () => Promise<void>
   updateSettings: (next: WeeklyRoutineSettings) => Promise<void>
-  dismissSetupPrompt: (kind: WeeklyRoutineSetupPromptKind) => Promise<void>
+  dismissSetupPrompt: () => Promise<void>
   restartCurrentCycle: () => Promise<void>
   hasCustomSettings: boolean
   isDeloadWeek: boolean
@@ -99,19 +98,12 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
     [currentWeekStartDateKey],
   )
 
-  const dismissSetupPrompt = useCallback(
-    async (kind: WeeklyRoutineSetupPromptKind) => {
-      // 온보딩은 영구 dismiss, 사이클 완료 안내는 현재 주차에만 dismiss
-      if (kind === "onboarding") {
-        await dismissWeeklyRoutineOnboardingPrompt()
-      } else {
-        await dismissWeeklyRoutineCycleRenewalPrompt(currentWeekStartDateKey)
-      }
+  const dismissSetupPrompt = useCallback(async () => {
+    // 사이클 완료 안내는 현재 주차에만 dismiss
+    await dismissWeeklyRoutineCycleRenewalPrompt(currentWeekStartDateKey)
 
-      setPromptState(await loadWeeklyRoutinePromptState())
-    },
-    [currentWeekStartDateKey],
-  )
+    setPromptState(await loadWeeklyRoutinePromptState())
+  }, [currentWeekStartDateKey])
 
   // 현재 주차를 기준으로 루틴 사이클을 새로 시작
   const restartCurrentCycle = useCallback(async () => {
@@ -141,7 +133,7 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
     [currentWeekStartDateKey, settings],
   )
 
-  // 설정 전 또는 사이클 종료 시 안내 모달 노출 여부 계산
+  // 루틴 사이클 종료 시 안내 모달 노출 여부 계산
   const setupPromptKind = useMemo(
     () =>
       shouldShowWeeklyRoutineSetupPrompt({
