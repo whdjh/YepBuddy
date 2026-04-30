@@ -64,7 +64,10 @@
       "resume": "Resume",
       "pause": "Pause",
       "endWorkout": "End Workout",
-      "discardWorkout": "Discard & Exit"
+      "discardWorkout": "Discard & Exit",
+      "routinePicker": {
+        "title": "Which routine today?"
+      }
     },
     "result": {
       "duration": "Duration",

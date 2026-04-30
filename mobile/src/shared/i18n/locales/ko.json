@@ -64,7 +64,10 @@
       "resume": "재개",
       "pause": "일시정지",
       "endWorkout": "운동 종료",
-      "discardWorkout": "저장하지 않고 종료하기"
+      "discardWorkout": "저장하지 않고 종료하기",
+      "routinePicker": {
+        "title": "오늘 어느 루틴 하실 건가요?"
+      }
     },
     "result": {
       "duration": "운동 시간",

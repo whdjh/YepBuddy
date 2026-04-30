@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
@@ -23,12 +23,19 @@ interface BodyPartSelectorProps {
   selectedParts: WorkoutBodyPartSet[]
   onToggle: (key: BodyPart) => void
   onToggleDetail?: (part: BodyPart, detail: BodyPartDetail) => void
+  expandedPart?: BodyPart | null
 }
 
-export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail }: BodyPartSelectorProps) {
+export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expandedPart }: BodyPartSelectorProps) {
   const { t } = useTranslation()
   const [detailPart, setDetailPart] = useState<BodyPart | null>(null)
   const suppressNextPressRef = useRef<BodyPart | null>(null)
+
+  useEffect(() => {
+    if (expandedPart !== undefined) {
+      setDetailPart(expandedPart ?? null)
+    }
+  }, [expandedPart])
 
   const handleLongPress = (key: BodyPart) => {
     suppressNextPressRef.current = key
