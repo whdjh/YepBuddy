@@ -66,6 +66,10 @@ export {
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
 export {
+  getStoredWorkoutSessionDurationMinutes,
+  getStoredWorkoutSessionSetCount,
+} from "./lib/sessionMetrics"
+export {
   getWeeklyRoutineCycleState,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
