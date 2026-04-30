@@ -92,6 +92,25 @@
       "arms": "팔",
       "core": "코어"
     },
+    "weeklyRoutine": {
+      "title": "주간 루틴",
+      "summary": "이번 주 루틴 {{total}}개 중 {{completed}}개 완료",
+      "remaining": "아직 {{remaining}}개 루틴이 남았어요",
+      "settings": {
+        "title": "주간 루틴 설정",
+        "save": "저장",
+        "placeholder": "이번 주 루틴을 설정하세요"
+      },
+      "status": {
+        "completed": "완료",
+        "partial": "부분",
+        "pending": "예정"
+      },
+      "suggestion": {
+        "reason": "이번 주 루틴에서 아직 완료하지 않은 세션이에요",
+        "complete": "이번 주 루틴을 모두 완료했어요"
+      }
+    },
     "bodyPartDetails": {
       "upper_chest": "상부",
       "middle_chest": "중부",

@@ -92,6 +92,25 @@
       "arms": "Arms",
       "core": "Core"
     },
+    "weeklyRoutine": {
+      "title": "Weekly Routine",
+      "summary": "{{completed}} of {{total}} routine sessions completed this week",
+      "remaining": "{{remaining}} routine sessions remaining",
+      "settings": {
+        "title": "Weekly Routine Settings",
+        "save": "Save",
+        "placeholder": "Set this week's routine"
+      },
+      "status": {
+        "completed": "Done",
+        "partial": "Partial",
+        "pending": "Planned"
+      },
+      "suggestion": {
+        "reason": "This is an unfinished session from your weekly routine",
+        "complete": "You completed this week's routine"
+      }
+    },
     "bodyPartDetails": {
       "upper_chest": "Upper",
       "middle_chest": "Middle",
