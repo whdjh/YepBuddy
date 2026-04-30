@@ -11,10 +11,10 @@ import { useUnstableNativeVariable } from "nativewind"
 import type { BodyPart } from "@/entities/workout-session"
 import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
 
-// 버튼 영역 높이 (버튼 44 × 2 + gap 12)
+// 버튼 영역 높이 (버튼 44 × 4 + gap 12)
 const BUTTON_HEIGHT = 44
 const BUTTON_GAP = 12
-const BUTTON_COUNT = 3
+const BUTTON_COUNT = 4
 export const BUTTONS_HEIGHT =
   BUTTON_HEIGHT * BUTTON_COUNT + BUTTON_GAP * (BUTTON_COUNT - 1)
 
@@ -27,6 +27,7 @@ interface WorkoutDrawerProps {
   onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
+  onDiscard: () => void
   bottomPadding: number
 }
 
@@ -37,6 +38,7 @@ export function WorkoutDrawer({
   onTempo,
   onTogglePause,
   onEnd,
+  onDiscard,
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
@@ -136,6 +138,15 @@ export function WorkoutDrawer({
           >
             <Text className="text-yb-body-sm font-bold text-yb-on-accent">
               {t("workout.active.endWorkout")}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={onDiscard}
+            className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-drawer-danger-bg"
+          >
+            <Text className="text-yb-body-sm font-bold text-yb-drawer-danger-fg">
+              {t("workout.active.discardWorkout")}
             </Text>
           </Pressable>
         </View>

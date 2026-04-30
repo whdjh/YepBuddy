@@ -65,6 +65,8 @@
       "pause": "일시정지",
       "endWorkout": "운동 종료",
       "discardWorkout": "저장하지 않고 종료하기",
+      "discardTitle": "운동을 취소할까요?",
+      "discardMessage": "이 운동은 저장되지 않고, 오늘 다시 운동을 시작할 수 있어요.",
       "routinePicker": {
         "title": "오늘 어느 루틴 하실 건가요?"
       }
@@ -85,7 +87,14 @@
       "setsUnit": "세트",
       "heartRateUnit": "BPM",
       "avgPrefix": "평균",
-      "noData": "데이터가 없습니다."
+      "noData": "데이터가 없습니다.",
+      "deleteTitle": "이 운동 기록을 삭제하시겠습니까?",
+      "deleteMessage": "삭제하면 오늘 다시 운동을 시작할 수 있어요.\n캘린더에 등록된 일정은 삭제되지 않을 수 있어요.",
+      "deleteCancel": "취소",
+      "deleteConfirm": "운동 기록 삭제",
+      "deleteConfirmYes": "예",
+      "deleteErrorTitle": "삭제 실패",
+      "deleteErrorMessage": "운동 기록을 삭제하지 못했어요. 다시 시도해주세요."
     },
     "bodyParts": {
       "chest": "가슴",

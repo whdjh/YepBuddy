@@ -12,6 +12,7 @@ export {
 } from "./lib/reminder"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
+  deleteStoredWorkoutSession,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
   getStoredWorkoutSessionsForMonth,

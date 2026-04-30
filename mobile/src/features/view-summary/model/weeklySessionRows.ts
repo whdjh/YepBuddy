@@ -122,13 +122,17 @@ export function buildWeeklySessionRows(
   const rows: WeeklySessionRow[] = []
 
   input.progress.slots.forEach((slot) => {
-    if (slot.matchedSession && !emittedSessionIds.has(slot.matchedSession.sessionId)) {
+    if (
+      slot.status === "completed" &&
+      slot.matchedSession &&
+      !emittedSessionIds.has(slot.matchedSession.sessionId)
+    ) {
       emittedSessionIds.add(slot.matchedSession.sessionId)
       rows.push(getActualSessionRow(slot.matchedSession, input))
       return
     }
 
-    if (!slot.matchedSession) {
+    if (slot.status !== "completed") {
       rows.push(getPlannedRoutineRow(slot.routineSession, input))
     }
   })
