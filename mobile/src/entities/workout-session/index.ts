@@ -37,3 +37,25 @@ export {
   getWorkoutBodyPartSetKey,
   getWorkoutBodyPartSetLabel,
 } from "./model/bodyPartSet"
+export {
+  DEFAULT_WEEKLY_ROUTINE_SESSIONS,
+} from "./model/weeklyRoutine"
+export type {
+  RoutinePart,
+  WeeklyRoutineSession,
+  WeeklyRoutineSettings,
+} from "./model/weeklyRoutine"
+export {
+  loadWeeklyRoutineSettings,
+  saveWeeklyRoutineSettings,
+} from "./model/weeklyRoutineStorage"
+export {
+  buildWeeklyRoutineProgress,
+  getNextRoutineSuggestion,
+  isSessionMatchingRoutineSession,
+} from "./lib/weeklyRoutineProgress"
+export type {
+  WeeklyRoutineProgress,
+  WeeklyRoutineSlotProgress,
+  WeeklyRoutineSlotStatus,
+} from "./lib/weeklyRoutineProgress"
