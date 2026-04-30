@@ -96,15 +96,37 @@
       "title": "주간 루틴",
       "summary": "이번 주 루틴 {{total}}개 중 {{completed}}개 완료",
       "remaining": "아직 {{remaining}}개 루틴이 남았어요",
+      "cycle": {
+        "regular": "{{total}}주 루틴 중 {{current}}주차",
+        "deload": "디로드 주차 · {{total}}주 루틴 중 {{current}}주차",
+        "notConfigured": "기본 루틴 사용 중"
+      },
       "settings": {
         "title": "주간 루틴 설정",
         "save": "저장",
-        "placeholder": "이번 주 루틴을 설정하세요"
+        "placeholder": "이번 주 루틴을 설정하세요",
+        "regularWeeks": "일반 주차",
+        "deloadWeeks": "디로드 주차",
+        "cycleHelp": "일반 주차가 끝나면 디로드 주차로 표시됩니다."
       },
       "status": {
         "completed": "완료",
         "partial": "부분",
-        "pending": "예정"
+        "pending": "예정",
+        "deload": "디로드"
+      },
+      "prompt": {
+        "dismiss": "나중에",
+        "onboarding": {
+          "title": "주간 루틴을 정해두면 이번 주 진행률을 볼 수 있어요",
+          "body": "부위 조합과 루틴을 저장해 보세요.",
+          "action": "설정"
+        },
+        "cycleComplete": {
+          "title": "이번 루틴 사이클이 끝났어요",
+          "body": "새 사이클로 다시 시작하거나 루틴을 조정하세요.",
+          "action": "새 사이클 시작"
+        }
       },
       "suggestion": {
         "reason": "이번 주 루틴에서 아직 완료하지 않은 세션이에요",

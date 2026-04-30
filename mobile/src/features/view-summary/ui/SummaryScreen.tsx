@@ -18,6 +18,8 @@ import { useThisWeekSessions } from "../model/useThisWeekSessions"
 import { useTodayCompleted } from "../model/useTodayCompleted"
 import { useTodaySummary } from "../model/useTodaySummary"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
+import { useWeeklyRoutinePlan } from "../model/useWeeklyRoutinePlan"
+import { buildWeeklySessionRows } from "../model/weeklySessionRows"
 import {
   getSummaryCardWidth,
   type SummaryCardId,
@@ -29,6 +31,8 @@ import { WorkoutLinkCard } from "./WorkoutLinkCard"
 import { WeeklySessionList } from "./WeeklySessionList"
 import { EditableSummaryCardFrame } from "./EditableSummaryCardFrame"
 import { SummaryCardEditModal } from "./SummaryCardEditModal"
+import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
+import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 function getBodyPartsLabel(
   session: StoredWorkoutSession | null,
@@ -48,31 +52,8 @@ function getBodyPartsLabel(
     .join(", ")
 }
 
-function getSessionSetCount(session: StoredWorkoutSession | null) {
-  if (!session) {
-    return 0
-  }
-
-  return session.bodyParts.reduce((sum, item) => sum + item.setCount, 0)
-}
-
 function getRepresentativeBodyPart(session: StoredWorkoutSession | null) {
   return session?.bodyParts[0]?.part ?? null
-}
-
-function getSessionDurationMinutes(session: StoredWorkoutSession | null) {
-  if (!session) {
-    return 0
-  }
-
-  const startedAtMs = new Date(session.startedAt).getTime()
-  const completedAtMs = new Date(session.completedAt).getTime()
-
-  if (Number.isNaN(startedAtMs) || Number.isNaN(completedAtMs)) {
-    return 0
-  }
-
-  return Math.max(0, Math.round((completedAtMs - startedAtMs) / 60000))
 }
 
 export function SummaryScreen() {
@@ -80,11 +61,14 @@ export function SummaryScreen() {
   const { t } = useTranslation()
   const [isEditing, setIsEditing] = useState(false)
   const [isCardPickerOpen, setIsCardPickerOpen] = useState(false)
+  const [isWeeklyRoutineSettingsOpen, setIsWeeklyRoutineSettingsOpen] =
+    useState(false)
   const { data: todaySummary, isLoading: isTodaySummaryLoading } =
     useTodaySummary()
   const { data: latestSession } = useLatestSession()
   const { data: weekSessions } = useThisWeekSessions()
   const todayCompleted = useTodayCompleted()
+  const weeklyRoutinePlan = useWeeklyRoutinePlan()
   const {
     cardRows,
     availableCards,
@@ -108,15 +92,15 @@ export function SummaryScreen() {
   const latestSessionDay = latestSession
     ? formatDateWithDay(new Date(latestSession.startedAt))
     : t("summary.today")
-  const weeklySessions = weekSessions.map((session) => ({
-    sessionId: session.sessionId,
-    bodyPart: getBodyPartsLabel(session, t("workout.result.unspecified")),
-    representativeBodyPart: getRepresentativeBodyPart(session),
-    day: formatDateWithDay(new Date(session.startedAt)),
-    durationMin: getSessionDurationMinutes(session),
-    sets: getSessionSetCount(session),
-    kcal: "--",
-  }))
+  const weeklySessions = buildWeeklySessionRows({
+    weekSessions,
+    progress: weeklyRoutinePlan.progress,
+    fallbackBodyPartLabel: t("workout.result.unspecified"),
+    plannedLabel: t("workout.weeklyRoutine.status.pending"),
+    formatDate: formatDateWithDay,
+    bodyPartLabel,
+    bodyPartDetailLabel,
+  })
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
@@ -290,6 +274,20 @@ export function SummaryScreen() {
           setIsCardPickerOpen(false)
         }}
         onClose={() => setIsCardPickerOpen(false)}
+      />
+      <WeeklyRoutineSettingsSheet
+        plan={weeklyRoutinePlan}
+        visible={isWeeklyRoutineSettingsOpen}
+        onClose={() => setIsWeeklyRoutineSettingsOpen(false)}
+      />
+      <WeeklyRoutineSetupPromptModal
+        plan={weeklyRoutinePlan}
+        visible={
+          Boolean(weeklyRoutinePlan.setupPromptKind) &&
+          !weeklyRoutinePlan.isLoading &&
+          !isWeeklyRoutineSettingsOpen
+        }
+        onPressSettings={() => setIsWeeklyRoutineSettingsOpen(true)}
       />
     </Main>
   )
