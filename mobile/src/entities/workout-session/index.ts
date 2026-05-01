@@ -67,6 +67,7 @@ export {
 } from "./lib/weeklyRoutineProgress"
 export {
   getStoredWorkoutSessionDurationMinutes,
+  getStoredWorkoutSessionDurationSeconds,
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {

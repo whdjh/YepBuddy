@@ -14,6 +14,7 @@ import { SymbolView } from "expo-symbols"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   deleteStoredWorkoutSession,
+  getStoredWorkoutSessionDurationSeconds,
   getWorkoutBodyPartSetLabel,
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
@@ -214,7 +215,13 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
             {t("workout.result.statsTitle")}
           </Text>
           <StatsGrid
-            duration={hk?.duration != null ? formatDuration(hk.duration) : null}
+            duration={
+              hk?.duration != null
+                ? formatDuration(hk.duration)
+                : stored
+                  ? formatDuration(getStoredWorkoutSessionDurationSeconds(stored))
+                  : null
+            }
             calories={hk?.activeKcal ?? null}
             totalSets={totalSets}
             avgHeartRate={avgHeartRate}
