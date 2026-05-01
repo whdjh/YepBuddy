@@ -1,74 +1,27 @@
 import { useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
-import { useRouter } from "expo-router"
-import { useTranslation } from "react-i18next"
-import {
-  getWorkoutBodyPartSetLabel,
-  type StoredWorkoutSession,
-} from "@/entities/workout-session"
-import {
-  bodyPartDetailLabel,
-  bodyPartLabel,
-  formatDateWithDay,
-} from "@/shared/lib/format"
+import { formatDateWithDay } from "@/shared/lib/format"
 import { Main } from "@/shared/ui/Main"
-import { useLatestSession } from "../model/useLatestSession"
-import { useThisWeekSessions } from "../model/useThisWeekSessions"
-import { useTodayCompleted } from "../model/useTodayCompleted"
-import { useTodaySummary } from "../model/useTodaySummary"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
-import { useWeeklyRoutinePlan } from "../model/useWeeklyRoutinePlan"
-import { buildWeeklySessionRows } from "../model/weeklySessionRows"
 import {
   getSummaryCardWidth,
   type SummaryCardId,
 } from "../model/summaryCardLayout"
-import { TodayWorkoutCard } from "./TodayWorkoutCard"
-import { StatCard } from "@/shared/ui/StatCard"
-import { SessionLinkCard } from "./SessionLinkCard"
-import { WorkoutLinkCard } from "./WorkoutLinkCard"
-import { WeeklySessionList } from "./WeeklySessionList"
+import { useSummaryCardData } from "../model/useSummaryCardData"
+import { SummaryCardRenderer } from "./SummaryCardRenderer"
 import { EditableSummaryCardFrame } from "./EditableSummaryCardFrame"
 import { SummaryCardEditModal } from "./SummaryCardEditModal"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
-function getBodyPartsLabel(
-  session: StoredWorkoutSession | null,
-  fallback: string,
-) {
-  if (!session || session.bodyParts.length === 0) {
-    return fallback
-  }
-
-  return session.bodyParts
-    .map((item) =>
-      getWorkoutBodyPartSetLabel(item, {
-        bodyPartLabel,
-        bodyPartDetailLabel,
-      }),
-    )
-    .join(", ")
-}
-
-function getRepresentativeBodyPart(session: StoredWorkoutSession | null) {
-  return session?.bodyParts[0]?.part ?? null
-}
-
 export function SummaryScreen() {
-  const router = useRouter()
-  const { t } = useTranslation()
+  const cardData = useSummaryCardData()
+  const { t } = cardData
   const [isEditing, setIsEditing] = useState(false)
   const [isCardPickerOpen, setIsCardPickerOpen] = useState(false)
   const [isWeeklyRoutineSettingsOpen, setIsWeeklyRoutineSettingsOpen] =
     useState(false)
-  const { data: todaySummary, isLoading: isTodaySummaryLoading } =
-    useTodaySummary()
-  const { data: latestSession } = useLatestSession()
-  const { data: weekSessions } = useThisWeekSessions()
-  const todayCompleted = useTodayCompleted()
-  const weeklyRoutinePlan = useWeeklyRoutinePlan()
   const {
     cardRows,
     availableCards,
@@ -79,106 +32,10 @@ export function SummaryScreen() {
 
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
-  const todayDurationMin = Math.round(todaySummary.totalDuration / 60)
-  const latestSessionBodyParts = getBodyPartsLabel(
-    latestSession,
-    t("workout.result.unspecified"),
-  )
-  const todayRepresentativeBodyPart = getRepresentativeBodyPart(
-    todaySummary.storedSession,
-  )
-  const latestSessionRepresentativeBodyPart =
-    getRepresentativeBodyPart(latestSession)
-  const latestSessionDay = latestSession
-    ? formatDateWithDay(new Date(latestSession.startedAt))
-    : t("summary.today")
-  const weeklySessions = buildWeeklySessionRows({
-    weekSessions,
-    progress: weeklyRoutinePlan.progress,
-    fallbackBodyPartLabel: t("workout.result.unspecified"),
-    plannedLabel: t("workout.weeklyRoutine.status.pending"),
-    formatDate: formatDateWithDay,
-    bodyPartLabel,
-    bodyPartDetailLabel,
-  })
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const enterEditMode = () => setIsEditing(true)
-
-  function renderSummaryCard(cardId: SummaryCardId) {
-    switch (cardId) {
-      case "todayWorkout":
-        return (
-          <TodayWorkoutCard
-            bodyParts={getBodyPartsLabel(
-              todaySummary.storedSession,
-              t("workout.result.unspecified"),
-            )}
-            representativeBodyPart={todayRepresentativeBodyPart}
-            totalSets={todaySummary.totalSets}
-            targetSets={Math.max(24, todaySummary.totalSets || 24)}
-            onLongPress={enterEditMode}
-          />
-        )
-      case "workoutTime":
-        return (
-          <StatCard
-            label={t("summary.workoutTime")}
-            subtitle={t("summary.today")}
-            value={isTodaySummaryLoading ? "--" : todayDurationMin}
-            unit={t("summary.minuteUnit")}
-            onLongPress={enterEditMode}
-          />
-        )
-      case "sets":
-        return (
-          <StatCard
-            label={t("summary.sets")}
-            subtitle={t("summary.today")}
-            value={isTodaySummaryLoading ? "--" : todaySummary.totalSets}
-            unit={t("summary.setsUnit")}
-            onLongPress={enterEditMode}
-          />
-        )
-      case "latestSession":
-        return (
-          <SessionLinkCard
-            bodyPart={latestSessionBodyParts}
-            representativeBodyPart={latestSessionRepresentativeBodyPart}
-            kcal="--"
-            day={latestSessionDay}
-            onLongPress={enterEditMode}
-            onPress={
-              latestSession
-                ? () =>
-                    router.push(
-                      `/workout/${encodeURIComponent(latestSession.sessionId)}`,
-                    )
-                : undefined
-            }
-          />
-        )
-      case "startWorkout":
-        return (
-          <WorkoutLinkCard
-            disabled={todayCompleted}
-            onLongPress={enterEditMode}
-          />
-        )
-      case "weeklySessions":
-        return (
-          <WeeklySessionList
-            sessions={weeklySessions}
-            onLongPress={enterEditMode}
-            onMorePress={() => router.push("/sessions")}
-            onSessionPress={(sessionId) =>
-              router.push(`/workout/${encodeURIComponent(sessionId)}`)
-            }
-          />
-        )
-    }
-  }
 
   function renderEditableSummaryCard(cardId: SummaryCardId) {
     return (
@@ -188,7 +45,11 @@ export function SummaryScreen() {
         onDrag={(direction) => moveCard(cardId, direction)}
         onRemove={() => removeCard(cardId)}
       >
-        {renderSummaryCard(cardId)}
+        <SummaryCardRenderer
+          cardId={cardId}
+          data={cardData}
+          onLongPress={enterEditMode}
+        />
       </EditableSummaryCardFrame>
     )
   }
@@ -279,7 +140,13 @@ export function SummaryScreen() {
 
       <SummaryCardEditModal
         cards={hiddenCardIds}
-        renderCardPreview={renderSummaryCard}
+        renderCardPreview={(cardId) => (
+          <SummaryCardRenderer
+            cardId={cardId}
+            data={cardData}
+            onLongPress={() => {}}
+          />
+        )}
         visible={isCardPickerOpen}
         onAddCard={(cardId) => {
           addCard(cardId)
@@ -288,15 +155,15 @@ export function SummaryScreen() {
         onClose={() => setIsCardPickerOpen(false)}
       />
       <WeeklyRoutineSettingsSheet
-        plan={weeklyRoutinePlan}
+        plan={cardData.weeklyRoutinePlan}
         visible={isWeeklyRoutineSettingsOpen}
         onClose={() => setIsWeeklyRoutineSettingsOpen(false)}
       />
       <WeeklyRoutineSetupPromptModal
-        plan={weeklyRoutinePlan}
+        plan={cardData.weeklyRoutinePlan}
         visible={
-          Boolean(weeklyRoutinePlan.setupPromptKind) &&
-          !weeklyRoutinePlan.isLoading &&
+          Boolean(cardData.weeklyRoutinePlan.setupPromptKind) &&
+          !cardData.weeklyRoutinePlan.isLoading &&
           !isWeeklyRoutineSettingsOpen
         }
       />
