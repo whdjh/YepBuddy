@@ -20,3 +20,17 @@ export function getStoredWorkoutSessionDurationMinutes(
 
   return Math.max(0, Math.round((completedAtMs - startedAtMs) / 60000))
 }
+
+// 저장된 운동 세션의 진행 시간을 초 단위로 계산
+export function getStoredWorkoutSessionDurationSeconds(
+  session: StoredWorkoutSession,
+) {
+  const startedAtMs = new Date(session.startedAt).getTime()
+  const completedAtMs = new Date(session.completedAt).getTime()
+
+  if (Number.isNaN(startedAtMs) || Number.isNaN(completedAtMs)) {
+    return 0
+  }
+
+  return Math.max(0, Math.round((completedAtMs - startedAtMs) / 1000))
+}

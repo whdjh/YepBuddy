@@ -31,7 +31,10 @@ export function LocationMap({
           rotateEnabled={false}
           pitchEnabled={false}
         >
-          <Marker coordinate={{ latitude, longitude }} />
+          <Marker
+            coordinate={{ latitude, longitude }}
+            tracksViewChanges={false}
+          />
         </MapView>
       </View>
 

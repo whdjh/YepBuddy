@@ -65,6 +65,8 @@
       "pause": "Pause",
       "endWorkout": "End Workout",
       "discardWorkout": "Discard & Exit",
+      "discardTitle": "Discard this workout?",
+      "discardMessage": "This workout will not be saved, and you can start another workout today.",
       "routinePicker": {
         "title": "Which routine today?"
       }
@@ -85,7 +87,14 @@
       "setsUnit": "sets",
       "heartRateUnit": "BPM",
       "avgPrefix": "Avg",
-      "noData": "no data"
+      "noData": "No data",
+      "deleteTitle": "Delete this workout record?",
+      "deleteMessage": "After deleting it, you can start another workout today.\nCalendar events may not be deleted.",
+      "deleteCancel": "Cancel",
+      "deleteConfirm": "Delete Workout Record",
+      "deleteConfirmYes": "Yes",
+      "deleteErrorTitle": "Delete failed",
+      "deleteErrorMessage": "Could not delete this workout. Please try again."
     },
     "bodyParts": {
       "chest": "Chest",
@@ -156,7 +165,7 @@
     "workoutTime": "Workout Time",
     "sets": "Sets",
     "today": "Today",
-    "session": "Session",
+    "session": "Body Part",
     "workout": "Workout",
     "strengthTraining": "Strength Training",
     "startWorkout": "Start Workout",

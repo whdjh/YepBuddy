@@ -1,20 +1,32 @@
 import { useEffect, useRef, useState } from "react"
-import { ActivityIndicator, ScrollView, Text, View } from "react-native"
+import {
+  ActivityIndicator,
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
+  deleteStoredWorkoutSession,
+  getStoredWorkoutSessionDurationSeconds,
   getWorkoutBodyPartSetLabel,
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/Input"
 import { IconButton } from "@/shared/ui/IconButton"
+import { GlassBackground } from "@/shared/ui/GlassBackground"
 import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
+import { DeleteConfirmationSheet } from "./DeleteConfirmationSheet"
 import {
   bodyPartLabel,
   bodyPartDetailLabel,
@@ -32,11 +44,23 @@ interface ResultScreenProps {
 export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenProps) {
   const router = useRouter()
   const { t } = useTranslation()
+  const insets = useSafeAreaInsets()
   const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const deleteCtaBackgroundColor =
+    (useUnstableNativeVariable("--yb-result-delete-cta-bg") as unknown as string) ||
+    "rgba(237,228,214,0.95)"
+  const deleteCtaBorderColor =
+    (useUnstableNativeVariable("--yb-result-delete-cta-border") as unknown as string) ||
+    "rgba(255,255,255,0.70)"
+  const deleteCtaTextColor =
+    (useUnstableNativeVariable("--yb-result-delete-cta-fg") as unknown as string) ||
+    "#BD413F"
   const { data, isLoading } = useSessionDetail(sessionId)
   const stored = data?.stored
   const hk = data?.hk
   const [memo, setMemo] = useState(stored?.memo ?? "")
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -105,6 +129,35 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
       ? formatTime(hk.heartRateSamples[hk.heartRateSamples.length - 1].endDate)
       : endTime
 
+  const deleteSession = async () => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+      saveTimeoutRef.current = null
+    }
+
+    setIsDeleting(true)
+
+    try {
+      await deleteStoredWorkoutSession(sessionId)
+      setIsDeleteSheetVisible(false)
+      router.replace("/")
+    } catch {
+      Alert.alert(
+        t("workout.result.deleteErrorTitle"),
+        t("workout.result.deleteErrorMessage"),
+      )
+      setIsDeleting(false)
+    }
+  }
+
+  const handleDeletePress = () => {
+    if (!stored || isDeleting) {
+      return
+    }
+
+    setIsDeleteSheetVisible(true)
+  }
+
   return (
     <Main>
       {/* 네비게이션 */}
@@ -117,7 +170,8 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
         >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
-        <Text className="text-yb-fg text-yb-title">{dateLabel}</Text>
+        <Text className="text-yb-fg text-yb-title flex-1">{dateLabel}</Text>
+        <View className="w-yb-icon-btn" />
       </View>
 
       {isLoading ? (
@@ -133,7 +187,8 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
       ) : (
         <ScrollView
           className="grow"
-          contentContainerClassName="px-yb-5 pb-yb-10"
+          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 18) + 32 }}
+          contentContainerClassName="px-yb-5"
           showsVerticalScrollIndicator={false}
         >
           {/* 세션 헤더 */}
@@ -160,7 +215,13 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
             {t("workout.result.statsTitle")}
           </Text>
           <StatsGrid
-            duration={hk?.duration != null ? formatDuration(hk.duration) : null}
+            duration={
+              hk?.duration != null
+                ? formatDuration(hk.duration)
+                : stored
+                  ? formatDuration(getStoredWorkoutSessionDurationSeconds(stored))
+                  : null
+            }
             calories={hk?.activeKcal ?? null}
             totalSets={totalSets}
             avgHeartRate={avgHeartRate}
@@ -194,8 +255,38 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               />
             </>
           )}
+
+          <View className="items-center">
+            <Pressable
+              disabled={isDeleting}
+              className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center overflow-hidden rounded-full border px-yb-7 py-yb-4 shadow-lg active:opacity-80"
+              onPress={handleDeletePress}
+              style={{
+                backgroundColor: deleteCtaBackgroundColor,
+                borderColor: deleteCtaBorderColor,
+              }}
+            >
+              <GlassBackground
+                cornerRadius={999}
+                fallbackClassName="bg-yb-result-delete-cta-bg"
+              />
+              <Text
+                className="text-yb-body-lg font-semibold"
+                style={{ color: deleteCtaTextColor }}
+              >
+                {t("workout.result.deleteConfirm")}
+              </Text>
+            </Pressable>
+          </View>
         </ScrollView>
       )}
+
+      <DeleteConfirmationSheet
+        visible={isDeleteSheetVisible}
+        isDeleting={isDeleting}
+        onCancel={() => setIsDeleteSheetVisible(false)}
+        onConfirm={() => void deleteSession()}
+      />
     </Main>
   )
 }

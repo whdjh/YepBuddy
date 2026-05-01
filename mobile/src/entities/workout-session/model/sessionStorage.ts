@@ -148,6 +148,26 @@ export async function updateStoredWorkoutMemo(sessionId: string, memo: string) {
   return nextSession
 }
 
+/** 완료 세션 본문과 날짜별 sessionId 인덱스를 함께 삭제 */
+export async function deleteStoredWorkoutSession(sessionId: string) {
+  const session = await getStoredWorkoutSession(sessionId)
+  if (!session) {
+    return null
+  }
+
+  const dateKey = getLocalDateKeyFromIso(session.startedAt)
+  const storedDateKeys = await getStoredWorkoutDateKeys()
+  const nextDateKeys = storedDateKeys.filter((key) => key !== dateKey)
+
+  await Promise.all([
+    AsyncStorage.removeItem(getWorkoutSessionStorageKey(sessionId)),
+    AsyncStorage.removeItem(getWorkoutDateStorageKey(dateKey)),
+    saveStoredWorkoutDateKeys(nextDateKeys),
+  ])
+
+  return session
+}
+
 /** 날짜 키로 완료 세션의 sessionId를 조회 */
 export async function getStoredWorkoutSessionIdByDate(dateKey: string) {
   return AsyncStorage.getItem(getWorkoutDateStorageKey(dateKey))

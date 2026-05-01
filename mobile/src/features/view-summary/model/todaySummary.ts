@@ -3,6 +3,7 @@ import type {
   WorkoutBodyPartSet,
   WorkoutHealthKitWorkout,
 } from "@/entities/workout-session"
+import { getStoredWorkoutSessionDurationMinutes } from "@/entities/workout-session"
 
 /** 메인 요약 화면에서 오늘 카드/통계가 함께 쓰는 계산 결과 타입 */
 export interface TodaySummary {
@@ -35,6 +36,10 @@ export function mergeTodaySummary(params: {
     (sum, workout) => sum + workout.duration,
     0,
   )
+  const fallbackDuration =
+    params.storedSession != null
+      ? getStoredWorkoutSessionDurationMinutes(params.storedSession) * 60
+      : 0
   const totalKcal = params.hkWorkouts.reduce(
     (sum, workout) => sum + workout.kcal,
     0,
@@ -44,7 +49,7 @@ export function mergeTodaySummary(params: {
     bodyParts,
     hkWorkouts: params.hkWorkouts,
     storedSession: params.storedSession,
-    totalDuration,
+    totalDuration: totalDuration > 0 ? totalDuration : fallbackDuration,
     totalKcal,
     totalSets,
   }

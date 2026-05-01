@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { ScrollView } from "react-native"
+import { Alert, ScrollView } from "react-native"
 import { router } from "expo-router"
+import { useTranslation } from "react-i18next"
 import type { BodyPart, RoutinePart } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
@@ -20,6 +21,7 @@ import { MemoSection } from "./MemoSection"
 import { WorkoutDrawer, BUTTONS_HEIGHT } from "./WorkoutDrawer"
 
 export function ActiveWorkoutScreen() {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const routineProgress = useRoutineProgress()
   const [expandedBodyPart, setExpandedBodyPart] = useState<BodyPart | null>(null)
@@ -38,6 +40,7 @@ export function ActiveWorkoutScreen() {
     pauseWorkout,
     resumeWorkout,
     completeWorkout,
+    resetWorkout,
   } = useWorkout()
   const {
     endWorkout,
@@ -87,6 +90,28 @@ export function ActiveWorkoutScreen() {
     )
   }
 
+  const handleDiscard = () => {
+    Alert.alert(
+      t("workout.active.discardTitle"),
+      t("workout.active.discardMessage"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("workout.active.discardWorkout"),
+          style: "destructive",
+          onPress: () => {
+            void resetWorkout().then(() => {
+              router.replace("/")
+            })
+          },
+        },
+      ],
+    )
+  }
+
   return (
     <Main className="workout-mode">
       <ScrollView
@@ -131,6 +156,7 @@ export function ActiveWorkoutScreen() {
         onTempo={() => router.push("/(tabs)/tempo?fromWorkout=1")}
         onTogglePause={() => void handlePauseToggle()}
         onEnd={() => void handleComplete()}
+        onDiscard={handleDiscard}
         bottomPadding={bottomPadding}
       />
     </Main>
