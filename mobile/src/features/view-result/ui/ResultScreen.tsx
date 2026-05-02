@@ -170,7 +170,9 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
         >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
-        <Text className="text-yb-fg text-yb-title flex-1">{dateLabel}</Text>
+        <Text className="min-w-0 grow shrink text-yb-title text-yb-fg" numberOfLines={1}>
+          {dateLabel}
+        </Text>
         <View className="w-yb-icon-btn" />
       </View>
 
