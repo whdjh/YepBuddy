@@ -8,8 +8,11 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
-import type { BodyPart } from "@/entities/workout-session"
-import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
+import {
+  canEndWorkoutFromDrawer,
+  getWorkoutDrawerExpandedToggleLabelKey,
+  getWorkoutDrawerTimerControl,
+} from "../lib/workoutDrawerControls"
 
 // 버튼 영역 높이 (버튼 44 × 4 + gap 12)
 const BUTTON_HEIGHT = 44
@@ -17,13 +20,15 @@ const BUTTON_GAP = 12
 const BUTTON_COUNT = 4
 export const BUTTONS_HEIGHT =
   BUTTON_HEIGHT * BUTTON_COUNT + BUTTON_GAP * (BUTTON_COUNT - 1)
+export const DRAWER_VISIBLE_HEIGHT = 96
 
 const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 
 interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
-  representativeBodyPart?: BodyPart | null
+  hasCardioStarted: boolean
+  onStartCardio: () => void
   onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
@@ -34,7 +39,8 @@ interface WorkoutDrawerProps {
 export function WorkoutDrawer({
   timerDisplay,
   isPaused,
-  representativeBodyPart,
+  hasCardioStarted,
+  onStartCardio,
   onTempo,
   onTogglePause,
   onEnd,
@@ -45,6 +51,12 @@ export function WorkoutDrawer({
   const dangerColor =
     (useUnstableNativeVariable("--yb-status-error") as unknown as string) ||
     "#E5484D"
+  const accentColor =
+    (useUnstableNativeVariable("--yb-accent") as unknown as string) ||
+    "#9B7E56"
+  const cardioColor =
+    (useUnstableNativeVariable("--yb-status-success") as unknown as string) ||
+    "#308639"
   const onDangerColor =
     (useUnstableNativeVariable("--yb-on-accent") as unknown as string) ||
     "#FFFFFF"
@@ -52,6 +64,22 @@ export function WorkoutDrawer({
   const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)
   const translateY = useSharedValue(collapseHeight)
+  const timerControl = getWorkoutDrawerTimerControl(isPaused)
+  const canEndWorkout = canEndWorkoutFromDrawer(isPaused)
+  const canStartCardio = !isPaused && !hasCardioStarted
+
+  const openDrawer = () => {
+    translateY.value = withSpring(0, SPRING_CONFIG)
+    isDrawerOpen.value = true
+  }
+
+  const handleTimerControlPress = () => {
+    onTogglePause()
+
+    if (!isPaused) {
+      openDrawer()
+    }
+  }
 
   const panGesture = Gesture.Pan()
     .onUpdate((e) => {
@@ -88,7 +116,30 @@ export function WorkoutDrawer({
 
         {/* 타이머 */}
         <View className="flex-row items-center justify-center gap-yb-3 mb-yb-3">
-          <BodyPartIcon bodyPart={representativeBodyPart} size="drawer" />
+          <Pressable
+            onPress={onStartCardio}
+            disabled={!canStartCardio}
+            accessibilityLabel={t("workout.calendar.cardio")}
+            className="items-center justify-center rounded-yb-icon"
+            style={{
+              backgroundColor: hasCardioStarted
+                ? cardioColor
+                : "rgba(255,255,255,0.08)",
+              borderColor: hasCardioStarted
+                ? cardioColor
+                : "rgba(255,255,255,0.18)",
+              borderWidth: 1,
+              height: 48,
+              opacity: isPaused && !hasCardioStarted ? 0.55 : 1,
+              width: 48,
+            }}
+          >
+            <SymbolView
+              name="figure.run"
+              size={22}
+              tintColor={hasCardioStarted ? onDangerColor : cardioColor}
+            />
+          </Pressable>
 
           <Text
             className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"
@@ -98,13 +149,18 @@ export function WorkoutDrawer({
           </Text>
 
           <Pressable
-            onPress={onEnd}
-            className="h-yb-9 w-yb-9 items-center justify-center rounded-full"
-            style={{ backgroundColor: dangerColor }}
+            onPress={handleTimerControlPress}
+            accessibilityLabel={t(timerControl.labelKey)}
+            className="items-center justify-center rounded-full"
+            style={{
+              backgroundColor: isPaused ? accentColor : dangerColor,
+              height: 48,
+              width: 48,
+            }}
           >
             <SymbolView
-              name="stop.fill"
-              size={14}
+              name={timerControl.iconName}
+              size={20}
               tintColor={onDangerColor}
             />
           </Pressable>
@@ -126,14 +182,13 @@ export function WorkoutDrawer({
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
           >
             <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
-              {isPaused
-                ? t("workout.active.resume")
-                : t("workout.active.stop")}
+              {t(getWorkoutDrawerExpandedToggleLabelKey(isPaused))}
             </Text>
           </Pressable>
 
           <Pressable
             onPress={onEnd}
+            disabled={!canEndWorkout}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-accent"
           >
             <Text className="text-yb-body-sm font-bold text-yb-on-accent">

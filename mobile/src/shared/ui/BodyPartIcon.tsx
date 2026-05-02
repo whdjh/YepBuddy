@@ -19,7 +19,7 @@ interface BodyPartIconProps {
 
 const frameSizeBySize: Record<BodyPartIconSize, number> = {
   xs: 24,
-  drawer: 36,
+  drawer: 48,
   sm: 40,
   md: 56,
   lg: 64,
@@ -28,7 +28,7 @@ const frameSizeBySize: Record<BodyPartIconSize, number> = {
 
 const iconSizeBySize: Record<BodyPartIconSize, number> = {
   xs: 22,
-  drawer: 28,
+  drawer: 36,
   sm: 28,
   md: 38,
   lg: 46,
@@ -37,7 +37,7 @@ const iconSizeBySize: Record<BodyPartIconSize, number> = {
 
 const radiusBySize: Record<BodyPartIconSize, number> = {
   xs: 0,
-  drawer: 8,
+  drawer: 12,
   sm: 8,
   md: 12,
   lg: 16,

@@ -16,6 +16,7 @@ import {
   saveCompletedWorkoutSession,
   saveCurrentWorkoutSnapshot,
 } from "./sessionStorage"
+import { getWorkoutCompletedAt } from "../lib/workoutCompletion"
 import type {
   BodyPart,
   BodyPartDetail,
@@ -56,6 +57,8 @@ interface WorkoutContextValue {
   ) => void
   /** 운동 메모를 수정 */
   updateMemo: (memo: string) => void
+  /** 현재 시각부터 운동 종료까지 유산소로 기록 */
+  startCardio: () => void
   /** 운동을 일시정지 상태로 전환 */
   pauseWorkout: () => void
   /** 일시정지된 운동을 다시 시작 */
@@ -179,6 +182,13 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     dispatch({ type: "UPDATE_MEMO", payload: memo })
   }, [])
 
+  const startCardio = useCallback(() => {
+    dispatch({
+      type: "START_CARDIO",
+      payload: { cardioStartedAt: new Date().toISOString() },
+    })
+  }, [])
+
   const pauseWorkout = useCallback(() => {
     dispatch({ type: "PAUSE", payload: { pausedAt: new Date().toISOString() } })
   }, [])
@@ -196,13 +206,14 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     }
 
     // 종료 시각을 reducer에 반영하고, 별도로 완료 세션 저장까지 수행한다.
-    const completedAt = new Date().toISOString()
+    const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
     dispatch({ type: "COMPLETE", payload: { completedAt } })
 
     const session: StoredWorkoutSession = {
       sessionId: state.sessionId,
       startedAt: state.startedAt,
       completedAt,
+      cardioStartedAt: state.cardioStartedAt ?? null,
       bodyParts: state.bodyParts,
       memo: state.memo,
       location: state.location,
@@ -213,8 +224,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     return session
   }, [
     state.bodyParts,
+    state.cardioStartedAt,
     state.location,
     state.memo,
+    state.pausedAt,
     state.sessionId,
     state.startedAt,
   ])
@@ -241,6 +254,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       toggleBodyPartDetail,
       updateSetCount,
       updateMemo,
+      startCardio,
       pauseWorkout,
       resumeWorkout,
       completeWorkout,
@@ -256,6 +270,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       resumeWorkout,
       setLiveStats,
       setLocation,
+      startCardio,
       startCountdown,
       startRecording,
       state,

@@ -10,6 +10,9 @@ const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
 const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
 let hasVerifiedStoredWorkoutDateKeys = false
 
+type PersistedWorkoutSession = Omit<StoredWorkoutSession, "cardioStartedAt"> &
+  Partial<Pick<StoredWorkoutSession, "cardioStartedAt">>
+
 // 완료된 운동 세션 본문은 sessionId 기준으로 저장
 export const getWorkoutSessionStorageKey = (sessionId: string) =>
   `yb:workout:session:${sessionId}`
@@ -52,14 +55,17 @@ export async function clearWorkoutReminderId() {
   await AsyncStorage.removeItem(WORKOUT_REMINDER_STORAGE_KEY)
 }
 
+/** 날짜별 sessionId 저장 키에서 YYYY-MM-DD 날짜 키만 추출 */
 function getDateKeyFromStorageKey(storageKey: string) {
   return storageKey.slice(WORKOUT_DATE_STORAGE_PREFIX.length)
 }
 
+/** 날짜 키 목록에서 중복을 제거하고 최신 날짜순으로 정렬 */
 function normalizeStoredDateKeys(dateKeys: string[]) {
   return [...new Set(dateKeys)].sort((a, b) => b.localeCompare(a))
 }
 
+/** 완료 세션이 저장된 날짜 키 인덱스를 저장 */
 async function saveStoredWorkoutDateKeys(dateKeys: string[]) {
   await AsyncStorage.setItem(
     WORKOUT_DATES_STORAGE_KEY,
@@ -67,6 +73,7 @@ async function saveStoredWorkoutDateKeys(dateKeys: string[]) {
   )
 }
 
+/** 저장된 날짜 키 인덱스를 읽고, 형식이 맞지 않으면 null 반환 */
 async function getStoredWorkoutDateKeysFromIndex() {
   const value = await AsyncStorage.getItem(WORKOUT_DATES_STORAGE_KEY)
   if (!value) {
@@ -81,6 +88,7 @@ async function getStoredWorkoutDateKeysFromIndex() {
   return normalizeStoredDateKeys(parsed)
 }
 
+/** 날짜별 sessionId 저장 키 전체를 스캔해 날짜 키 인덱스를 다시 생성 */
 async function rebuildStoredWorkoutDateKeys() {
   const dateKeys = (await AsyncStorage.getAllKeys())
     .filter((key) => key.startsWith(WORKOUT_DATE_STORAGE_PREFIX))
@@ -91,6 +99,7 @@ async function rebuildStoredWorkoutDateKeys() {
   return normalizedDateKeys
 }
 
+/** 저장된 날짜 키 인덱스를 가져오고, 필요하면 실제 저장 키 기준으로 재검증 */
 async function getStoredWorkoutDateKeys() {
   const indexedDateKeys = await getStoredWorkoutDateKeysFromIndex()
   if (indexedDateKeys && hasVerifiedStoredWorkoutDateKeys) {
@@ -102,12 +111,22 @@ async function getStoredWorkoutDateKeys() {
   return rebuiltDateKeys
 }
 
+/** 날짜 키가 지정된 시작/종료 날짜 키 범위 안에 있는지 확인 */
 function isDateKeyInRange(
   dateKey: string,
   startDateKey: string,
   endDateKey: string,
 ) {
   return dateKey >= startDateKey && dateKey <= endDateKey
+}
+
+/** 저장된 세션 JSON을 현재 StoredWorkoutSession 형태로 정규화 */
+function parseStoredWorkoutSession(value: string) {
+  const session = JSON.parse(value) as PersistedWorkoutSession
+  return {
+    ...session,
+    cardioStartedAt: session.cardioStartedAt ?? null,
+  }
 }
 
 /** 완료 세션 본문과 날짜별 sessionId 인덱스를 함께 저장 */
@@ -133,7 +152,7 @@ export async function saveCompletedWorkoutSession(
 /** sessionId로 완료 세션 하나를 조회 */
 export async function getStoredWorkoutSession(sessionId: string) {
   const value = await AsyncStorage.getItem(getWorkoutSessionStorageKey(sessionId))
-  return value ? (JSON.parse(value) as StoredWorkoutSession) : null
+  return value ? parseStoredWorkoutSession(value) : null
 }
 
 /** 완료 세션 메모만 수정한 뒤 다시 저장 */
@@ -173,6 +192,7 @@ export async function getStoredWorkoutSessionIdByDate(dateKey: string) {
   return AsyncStorage.getItem(getWorkoutDateStorageKey(dateKey))
 }
 
+/** 날짜 키 범위 안에 있는 완료 세션 id 목록을 최신 날짜순으로 조회 */
 async function getStoredWorkoutSessionIdsByDateRange(
   startDateKey: string,
   endDateKey: string,
@@ -228,7 +248,7 @@ export async function getStoredWorkoutSessionsInRange(
   )
 
   return sessionEntries
-    .map(([, value]) => (value ? (JSON.parse(value) as StoredWorkoutSession) : null))
+    .map(([, value]) => (value ? parseStoredWorkoutSession(value) : null))
     .filter((session): session is StoredWorkoutSession => session !== null)
 }
 
@@ -273,7 +293,7 @@ export async function getLatestStoredWorkoutSession() {
     const value = await AsyncStorage.getItem(
       getWorkoutSessionStorageKey(sessionId),
     )
-    const session = value ? (JSON.parse(value) as StoredWorkoutSession) : null
+    const session = value ? parseStoredWorkoutSession(value) : null
     if (session) {
       return session
     }

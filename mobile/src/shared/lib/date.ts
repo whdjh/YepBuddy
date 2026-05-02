@@ -94,3 +94,9 @@ export function getIsoAfterHours(iso: string, hours: number) {
 export function getTimeDistanceMs(a: string, b: string) {
   return Math.abs(new Date(a).getTime() - new Date(b).getTime())
 }
+
+/** ISO 시각 문자열을 ms timestamp로 바꾸고, 잘못된 값은 null로 처리 */
+export function getTimestampMsFromIso(iso: string) {
+  const timestamp = new Date(iso).getTime()
+  return Number.isFinite(timestamp) ? timestamp : null
+}

@@ -29,6 +29,8 @@ export interface WorkoutState {
   startedAt: string | null
   /** 종료 시각 */
   completedAt: string | null
+  /** 유산소 시작 시각 */
+  cardioStartedAt: string | null
   /** 일시정지 시각 */
   pausedAt: string | null
   /** 지금까지 pause된 총 시간 */
@@ -75,6 +77,7 @@ export type WorkoutAction =
       }
     }
   | { type: "UPDATE_MEMO"; payload: string }
+  | { type: "START_CARDIO"; payload: { cardioStartedAt: string } }
   | { type: "PAUSE"; payload: { pausedAt: string } }
   | { type: "RESUME"; payload: { resumedAt: string } }
   | { type: "COMPLETE"; payload: { completedAt: string } }
@@ -89,6 +92,7 @@ export const initialWorkoutState: WorkoutState = {
   sessionId: null,
   startedAt: null,
   completedAt: null,
+  cardioStartedAt: null,
   pausedAt: null,
   pausedDuration: 0,
   bodyParts: [],
@@ -120,6 +124,7 @@ export function workoutReducer(
         sessionId: action.payload.sessionId,
         startedAt: action.payload.startedAt,
         completedAt: null,
+        cardioStartedAt: null,
         pausedAt: null,
         pausedDuration: 0,
       }
@@ -171,6 +176,15 @@ export function workoutReducer(
       return {
         ...state,
         memo: action.payload,
+      }
+    case "START_CARDIO":
+      if (state.phase !== "recording" || state.cardioStartedAt) {
+        return state
+      }
+
+      return {
+        ...state,
+        cardioStartedAt: action.payload.cardioStartedAt,
       }
     // 일시정지 액션 처리
     case "PAUSE":
@@ -242,7 +256,11 @@ export function workoutReducer(
     // 저장 상태 복구 액션 처리
     case "HYDRATE":
       // 저장해둔 진행 중 운동 스냅샷으로 상태를 통째로 복구
-      return action.payload
+      return {
+        ...initialWorkoutState,
+        ...action.payload,
+        cardioStartedAt: action.payload.cardioStartedAt ?? null,
+      }
     // 초기화 액션 처리
     case "RESET":
       // 운동 세션을 초기 상태로 완전히 되돌림
