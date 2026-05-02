@@ -1,13 +1,16 @@
-import { SymbolView } from "expo-symbols"
 import type { ReactNode } from "react"
 import {
   Modal,
   Pressable,
   ScrollView,
+  StyleSheet,
   Text,
   View,
-  useColorScheme,
 } from "react-native"
+import {
+  GestureHandlerRootView,
+  Pressable as GesturePressable,
+} from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
 import {
   buildSummaryCardRows,
@@ -32,71 +35,80 @@ export function SummaryCardEditModal({
 }: SummaryCardEditModalProps) {
   const { t } = useTranslation()
 
-  const isDark = useColorScheme() === "dark"
-  const iconColor = isDark ? "#F8E7D0" : "#5B4126"
-
   return (
     <Modal
-      animationType="fade"
+      animationType="slide"
       transparent
       visible={visible}
       onRequestClose={onClose}
     >
-      <View className="absolute inset-0 justify-end bg-black/35">
-        <Pressable className="absolute inset-0" onPress={onClose} />
-        <View className="rounded-t-yb-xl border border-yb-border bg-yb-surface px-yb-5 pb-yb-8 pt-yb-5">
-          <View className="mb-yb-4 flex-row items-center justify-between">
-            <Text className="text-yb-title font-bold text-yb-fg">
+      <GestureHandlerRootView style={StyleSheet.absoluteFill}>
+        <View className="absolute inset-0 justify-end bg-yb-result-delete-overlay">
+          <GesturePressable style={StyleSheet.absoluteFill} onPress={onClose} />
+          <View className="z-10 rounded-t-yb-drawer border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
+            <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
+            <Text className="mb-yb-5 text-yb-heading-sm text-yb-fg">
               {t("summary.editSummary")}
             </Text>
+
+            {cards.length === 0 ? (
+              <View className="py-yb-6">
+                <Text className="text-center text-yb-body-md font-semibold text-yb-fg-secondary">
+                  {t("summary.noAvailableCards")}
+                </Text>
+              </View>
+            ) : (
+              <ScrollView
+                className="shrink"
+                contentContainerClassName="gap-yb-4 pb-yb-2"
+                showsVerticalScrollIndicator={false}
+              >
+                {buildSummaryCardRows(cards).map((row) => {
+                  const isHalfRow =
+                    row.length > 1 || getSummaryCardWidth(row[0]) === "half"
+
+                  return (
+                    <View
+                      key={row.join(":")}
+                      className={isHalfRow ? "flex-row gap-yb-4" : ""}
+                    >
+                      {row.map((cardId) => (
+                        <Pressable
+                          key={cardId}
+                          accessibilityLabel={t("summary.add")}
+                          className={
+                            isHalfRow
+                              ? "basis-0 grow active:opacity-85"
+                              : "active:opacity-85"
+                          }
+                          onPress={() => onAddCard(cardId)}
+                        >
+                          <View pointerEvents="none">
+                            {renderCardPreview(cardId)}
+                          </View>
+                        </Pressable>
+                      ))}
+                      {isHalfRow && row.length === 1 && (
+                        <View className="basis-0 grow" />
+                      )}
+                    </View>
+                  )
+                })}
+              </ScrollView>
+            )}
+
             <Pressable
               accessibilityLabel={t("summary.done")}
-              className="h-10 w-10 items-center justify-center rounded-full bg-yb-fill-pale"
+              className="mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
               onPress={onClose}
             >
-              <SymbolView name="xmark" size={16} tintColor={iconColor} />
+              <Text className="text-yb-body-lg text-yb-on-accent">
+                {t("summary.done")}
+              </Text>
             </Pressable>
           </View>
-
-          {cards.length === 0 ? (
-            <View className="rounded-yb-xl border border-yb-border bg-yb-surface-subtle p-yb-6">
-              <Text className="text-center text-yb-body-md font-semibold text-yb-fg-secondary">
-                {t("summary.noAvailableCards")}
-              </Text>
-            </View>
-          ) : (
-            <ScrollView
-              className="max-h-[560px]"
-              contentContainerClassName="gap-yb-4 pb-yb-2"
-              showsVerticalScrollIndicator={false}
-            >
-              {buildSummaryCardRows(cards).map((row) => {
-                const isHalfRow =
-                  row.length > 1 || getSummaryCardWidth(row[0]) === "half"
-
-                return (
-                  <View
-                    key={row.join(":")}
-                    className={isHalfRow ? "flex-row gap-yb-4" : ""}
-                  >
-                    {row.map((cardId) => (
-                      <Pressable
-                        key={cardId}
-                        accessibilityLabel={t("summary.add")}
-                        className={isHalfRow ? "basis-0 grow" : undefined}
-                        onPress={() => onAddCard(cardId)}
-                      >
-                        <View pointerEvents="none">{renderCardPreview(cardId)}</View>
-                      </Pressable>
-                    ))}
-                    {isHalfRow && row.length === 1 && <View className="basis-0 grow" />}
-                  </View>
-                )
-              })}
-            </ScrollView>
-          )}
         </View>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   )
 }

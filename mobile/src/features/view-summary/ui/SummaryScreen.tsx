@@ -1,6 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Alert, Pressable, ScrollView, Text, View } from "react-native"
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+  useColorScheme,
+} from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect"
+import { SymbolView } from "expo-symbols"
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"
@@ -16,9 +31,12 @@ import { SummaryCardEditModal } from "./SummaryCardEditModal"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
+const IS_LIQUID_GLASS_AVAILABLE = isLiquidGlassAvailable()
+
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
+  const insets = useSafeAreaInsets()
   const notificationPermissionRequestDone =
     useNotificationPermissionRequestDone()
   const [isEditing, setIsEditing] = useState(false)
@@ -34,6 +52,7 @@ export function SummaryScreen() {
     addCard,
     removeCard,
     moveCard,
+    moveCardWithinRow,
   } = useSummaryCardLayout()
 
   const todayDate = new Date()
@@ -51,6 +70,10 @@ export function SummaryScreen() {
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const enterEditMode = () => setIsEditing(true)
+  const openCardPicker = () => {
+    setIsEditing(true)
+    setIsCardPickerOpen(true)
+  }
 
   const closeRoutineFeatureAlert = useCallback(() => {
     isWeeklyRoutineFeatureAlertOpenRef.current = false
@@ -110,6 +133,7 @@ export function SummaryScreen() {
         key={cardId}
         isEditing={isEditing}
         onDrag={(direction) => moveCard(cardId, direction)}
+        onMoveWithinRow={(direction) => moveCardWithinRow(cardId, direction)}
         onRemove={() => removeCard(cardId)}
       >
         <SummaryCardRenderer
@@ -133,55 +157,49 @@ export function SummaryScreen() {
         contentContainerClassName="px-yb-5 pb-yb-30"
         showsVerticalScrollIndicator={false}
       >
-        {/* 헤더 */}
-        <View className="flex-row items-center justify-between gap-yb-3 pt-yb-4 pb-yb-1">
-          <Text className="shrink text-yb-fg text-yb-display tracking-yb-tight">
-            {t("summary.title")}
-          </Text>
-          <View className="flex-row flex-wrap items-center justify-end gap-yb-2">
-            {isEditing && (
+        {isEditing ? (
+          <View className="pt-yb-4 pb-yb-6">
+            <View className="h-yb-12" />
+          </View>
+        ) : (
+          <>
+            {/* 헤더 */}
+            <View className="flex-row items-center justify-between gap-yb-3 pt-yb-4 pb-yb-1">
+              <Text className="shrink text-yb-fg text-yb-display tracking-yb-tight">
+                {t("summary.title")}
+              </Text>
               <Pressable
-                className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
-                onPress={() => setIsEditing(false)}
+                disabled={weeklyRoutinePlan.isLoading}
+                className={`h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4 ${
+                  weeklyRoutinePlan.isLoading ? "opacity-50" : ""
+                }`}
+                onPress={handleRoutineTogglePress}
               >
                 <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                  {t("summary.done", { defaultValue: "완료" })}
+                  {routineToggleLabel}
                 </Text>
               </Pressable>
-            )}
-            <Pressable
-              disabled={weeklyRoutinePlan.isLoading}
-              className={`h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4 ${
-                weeklyRoutinePlan.isLoading ? "opacity-50" : ""
-              }`}
-              onPress={handleRoutineTogglePress}
-            >
-              <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                {routineToggleLabel}
-              </Text>
-            </Pressable>
-            <Pressable
-              className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
-              onPress={() => setIsCardPickerOpen(true)}
-            >
-              <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                {t("summary.editSummary")}
-              </Text>
-            </Pressable>
-          </View>
-        </View>
-        <Text className="mb-yb-6 text-yb-label text-yb-fg-secondary">
-          {dateString}
-        </Text>
+            </View>
+            <Text className="mb-yb-6 text-yb-label text-yb-fg-secondary">
+              {dateString}
+            </Text>
+          </>
+        )}
 
         {cardRows.length === 0 && (
-          <View className="mb-yb-4 rounded-yb-xl border border-yb-border bg-yb-surface/70 p-yb-6">
+          <Pressable
+            accessibilityLabel={t("summary.add")}
+            className="mb-yb-4 rounded-yb-xl border border-yb-border bg-yb-surface/70 p-yb-6 active:opacity-80"
+            onPress={openCardPicker}
+            onLongPress={enterEditMode}
+            delayLongPress={450}
+          >
             <Text className="text-center text-yb-body-md font-semibold text-yb-fg-secondary">
               {t("summary.noCards", {
                 defaultValue: "표시 중인 카드가 없습니다.",
               })}
             </Text>
-          </View>
+          </Pressable>
         )}
 
         {cardRows.map((row) => {
@@ -207,6 +225,16 @@ export function SummaryScreen() {
           )
         })}
       </ScrollView>
+
+      {isEditing && (
+        <SummaryEditControls
+          addLabel={t("summary.add")}
+          doneLabel={t("summary.done", { defaultValue: "완료" })}
+          topOffset={insets.top + 12}
+          onAdd={openCardPicker}
+          onDone={() => setIsEditing(false)}
+        />
+      )}
 
       <SummaryCardEditModal
         cards={hiddenCardIds}
@@ -240,5 +268,94 @@ export function SummaryScreen() {
         }
       />
     </Main>
+  )
+}
+
+interface SummaryEditControlsProps {
+  addLabel: string
+  doneLabel: string
+  topOffset: number
+  onAdd: () => void
+  onDone: () => void
+}
+
+function SummaryEditControls({
+  addLabel,
+  doneLabel,
+  topOffset,
+  onAdd,
+  onDone,
+}: SummaryEditControlsProps) {
+  const isDark = useColorScheme() === "dark"
+  const plusTintColor = isDark ? "#FFFFFF" : "#FAF7F2"
+  const progress = useSharedValue(0)
+
+  useEffect(() => {
+    progress.value = withSpring(1, { damping: 18, stiffness: 260 })
+  }, [progress])
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: progress.value,
+    transform: [
+      { translateY: (1 - progress.value) * -8 },
+      { scale: 0.92 + progress.value * 0.08 },
+    ],
+  }))
+
+  return (
+    <Animated.View
+      pointerEvents="box-none"
+      className="absolute left-yb-5 right-yb-5 z-20 flex-row items-center justify-between"
+      style={[animatedStyle, { top: topOffset }]}
+    >
+      <Pressable
+        accessibilityLabel={addLabel}
+        className={`h-yb-12 w-yb-12 items-center justify-center rounded-full shadow-yb-sm active:scale-95 ${
+          isDark
+            ? "border border-yb-border bg-yb-surface-subtle"
+            : "bg-yb-fill-strong"
+        }`}
+        onPress={onAdd}
+      >
+        <SymbolView name="plus" size={24} tintColor={plusTintColor} />
+      </Pressable>
+      <Pressable
+        accessibilityLabel={doneLabel}
+        className="h-yb-12 w-yb-12 items-center justify-center overflow-hidden rounded-full border border-white/70 bg-white/20 shadow-yb-sm active:scale-95 dark:border-white/20 dark:bg-white/10"
+        onPress={onDone}
+      >
+        <GlassCircleBackground isDark={isDark} />
+        <SymbolView
+          name="checkmark"
+          size={24}
+          tintColor={isDark ? "#D6FAD6" : "#17501D"}
+        />
+      </Pressable>
+    </Animated.View>
+  )
+}
+
+function GlassCircleBackground({ isDark }: { isDark: boolean }) {
+  if (IS_LIQUID_GLASS_AVAILABLE) {
+    return (
+      <GlassView
+        glassEffectStyle="regular"
+        isInteractive
+        colorScheme={isDark ? "dark" : "light"}
+        tintColor={isDark ? "rgba(255,255,255,0.14)" : "rgba(255,255,255,0.34)"}
+        className="absolute inset-0"
+        pointerEvents="none"
+        style={{ bottom: 0, left: 0, position: "absolute", right: 0, top: 0 }}
+      />
+    )
+  }
+
+  return (
+    <View
+      className={`absolute inset-0 ${
+        isDark ? "bg-white/10" : "bg-white/35"
+      }`}
+      pointerEvents="none"
+    />
   )
 }

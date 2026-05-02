@@ -5,6 +5,7 @@ import {
   addSummaryCard,
   buildSummaryCardRows,
   moveSummaryCard,
+  moveSummaryCardWithinRow,
   removeSummaryCard,
   type SummaryCardId,
 } from "./summaryCardLayout"
@@ -70,6 +71,14 @@ export function useSummaryCardLayout() {
     [cardIds, persistCardIds],
   )
 
+  // 카드를 같은 행 안에서 direction(-1: 왼쪽, +1: 오른쪽)으로 한 칸 이동
+  const moveCardWithinRow = useCallback(
+    (cardId: SummaryCardId, direction: -1 | 1) => {
+      persistCardIds(moveSummaryCardWithinRow(cardIds, cardId, direction))
+    },
+    [cardIds, persistCardIds],
+  )
+
   // O(1) 조회를 위해 현재 표시 중인 카드 ID를 Set으로 관리
   const visibleCardIds = useMemo(() => new Set(cardIds), [cardIds])
   // 전체 카드 정의에 isVisible 플래그를 붙여 편집 모달에서 사용
@@ -91,5 +100,6 @@ export function useSummaryCardLayout() {
     addCard,
     removeCard,
     moveCard,
+    moveCardWithinRow,
   }
 }
