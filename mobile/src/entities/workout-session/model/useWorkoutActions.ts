@@ -66,6 +66,13 @@ export function useWorkoutActions({
     dispatch({ type: "UPDATE_MEMO", payload: memo })
   }, [dispatch])
 
+  const startCardio = useCallback(() => {
+    dispatch({
+      type: "START_CARDIO",
+      payload: { cardioStartedAt: new Date().toISOString() },
+    })
+  }, [dispatch])
+
   const pauseWorkout = useCallback(() => {
     dispatch({ type: "PAUSE", payload: { pausedAt: new Date().toISOString() } })
   }, [dispatch])
@@ -90,6 +97,7 @@ export function useWorkoutActions({
       sessionId: state.sessionId,
       startedAt: state.startedAt,
       completedAt,
+      cardioStartedAt: state.cardioStartedAt ?? null,
       bodyParts: state.bodyParts,
       memo: state.memo,
       location: state.location,
@@ -114,6 +122,7 @@ export function useWorkoutActions({
     toggleBodyPart,
     updateSetCount,
     updateMemo,
+    startCardio,
     pauseWorkout,
     resumeWorkout,
     completeWorkout,

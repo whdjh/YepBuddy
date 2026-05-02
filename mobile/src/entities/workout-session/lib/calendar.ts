@@ -7,6 +7,10 @@ import {
   YEPBUDDY_CALENDAR_NAME,
   YEPBUDDY_CALENDAR_TITLE,
 } from "./calendarRegistration"
+import {
+  appendCardioDurationToTitle,
+  getCardioDurationMinutes,
+} from "./cardioSession"
 import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
 import type { WorkoutBodyPartSet } from "../model/types"
 
@@ -20,21 +24,33 @@ const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
 }
 
 /** 운동 부위와 세트 수를 묶어 캘린더 이벤트 제목 문자열로 만듬 */
-function formatWorkoutCalendarTitle(bodyParts: WorkoutBodyPartSet[]) {
-  if (bodyParts.length === 0) {
-    return i18n.t("workout.calendar.defaultTitle")
-  }
+function formatWorkoutCalendarTitle(params: {
+  bodyParts: WorkoutBodyPartSet[]
+  cardioStartedAt?: string | null
+  completedAt: string
+}) {
+  const bodyPartTitle =
+    params.bodyParts.length === 0
+      ? i18n.t("workout.calendar.defaultTitle")
+      : params.bodyParts
+          .map((item) => {
+            const label = getWorkoutBodyPartSetLabel(item, {
+              bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
+              bodyPartDetailLabel: (detail) =>
+                i18n.t(`workout.bodyPartDetails.${detail}`),
+            })
+            return `${label}(${item.setCount})`
+          })
+          .join(", ")
 
-  return bodyParts
-    .map((item) => {
-      const label = getWorkoutBodyPartSetLabel(item, {
-        bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
-        bodyPartDetailLabel: (detail) =>
-          i18n.t(`workout.bodyPartDetails.${detail}`),
-      })
-      return `${label}(${item.setCount})`
-    })
-    .join(", ")
+  return appendCardioDurationToTitle({
+    title: bodyPartTitle,
+    cardioLabel: i18n.t("workout.calendar.cardio"),
+    cardioMinutes: getCardioDurationMinutes({
+      cardioStartedAt: params.cardioStartedAt,
+      completedAt: params.completedAt,
+    }),
+  })
 }
 
 /** 새 캘린더를 만들 때 사용할 기기 기본 캘린더 소스를 가져옴 */
@@ -82,6 +98,7 @@ async function getOrCreateYepBuddyCalendarId() {
 export async function registerWorkoutToCalendar(params: {
   startedAt: string
   completedAt: string
+  cardioStartedAt?: string | null
   memo: string
   bodyParts: WorkoutBodyPartSet[]
 }) {
@@ -115,7 +132,11 @@ export async function registerWorkoutToCalendar(params: {
   }
 
   await Calendar.createEventAsync(calendarId, {
-    title: formatWorkoutCalendarTitle(params.bodyParts),
+    title: formatWorkoutCalendarTitle({
+      bodyParts: params.bodyParts,
+      cardioStartedAt: params.cardioStartedAt,
+      completedAt: params.completedAt,
+    }),
     startDate: new Date(params.startedAt),
     endDate: new Date(params.completedAt),
     notes: params.memo || undefined,
