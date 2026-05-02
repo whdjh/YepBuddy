@@ -127,7 +127,7 @@ export function ActiveWorkoutScreen() {
           activeKcal={state.activeKcal}
           totalKcal={state.totalKcal}
         />
-        {!routineProgress.isLoading && (
+        {!routineProgress.isLoading && routineProgress.isRoutineEnabled && (
           <RoutineSessionPicker
             progress={routineProgress.progress}
             onSelectSlot={handleSelectSlot}

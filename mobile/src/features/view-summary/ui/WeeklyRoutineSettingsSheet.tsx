@@ -1,98 +1,32 @@
 import { useEffect, useState } from "react"
-import { Modal, Pressable, ScrollView, Text, View } from "react-native"
+import { Modal, ScrollView, StyleSheet, Text, View } from "react-native"
+import {
+  GestureHandlerRootView,
+  Pressable as GesturePressable,
+} from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
 import {
-  BODY_PART_DETAILS,
   createDefaultWeeklyRoutineSettings,
+  MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
+  MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
   resizeWeeklyRoutineSessions,
   type BodyPart,
   type BodyPartDetail,
   type RoutinePart,
   type WeeklyRoutineSettings,
 } from "@/entities/workout-session"
-import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
 import type { WeeklyRoutinePlanResult } from "../model/useWeeklyRoutinePlan"
-
-const ALL_BODY_PARTS: BodyPart[] = [
-  "chest",
-  "back",
-  "legs",
-  "shoulders",
-  "arms",
-  "core",
-]
+import {
+  CycleStepper,
+  RoutineSettingsSaveButton,
+  RoutineSessionPartEditor,
+} from "./weekly-routine-settings/RoutineSettingsEditors"
+import { toggleRoutinePartDetail } from "./weekly-routine-settings/routinePartDetail"
 
 interface WeeklyRoutineSettingsSheetProps {
   plan: WeeklyRoutinePlanResult
   visible: boolean
   onClose: () => void
-}
-
-interface CycleStepperProps {
-  label: string
-  value: number
-  min: number
-  onChange: (value: number) => void
-}
-
-// details 배열에서 특정 detail을 토글
-function toggleDetail(
-  current: RoutinePart[],
-  part: BodyPart,
-  detail: BodyPartDetail,
-) {
-  return current.map((item) => {
-    if (item.part !== part) return item
-    const details = item.details ?? []
-    return {
-      ...item,
-      details: details.includes(detail)
-        ? details.filter((value) => value !== detail)
-        : [...details, detail],
-    }
-  })
-}
-
-function CycleStepper({ label, value, min, onChange }: CycleStepperProps) {
-  const decrementDisabled = value <= min
-
-  return (
-    <View className="flex-row items-center justify-between rounded-yb-md border border-yb-border bg-yb-fill-pale px-yb-4 py-yb-3">
-      <Text className="text-yb-body-sm font-semibold text-yb-fg">
-        {label}
-      </Text>
-      <View className="flex-row items-center gap-yb-3">
-        <Pressable
-          disabled={decrementDisabled}
-          className={`h-yb-8 w-yb-8 items-center justify-center rounded-full border ${
-            decrementDisabled
-              ? "border-yb-border bg-yb-surface/50"
-              : "border-yb-accent bg-yb-surface"
-          }`}
-          onPress={() => onChange(Math.max(min, value - 1))}
-        >
-          <Text
-            className={`text-yb-body-md font-semibold ${
-              decrementDisabled ? "text-yb-fg-tertiary" : "text-yb-accent"
-            }`}
-          >
-            -
-          </Text>
-        </Pressable>
-        <Text className="min-w-yb-6 text-center text-yb-body-md font-semibold text-yb-fg">
-          {value}
-        </Text>
-        <Pressable
-          className="h-yb-8 w-yb-8 items-center justify-center rounded-full border border-yb-accent bg-yb-surface"
-          onPress={() => onChange(value + 1)}
-        >
-          <Text className="text-yb-body-md font-semibold text-yb-accent">
-            +
-          </Text>
-        </Pressable>
-      </View>
-    </View>
-  )
 }
 
 // 주간 루틴 세션 편집 바텀시트
@@ -129,15 +63,15 @@ export function WeeklyRoutineSettingsSheet({
     }))
   }
 
-  const updateCycleWeeks = (
-    field: "regularWeeks" | "deloadWeeks",
+  const updateRoutineNumber = (
+    field: "trainingWeeks" | "deloadWeeks" | "splitCount",
     value: number,
   ) => {
     setDraft((current) => ({
       ...current,
       [field]: value,
       sessions:
-        field === "regularWeeks"
+        field === "splitCount"
           ? resizeWeeklyRoutineSessions(current.sessions, value)
           : current.sessions,
     }))
@@ -163,124 +97,76 @@ export function WeeklyRoutineSettingsSheet({
     if (!currentParts.some((item) => item.part === part)) {
       return
     }
-    updateSessionParts(index, toggleDetail(currentParts, part, detail))
+    updateSessionParts(
+      index,
+      toggleRoutinePartDetail(currentParts, part, detail),
+    )
   }
 
   return (
-    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
-      <Pressable className="flex-1 justify-end" onPress={onClose}>
-        <Pressable
-          className="max-h-[86%] rounded-t-yb-xl bg-yb-surface px-yb-6 pt-yb-4"
-          onPress={() => {}}
-        >
-          <View className="mb-yb-6 h-yb-1 w-yb-10 self-center rounded-full bg-yb-border" />
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerClassName="pb-yb-10"
-          >
-            <Text className="mb-yb-4 text-yb-title font-semibold text-yb-fg">
-              {t("workout.weeklyRoutine.settings.title")}
-            </Text>
-            <View className="mb-yb-4 gap-yb-2">
-              <CycleStepper
-                label={t("workout.weeklyRoutine.settings.regularWeeks")}
-                min={1}
-                value={draft.regularWeeks}
-                onChange={(value) => updateCycleWeeks("regularWeeks", value)}
-              />
-              <CycleStepper
-                label={t("workout.weeklyRoutine.settings.deloadWeeks")}
-                min={0}
-                value={draft.deloadWeeks}
-                onChange={(value) => updateCycleWeeks("deloadWeeks", value)}
-              />
-              <Text className="text-yb-caption text-yb-fg-tertiary">
-                {t("workout.weeklyRoutine.settings.cycleHelp")}
-              </Text>
-            </View>
-            <View className="gap-yb-4">
-              {draft.sessions.map((session, index) => (
-                <View
-                  key={session.id}
-                  className="rounded-yb-md border border-yb-border bg-yb-fill-pale px-yb-4 py-yb-3"
-                >
-                  <Text className="mb-yb-3 text-yb-body-sm font-semibold text-yb-fg">
-                    {index + 1}
-                  </Text>
-                  <View className="flex-row flex-wrap gap-yb-2">
-                    {ALL_BODY_PARTS.map((part) => {
-                      const active = session.parts.some((item) => item.part === part)
-                      return (
-                        <Pressable
-                          key={part}
-                          onPress={() => handleTogglePart(index, part)}
-                          className={`rounded-yb-md border px-yb-3 py-yb-2 ${
-                            active
-                              ? "border-yb-accent bg-yb-accent"
-                              : "border-yb-border bg-yb-surface"
-                          }`}
-                        >
-                          <Text
-                          className={`text-yb-caption font-semibold ${
-                              active ? "text-yb-on-accent" : "text-yb-fg-secondary"
-                            }`}
-                          >
-                            {bodyPartLabel(part)}
-                          </Text>
-                        </Pressable>
-                      )
-                    })}
-                  </View>
-                  {session.parts.map((routinePart) => {
-                    const details = BODY_PART_DETAILS[routinePart.part]
-                    if (details.length === 0) return null
-
-                    return (
-                      <View key={routinePart.part} className="mt-yb-3">
-                        <Text className="mb-yb-2 text-yb-caption font-semibold text-yb-fg-tertiary">
-                          {bodyPartLabel(routinePart.part)}
-                        </Text>
-                        <View className="flex-row flex-wrap gap-yb-2">
-                          {details.map((detail) => {
-                            const active = routinePart.details?.includes(detail) ?? false
-                            return (
-                              <Pressable
-                                key={detail}
-                                onPress={() => handleToggleDetail(index, routinePart.part, detail)}
-                                className={`rounded-full border px-yb-3 py-yb-1 ${
-                                  active
-                                    ? "border-yb-accent bg-yb-accent"
-                                    : "border-yb-border bg-yb-surface"
-                                }`}
-                              >
-                                <Text
-                                  className={`text-yb-caption ${
-                                    active ? "text-yb-on-accent" : "text-yb-fg-secondary"
-                                  }`}
-                                >
-                                  {bodyPartDetailLabel(detail)}
-                                </Text>
-                              </Pressable>
-                            )
-                          })}
-                        </View>
-                      </View>
-                    )
-                  })}
-                </View>
-              ))}
-            </View>
-            <Pressable
-              onPress={handleSave}
-              className="mt-yb-6 items-center rounded-yb-md bg-yb-accent py-yb-3"
+    <Modal
+      visible={visible}
+      transparent
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <GestureHandlerRootView style={StyleSheet.absoluteFill}>
+        <View className="absolute inset-0 justify-end bg-black/25">
+          <GesturePressable style={StyleSheet.absoluteFill} onPress={onClose} />
+          <View className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
+            <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
+            <ScrollView
+              className="shrink"
+              showsVerticalScrollIndicator={false}
+              contentContainerClassName="pb-yb-5"
             >
-              <Text className="font-semibold text-yb-on-accent">
-                {t("workout.weeklyRoutine.settings.save")}
+              <Text className="mb-yb-5 text-yb-heading-sm text-yb-fg">
+                {t("workout.weeklyRoutine.settings.title")}
               </Text>
-            </Pressable>
-          </ScrollView>
-        </Pressable>
-      </Pressable>
+              <View className="mb-yb-5 gap-yb-2">
+                <CycleStepper
+                  label={t("workout.weeklyRoutine.settings.trainingWeeks")}
+                  min={1}
+                  value={draft.trainingWeeks}
+                  onChange={(value) =>
+                    updateRoutineNumber("trainingWeeks", value)
+                  }
+                />
+                <CycleStepper
+                  label={t("workout.weeklyRoutine.settings.deloadWeeks")}
+                  min={0}
+                  value={draft.deloadWeeks}
+                  onChange={(value) => updateRoutineNumber("deloadWeeks", value)}
+                />
+                <CycleStepper
+                  label={t("workout.weeklyRoutine.settings.splitCount")}
+                  min={MIN_WEEKLY_ROUTINE_SPLIT_COUNT}
+                  max={MAX_WEEKLY_ROUTINE_SPLIT_COUNT}
+                  value={draft.splitCount}
+                  onChange={(value) =>
+                    updateRoutineNumber("splitCount", value)
+                  }
+                />
+              </View>
+              <View className="gap-yb-3">
+                {draft.sessions.map((session, index) => (
+                  <RoutineSessionPartEditor
+                    key={session.id}
+                    index={index}
+                    session={session}
+                    onTogglePart={handleTogglePart}
+                    onToggleDetail={handleToggleDetail}
+                  />
+                ))}
+              </View>
+            </ScrollView>
+            <RoutineSettingsSaveButton
+              label={t("workout.weeklyRoutine.settings.save")}
+              onPress={handleSave}
+            />
+          </View>
+        </View>
+      </GestureHandlerRootView>
     </Modal>
   )
 }

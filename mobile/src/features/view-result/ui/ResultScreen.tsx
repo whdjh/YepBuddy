@@ -26,7 +26,6 @@ import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
-import { DeleteConfirmationSheet } from "./DeleteConfirmationSheet"
 import {
   bodyPartLabel,
   bodyPartDetailLabel,
@@ -60,7 +59,6 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const hk = data?.hk
   const [memo, setMemo] = useState(stored?.memo ?? "")
   const [isDeleting, setIsDeleting] = useState(false)
-  const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -139,7 +137,6 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
 
     try {
       await deleteStoredWorkoutSession(sessionId)
-      setIsDeleteSheetVisible(false)
       router.replace("/")
     } catch {
       Alert.alert(
@@ -155,7 +152,22 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
       return
     }
 
-    setIsDeleteSheetVisible(true)
+    Alert.alert(
+      t("workout.result.deleteTitle"),
+      t("workout.result.deleteMessage"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+        },
+        {
+          text: t("workout.result.deleteConfirmYes"),
+          style: "destructive",
+          onPress: () => void deleteSession(),
+        },
+      ],
+      { cancelable: true },
+    )
   }
 
   return (
@@ -170,7 +182,9 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
         >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
-        <Text className="text-yb-fg text-yb-title flex-1">{dateLabel}</Text>
+        <Text className="min-w-0 grow shrink text-yb-title text-yb-fg" numberOfLines={1}>
+          {dateLabel}
+        </Text>
         <View className="w-yb-icon-btn" />
       </View>
 
@@ -280,13 +294,6 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           </View>
         </ScrollView>
       )}
-
-      <DeleteConfirmationSheet
-        visible={isDeleteSheetVisible}
-        isDeleting={isDeleting}
-        onCancel={() => setIsDeleteSheetVisible(false)}
-        onConfirm={() => void deleteSession()}
-      />
     </Main>
   )
 }

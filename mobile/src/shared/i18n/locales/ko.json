@@ -89,7 +89,7 @@
       "avgPrefix": "평균",
       "noData": "데이터가 없습니다.",
       "deleteTitle": "이 운동 기록을 삭제하시겠습니까?",
-      "deleteMessage": "삭제하면 오늘 다시 운동을 시작할 수 있어요.\n캘린더에 등록된 일정은 삭제되지 않을 수 있어요.",
+      "deleteMessage": "캘린더에 등록된 일정은 삭제되지 않을 수 있어요.",
       "deleteCancel": "취소",
       "deleteConfirm": "운동 기록 삭제",
       "deleteConfirmYes": "예",
@@ -117,9 +117,9 @@
         "title": "주간 루틴 설정",
         "save": "저장",
         "placeholder": "이번 주 루틴을 설정하세요",
-        "regularWeeks": "일반 주차",
+        "trainingWeeks": "훈련 주차",
         "deloadWeeks": "디로드 주차",
-        "cycleHelp": "일반 주차가 끝나면 디로드 주차로 표시됩니다."
+        "splitCount": "훈련 분할"
       },
       "status": {
         "completed": "완료",
@@ -134,6 +134,11 @@
           "body": "새 사이클로 다시 시작하거나 루틴을 조정하세요.",
           "action": "새 사이클 시작"
         }
+      },
+      "featurePrompt": {
+        "title": "루틴 설정을 하시겠습니까?",
+        "accept": "예",
+        "decline": "아니오"
       },
       "suggestion": {
         "reason": "이번 주 루틴에서 아직 완료하지 않은 세션이에요",
@@ -172,6 +177,8 @@
     "thisWeekSessions": "이번 주 세션",
     "moreLink": "더보기",
     "routineSettings": "루틴 설정",
+    "routineOn": "루틴 ON",
+    "routineOff": "루틴 OFF",
     "editSummary": "요약 편집",
     "done": "완료",
     "add": "추가",

@@ -16,17 +16,27 @@ export interface WeeklyRoutineSession {
 export interface WeeklyRoutineSettings {
   sessions: WeeklyRoutineSession[]
   cycleStartDateKey: string
-  regularWeeks: number
+  trainingWeeks: number
   deloadWeeks: number
+  splitCount: number
 }
+
+// 루틴 기능을 아직 묻지 않았는지, 켰는지, 껐는지 나타내는 사용자 선택 상태
+export type WeeklyRoutineFeatureStatus =
+  | "unasked"
+  | "enabled"
+  | "disabled"
 
 export interface WeeklyRoutinePromptState {
   cycleRenewalDismissedForWeekStartDateKey: string | null
 }
 
-// 기본 루틴 사이클: 4주 일반 루틴 + 1주 디로드
-export const DEFAULT_WEEKLY_ROUTINE_REGULAR_WEEKS = 4
+// 기본 루틴 사이클: 4주 훈련 + 1주 디로드, 4분할
+export const DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS = 4
 export const DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS = 1
+export const DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT = 4
+export const MIN_WEEKLY_ROUTINE_SPLIT_COUNT = 1
+export const MAX_WEEKLY_ROUTINE_SPLIT_COUNT = 7
 
 // 사용자 설정 없을 때 사용하는 기본 주간 루틴
 export const DEFAULT_WEEKLY_ROUTINE_SESSIONS: WeeklyRoutineSession[] = [
@@ -52,6 +62,18 @@ export const DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE: WeeklyRoutinePromptState = {
   cycleRenewalDismissedForWeekStartDateKey: null,
 }
 
+// 이전 버전에 저장된 루틴 설정이 있으면 기존 사용자는 루틴 ON 상태로 간주
+export function resolveWeeklyRoutineFeatureStatus(
+  storedStatus: WeeklyRoutineFeatureStatus | null,
+  hasStoredSettings: boolean,
+): WeeklyRoutineFeatureStatus {
+  if (storedStatus) {
+    return storedStatus
+  }
+
+  return hasStoredSettings ? "enabled" : "unasked"
+}
+
 // 새 사용자를 위한 기본 주간 루틴 설정 생성
 export function createDefaultWeeklyRoutineSettings(
   cycleStartDateKey: string,
@@ -59,36 +81,65 @@ export function createDefaultWeeklyRoutineSettings(
   return {
     sessions: DEFAULT_WEEKLY_ROUTINE_SESSIONS,
     cycleStartDateKey,
-    regularWeeks: DEFAULT_WEEKLY_ROUTINE_REGULAR_WEEKS,
+    trainingWeeks: DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS,
     deloadWeeks: DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
+    splitCount: DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT,
   }
+}
+
+type LegacyWeeklyRoutineSettings = Partial<WeeklyRoutineSettings> & {
+  regularWeeks?: number
 }
 
 // 이전 버전 저장값에 새 필드가 없어도 안전하게 기본값을 채움
 export function normalizeWeeklyRoutineSettings(
-  settings: Partial<WeeklyRoutineSettings>,
+  settings: LegacyWeeklyRoutineSettings,
   fallbackCycleStartDateKey: string,
 ): WeeklyRoutineSettings {
+  const legacyRegularWeeks = settings.regularWeeks
+  const trainingWeeks = Math.max(
+    1,
+    settings.trainingWeeks ??
+      legacyRegularWeeks ??
+      DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS,
+  )
+  const deloadWeeks = Math.max(
+    0,
+    settings.deloadWeeks ?? DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
+  )
+  const splitCount = Math.min(
+    MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
+    Math.max(
+      MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
+      settings.splitCount ??
+        legacyRegularWeeks ??
+        DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT,
+    ),
+  )
+  const baseSessions =
+    settings.sessions && settings.sessions.length > 0
+      ? settings.sessions
+      : DEFAULT_WEEKLY_ROUTINE_SESSIONS
+
   return {
-    sessions:
-      settings.sessions && settings.sessions.length > 0
-        ? settings.sessions
-        : DEFAULT_WEEKLY_ROUTINE_SESSIONS,
+    sessions: resizeWeeklyRoutineSessions(baseSessions, splitCount),
     cycleStartDateKey:
       settings.cycleStartDateKey ?? fallbackCycleStartDateKey,
-    regularWeeks:
-      settings.regularWeeks ?? DEFAULT_WEEKLY_ROUTINE_REGULAR_WEEKS,
-    deloadWeeks:
-      settings.deloadWeeks ?? DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
+    trainingWeeks,
+    deloadWeeks,
+    splitCount,
   }
 }
 
-// 일반 주차 수가 바뀌면 루틴 세션 개수도 같은 수로 맞춤
+// 분할 수가 바뀌면 루틴 세션 개수도 같은 수로 맞춤
 export function resizeWeeklyRoutineSessions(
   sessions: WeeklyRoutineSession[],
   nextCount: number,
 ): WeeklyRoutineSession[] {
-  const normalizedCount = Math.max(1, Math.floor(nextCount))
+  const normalizedCount = Math.min(
+    MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
+    Math.max(MIN_WEEKLY_ROUTINE_SPLIT_COUNT, Math.floor(nextCount)),
+  )
 
   if (sessions.length >= normalizedCount) {
     return sessions.slice(0, normalizedCount)

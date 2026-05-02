@@ -42,21 +42,27 @@ export {
   createDefaultWeeklyRoutineSettings,
   DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
   DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
-  DEFAULT_WEEKLY_ROUTINE_REGULAR_WEEKS,
+  DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT,
   DEFAULT_WEEKLY_ROUTINE_SESSIONS,
+  DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS,
+  MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
+  MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
   normalizeWeeklyRoutineSettings,
   resizeWeeklyRoutineSessions,
 } from "./model/weeklyRoutine"
 export type {
   RoutinePart,
+  WeeklyRoutineFeatureStatus,
   WeeklyRoutinePromptState,
   WeeklyRoutineSession,
   WeeklyRoutineSettings,
 } from "./model/weeklyRoutine"
 export {
   dismissWeeklyRoutineCycleRenewalPrompt,
+  loadWeeklyRoutineFeatureStatus,
   loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
+  saveWeeklyRoutineFeatureStatus,
   saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
 } from "./model/weeklyRoutineStorage"

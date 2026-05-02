@@ -83,13 +83,13 @@
       "memoPlaceholder": "Add a note",
       "strengthTraining": "Strength Training",
       "unspecified": "Unspecified",
-"caloriesUnit": "KCAL",
+      "caloriesUnit": "KCAL",
       "setsUnit": "sets",
       "heartRateUnit": "BPM",
       "avgPrefix": "Avg",
       "noData": "No data",
       "deleteTitle": "Delete this workout record?",
-      "deleteMessage": "After deleting it, you can start another workout today.\nCalendar events may not be deleted.",
+      "deleteMessage": "Calendar events may not be deleted.",
       "deleteCancel": "Cancel",
       "deleteConfirm": "Delete Workout Record",
       "deleteConfirmYes": "Yes",
@@ -117,9 +117,9 @@
         "title": "Weekly Routine Settings",
         "save": "Save",
         "placeholder": "Set this week's routine",
-        "regularWeeks": "Regular weeks",
+        "trainingWeeks": "Training weeks",
         "deloadWeeks": "Deload weeks",
-        "cycleHelp": "After regular weeks finish, the routine is shown as a deload week."
+        "splitCount": "Training split"
       },
       "status": {
         "completed": "Done",
@@ -134,6 +134,11 @@
           "body": "Start a new cycle or adjust the routine.",
           "action": "Start new cycle"
         }
+      },
+      "featurePrompt": {
+        "title": "Would you like to set up a routine?",
+        "accept": "Yes",
+        "decline": "No"
       },
       "suggestion": {
         "reason": "This is an unfinished session from your weekly routine",
@@ -172,6 +177,8 @@
     "thisWeekSessions": "This Week",
     "moreLink": "More",
     "routineSettings": "Routine",
+    "routineOn": "Routine ON",
+    "routineOff": "Routine OFF",
     "editSummary": "Edit Summary",
     "done": "Done",
     "add": "Add",
