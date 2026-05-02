@@ -52,17 +52,17 @@ export function CycleStepper({
   const decrementDisabled = value <= min
 
   return (
-    <View className="flex-row items-center justify-between rounded-yb-md border border-yb-border bg-yb-fill-pale px-yb-4 py-yb-3">
+    <View className="flex-row items-center justify-between rounded-yb-xl border border-yb-border-subtle bg-yb-surface px-yb-4 py-yb-2.5 shadow-yb-sm">
       <Text className="text-yb-body-sm font-semibold text-yb-fg">
         {label}
       </Text>
-      <View className="flex-row items-center gap-yb-3">
+      <View className="flex-row items-center rounded-full bg-yb-surface-muted p-yb-0.5">
         <Pressable
           disabled={decrementDisabled}
-          className={`h-yb-8 w-yb-8 items-center justify-center rounded-full border ${
+          className={`h-yb-8 w-yb-8 items-center justify-center rounded-full ${
             decrementDisabled
-              ? "border-yb-border bg-yb-surface/50"
-              : "border-yb-accent bg-yb-surface"
+              ? "bg-yb-surface/50"
+              : "bg-yb-surface shadow-yb-sm active:opacity-80"
           }`}
           onPress={() => onChange(Math.max(min, value - 1))}
         >
@@ -74,11 +74,11 @@ export function CycleStepper({
             -
           </Text>
         </Pressable>
-        <Text className="min-w-yb-6 text-center text-yb-body-md font-semibold text-yb-fg">
+        <Text className="w-yb-9 text-center text-yb-body-lg text-yb-fg">
           {value}
         </Text>
         <Pressable
-          className="h-yb-8 w-yb-8 items-center justify-center rounded-full border border-yb-accent bg-yb-surface"
+          className="h-yb-8 w-yb-8 items-center justify-center rounded-full bg-yb-surface shadow-yb-sm active:opacity-80"
           onPress={() => onChange(value + 1)}
         >
           <Text className="text-yb-body-md font-semibold text-yb-accent">
@@ -97,9 +97,9 @@ export function RoutineSettingsSaveButton({
   return (
     <Pressable
       onPress={onPress}
-      className="mb-yb-10 mt-yb-4 items-center rounded-yb-md bg-yb-accent py-yb-3"
+      className="mb-yb-10 mt-yb-3 min-h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
     >
-      <Text className="font-semibold text-yb-on-accent">{label}</Text>
+      <Text className="text-yb-body-lg text-yb-on-accent">{label}</Text>
     </Pressable>
   )
 }
@@ -111,11 +111,8 @@ export function RoutineSessionPartEditor({
   onToggleDetail,
 }: RoutineSessionPartEditorProps) {
   return (
-    <View className="rounded-yb-md border border-yb-border bg-yb-fill-pale px-yb-4 py-yb-3">
-      <Text className="mb-yb-3 text-yb-body-sm font-semibold text-yb-fg">
-        {index + 1}
-      </Text>
-      <View className="flex-row flex-wrap gap-yb-2">
+    <View className="rounded-yb-xl border border-yb-border-subtle bg-yb-surface px-yb-3.5 py-yb-3.5 shadow-yb-sm">
+      <View className="flex-row items-center gap-yb-1.5">
         {ALL_BODY_PARTS.map((part) => {
           const active = session.parts.some((item) => item.part === part)
 
@@ -123,10 +120,10 @@ export function RoutineSessionPartEditor({
             <Pressable
               key={part}
               onPress={() => onTogglePart(index, part)}
-              className={`rounded-yb-md border px-yb-3 py-yb-2 ${
+              className={`h-[38px] items-center justify-center rounded-full border px-yb-2.5 ${
                 active
-                  ? "border-yb-accent bg-yb-accent"
-                  : "border-yb-border bg-yb-surface"
+                  ? "border-yb-accent bg-yb-accent shadow-yb-sm active:opacity-90"
+                  : "border-yb-border-subtle bg-yb-surface-muted active:opacity-80"
               }`}
             >
               <Text
@@ -145,8 +142,8 @@ export function RoutineSessionPartEditor({
         if (details.length === 0) return null
 
         return (
-          <View key={routinePart.part} className="mt-yb-3">
-            <Text className="mb-yb-2 text-yb-caption font-semibold text-yb-fg-tertiary">
+          <View key={routinePart.part} className="mt-yb-4">
+            <Text className="mb-yb-2 text-yb-label text-yb-fg-secondary">
               {bodyPartLabel(routinePart.part)}
             </Text>
             <View className="flex-row flex-wrap gap-yb-2">
@@ -159,15 +156,15 @@ export function RoutineSessionPartEditor({
                     onPress={() =>
                       onToggleDetail(index, routinePart.part, detail)
                     }
-                    className={`rounded-full border px-yb-3 py-yb-1 ${
+                    className={`min-h-[34px] items-center justify-center rounded-full border px-yb-3 ${
                       active
-                        ? "border-yb-accent bg-yb-accent"
-                        : "border-yb-border bg-yb-surface"
+                        ? "border-yb-accent bg-yb-accent/15"
+                        : "border-yb-border-subtle bg-yb-surface"
                     }`}
                   >
                     <Text
-                      className={`text-yb-caption ${
-                        active ? "text-yb-on-accent" : "text-yb-fg-secondary"
+                      className={`text-yb-caption font-semibold ${
+                        active ? "text-yb-accent" : "text-yb-fg-secondary"
                       }`}
                     >
                       {bodyPartDetailLabel(detail)}

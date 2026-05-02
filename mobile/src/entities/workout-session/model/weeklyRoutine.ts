@@ -101,7 +101,7 @@ export function normalizeWeeklyRoutineSettings(
   }
 }
 
-// 일반 주차 수가 바뀌면 루틴 세션 개수도 같은 수로 맞춤
+// 분할 수가 바뀌면 루틴 세션 개수도 같은 수로 맞춤
 export function resizeWeeklyRoutineSessions(
   sessions: WeeklyRoutineSession[],
   nextCount: number,

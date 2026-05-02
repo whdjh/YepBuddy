@@ -109,19 +109,19 @@ export function WeeklyRoutineSettingsSheet({
       onRequestClose={onClose}
     >
       <GestureHandlerRootView style={StyleSheet.absoluteFill}>
-        <View className="absolute inset-0 justify-end bg-black/35">
+        <View className="absolute inset-0 justify-end bg-black/25">
           <GesturePressable style={StyleSheet.absoluteFill} onPress={onClose} />
-          <View className="z-10 max-h-[86%] rounded-t-yb-xl bg-yb-surface px-yb-6 pt-yb-4">
-            <View className="mb-yb-6 h-yb-1 w-yb-10 self-center rounded-full bg-yb-border" />
+          <View className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
+            <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
             <ScrollView
               className="shrink"
               showsVerticalScrollIndicator={false}
-              contentContainerClassName="pb-yb-4"
+              contentContainerClassName="pb-yb-5"
             >
-              <Text className="mb-yb-4 text-yb-title font-semibold text-yb-fg">
+              <Text className="mb-yb-5 text-yb-heading-sm text-yb-fg">
                 {t("workout.weeklyRoutine.settings.title")}
               </Text>
-              <View className="mb-yb-4 gap-yb-2">
+              <View className="mb-yb-5 gap-yb-2">
                 <CycleStepper
                   label={t("workout.weeklyRoutine.settings.regularWeeks")}
                   min={1}
@@ -134,11 +134,8 @@ export function WeeklyRoutineSettingsSheet({
                   value={draft.deloadWeeks}
                   onChange={(value) => updateCycleWeeks("deloadWeeks", value)}
                 />
-                <Text className="text-yb-caption text-yb-fg-tertiary">
-                  {t("workout.weeklyRoutine.settings.cycleHelp")}
-                </Text>
               </View>
-              <View className="gap-yb-4">
+              <View className="gap-yb-3">
                 {draft.sessions.map((session, index) => (
                   <RoutineSessionPartEditor
                     key={session.id}

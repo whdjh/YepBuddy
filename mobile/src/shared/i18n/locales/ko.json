@@ -117,9 +117,8 @@
         "title": "주간 루틴 설정",
         "save": "저장",
         "placeholder": "이번 주 루틴을 설정하세요",
-        "regularWeeks": "일반 주차",
-        "deloadWeeks": "디로드 주차",
-        "cycleHelp": "일반 주차가 끝나면 디로드 주차로 표시됩니다."
+        "regularWeeks": "훈련 주차",
+        "deloadWeeks": "디로드 주차"
       },
       "status": {
         "completed": "완료",

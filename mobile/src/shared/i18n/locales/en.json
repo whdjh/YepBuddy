@@ -117,9 +117,8 @@
         "title": "Weekly Routine Settings",
         "save": "Save",
         "placeholder": "Set this week's routine",
-        "regularWeeks": "Regular weeks",
-        "deloadWeeks": "Deload weeks",
-        "cycleHelp": "After regular weeks finish, the routine is shown as a deload week."
+        "regularWeeks": "Training weeks",
+        "deloadWeeks": "Deload weeks"
       },
       "status": {
         "completed": "Done",
