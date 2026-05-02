@@ -1,22 +1,30 @@
 import { SymbolView } from "expo-symbols"
 import type { ReactNode } from "react"
-import { useMemo, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 import { View, useColorScheme } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import Animated, {
+  cancelAnimation,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
+  withSequence,
   withSpring,
+  withTiming,
 } from "react-native-reanimated"
 import { IconButton } from "@/shared/ui/IconButton"
 
-const DRAG_REORDER_THRESHOLD = 72
+const DRAG_REORDER_THRESHOLD_Y = 72
+const DRAG_REORDER_THRESHOLD_X = 48
+
+type DragStep = "none" | "x:-1" | "x:1" | "y:-1" | "y:1"
 
 interface EditableSummaryCardFrameProps {
   children: ReactNode
   isEditing: boolean
   onRemove: () => void
   onDrag: (direction: -1 | 1) => void
+  onMoveWithinRow: (direction: -1 | 1) => void
 }
 
 export function EditableSummaryCardFrame({
@@ -24,42 +32,87 @@ export function EditableSummaryCardFrame({
   isEditing,
   onRemove,
   onDrag,
+  onMoveWithinRow,
 }: EditableSummaryCardFrameProps) {
   const isDark = useColorScheme() === "dark"
   const symbolTintColor = isDark ? "#F8E7D0" : "#5B4126"
+  const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
-  const dragStepRef = useRef(0)
+  const wiggle = useSharedValue(0)
+  const dragStepRef = useRef<DragStep>("none")
+
+  useEffect(() => {
+    if (!isEditing) {
+      cancelAnimation(wiggle)
+      wiggle.value = withTiming(0, { duration: 90 })
+      translateX.value = withSpring(0)
+      translateY.value = withSpring(0)
+      return
+    }
+
+    wiggle.value = withRepeat(
+      withSequence(
+        withTiming(-0.7, { duration: 90 }),
+        withTiming(0.7, { duration: 90 }),
+      ),
+      -1,
+      true,
+    )
+
+    return () => {
+      cancelAnimation(wiggle)
+    }
+  }, [isEditing, translateX, translateY, wiggle])
+
   const dragGesture = useMemo(
     () =>
       Gesture.Pan()
         .enabled(isEditing)
         .runOnJS(true)
         .onBegin(() => {
-          dragStepRef.current = 0
+          dragStepRef.current = "none"
         })
         .onUpdate((event) => {
+          translateX.value = event.translationX
           translateY.value = event.translationY
 
-          const nextStep =
-            event.translationY > DRAG_REORDER_THRESHOLD
-              ? 1
-              : event.translationY < -DRAG_REORDER_THRESHOLD
-                ? -1
-                : 0
+          const absX = Math.abs(event.translationX)
+          const absY = Math.abs(event.translationY)
+          const nextStep: DragStep =
+            absX > DRAG_REORDER_THRESHOLD_X && absX > absY
+              ? event.translationX > 0
+                ? "x:1"
+                : "x:-1"
+              : absY > DRAG_REORDER_THRESHOLD_Y
+                ? event.translationY > 0
+                  ? "y:1"
+                  : "y:-1"
+                : "none"
 
-          if (nextStep !== 0 && nextStep !== dragStepRef.current) {
+          if (nextStep !== "none" && nextStep !== dragStepRef.current) {
             dragStepRef.current = nextStep
-            onDrag(nextStep)
+
+            if (nextStep.startsWith("x:")) {
+              onMoveWithinRow(nextStep === "x:1" ? 1 : -1)
+              return
+            }
+
+            onDrag(nextStep === "y:1" ? 1 : -1)
           }
         })
         .onFinalize(() => {
-          dragStepRef.current = 0
+          dragStepRef.current = "none"
+          translateX.value = withSpring(0)
           translateY.value = withSpring(0)
         }),
-    [isEditing, onDrag, translateY],
+    [isEditing, onDrag, onMoveWithinRow, translateX, translateY],
   )
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: isEditing ? translateY.value : 0 }],
+    transform: [
+      { translateX: isEditing ? translateX.value : 0 },
+      { translateY: isEditing ? translateY.value : 0 },
+      { rotate: `${isEditing ? wiggle.value : 0}deg` },
+    ],
   }))
 
   return (
@@ -68,7 +121,7 @@ export function EditableSummaryCardFrame({
         <View pointerEvents={isEditing ? "none" : "auto"}>{children}</View>
 
         {isEditing && (
-          <View className="absolute right-yb-2 top-yb-2 z-10">
+          <View className="absolute -right-yb-2 -top-yb-2 z-10">
             <IconButton
               variant="edit"
               accessibilityLabel="삭제"
