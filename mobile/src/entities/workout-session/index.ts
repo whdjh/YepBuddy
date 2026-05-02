@@ -49,14 +49,17 @@ export {
 } from "./model/weeklyRoutine"
 export type {
   RoutinePart,
+  WeeklyRoutineFeatureStatus,
   WeeklyRoutinePromptState,
   WeeklyRoutineSession,
   WeeklyRoutineSettings,
 } from "./model/weeklyRoutine"
 export {
   dismissWeeklyRoutineCycleRenewalPrompt,
+  loadWeeklyRoutineFeatureStatus,
   loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
+  saveWeeklyRoutineFeatureStatus,
   saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
 } from "./model/weeklyRoutineStorage"

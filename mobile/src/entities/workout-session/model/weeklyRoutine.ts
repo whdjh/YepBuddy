@@ -20,6 +20,12 @@ export interface WeeklyRoutineSettings {
   deloadWeeks: number
 }
 
+// 루틴 기능을 아직 묻지 않았는지, 켰는지, 껐는지 나타내는 사용자 선택 상태
+export type WeeklyRoutineFeatureStatus =
+  | "unasked"
+  | "enabled"
+  | "disabled"
+
 export interface WeeklyRoutinePromptState {
   cycleRenewalDismissedForWeekStartDateKey: string | null
 }
@@ -50,6 +56,18 @@ const WEEKLY_ROUTINE_SESSION_PRESETS: RoutinePart[][] = [
 // 루틴 안내 모달의 기본 노출 상태
 export const DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE: WeeklyRoutinePromptState = {
   cycleRenewalDismissedForWeekStartDateKey: null,
+}
+
+// 이전 버전에 저장된 루틴 설정이 있으면 기존 사용자는 루틴 ON 상태로 간주
+export function resolveWeeklyRoutineFeatureStatus(
+  storedStatus: WeeklyRoutineFeatureStatus | null,
+  hasStoredSettings: boolean,
+): WeeklyRoutineFeatureStatus {
+  if (storedStatus) {
+    return storedStatus
+  }
+
+  return hasStoredSettings ? "enabled" : "unasked"
 }
 
 // 새 사용자를 위한 기본 주간 루틴 설정 생성
