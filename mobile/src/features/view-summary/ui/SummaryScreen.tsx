@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { formatDateWithDay } from "@/shared/lib/format"
+import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
 import {
@@ -12,14 +13,19 @@ import { useSummaryCardData } from "../model/useSummaryCardData"
 import { SummaryCardRenderer } from "./SummaryCardRenderer"
 import { EditableSummaryCardFrame } from "./EditableSummaryCardFrame"
 import { SummaryCardEditModal } from "./SummaryCardEditModal"
+import { WeeklyRoutineFeaturePromptModal } from "./WeeklyRoutineFeaturePromptModal"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
+  const notificationPermissionRequestDone =
+    useNotificationPermissionRequestDone()
   const [isEditing, setIsEditing] = useState(false)
   const [isCardPickerOpen, setIsCardPickerOpen] = useState(false)
+  const [isWeeklyRoutineFeaturePromptOpen, setIsWeeklyRoutineFeaturePromptOpen] =
+    useState(false)
   const [isWeeklyRoutineSettingsOpen, setIsWeeklyRoutineSettingsOpen] =
     useState(false)
   const {
@@ -32,10 +38,37 @@ export function SummaryScreen() {
 
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
+  const weeklyRoutinePlan = cardData.weeklyRoutinePlan
+  const isRoutineFeaturePromptVisible =
+    isWeeklyRoutineFeaturePromptOpen ||
+    (notificationPermissionRequestDone &&
+      weeklyRoutinePlan.featureStatus === "unasked" &&
+      !weeklyRoutinePlan.isLoading &&
+      !isWeeklyRoutineSettingsOpen)
+  const routineToggleLabel = weeklyRoutinePlan.isRoutineEnabled
+    ? t("summary.routineOn")
+    : t("summary.routineOff")
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const enterEditMode = () => setIsEditing(true)
+  const handleRoutineTogglePress = () => {
+    if (weeklyRoutinePlan.isRoutineEnabled) {
+      void weeklyRoutinePlan.disableRoutine()
+      setIsWeeklyRoutineFeaturePromptOpen(false)
+      return
+    }
+
+    setIsWeeklyRoutineFeaturePromptOpen(true)
+  }
+  const handleRoutinePromptAccept = () => {
+    setIsWeeklyRoutineFeaturePromptOpen(false)
+    setIsWeeklyRoutineSettingsOpen(true)
+  }
+  const handleRoutinePromptDecline = () => {
+    setIsWeeklyRoutineFeaturePromptOpen(false)
+    void weeklyRoutinePlan.disableRoutine()
+  }
 
   function renderEditableSummaryCard(cardId: SummaryCardId) {
     return (
@@ -83,11 +116,14 @@ export function SummaryScreen() {
               </Pressable>
             )}
             <Pressable
-              className="h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4"
-              onPress={() => setIsWeeklyRoutineSettingsOpen(true)}
+              disabled={weeklyRoutinePlan.isLoading}
+              className={`h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4 ${
+                weeklyRoutinePlan.isLoading ? "opacity-50" : ""
+              }`}
+              onPress={handleRoutineTogglePress}
             >
               <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                {t("summary.routineSettings")}
+                {routineToggleLabel}
               </Text>
             </Pressable>
             <Pressable
@@ -155,16 +191,23 @@ export function SummaryScreen() {
         onClose={() => setIsCardPickerOpen(false)}
       />
       <WeeklyRoutineSettingsSheet
-        plan={cardData.weeklyRoutinePlan}
+        plan={weeklyRoutinePlan}
         visible={isWeeklyRoutineSettingsOpen}
         onClose={() => setIsWeeklyRoutineSettingsOpen(false)}
       />
+      <WeeklyRoutineFeaturePromptModal
+        visible={isRoutineFeaturePromptVisible}
+        onAccept={handleRoutinePromptAccept}
+        onDecline={handleRoutinePromptDecline}
+      />
       <WeeklyRoutineSetupPromptModal
-        plan={cardData.weeklyRoutinePlan}
+        plan={weeklyRoutinePlan}
         visible={
-          Boolean(cardData.weeklyRoutinePlan.setupPromptKind) &&
-          !cardData.weeklyRoutinePlan.isLoading &&
-          !isWeeklyRoutineSettingsOpen
+          weeklyRoutinePlan.isRoutineEnabled &&
+          Boolean(weeklyRoutinePlan.setupPromptKind) &&
+          !weeklyRoutinePlan.isLoading &&
+          !isWeeklyRoutineSettingsOpen &&
+          !isRoutineFeaturePromptVisible
         }
       />
     </Main>
