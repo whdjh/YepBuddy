@@ -7,6 +7,8 @@ import {
 import { useTranslation } from "react-i18next"
 import {
   createDefaultWeeklyRoutineSettings,
+  MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
+  MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
   resizeWeeklyRoutineSessions,
   type BodyPart,
   type BodyPartDetail,
@@ -61,15 +63,15 @@ export function WeeklyRoutineSettingsSheet({
     }))
   }
 
-  const updateCycleWeeks = (
-    field: "regularWeeks" | "deloadWeeks",
+  const updateRoutineNumber = (
+    field: "trainingWeeks" | "deloadWeeks" | "splitCount",
     value: number,
   ) => {
     setDraft((current) => ({
       ...current,
       [field]: value,
       sessions:
-        field === "regularWeeks"
+        field === "splitCount"
           ? resizeWeeklyRoutineSessions(current.sessions, value)
           : current.sessions,
     }))
@@ -123,16 +125,27 @@ export function WeeklyRoutineSettingsSheet({
               </Text>
               <View className="mb-yb-5 gap-yb-2">
                 <CycleStepper
-                  label={t("workout.weeklyRoutine.settings.regularWeeks")}
+                  label={t("workout.weeklyRoutine.settings.trainingWeeks")}
                   min={1}
-                  value={draft.regularWeeks}
-                  onChange={(value) => updateCycleWeeks("regularWeeks", value)}
+                  value={draft.trainingWeeks}
+                  onChange={(value) =>
+                    updateRoutineNumber("trainingWeeks", value)
+                  }
                 />
                 <CycleStepper
                   label={t("workout.weeklyRoutine.settings.deloadWeeks")}
                   min={0}
                   value={draft.deloadWeeks}
-                  onChange={(value) => updateCycleWeeks("deloadWeeks", value)}
+                  onChange={(value) => updateRoutineNumber("deloadWeeks", value)}
+                />
+                <CycleStepper
+                  label={t("workout.weeklyRoutine.settings.splitCount")}
+                  min={MIN_WEEKLY_ROUTINE_SPLIT_COUNT}
+                  max={MAX_WEEKLY_ROUTINE_SPLIT_COUNT}
+                  value={draft.splitCount}
+                  onChange={(value) =>
+                    updateRoutineNumber("splitCount", value)
+                  }
                 />
               </View>
               <View className="gap-yb-3">

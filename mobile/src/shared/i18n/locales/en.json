@@ -117,8 +117,9 @@
         "title": "Weekly Routine Settings",
         "save": "Save",
         "placeholder": "Set this week's routine",
-        "regularWeeks": "Training weeks",
-        "deloadWeeks": "Deload weeks"
+        "trainingWeeks": "Training weeks",
+        "deloadWeeks": "Deload weeks",
+        "splitCount": "Training split"
       },
       "status": {
         "completed": "Done",

@@ -24,6 +24,7 @@ interface CycleStepperProps {
   label: string
   value: number
   min: number
+  max?: number
   onChange: (value: number) => void
 }
 
@@ -47,9 +48,11 @@ export function CycleStepper({
   label,
   value,
   min,
+  max,
   onChange,
 }: CycleStepperProps) {
   const decrementDisabled = value <= min
+  const incrementDisabled = max != null && value >= max
 
   return (
     <View className="flex-row items-center justify-between rounded-yb-xl border border-yb-border-subtle bg-yb-surface px-yb-4 py-yb-2.5 shadow-yb-sm">
@@ -78,10 +81,21 @@ export function CycleStepper({
           {value}
         </Text>
         <Pressable
-          className="h-yb-8 w-yb-8 items-center justify-center rounded-full bg-yb-surface shadow-yb-sm active:opacity-80"
-          onPress={() => onChange(value + 1)}
+          disabled={incrementDisabled}
+          className={`h-yb-8 w-yb-8 items-center justify-center rounded-full ${
+            incrementDisabled
+              ? "bg-yb-surface/50"
+              : "bg-yb-surface shadow-yb-sm active:opacity-80"
+          }`}
+          onPress={() =>
+            onChange(max == null ? value + 1 : Math.min(max, value + 1))
+          }
         >
-          <Text className="text-yb-body-md font-semibold text-yb-accent">
+          <Text
+            className={`text-yb-body-md font-semibold ${
+              incrementDisabled ? "text-yb-fg-tertiary" : "text-yb-accent"
+            }`}
+          >
             +
           </Text>
         </Pressable>

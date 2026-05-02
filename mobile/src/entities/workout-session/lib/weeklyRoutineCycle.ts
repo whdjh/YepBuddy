@@ -19,14 +19,14 @@ interface WeeklyRoutineSetupPromptInput {
   currentWeekStartDateKey: string
 }
 
-// 현재 주차가 일반 루틴/디로드/사이클 완료 중 어디인지 계산
+// 현재 주차가 훈련/디로드/사이클 완료 중 어디인지 계산
 export function getWeeklyRoutineCycleState(
   settings: WeeklyRoutineSettings,
   currentWeekStartDateKey: string,
 ): WeeklyRoutineCycleState {
-  const regularWeeks = Math.max(1, settings.regularWeeks)
+  const trainingWeeks = Math.max(1, settings.trainingWeeks)
   const deloadWeeks = Math.max(0, settings.deloadWeeks)
-  const totalCycleWeeks = regularWeeks + deloadWeeks
+  const totalCycleWeeks = trainingWeeks + deloadWeeks
   const elapsedWeeks = getElapsedWeeksBetweenDateKeys(
     settings.cycleStartDateKey,
     currentWeekStartDateKey,
@@ -40,7 +40,7 @@ export function getWeeklyRoutineCycleState(
     isDeloadWeek:
       !isCycleComplete &&
       deloadWeeks > 0 &&
-      currentWeekNumber > regularWeeks,
+      currentWeekNumber > trainingWeeks,
     isCycleComplete,
   }
 }
