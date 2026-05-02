@@ -18,7 +18,11 @@ import { BodyPartSelector } from "./BodyPartSelector"
 import { RoutineSessionPicker } from "./RoutineSessionPicker"
 import { SetCountList } from "./SetCountList"
 import { MemoSection } from "./MemoSection"
-import { WorkoutDrawer, BUTTONS_HEIGHT } from "./WorkoutDrawer"
+import {
+  WorkoutDrawer,
+  BUTTONS_HEIGHT,
+  DRAWER_VISIBLE_HEIGHT,
+} from "./WorkoutDrawer"
 
 export function ActiveWorkoutScreen() {
   const { t } = useTranslation()
@@ -118,7 +122,7 @@ export function ActiveWorkoutScreen() {
         className="grow"
         contentContainerStyle={{
           paddingTop: 16,
-          paddingBottom: 84 + BUTTONS_HEIGHT + bottomPadding,
+          paddingBottom: DRAWER_VISIBLE_HEIGHT + BUTTONS_HEIGHT + bottomPadding,
         }}
         showsVerticalScrollIndicator={false}
       >

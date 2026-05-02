@@ -61,6 +61,7 @@
       "memoPlaceholder": "운동 메모를 자유롭게 작성하세요",
       "memoHint": "운동중에도 자유롭게 기록",
       "stop": "중지",
+      "stopWorkout": "운동 중지",
       "resume": "재개",
       "pause": "일시정지",
       "endWorkout": "운동 종료",

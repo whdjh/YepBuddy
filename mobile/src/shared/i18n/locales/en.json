@@ -61,6 +61,7 @@
       "memoPlaceholder": "Write workout notes freely",
       "memoHint": "Record freely during workout",
       "stop": "Stop",
+      "stopWorkout": "Stop Workout",
       "resume": "Resume",
       "pause": "Pause",
       "endWorkout": "End Workout",
