@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { useCallback, useEffect, useRef, useState } from "react"
+import { Alert, Pressable, ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
@@ -13,7 +13,6 @@ import { useSummaryCardData } from "../model/useSummaryCardData"
 import { SummaryCardRenderer } from "./SummaryCardRenderer"
 import { EditableSummaryCardFrame } from "./EditableSummaryCardFrame"
 import { SummaryCardEditModal } from "./SummaryCardEditModal"
-import { WeeklyRoutineFeaturePromptModal } from "./WeeklyRoutineFeaturePromptModal"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
@@ -24,10 +23,11 @@ export function SummaryScreen() {
     useNotificationPermissionRequestDone()
   const [isEditing, setIsEditing] = useState(false)
   const [isCardPickerOpen, setIsCardPickerOpen] = useState(false)
-  const [isWeeklyRoutineFeaturePromptOpen, setIsWeeklyRoutineFeaturePromptOpen] =
+  const [isWeeklyRoutineFeatureAlertOpen, setIsWeeklyRoutineFeatureAlertOpen] =
     useState(false)
   const [isWeeklyRoutineSettingsOpen, setIsWeeklyRoutineSettingsOpen] =
     useState(false)
+  const isWeeklyRoutineFeatureAlertOpenRef = useRef(false)
   const {
     cardRows,
     availableCards,
@@ -39,12 +39,11 @@ export function SummaryScreen() {
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
   const weeklyRoutinePlan = cardData.weeklyRoutinePlan
-  const isRoutineFeaturePromptVisible =
-    isWeeklyRoutineFeaturePromptOpen ||
-    (notificationPermissionRequestDone &&
-      weeklyRoutinePlan.featureStatus === "unasked" &&
-      !weeklyRoutinePlan.isLoading &&
-      !isWeeklyRoutineSettingsOpen)
+  const shouldShowRoutineFeatureAlert =
+    notificationPermissionRequestDone &&
+    weeklyRoutinePlan.featureStatus === "unasked" &&
+    !weeklyRoutinePlan.isLoading &&
+    !isWeeklyRoutineSettingsOpen
   const routineToggleLabel = weeklyRoutinePlan.isRoutineEnabled
     ? t("summary.routineOn")
     : t("summary.routineOff")
@@ -52,22 +51,57 @@ export function SummaryScreen() {
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const enterEditMode = () => setIsEditing(true)
-  const handleRoutineTogglePress = () => {
-    if (weeklyRoutinePlan.isRoutineEnabled) {
-      void weeklyRoutinePlan.disableRoutine()
-      setIsWeeklyRoutineFeaturePromptOpen(false)
+
+  const closeRoutineFeatureAlert = useCallback(() => {
+    isWeeklyRoutineFeatureAlertOpenRef.current = false
+    setIsWeeklyRoutineFeatureAlertOpen(false)
+  }, [])
+
+  const showRoutineFeatureAlert = useCallback(() => {
+    if (isWeeklyRoutineFeatureAlertOpenRef.current) {
       return
     }
 
-    setIsWeeklyRoutineFeaturePromptOpen(true)
-  }
-  const handleRoutinePromptAccept = () => {
-    setIsWeeklyRoutineFeaturePromptOpen(false)
-    setIsWeeklyRoutineSettingsOpen(true)
-  }
-  const handleRoutinePromptDecline = () => {
-    setIsWeeklyRoutineFeaturePromptOpen(false)
-    void weeklyRoutinePlan.disableRoutine()
+    isWeeklyRoutineFeatureAlertOpenRef.current = true
+    setIsWeeklyRoutineFeatureAlertOpen(true)
+    Alert.alert(
+      t("workout.weeklyRoutine.featurePrompt.title"),
+      undefined,
+      [
+        {
+          text: t("workout.weeklyRoutine.featurePrompt.decline"),
+          style: "cancel",
+          onPress: () => {
+            void weeklyRoutinePlan.disableRoutine().finally(() => {
+              closeRoutineFeatureAlert()
+            })
+          },
+        },
+        {
+          text: t("workout.weeklyRoutine.featurePrompt.accept"),
+          onPress: () => {
+            closeRoutineFeatureAlert()
+            setIsWeeklyRoutineSettingsOpen(true)
+          },
+        },
+      ],
+      { cancelable: false },
+    )
+  }, [closeRoutineFeatureAlert, t, weeklyRoutinePlan])
+
+  useEffect(() => {
+    if (shouldShowRoutineFeatureAlert) {
+      showRoutineFeatureAlert()
+    }
+  }, [shouldShowRoutineFeatureAlert, showRoutineFeatureAlert])
+
+  const handleRoutineTogglePress = () => {
+    if (weeklyRoutinePlan.isRoutineEnabled) {
+      void weeklyRoutinePlan.disableRoutine()
+      return
+    }
+
+    showRoutineFeatureAlert()
   }
 
   function renderEditableSummaryCard(cardId: SummaryCardId) {
@@ -195,11 +229,6 @@ export function SummaryScreen() {
         visible={isWeeklyRoutineSettingsOpen}
         onClose={() => setIsWeeklyRoutineSettingsOpen(false)}
       />
-      <WeeklyRoutineFeaturePromptModal
-        visible={isRoutineFeaturePromptVisible}
-        onAccept={handleRoutinePromptAccept}
-        onDecline={handleRoutinePromptDecline}
-      />
       <WeeklyRoutineSetupPromptModal
         plan={weeklyRoutinePlan}
         visible={
@@ -207,7 +236,7 @@ export function SummaryScreen() {
           Boolean(weeklyRoutinePlan.setupPromptKind) &&
           !weeklyRoutinePlan.isLoading &&
           !isWeeklyRoutineSettingsOpen &&
-          !isRoutineFeaturePromptVisible
+          !isWeeklyRoutineFeatureAlertOpen
         }
       />
     </Main>
