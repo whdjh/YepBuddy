@@ -16,6 +16,7 @@ import {
   saveCompletedWorkoutSession,
   saveCurrentWorkoutSnapshot,
 } from "./sessionStorage"
+import { getWorkoutCompletedAt } from "../lib/workoutCompletion"
 import type {
   BodyPart,
   BodyPartDetail,
@@ -196,7 +197,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     }
 
     // 종료 시각을 reducer에 반영하고, 별도로 완료 세션 저장까지 수행한다.
-    const completedAt = new Date().toISOString()
+    const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
     dispatch({ type: "COMPLETE", payload: { completedAt } })
 
     const session: StoredWorkoutSession = {
@@ -215,6 +216,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     state.bodyParts,
     state.location,
     state.memo,
+    state.pausedAt,
     state.sessionId,
     state.startedAt,
   ])

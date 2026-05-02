@@ -3,6 +3,7 @@ import {
   clearCurrentWorkoutSnapshot,
   saveCompletedWorkoutSession,
 } from "./sessionStorage"
+import { getWorkoutCompletedAt } from "../lib/workoutCompletion"
 import type {
   BodyPart,
   BodyPartDetail,
@@ -82,7 +83,7 @@ export function useWorkoutActions({
       return null
     }
 
-    const completedAt = new Date().toISOString()
+    const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
     dispatch({ type: "COMPLETE", payload: { completedAt } })
 
     const session: StoredWorkoutSession = {
