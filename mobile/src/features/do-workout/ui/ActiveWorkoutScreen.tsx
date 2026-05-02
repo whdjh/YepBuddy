@@ -41,6 +41,7 @@ export function ActiveWorkoutScreen() {
     applyBodyPartTemplate,
     updateSetCount,
     updateMemo,
+    startCardio,
     pauseWorkout,
     resumeWorkout,
     completeWorkout,
@@ -85,6 +86,7 @@ export function ActiveWorkoutScreen() {
     await registerWorkoutToCalendar({
       startedAt: completedSession.startedAt,
       completedAt: completedSession.completedAt,
+      cardioStartedAt: completedSession.cardioStartedAt,
       memo: completedSession.memo,
       bodyParts: completedSession.bodyParts,
     })
@@ -156,7 +158,8 @@ export function ActiveWorkoutScreen() {
       <WorkoutDrawer
         timerDisplay={timerDisplay}
         isPaused={state.phase === "paused"}
-        representativeBodyPart={state.bodyParts[0]?.part ?? null}
+        hasCardioStarted={Boolean(state.cardioStartedAt)}
+        onStartCardio={startCardio}
         onTempo={() => router.push("/(tabs)/tempo?fromWorkout=1")}
         onTogglePause={() => void handlePauseToggle()}
         onEnd={() => void handleComplete()}

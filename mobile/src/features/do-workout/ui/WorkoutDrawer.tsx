@@ -8,8 +8,6 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated"
 import { useUnstableNativeVariable } from "nativewind"
-import type { BodyPart } from "@/entities/workout-session"
-import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
 import {
   canEndWorkoutFromDrawer,
   getWorkoutDrawerExpandedToggleLabelKey,
@@ -29,7 +27,8 @@ const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 interface WorkoutDrawerProps {
   timerDisplay: string
   isPaused: boolean
-  representativeBodyPart?: BodyPart | null
+  hasCardioStarted: boolean
+  onStartCardio: () => void
   onTempo: () => void
   onTogglePause: () => void
   onEnd: () => void
@@ -40,7 +39,8 @@ interface WorkoutDrawerProps {
 export function WorkoutDrawer({
   timerDisplay,
   isPaused,
-  representativeBodyPart,
+  hasCardioStarted,
+  onStartCardio,
   onTempo,
   onTogglePause,
   onEnd,
@@ -54,6 +54,9 @@ export function WorkoutDrawer({
   const accentColor =
     (useUnstableNativeVariable("--yb-accent") as unknown as string) ||
     "#9B7E56"
+  const cardioColor =
+    (useUnstableNativeVariable("--yb-status-success") as unknown as string) ||
+    "#308639"
   const onDangerColor =
     (useUnstableNativeVariable("--yb-on-accent") as unknown as string) ||
     "#FFFFFF"
@@ -63,6 +66,7 @@ export function WorkoutDrawer({
   const translateY = useSharedValue(collapseHeight)
   const timerControl = getWorkoutDrawerTimerControl(isPaused)
   const canEndWorkout = canEndWorkoutFromDrawer(isPaused)
+  const canStartCardio = !isPaused && !hasCardioStarted
 
   const openDrawer = () => {
     translateY.value = withSpring(0, SPRING_CONFIG)
@@ -112,7 +116,30 @@ export function WorkoutDrawer({
 
         {/* 타이머 */}
         <View className="flex-row items-center justify-center gap-yb-3 mb-yb-3">
-          <BodyPartIcon bodyPart={representativeBodyPart} size="drawer" />
+          <Pressable
+            onPress={onStartCardio}
+            disabled={!canStartCardio}
+            accessibilityLabel={t("workout.calendar.cardio")}
+            className="items-center justify-center rounded-yb-icon"
+            style={{
+              backgroundColor: hasCardioStarted
+                ? cardioColor
+                : "rgba(255,255,255,0.08)",
+              borderColor: hasCardioStarted
+                ? cardioColor
+                : "rgba(255,255,255,0.18)",
+              borderWidth: 1,
+              height: 48,
+              opacity: isPaused && !hasCardioStarted ? 0.55 : 1,
+              width: 48,
+            }}
+          >
+            <SymbolView
+              name="figure.run"
+              size={22}
+              tintColor={hasCardioStarted ? onDangerColor : cardioColor}
+            />
+          </Pressable>
 
           <Text
             className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"
