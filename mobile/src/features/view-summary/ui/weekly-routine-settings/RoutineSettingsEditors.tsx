@@ -111,7 +111,7 @@ export function RoutineSettingsSaveButton({
   return (
     <Pressable
       onPress={onPress}
-      className="mb-yb-10 mt-yb-3 min-h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
+      className="mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
     >
       <Text className="text-yb-body-lg text-yb-on-accent">{label}</Text>
     </Pressable>
