@@ -89,6 +89,42 @@ export function moveSummaryCard(
   return nextCardIds
 }
 
+// 같은 행 안에서만 카드를 좌우로 이동. 행 경계를 넘는 이동X
+export function moveSummaryCardWithinRow(
+  cardIds: readonly SummaryCardId[],
+  cardId: SummaryCardId,
+  direction: -1 | 1,
+) {
+  const rows = buildSummaryCardRows(cardIds)
+  let rowStartIndex = 0
+
+  for (const row of rows) {
+    const fromRowIndex = row.indexOf(cardId)
+
+    if (fromRowIndex < 0) {
+      rowStartIndex += row.length
+      continue
+    }
+
+    const toRowIndex = fromRowIndex + direction
+
+    if (toRowIndex < 0 || toRowIndex >= row.length) {
+      return [...cardIds]
+    }
+
+    const nextCardIds = [...cardIds]
+    const fromIndex = rowStartIndex + fromRowIndex
+    const toIndex = rowStartIndex + toRowIndex
+    const [movedCardId] = nextCardIds.splice(fromIndex, 1)
+
+    nextCardIds.splice(toIndex, 0, movedCardId)
+
+    return nextCardIds
+  }
+
+  return [...cardIds]
+}
+
 // 카드 정의(id, width)를 반환
 export function getSummaryCardDefinition(cardId: SummaryCardId) {
   return SUMMARY_CARD_DEFINITIONS.find((card) => card.id === cardId)
