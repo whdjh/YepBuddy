@@ -42,6 +42,7 @@
       "permissionTitle": "캘린더 권한 필요",
       "permissionBody": "캘린더에 운동 일정을 추가하려면 설정에서 권한을 허용해주세요.",
       "openSettings": "설정으로 이동",
+      "cardio": "유산소",
       "successTitle": "캘린더 등록 완료",
       "successBody": "운동 일정이 캘린더에 추가되었습니다."
     },

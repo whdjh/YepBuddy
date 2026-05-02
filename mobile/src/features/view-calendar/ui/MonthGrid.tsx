@@ -44,6 +44,7 @@ export function MonthGrid({
           const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
           const dayWorkout = workoutDates[dateKey] ?? null
           const bodyParts = dayWorkout?.bodyParts ?? []
+          const hasCardio = dayWorkout?.hasCardio ?? false
           const isToday = year === today.year && month === today.month && day === today.day
           const isFuture =
             year > today.year ||
@@ -57,6 +58,7 @@ export function MonthGrid({
               isToday={isToday}
               hasWorkout={dayWorkout != null}
               bodyParts={bodyParts}
+              hasCardio={hasCardio}
               disabled={isFuture || !dayWorkout}
               onPress={() => {
                 if (dayWorkout) {

@@ -53,6 +53,7 @@ export function useMonthWorkoutDates(
             accumulator[getLocalDateKeyFromIso(session.startedAt)] = {
               sessionId: session.sessionId,
               bodyParts: getUniqueWorkoutBodyParts(session.bodyParts),
+              hasCardio: Boolean(session.cardioStartedAt),
             }
             return accumulator
           },

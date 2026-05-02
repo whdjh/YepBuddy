@@ -10,18 +10,31 @@ interface DayCellProps {
   isToday: boolean
   hasWorkout: boolean
   bodyParts: BodyPart[]
+  hasCardio: boolean
   disabled: boolean
   onPress: () => void
 }
 
-export function DayCell({ day, isToday, hasWorkout, bodyParts, disabled, onPress }: DayCellProps) {
+export function DayCell({
+  day,
+  isToday,
+  hasWorkout,
+  bodyParts,
+  hasCardio,
+  disabled,
+  onPress,
+}: DayCellProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [tooltipWidth, setTooltipWidth] = useState(0)
   const cellRef = useRef<View>(null)
+  const visibleBodyPart = bodyParts[0] ?? null
+  const hiddenBodyPartCount = Math.max(0, bodyParts.length - 1)
+  const hiddenBadgeCount = hiddenBodyPartCount + (hasCardio ? 1 : 0)
+  const badgeCount = bodyParts.length + (hasCardio ? 1 : 0)
 
   const handleLongPress = () => {
-    if (bodyParts.length <= 1) return
+    if (badgeCount <= 1) return
     cellRef.current?.measure((_, __, width, ___, pageX, pageY) => {
       setTooltipPos({ x: pageX + width / 2, y: pageY })
       setTooltipVisible(true)
@@ -58,8 +71,12 @@ export function DayCell({ day, isToday, hasWorkout, bodyParts, disabled, onPress
 
         {hasWorkout && (
           <View className="flex-row items-center gap-yb-0.5">
-            <BodyPartBadge bodyPart={bodyParts[0] ?? null} />
-            {bodyParts.length > 1 && (
+            {visibleBodyPart ? (
+              <BodyPartBadge bodyPart={visibleBodyPart} />
+            ) : (
+              !hasCardio && <BodyPartBadge bodyPart={null} />
+            )}
+            {hiddenBadgeCount > 0 && (
               <Text
                 style={{
                   fontSize: 8,
@@ -68,7 +85,7 @@ export function DayCell({ day, isToday, hasWorkout, bodyParts, disabled, onPress
                   color: "#9B7E56",
                 }}
               >
-                +{bodyParts.length - 1}
+                +{hiddenBadgeCount}
               </Text>
             )}
           </View>
@@ -111,6 +128,7 @@ export function DayCell({ day, isToday, hasWorkout, bodyParts, disabled, onPress
               {bodyParts.map((part) => (
                 <BodyPartBadge key={part} bodyPart={part} size="md" />
               ))}
+              {hasCardio && <BodyPartBadge variant="cardio" size="md" />}
             </View>
           </Pressable>
         </Modal>

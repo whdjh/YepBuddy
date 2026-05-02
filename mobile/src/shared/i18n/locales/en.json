@@ -42,6 +42,7 @@
       "permissionTitle": "Calendar Permission Needed",
       "permissionBody": "Allow calendar access in Settings to add workouts to your calendar.",
       "openSettings": "Open Settings",
+      "cardio": "Cardio",
       "successTitle": "Added to Calendar",
       "successBody": "Your workout event was added to the calendar."
     },
