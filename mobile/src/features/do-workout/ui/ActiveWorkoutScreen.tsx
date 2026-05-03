@@ -6,7 +6,7 @@ import type { BodyPart, RoutinePart } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   registerWorkoutToCalendar,
-  scheduleWorkoutReminder22h,
+  syncWorkoutReminderAtNight,
   useWorkout,
 } from "@/entities/workout-session"
 import { useHealthKitWorkout } from "@/features/do-workout/lib/useHealthKitWorkout"
@@ -90,7 +90,7 @@ export function ActiveWorkoutScreen() {
       memo: completedSession.memo,
       bodyParts: completedSession.bodyParts,
     })
-    await scheduleWorkoutReminder22h(completedSession.completedAt)
+    await syncWorkoutReminderAtNight()
     router.replace(
       `/workout/${encodeURIComponent(completedSession.sessionId)}?fromWorkout=1`,
     )

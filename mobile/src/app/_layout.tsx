@@ -12,7 +12,10 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import * as Notifications from "expo-notifications"
 import * as Location from "expo-location"
 import { initHealthKit } from "@/entities/workout-session/api/healthKit"
-import { WorkoutProvider } from "@/entities/workout-session"
+import {
+  syncWorkoutReminderAtNight,
+  WorkoutProvider,
+} from "@/entities/workout-session"
 import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 import {
   setupProteinSaleNotificationHandler,
@@ -44,6 +47,7 @@ export default function RootLayout() {
       setupProteinSaleNotificationHandler()
 
     void syncProteinSaleNotificationsIfEnabled().catch(() => undefined)
+    void syncWorkoutReminderAtNight().catch(() => undefined)
 
     // 위치 권한과 HealthKit 초기화는 루틴 안내 모달 노출막음X
     void Promise.all([

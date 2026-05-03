@@ -48,7 +48,8 @@
     },
     "reminder": {
       "title": "운동 리마인더",
-      "body": "다음 운동을 기록할 시간이에요."
+      "body": "다음 운동을 기록할 시간이에요.",
+      "bodyRemaining": "이번 주 세션에 남은 운동: {{remaining}}회."
     },
     "active": {
       "title": "운동중",

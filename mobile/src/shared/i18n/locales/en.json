@@ -48,7 +48,8 @@
     },
     "reminder": {
       "title": "Workout Reminder",
-      "body": "Time to log your next workout."
+      "body": "Time to log your next workout.",
+      "bodyRemaining": "Remaining workouts this week: {{remaining}}."
     },
     "active": {
       "title": "Working Out",
