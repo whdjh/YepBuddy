@@ -31,10 +31,10 @@ export interface WeeklyRoutinePromptState {
   cycleRenewalDismissedForWeekStartDateKey: string | null
 }
 
-// 기본 루틴 사이클: 4주 훈련 + 1주 디로드, 4분할
+// 기본 루틴 사이클: 4주 훈련 + 1주 디로드
 export const DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS = 4
 export const DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS = 1
-export const DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT = 4
+export const DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT = 5
 export const MIN_WEEKLY_ROUTINE_SPLIT_COUNT = 1
 export const MAX_WEEKLY_ROUTINE_SPLIT_COUNT = 7
 
@@ -42,17 +42,16 @@ export const MAX_WEEKLY_ROUTINE_SPLIT_COUNT = 7
 export const DEFAULT_WEEKLY_ROUTINE_SESSIONS: WeeklyRoutineSession[] = [
   { id: "chest", parts: [{ part: "chest" }] },
   { id: "back", parts: [{ part: "back" }] },
-  {
-    id: "shoulders-arms",
-    parts: [{ part: "shoulders" }, { part: "arms" }],
-  },
+  { id: "shoulders", parts: [{ part: "shoulders" }] },
+  { id: "arms", parts: [{ part: "arms" }] },
   { id: "legs", parts: [{ part: "legs" }] },
 ]
 
 const WEEKLY_ROUTINE_SESSION_PRESETS: RoutinePart[][] = [
   [{ part: "chest" }],
   [{ part: "back" }],
-  [{ part: "shoulders" }, { part: "arms" }],
+  [{ part: "shoulders" }],
+  [{ part: "arms" }],
   [{ part: "legs" }],
   [{ part: "core" }],
 ]
