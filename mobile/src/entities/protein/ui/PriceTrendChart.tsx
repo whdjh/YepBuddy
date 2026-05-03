@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { CartesianChart, Line } from "victory-native"
+import { Path, Skia } from "@shopify/react-native-skia"
+import { CartesianChart } from "victory-native"
 import { useTranslation } from "react-i18next"
 
 import type { PriceHistoryPoint } from "../model/types"
@@ -10,6 +11,19 @@ interface PriceTrendChartProps {
 }
 
 const CHART_H = 180
+const buildLinePath = (points: { x: number; y: number | null | undefined }[]) => {
+  const validPoints = points.filter((point) => typeof point.y === "number")
+  if (validPoints.length === 0) return null
+
+  const builder = Skia.PathBuilder.Make()
+  builder.moveTo(validPoints[0].x, validPoints[0].y as number)
+
+  for (const point of validPoints.slice(1)) {
+    builder.lineTo(point.x, point.y as number)
+  }
+
+  return builder.build()
+}
 
 export function PriceTrendChart({ data }: PriceTrendChartProps) {
   const { t } = useTranslation()
@@ -72,14 +86,19 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
             xAxis={{ tickCount: 0, lineWidth: 0 }}
             yAxis={[{ tickCount: 0, lineWidth: 0 }]}
           >
-            {({ points, chartBounds }) => (
-              <Line
-                points={points.y}
-                color={lineColor}
-                strokeWidth={2}
-                curveType="natural"
-              />
-            )}
+            {({ points }) => {
+              const linePath = buildLinePath(points.y)
+              if (!linePath) return null
+
+              return (
+                <Path
+                  path={linePath}
+                  color={lineColor}
+                  strokeWidth={2}
+                  style="stroke"
+                />
+              )
+            }}
           </CartesianChart>
         )}
       </View>

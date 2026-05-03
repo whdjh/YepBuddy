@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { CartesianChart, Line, Area } from "victory-native"
-import { DashPathEffect, vec, Line as SkiaLine } from "@shopify/react-native-skia"
+import { CartesianChart } from "victory-native"
+import { DashPathEffect, Path, Skia, vec, Line as SkiaLine } from "@shopify/react-native-skia"
 
 interface HeartRateDataPoint {
   time: number
@@ -16,6 +16,38 @@ interface HeartRateChartProps {
 }
 
 const CHART_H = 160
+const buildLinePath = (points: { x: number; y: number | null | undefined }[]) => {
+  const validPoints = points.filter((point) => typeof point.y === "number")
+  if (validPoints.length === 0) return null
+
+  const builder = Skia.PathBuilder.Make()
+  builder.moveTo(validPoints[0].x, validPoints[0].y as number)
+  for (const point of validPoints.slice(1)) {
+    builder.lineTo(point.x, point.y as number)
+  }
+  return builder.build()
+}
+
+const buildAreaPath = (
+  points: { x: number; y: number | null | undefined }[],
+  y0: number,
+) => {
+  const validPoints = points.filter((point) => typeof point.y === "number")
+  if (validPoints.length === 0) return null
+
+  const builder = Skia.PathBuilder.Make()
+  const first = validPoints[0]
+  const last = validPoints[validPoints.length - 1]
+  if (!first || !last) return null
+
+  builder.moveTo(first.x, y0)
+  for (const point of validPoints) {
+    builder.lineTo(point.x, point.y as number)
+  }
+  builder.lineTo(last.x, y0)
+  builder.close()
+  return builder.build()
+}
 
 export function HeartRateChart({
   data,
@@ -91,6 +123,8 @@ export function HeartRateChart({
           >
             {({ points, chartBounds }) => {
               const { top, bottom, left, right } = chartBounds
+              const linePath = buildLinePath(points.y)
+              const areaPath = buildAreaPath(points.y, chartBounds.bottom)
 
               const toYPixel = (bpm: number) => {
                 const domainMin = globalMin - bpmRange * 0.15
@@ -122,20 +156,17 @@ export function HeartRateChart({
                   )}
 
                   {/* 영역 채우기 */}
-                  <Area
-                    points={points.y}
-                    y0={chartBounds.bottom}
-                    color={fillColor}
-                    curveType="natural"
-                  />
+                  {areaPath && <Path path={areaPath} color={fillColor} style="fill" />}
 
                   {/* 라인 */}
-                  <Line
-                    points={points.y}
-                    color={lineColor}
-                    strokeWidth={2}
-                    curveType="natural"
-                  />
+                  {linePath && (
+                    <Path
+                      path={linePath}
+                      color={lineColor}
+                      strokeWidth={2}
+                      style="stroke"
+                    />
+                  )}
                 </>
               )
             }}
