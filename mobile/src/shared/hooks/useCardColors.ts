@@ -14,6 +14,10 @@ const CARD_COLOR_TOKENS = {
     variable: "--yb-fg-secondary",
     fallback: PRIMITIVE_COLORS.khaki["400"],
   },
+  fgDisabled: {
+    variable: "--yb-fg-disabled",
+    fallback: PRIMITIVE_COLORS.neutral["400"],
+  },
   accent: {
     variable: "--yb-accent",
     fallback: PRIMITIVE_COLORS.khaki["300"],
@@ -41,6 +45,7 @@ export function useCardColors() {
   return {
     fg: useColorToken(CARD_COLOR_TOKENS.fg),
     fgSecondary: useColorToken(CARD_COLOR_TOKENS.fgSecondary),
+    fgDisabled: useColorToken(CARD_COLOR_TOKENS.fgDisabled),
     accent: useColorToken(CARD_COLOR_TOKENS.accent),
     fillPale: useColorToken(CARD_COLOR_TOKENS.fillPale),
     glassTint: useColorToken(CARD_COLOR_TOKENS.glassTint),

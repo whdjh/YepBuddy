@@ -1,13 +1,6 @@
-import { Pressable, Text, useColorScheme, type PressableProps } from "react-native"
-import { Host, HStack, Button as SwiftButton } from "@expo/ui/swift-ui"
-import {
-  buttonStyle,
-  disabled as disabledMod,
-  glassEffect,
-  frame,
-  font,
-  foregroundStyle,
-} from "@expo/ui/swift-ui/modifiers"
+import { Pressable, Text, type PressableProps } from "react-native"
+import { useCardColors } from "@/shared/hooks/useCardColors"
+import { GlassSurface } from "./GlassSurface"
 
 type ButtonVariant = "primary" | "accent" | "outline" | "ghost" | "danger" | "glass"
 
@@ -40,33 +33,30 @@ const labelStyles: Record<Exclude<ButtonVariant, "glass">, string> = {
 }
 
 export function Button({ variant = "primary", label, className, disabled, onPress, ...rest }: ButtonProps) {
-  const isDark = useColorScheme() === "dark"
+  const { fgSecondary } = useCardColors()
 
   if (variant === "glass") {
-    // semantic.fg-secondary → dark: cream.200, light: khaki.400
-    const fgColor = isDark ? "#EDE4D6" : "#876B45"
-
     return (
-      <Host style={{ height: 52 }}>
-        <HStack
-          modifiers={[
-            frame({ maxWidth: Infinity, height: 52 }),
-            glassEffect({ glass: { variant: "regular", interactive: true }, shape: "roundedRectangle", cornerRadius: 14 }),
-          ]}
+      <GlassSurface
+        className={`${disabled ? "opacity-40" : ""} ${className ?? ""}`}
+        cornerRadius={14}
+        minHeight={52}
+        paddingSize={0}
+      >
+        <Pressable
+          className="h-yb-btn-md items-center justify-center px-yb-6 active:opacity-80"
+          disabled={disabled}
+          onPress={onPress}
+          {...rest}
         >
-          <SwiftButton
-            label={label}
-            onPress={onPress}
-            modifiers={[
-              buttonStyle("plain"),
-              font({ weight: "bold", size: 16 }),
-              foregroundStyle(fgColor),
-              frame({ maxWidth: Infinity }),
-              disabledMod(!!disabled),
-            ]}
-          />
-        </HStack>
-      </Host>
+          <Text
+            className="text-yb-body-lg font-bold"
+            style={{ color: fgSecondary }}
+          >
+            {label}
+          </Text>
+        </Pressable>
+      </GlassSurface>
     )
   }
 

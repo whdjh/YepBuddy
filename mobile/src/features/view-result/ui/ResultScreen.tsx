@@ -21,7 +21,7 @@ import {
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/Input"
 import { IconButton } from "@/shared/ui/IconButton"
-import { GlassBackground } from "@/shared/ui/GlassBackground"
+import { GlassSurface } from "@/shared/ui/GlassSurface"
 import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
@@ -270,27 +270,29 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
             </>
           )}
 
-          <View className="items-center">
-            <Pressable
-              disabled={isDeleting}
-              className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center overflow-hidden rounded-full border px-yb-7 py-yb-4 shadow-lg active:opacity-80"
-              onPress={handleDeletePress}
+          <View className="mt-yb-8 items-center">
+            <GlassSurface
+              className="min-h-yb-btn-md w-[72%] max-w-[340px] border shadow-lg"
+              cornerRadius={999}
+              fallbackClassName="bg-yb-result-delete-cta-bg"
               style={{
                 backgroundColor: deleteCtaBackgroundColor,
                 borderColor: deleteCtaBorderColor,
               }}
             >
-              <GlassBackground
-                cornerRadius={999}
-                fallbackClassName="bg-yb-result-delete-cta-bg"
-              />
-              <Text
-                className="text-yb-body-lg font-semibold"
-                style={{ color: deleteCtaTextColor }}
+              <Pressable
+                disabled={isDeleting}
+                className="min-h-yb-btn-md items-center justify-center rounded-full px-yb-7 py-yb-4 active:opacity-80"
+                onPress={handleDeletePress}
               >
-                {t("workout.result.deleteConfirm")}
-              </Text>
-            </Pressable>
+                <Text
+                  className="text-yb-body-lg font-semibold"
+                  style={{ color: deleteCtaTextColor }}
+                >
+                  {t("workout.result.deleteConfirm")}
+                </Text>
+              </Pressable>
+            </GlassSurface>
           </View>
         </ScrollView>
       )}

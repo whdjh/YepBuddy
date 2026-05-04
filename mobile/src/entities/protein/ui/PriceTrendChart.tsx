@@ -1,11 +1,13 @@
 import { useState } from "react"
-import { Text, View, useColorScheme } from "react-native"
+import { Text, View } from "react-native"
 import { Path } from "@shopify/react-native-skia"
 import { CartesianChart } from "victory-native"
 import { useTranslation } from "react-i18next"
 
+import { useCardColors } from "@/shared/hooks/useCardColors"
+import { buildLinePath } from "@/shared/lib/skiaChartPaths"
+import { GlassSurface } from "@/shared/ui/GlassSurface"
 import type { PriceHistoryPoint } from "../model/types"
-import { buildLinePath } from "../../../shared/lib/skiaChartPaths"
 
 interface PriceTrendChartProps {
   data: PriceHistoryPoint[]
@@ -15,15 +17,13 @@ const CHART_H = 180
 
 export function PriceTrendChart({ data }: PriceTrendChartProps) {
   const { t } = useTranslation()
-  const isDark = useColorScheme() === "dark"
+  const { accent } = useCardColors()
 
   const [chartW, setChartW] = useState(0)
 
   if (data.length <= 1) return null
 
-  const lineColor = isDark ? "#D4883A" : "#9B7E56"
-  const cardBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)"
-  const cardBorder = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"
+  const lineColor = accent
 
   const prices = data.map((d) => d.price)
   const minPrice = Math.min(...prices)
@@ -39,16 +39,7 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
   const lastDate = data[data.length - 1].date
 
   return (
-    <View
-      style={{
-        backgroundColor: cardBg,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: cardBorder,
-        padding: 20,
-        overflow: "hidden",
-      }}
-    >
+    <GlassSurface cornerRadius={20} paddingSize={20}>
       <View className="flex-row items-center mb-yb-2 gap-yb-3">
         <Text className="text-yb-fg-secondary text-yb-caption font-semibold">
           {t("protein.detail.chartHigh", { value: maxPrice.toLocaleString() })}
@@ -72,7 +63,10 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
             xAxis={{ tickCount: 0, lineWidth: 0 }}
             yAxis={[{ tickCount: 0, lineWidth: 0 }]}
           >
-            {({ points }) => {
+            {({ points, chartBounds }) => {
+              const { top, bottom, left, right } = chartBounds
+              if (right <= left || bottom <= top) return null
+
               const linePath = buildLinePath(points.y)
               if (!linePath) return null
 
@@ -93,6 +87,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         <Text className="text-yb-fg-secondary text-yb-caption">{firstDate}</Text>
         <Text className="text-yb-fg-secondary text-yb-caption">{lastDate}</Text>
       </View>
-    </View>
+    </GlassSurface>
   )
 }

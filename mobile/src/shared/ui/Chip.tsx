@@ -1,7 +1,5 @@
 import { Pressable, Text, type PressableProps } from "react-native"
-import { GlassBackground } from "./GlassBackground"
-import { Button as SwiftButton } from "@expo/ui/swift-ui"
-import { buttonStyle, controlSize, tint } from "@expo/ui/swift-ui/modifiers"
+import { GlassSurface } from "./GlassSurface"
 
 type ChipVariant = "default" | "active" | "glass"
 type FilterPillVariant = "default" | "active"
@@ -41,9 +39,21 @@ const chipLabel: Record<ChipVariant, string> = {
 }
 
 export function Chip({ variant = "default", label, ...rest }: ChipProps) {
+  if (variant === "glass") {
+    return (
+      <GlassSurface className="h-yb-chip" cornerRadius={22}>
+        <Pressable
+          className="h-yb-chip items-center justify-center px-yb-6 active:scale-[0.97]"
+          {...rest}
+        >
+          <Text className={chipLabel.glass}>{label}</Text>
+        </Pressable>
+      </GlassSurface>
+    )
+  }
+
   return (
     <Pressable className={chipContainer[variant]} {...rest}>
-      {variant === "glass" && <GlassBackground />}
       <Text className={chipLabel[variant]}>{label}</Text>
     </Pressable>
   )
@@ -74,15 +84,26 @@ export function FilterPill({ variant = "default", label, ...rest }: FilterPillPr
 /* BodyPartPill */
 
 export function BodyPartPill({ variant = "default", label, onPress }: BodyPartPillProps) {
+  const isActive = variant === "active"
+
   return (
-    <SwiftButton
-      label={label}
-      onPress={onPress}
-      modifiers={[
-        buttonStyle("glass"),
-        controlSize("regular"),
-        tint(variant === "active" ? "#9B7E56" : "#888888"),
-      ]}
-    />
+    <GlassSurface
+      className="h-yb-chip"
+      cornerRadius={22}
+      fallbackClassName={isActive ? "bg-yb-accent/15" : "bg-yb-surface/70"}
+    >
+      <Pressable
+        className="h-yb-chip items-center justify-center px-yb-5 active:scale-[0.97]"
+        onPress={onPress}
+      >
+        <Text
+          className={`text-yb-body-sm font-semibold ${
+            isActive ? "text-yb-accent" : "text-yb-fg-secondary"
+          }`}
+        >
+          {label}
+        </Text>
+      </Pressable>
+    </GlassSurface>
   )
 }
