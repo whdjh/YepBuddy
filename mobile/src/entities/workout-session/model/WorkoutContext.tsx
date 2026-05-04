@@ -76,9 +76,6 @@ const WorkoutContext = createContext<WorkoutContextValue | null>(null)
 const ACTIVE_WORKOUT_ALLOWED_PATHS = new Set(["/workout/active", "/tempo"])
 
 export function WorkoutProvider({ children }: PropsWithChildren) {
-  const pathname = usePathname()
-  const router = useRouter()
-
   // 실제 운동 세션 상태 관리
   const [state, dispatch] = useReducer(workoutReducer, initialWorkoutState)
   // 저장소 복구가 끝났는지 표시
@@ -103,19 +100,6 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       mounted = false
     }
   }, [])
-
-  useEffect(() => {
-    if (!isHydrated) {
-      return
-    }
-
-    const isRecoverable =
-      state.phase === "recording" || state.phase === "paused"
-
-    if (isRecoverable && !ACTIVE_WORKOUT_ALLOWED_PATHS.has(pathname)) {
-      router.replace("/workout/active")
-    }
-  }, [isHydrated, pathname, router, state.phase])
 
   useDebouncedEffect(
     () => {
@@ -295,4 +279,25 @@ export function useWorkout() {
   }
 
   return context
+}
+
+export function WorkoutNavigationGuard() {
+  const { isHydrated, state } = useWorkout()
+  const pathname = usePathname()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return
+    }
+
+    const isRecoverable =
+      state.phase === "recording" || state.phase === "paused"
+
+    if (isRecoverable && !ACTIVE_WORKOUT_ALLOWED_PATHS.has(pathname)) {
+      router.replace("/workout/active")
+    }
+  }, [isHydrated, pathname, router, state.phase])
+
+  return null
 }

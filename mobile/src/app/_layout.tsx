@@ -75,28 +75,15 @@ export default function RootLayout() {
                 }}
               >
                 <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="workout" />
                 <Stack.Screen
-                  name="workout/countdown"
-                  options={{
-                    headerShown: false,
-                    gestureEnabled: false,
-                    animation: "fade",
-                  }}
-                />
-                <Stack.Screen
-                  name="workout/active"
-                  options={{
-                    headerShown: false,
-                    gestureEnabled: false,
-                    animation: "fade",
-                  }}
-                />
-                <Stack.Screen
-                  name="workout/[id]"
+                  name="calendar"
                   options={{
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen name="sessions" />
+                <Stack.Screen name="protein/[id]" />
               </Stack>
             </View>
           </WorkoutProvider>
