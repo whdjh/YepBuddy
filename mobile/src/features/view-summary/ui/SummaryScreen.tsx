@@ -1,5 +1,6 @@
 import {
   Pressable,
+  Linking,
   ScrollView,
   Text,
   useColorScheme,
@@ -8,6 +9,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { formatDateWithDay } from "@/shared/lib/format"
+import { privacyPolicyUrl, supportUrl } from "@/shared/lib/legalLinks"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
@@ -69,6 +71,7 @@ export function SummaryScreen() {
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
+  const hasLegalLinks = Boolean(privacyPolicyUrl || supportUrl)
 
   return (
     <Main>
@@ -139,6 +142,41 @@ export function SummaryScreen() {
           onMoveCardWithinRow={moveCardWithinRow}
           onRemoveCard={removeCard}
         />
+
+        {!isEditing && hasLegalLinks && (
+          <View
+            accessibilityLabel={t("legal.footerLabel")}
+            className="mt-yb-6 flex-row flex-wrap items-center justify-center gap-yb-2"
+          >
+            {privacyPolicyUrl && (
+              <Pressable
+                className="min-h-[36px] justify-center px-yb-2 active:opacity-70"
+                onPress={() => {
+                  void Linking.openURL(privacyPolicyUrl)
+                }}
+              >
+                <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
+                  {t("legal.privacyPolicy")}
+                </Text>
+              </Pressable>
+            )}
+            {privacyPolicyUrl && supportUrl && (
+              <Text className="text-yb-caption text-yb-fg-tertiary">/</Text>
+            )}
+            {supportUrl && (
+              <Pressable
+                className="min-h-[36px] justify-center px-yb-2 active:opacity-70"
+                onPress={() => {
+                  void Linking.openURL(supportUrl)
+                }}
+              >
+                <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
+                  {t("legal.support")}
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        )}
       </ScrollView>
 
       {isEditing && (
