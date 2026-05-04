@@ -9,6 +9,7 @@ export { getWorkoutLocationOnce } from "./lib/location"
 export {
   cancelScheduledWorkoutReminder,
   scheduleWorkoutReminder22h,
+  syncWorkoutReminderAtNight,
 } from "./lib/reminder"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {

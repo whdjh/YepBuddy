@@ -48,7 +48,8 @@
     },
     "reminder": {
       "title": "운동 리마인더",
-      "body": "다음 운동을 기록할 시간이에요."
+      "body": "다음 운동을 기록할 시간이에요.",
+      "bodyRemaining": "이번 주 세션에 남은 운동: {{remaining}}회."
     },
     "active": {
       "title": "운동중",
@@ -250,6 +251,28 @@
       "low": "저점",
       "mid": "중간",
       "high": "고점"
+    },
+    "saleNotifications": {
+      "toggleTitle": "마이프로틴 세일 알림",
+      "toggleBody": "주요 세일 전날 19:00에 알려드릴게요.",
+      "notificationTitle": "마이프로틴 세일 알림",
+      "notificationSubtitle": "{{eventName}} 세일",
+      "notificationBody": "재고와 할인 코드를 지금 확인해보세요.",
+      "events": {
+        "newYear": "신년",
+        "doubleDay0202": "2월 더블데이",
+        "doubleDay0303": "3월 더블데이",
+        "doubleDay0404": "4월 더블데이",
+        "goldenWeek": "골든위크",
+        "doubleDay0606": "6월 더블데이",
+        "doubleDay0707": "7월 더블데이",
+        "doubleDay0808": "8월 더블데이",
+        "doubleDay0909": "9월 더블데이",
+        "doubleDay1010": "10월 더블데이",
+        "singlesDay": "광군제",
+        "blackFriday": "블랙프라이데이",
+        "yearEnd": "연말 결산"
+      }
     }
   }
 }

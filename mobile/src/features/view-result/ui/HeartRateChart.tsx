@@ -1,7 +1,9 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { CartesianChart, Line, Area } from "victory-native"
-import { DashPathEffect, vec, Line as SkiaLine } from "@shopify/react-native-skia"
+import { CartesianChart } from "victory-native"
+import { DashPathEffect, Path, vec, Line as SkiaLine } from "@shopify/react-native-skia"
+
+import { buildLinePath, buildAreaPath } from "../../../shared/lib/skiaChartPaths"
 
 interface HeartRateDataPoint {
   time: number
@@ -59,7 +61,6 @@ export function HeartRateChart({
         overflow: "hidden",
       }}
     >
-      {/* Y축 라벨 */}
       <View className="flex-row items-center mb-yb-2 gap-yb-3">
         <Text style={{ fontSize: 11, fontWeight: "600", color: labelColor }}>
           최고 {globalMax}
@@ -74,7 +75,6 @@ export function HeartRateChart({
         </Text>
       </View>
 
-      {/* 차트 */}
       <View
         style={{ height: CHART_H }}
         onLayout={(e) => setChartW(e.nativeEvent.layout.width)}
@@ -91,6 +91,8 @@ export function HeartRateChart({
           >
             {({ points, chartBounds }) => {
               const { top, bottom, left, right } = chartBounds
+              const linePath = buildLinePath(points.y)
+              const areaPath = buildAreaPath(points.y, chartBounds.bottom)
 
               const toYPixel = (bpm: number) => {
                 const domainMin = globalMin - bpmRange * 0.15
@@ -104,38 +106,30 @@ export function HeartRateChart({
 
               return (
                 <>
-                  {/* 최고 점선 */}
                   <SkiaLine p1={vec(left, yMax)} p2={vec(right, yMax)} color={dashColor} strokeWidth={1}>
                     <DashPathEffect intervals={[4, 4]} />
                   </SkiaLine>
 
-                  {/* 최저 점선 */}
                   <SkiaLine p1={vec(left, yMin)} p2={vec(right, yMin)} color={dashColor} strokeWidth={1}>
                     <DashPathEffect intervals={[4, 4]} />
                   </SkiaLine>
 
-                  {/* 평균 점선 */}
                   {showAvg && yAvg != null && (
                     <SkiaLine p1={vec(left, yAvg)} p2={vec(right, yAvg)} color={lineColor} strokeWidth={1} opacity={0.5}>
                       <DashPathEffect intervals={[4, 4]} />
                     </SkiaLine>
                   )}
 
-                  {/* 영역 채우기 */}
-                  <Area
-                    points={points.y}
-                    y0={chartBounds.bottom}
-                    color={fillColor}
-                    curveType="natural"
-                  />
+                  {areaPath && <Path path={areaPath} color={fillColor} style="fill" />}
 
-                  {/* 라인 */}
-                  <Line
-                    points={points.y}
-                    color={lineColor}
-                    strokeWidth={2}
-                    curveType="natural"
-                  />
+                  {linePath && (
+                    <Path
+                      path={linePath}
+                      color={lineColor}
+                      strokeWidth={2}
+                      style="stroke"
+                    />
+                  )}
                 </>
               )
             }}
@@ -143,7 +137,6 @@ export function HeartRateChart({
         )}
       </View>
 
-      {/* X축 시간 */}
       <View className="flex-row justify-between mt-yb-1">
         <Text className="text-yb-fg-secondary text-yb-caption">{startTimeLabel}</Text>
         <Text className="text-yb-fg-secondary text-yb-caption">{endTimeLabel}</Text>

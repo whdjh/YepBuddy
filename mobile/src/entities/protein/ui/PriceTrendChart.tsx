@@ -1,9 +1,11 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { CartesianChart, Line } from "victory-native"
+import { Path } from "@shopify/react-native-skia"
+import { CartesianChart } from "victory-native"
 import { useTranslation } from "react-i18next"
 
 import type { PriceHistoryPoint } from "../model/types"
+import { buildLinePath } from "../../../shared/lib/skiaChartPaths"
 
 interface PriceTrendChartProps {
   data: PriceHistoryPoint[]
@@ -47,7 +49,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         overflow: "hidden",
       }}
     >
-      {/* Y축 */}
       <View className="flex-row items-center mb-yb-2 gap-yb-3">
         <Text className="text-yb-fg-secondary text-yb-caption font-semibold">
           {t("protein.detail.chartHigh", { value: maxPrice.toLocaleString() })}
@@ -57,7 +58,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         </Text>
       </View>
 
-      {/* 차트 */}
       <View
         style={{ height: CHART_H }}
         onLayout={(e) => setChartW(e.nativeEvent.layout.width)}
@@ -72,19 +72,23 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
             xAxis={{ tickCount: 0, lineWidth: 0 }}
             yAxis={[{ tickCount: 0, lineWidth: 0 }]}
           >
-            {({ points, chartBounds }) => (
-              <Line
-                points={points.y}
-                color={lineColor}
-                strokeWidth={2}
-                curveType="natural"
-              />
-            )}
+            {({ points }) => {
+              const linePath = buildLinePath(points.y)
+              if (!linePath) return null
+
+              return (
+                <Path
+                  path={linePath}
+                  color={lineColor}
+                  strokeWidth={2}
+                  style="stroke"
+                />
+              )
+            }}
           </CartesianChart>
         )}
       </View>
 
-      {/* X축 */}
       <View className="flex-row justify-between mt-yb-1">
         <Text className="text-yb-fg-secondary text-yb-caption">{firstDate}</Text>
         <Text className="text-yb-fg-secondary text-yb-caption">{lastDate}</Text>

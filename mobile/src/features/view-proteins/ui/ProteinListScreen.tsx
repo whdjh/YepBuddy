@@ -13,6 +13,7 @@ import {
   ProteinCard,
 } from "@/entities/protein"
 import type { Protein, ProteinCategory } from "@/entities/protein"
+import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
 
 const CATEGORIES: (ProteinCategory | "all")[] = ["all", "wpc", "wpi", "wpcwpi", "creatine", "beta-alanine"]
 
@@ -72,6 +73,8 @@ export function ProteinListScreen() {
           {t("protein.title")}
         </Text>
       </View>
+
+      <ProteinSaleNotificationToggle />
 
       <View className="pt-yb-4 pb-yb-2">
         <ScrollView

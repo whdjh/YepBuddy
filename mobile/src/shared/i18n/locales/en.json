@@ -48,7 +48,8 @@
     },
     "reminder": {
       "title": "Workout Reminder",
-      "body": "Time to log your next workout."
+      "body": "Time to log your next workout.",
+      "bodyRemaining": "Remaining workouts this week: {{remaining}}."
     },
     "active": {
       "title": "Working Out",
@@ -250,6 +251,28 @@
       "low": "Low",
       "mid": "Mid",
       "high": "High"
+    },
+    "saleNotifications": {
+      "toggleTitle": "Myprotein Sale Alerts",
+      "toggleBody": "We'll remind you at 19:00 the day before key sales.",
+      "notificationTitle": "Myprotein Sale Alert",
+      "notificationSubtitle": "{{eventName}} Sale",
+      "notificationBody": "Check stock and discount codes now.",
+      "events": {
+        "newYear": "New Year",
+        "doubleDay0202": "February Double Day",
+        "doubleDay0303": "March Double Day",
+        "doubleDay0404": "April Double Day",
+        "goldenWeek": "Golden Week",
+        "doubleDay0606": "June Double Day",
+        "doubleDay0707": "July Double Day",
+        "doubleDay0808": "August Double Day",
+        "doubleDay0909": "September Double Day",
+        "doubleDay1010": "October Double Day",
+        "singlesDay": "Singles Day",
+        "blackFriday": "Black Friday",
+        "yearEnd": "Year-End Sale"
+      }
     }
   }
 }

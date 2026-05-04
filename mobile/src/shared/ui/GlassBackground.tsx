@@ -1,7 +1,6 @@
-import { View } from "react-native"
-import { Host, GlassEffectContainer, VStack, Spacer } from "@expo/ui/swift-ui"
-import { frame, glassEffect } from "@expo/ui/swift-ui/modifiers"
-import { isLiquidGlassAvailable } from "expo-glass-effect"
+import { StyleSheet, View } from "react-native"
+import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect"
+import { useUnstableNativeVariable } from "nativewind"
 
 interface GlassBackgroundProps {
   /** 코너 라운드 (포인트) */
@@ -16,28 +15,28 @@ export function GlassBackground({
   cornerRadius = 16,
   fallbackClassName = "bg-yb-surface-muted/80",
 }: GlassBackgroundProps) {
+  const tintColor =
+    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) ||
+    "rgba(255,255,255,0.65)"
+  const fillStyle = [StyleSheet.absoluteFill, { borderRadius: cornerRadius }]
+
   if (IS_GLASS) {
     return (
-      <View className="absolute inset-0" pointerEvents="none">
-        <Host style={{ flex: 1 }}>
-          <GlassEffectContainer>
-            <VStack
-              modifiers={[
-                frame({ maxWidth: 9999, maxHeight: 9999 }),
-                glassEffect({
-                  glass: { variant: "regular", interactive: true },
-                  shape: "roundedRectangle",
-                  cornerRadius,
-                }),
-              ]}
-            >
-              <Spacer />
-            </VStack>
-          </GlassEffectContainer>
-        </Host>
-      </View>
+      <GlassView
+        glassEffectStyle="regular"
+        isInteractive
+        tintColor={tintColor}
+        pointerEvents="none"
+        style={fillStyle}
+      />
     )
   }
 
-  return <View className={`absolute inset-0 ${fallbackClassName}`} />
+  return (
+    <View
+      className={fallbackClassName}
+      pointerEvents="none"
+      style={fillStyle}
+    />
+  )
 }
