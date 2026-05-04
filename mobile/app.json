@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.anonymous.yepbuddy"
+      "bundleIdentifier": "com.juhun.yepbuddy"
     },
     "android": {
       "adaptiveIcon": {
@@ -37,7 +37,38 @@
           }
         }
       ],
-      ["expo-audio", { "enableBackgroundPlayback": true }]
+      [
+        "react-native-health",
+        {
+          "healthSharePermission": "운동 중 심박수와 칼로리 데이터를 읽어 세션 결과와 요약 통계에 표시합니다.",
+          "healthUpdatePermission": "완료한 운동 세션을 Apple 건강 앱에 운동 기록으로 저장합니다."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "운동 시작 위치를 한 번 기록해 세션 결과에 표시합니다.",
+          "locationAlwaysPermission": false,
+          "locationAlwaysAndWhenInUsePermission": false,
+          "isIosBackgroundLocationEnabled": false,
+          "isAndroidBackgroundLocationEnabled": false
+        }
+      ],
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
+          "remindersPermission": false
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "enableBackgroundPlayback": true,
+          "microphonePermission": false,
+          "recordAudioAndroid": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

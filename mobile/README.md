@@ -25,6 +25,15 @@ bun run start
 
 `.env`, `.env.local` 같은 로컬 설정 파일과 인증 정보는 커밋하지 않습니다.
 
+App Store 제출용 production 빌드에는 다음 공개 환경변수가 필요합니다.
+
+```text
+EXPO_PUBLIC_SUPABASE_URL
+EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_PRIVACY_POLICY_URL
+EXPO_PUBLIC_SUPPORT_URL
+```
+
 ## 구조
 
 - `src/app`: Expo Router 라우트

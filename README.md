@@ -51,6 +51,8 @@ node --env-file=../.env.local trackers/all.js
 ```text
 EXPO_PUBLIC_SUPABASE_URL
 EXPO_PUBLIC_SUPABASE_ANON_KEY
+EXPO_PUBLIC_PRIVACY_POLICY_URL
+EXPO_PUBLIC_SUPPORT_URL
 ```
 
 워커는 쿠팡 파트너스와 Supabase 서비스 키가 필요합니다.
