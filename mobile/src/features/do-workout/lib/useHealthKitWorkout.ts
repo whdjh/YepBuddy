@@ -1,7 +1,6 @@
 import { useEffect } from "react"
 import {
   endWorkoutSession,
-  initHealthKit,
   pauseWorkoutSession,
   readLiveWorkoutStats,
   resumeWorkoutSession,
@@ -12,11 +11,6 @@ import { useWorkout } from "@/entities/workout-session"
 export function useHealthKitWorkout() {
   // 앱의 운동 세션 상태를 기준으로 HealthKit 세션을 동기화
   const { state, setLiveStats } = useWorkout()
-
-  useEffect(() => {
-    // 화면 진입 시 HealthKit 권한/세션 사용 준비를 한 번 수행
-    void initHealthKit()
-  }, [])
 
   useEffect(() => {
     // 실제 기록 중일 때만 HealthKit 운동 세션과 실시간 수치 동기화를 시작
