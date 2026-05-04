@@ -42,7 +42,7 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
 
 function CardComponent(props: CardProps) {
   if (props.variant === "glass") {
-    const { children, minHeight, cornerRadius = 16, paddingSize = 20 } = props
+    const { children, minHeight, cornerRadius = 20, paddingSize = 20 } = props
     const contentMinHeight =
       minHeight != null ? Math.max(0, minHeight - paddingSize * 2) : undefined
 

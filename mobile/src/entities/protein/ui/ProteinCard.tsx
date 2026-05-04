@@ -43,7 +43,7 @@ export function ProteinCard({ protein, onPress }: ProteinCardProps) {
 
   return (
     <Pressable onPress={onPress} className="mb-yb-3">
-      <Card variant="glass" cornerRadius={20} paddingSize={20}>
+      <Card variant="glass">
         <Card.Row spacing={8} alignment="center">
           <Card.Title size={16}>{protein.name}</Card.Title>
           <Card.Spacer />

@@ -22,11 +22,11 @@ export function SessionCard({ bodyParts, kcal, date, onPress }: SessionCardProps
 
   return (
     <Pressable className="mb-yb-3" onPress={onPress}>
-      <Card variant="glass" cornerRadius={20} paddingSize={20}>
+      <Card variant="glass">
         <Card.Row spacing={14} alignment="center">
           <BodyPartIconHost bodyPart={representativeBodyPart} size="md" />
           <Card.Column alignment="leading" spacing={6}>
-            <Card.Title size={15}>{bodyPartLabelText}</Card.Title>
+            <Card.Title>{bodyPartLabelText}</Card.Title>
             <Card.Metric
               value={kcal ?? "--"}
               unit={t("summary.kcalUnit")}
