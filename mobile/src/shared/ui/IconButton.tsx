@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
-import { Pressable, type PressableProps } from "react-native"
-import { GlassBackground } from "./GlassBackground"
+import { Pressable, View, type PressableProps } from "react-native"
+import { GlassSurface } from "./GlassSurface"
 
 type IconButtonVariant = "back-square" | "back-round" | "adjust" | "glass" | "edit"
 
@@ -25,9 +25,23 @@ const variantStyles: Record<IconButtonVariant, string> = {
 }
 
 export function IconButton({ variant = "back-square", children, ...rest }: IconButtonProps) {
+  if (variant === "back-square" || variant === "glass") {
+    return (
+      <GlassSurface className="h-yb-icon-btn w-yb-icon-btn" cornerRadius={12}>
+        <Pressable
+          className="h-yb-icon-btn w-yb-icon-btn items-center justify-center active:scale-[0.95]"
+          {...rest}
+        >
+          <View className="h-yb-icon-btn w-yb-icon-btn items-center justify-center">
+            {children}
+          </View>
+        </Pressable>
+      </GlassSurface>
+    )
+  }
+
   return (
     <Pressable className={variantStyles[variant]} {...rest}>
-      {variant === "glass" && <GlassBackground />}
       {children}
     </Pressable>
   )

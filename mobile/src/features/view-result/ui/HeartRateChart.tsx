@@ -3,7 +3,9 @@ import { Text, View, useColorScheme } from "react-native"
 import { CartesianChart } from "victory-native"
 import { DashPathEffect, Path, vec, Line as SkiaLine } from "@shopify/react-native-skia"
 
-import { buildLinePath, buildAreaPath } from "../../../shared/lib/skiaChartPaths"
+import { useCardColors } from "@/shared/hooks/useCardColors"
+import { buildAreaPath, buildLinePath } from "@/shared/lib/skiaChartPaths"
+import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 interface HeartRateDataPoint {
   time: number
@@ -26,6 +28,7 @@ export function HeartRateChart({
   endTimeLabel,
 }: HeartRateChartProps) {
   const isDark = useColorScheme() === "dark"
+  const { fgSecondary } = useCardColors()
 
   const [chartW, setChartW] = useState(0)
 
@@ -33,10 +36,8 @@ export function HeartRateChart({
 
   const lineColor = isDark ? "#E8734E" : "#C4652E"
   const fillColor = isDark ? "rgba(232,115,78,0.15)" : "rgba(196,101,46,0.12)"
-  const labelColor = isDark ? "#8C7E6E" : "#876B45"
+  const labelColor = fgSecondary
   const dashColor = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)"
-  const cardBg = isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.7)"
-  const cardBorder = isDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.06)"
 
   const bpmValues = data.map((d) => d.bpm)
   const globalMin = Math.min(...bpmValues)
@@ -51,16 +52,7 @@ export function HeartRateChart({
     (globalMax - avgBpm) / bpmRange > 0.15
 
   return (
-    <View
-      style={{
-        backgroundColor: cardBg,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: cardBorder,
-        padding: 20,
-        overflow: "hidden",
-      }}
-    >
+    <GlassSurface cornerRadius={20} paddingSize={20}>
       <View className="flex-row items-center mb-yb-2 gap-yb-3">
         <Text style={{ fontSize: 11, fontWeight: "600", color: labelColor }}>
           최고 {globalMax}
@@ -91,6 +83,8 @@ export function HeartRateChart({
           >
             {({ points, chartBounds }) => {
               const { top, bottom, left, right } = chartBounds
+              if (right <= left || bottom <= top) return null
+
               const linePath = buildLinePath(points.y)
               const areaPath = buildAreaPath(points.y, chartBounds.bottom)
 
@@ -141,6 +135,6 @@ export function HeartRateChart({
         <Text className="text-yb-fg-secondary text-yb-caption">{startTimeLabel}</Text>
         <Text className="text-yb-fg-secondary text-yb-caption">{endTimeLabel}</Text>
       </View>
-    </View>
+    </GlassSurface>
   )
 }

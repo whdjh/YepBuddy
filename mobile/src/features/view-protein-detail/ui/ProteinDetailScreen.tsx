@@ -122,7 +122,7 @@ export function ProteinDetailScreen() {
         <CoupangPartnersDisclosure />
 
         {/* 현재가 */}
-        <Card variant="glass" cornerRadius={20} paddingSize={20}>
+        <Card variant="glass">
           <Card.Header label={t("protein.detail.currentPrice")} />
           <Card.Spacer size={12} />
           <Card.Row alignment="bottom">
@@ -138,7 +138,7 @@ export function ProteinDetailScreen() {
         </Card>
 
         {/* 특징 */}
-        <Card variant="glass" cornerRadius={20} paddingSize={20}>
+        <Card variant="glass">
           <Card.Column alignment="leading" spacing={8}>
             <Card.Header label={t("protein.detail.features")} />
             {protein.features.map((feature, index) => (

@@ -8,7 +8,7 @@ import {
   type WeeklyRoutineSession,
 } from "@/entities/workout-session"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
-import { GlassBackground } from "@/shared/ui/GlassBackground"
+import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 const Pressable = cssInterop(GesturePressable, { className: "style" })
 
@@ -56,9 +56,12 @@ export function CycleStepper({
   const incrementDisabled = max != null && value >= max
 
   return (
-    <View className="overflow-hidden rounded-yb-xl px-yb-4 py-yb-2.5 shadow-yb-sm">
-      <GlassBackground cornerRadius={16} fallbackClassName="bg-yb-glass-bg" />
-      <View className="flex-row items-center justify-between">
+    <GlassSurface
+      className="shadow-yb-sm"
+      cornerRadius={16}
+      fallbackClassName="bg-yb-glass-bg"
+    >
+      <View className="flex-row items-center justify-between px-yb-4 py-yb-2.5">
         <Text className="text-yb-body-sm font-semibold text-yb-fg">
           {label}
         </Text>
@@ -104,7 +107,7 @@ export function CycleStepper({
           </Pressable>
         </View>
       </View>
-    </View>
+    </GlassSurface>
   )
 }
 
@@ -129,86 +132,95 @@ export function RoutineSessionPartEditor({
   onToggleDetail,
 }: RoutineSessionPartEditorProps) {
   return (
-    <View className="overflow-hidden rounded-yb-xl px-yb-3.5 py-yb-3.5 shadow-yb-sm">
-      <GlassBackground cornerRadius={16} fallbackClassName="bg-yb-glass-bg" />
-      <View className="flex-row items-center gap-yb-1.5">
-        {ALL_BODY_PARTS.map((part) => {
-          const active = session.parts.some((item) => item.part === part)
+    <GlassSurface
+      className="shadow-yb-sm"
+      cornerRadius={16}
+      fallbackClassName="bg-yb-glass-bg"
+    >
+      <View className="px-yb-3.5 py-yb-3.5">
+        <View className="flex-row items-center gap-yb-1.5">
+          {ALL_BODY_PARTS.map((part) => {
+            const active = session.parts.some((item) => item.part === part)
 
-          return (
-            <Pressable
-              key={part}
-              onPress={() => onTogglePart(index, part)}
-              className={`h-[38px] items-center justify-center overflow-hidden rounded-full px-yb-2.5 ${
-                active
-                  ? "border border-yb-accent shadow-yb-sm active:opacity-90"
-                  : "active:opacity-80"
-              }`}
-            >
-              <GlassBackground
+            return (
+              <GlassSurface
+                key={part}
+                className={
+                  active ? "border border-yb-accent shadow-yb-sm" : undefined
+                }
                 cornerRadius={999}
                 fallbackClassName={
                   active ? "bg-yb-accent/15" : "bg-yb-glass-bg"
                 }
-              />
-              {active && <View className="bg-yb-accent/15 absolute inset-0" />}
-              <Text
-                className={`text-yb-caption font-semibold ${
-                  active ? "text-yb-accent" : "text-yb-fg-secondary"
-                }`}
               >
-                {bodyPartLabel(part)}
-              </Text>
-            </Pressable>
-          )
-        })}
-      </View>
-      {session.parts.map((routinePart) => {
-        const details = BODY_PART_DETAILS[routinePart.part]
-        if (details.length === 0) return null
-
-        return (
-          <View key={routinePart.part} className="mt-yb-4">
-            <Text className="mb-yb-2 text-yb-label text-yb-fg-secondary">
-              {bodyPartLabel(routinePart.part)}
-            </Text>
-            <View className="flex-row flex-wrap gap-yb-2">
-              {details.map((detail) => {
-                const active = routinePart.details?.includes(detail) ?? false
-
-                return (
-                  <Pressable
-                    key={detail}
-                    onPress={() =>
-                      onToggleDetail(index, routinePart.part, detail)
-                    }
-                    className={`min-h-[34px] items-center justify-center overflow-hidden rounded-full px-yb-3 ${
-                      active ? "border border-yb-accent" : ""
+                <Pressable
+                  onPress={() => onTogglePart(index, part)}
+                  className={`h-[38px] items-center justify-center px-yb-2.5 ${
+                    active ? "active:opacity-90" : "active:opacity-80"
+                  }`}
+                >
+                  {active && (
+                    <View className="absolute inset-0 bg-yb-accent/15" />
+                  )}
+                  <Text
+                    className={`text-yb-caption font-semibold ${
+                      active ? "text-yb-accent" : "text-yb-fg-secondary"
                     }`}
                   >
-                    <GlassBackground
+                    {bodyPartLabel(part)}
+                  </Text>
+                </Pressable>
+              </GlassSurface>
+            )
+          })}
+        </View>
+        {session.parts.map((routinePart) => {
+          const details = BODY_PART_DETAILS[routinePart.part]
+          if (details.length === 0) return null
+
+          return (
+            <View key={routinePart.part} className="mt-yb-4">
+              <Text className="mb-yb-2 text-yb-label text-yb-fg-secondary">
+                {bodyPartLabel(routinePart.part)}
+              </Text>
+              <View className="flex-row flex-wrap gap-yb-2">
+                {details.map((detail) => {
+                  const active = routinePart.details?.includes(detail) ?? false
+
+                  return (
+                    <GlassSurface
+                      key={detail}
+                      className={active ? "border border-yb-accent" : undefined}
                       cornerRadius={999}
                       fallbackClassName={
                         active ? "bg-yb-accent/15" : "bg-yb-glass-bg"
                       }
-                    />
-                    {active && (
-                      <View className="bg-yb-accent/15 absolute inset-0" />
-                    )}
-                    <Text
-                      className={`text-yb-caption font-semibold ${
-                        active ? "text-yb-accent" : "text-yb-fg-secondary"
-                      }`}
                     >
-                      {bodyPartDetailLabel(detail)}
-                    </Text>
-                  </Pressable>
-                )
-              })}
+                      <Pressable
+                        onPress={() =>
+                          onToggleDetail(index, routinePart.part, detail)
+                        }
+                        className="min-h-[34px] items-center justify-center px-yb-3 active:opacity-80"
+                      >
+                        {active && (
+                          <View className="absolute inset-0 bg-yb-accent/15" />
+                        )}
+                        <Text
+                          className={`text-yb-caption font-semibold ${
+                            active ? "text-yb-accent" : "text-yb-fg-secondary"
+                          }`}
+                        >
+                          {bodyPartDetailLabel(detail)}
+                        </Text>
+                      </Pressable>
+                    </GlassSurface>
+                  )
+                })}
+              </View>
             </View>
-          </View>
-        )
-      })}
-    </View>
+          )
+        })}
+      </View>
+    </GlassSurface>
   )
 }

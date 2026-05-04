@@ -1,9 +1,8 @@
 import type { ReactNode } from "react"
 import type { SFSymbol } from "sf-symbols-typescript"
-import { View, type ViewProps, type ViewStyle, useColorScheme } from "react-native"
+import { StyleSheet, View, type ViewProps } from "react-native"
 import { Host, VStack, HStack, Text as SwiftText, Image, Spacer, Divider, Gauge } from "@expo/ui/swift-ui"
 import {
-  glassEffect,
   frame,
   padding,
   font,
@@ -14,17 +13,8 @@ import {
   clipShape,
   shapes,
 } from "@expo/ui/swift-ui/modifiers"
-
-/* 색상 */
-function useCardColors() {
-  const isDark = useColorScheme() === "dark"
-  return {
-    fg: isDark ? "#FFFFFF" : "#3A2A1A",
-    fgSecondary: isDark ? "#EDE4D6" : "#876B45",
-    accent: isDark ? "#D4883A" : "#9B7E56",
-    fillPale: isDark ? "#5A472D" : "#F2EBDD",
-  }
-}
+import { useCardColors } from "@/shared/hooks/useCardColors"
+import { GlassSurface } from "./GlassSurface"
 
 /* Card */
 type CardVariant = "default" | "subtle" | "glass"
@@ -52,26 +42,32 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
 
 function CardComponent(props: CardProps) {
   if (props.variant === "glass") {
-    const { children, minHeight, cornerRadius = 16, paddingSize = 20 } = props
-    const hostStyle: ViewStyle | undefined = minHeight ? { minHeight } : undefined
+    const { children, minHeight, cornerRadius = 20, paddingSize = 20 } = props
+    const contentMinHeight =
+      minHeight != null ? Math.max(0, minHeight - paddingSize * 2) : undefined
 
     return (
-      <Host matchContents={{ vertical: true }} ignoreSafeArea="all" style={hostStyle}>
-        <VStack
-          spacing={0}
-          modifiers={[
-            padding({ top: paddingSize, leading: paddingSize, bottom: paddingSize, trailing: paddingSize }),
-            frame({ maxWidth: 9999 }),
-            glassEffect({
-              glass: { variant: "regular", interactive: true },
-              shape: "roundedRectangle",
-              cornerRadius,
-            }),
+      <GlassSurface
+        cornerRadius={cornerRadius}
+        minHeight={minHeight}
+        paddingSize={paddingSize}
+      >
+        <Host
+          matchContents={{ vertical: true }}
+          ignoreSafeArea="all"
+          style={[
+            styles.swiftHost,
+            contentMinHeight != null ? { minHeight: contentMinHeight } : null,
           ]}
         >
-          {children}
-        </VStack>
-      </Host>
+          <VStack
+            spacing={0}
+            modifiers={[frame({ maxWidth: 9999 })]}
+          >
+            {children}
+          </VStack>
+        </Host>
+      </GlassSurface>
     )
   }
 
@@ -303,4 +299,10 @@ export const Card = Object.assign(CardComponent, {
   Divider: CardDivider,
   Row,
   Column,
+})
+
+const styles = StyleSheet.create({
+  swiftHost: {
+    width: "100%",
+  },
 })

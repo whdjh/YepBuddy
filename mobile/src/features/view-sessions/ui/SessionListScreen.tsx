@@ -1,4 +1,4 @@
-import { Fragment, useMemo, useState } from "react"
+import { Fragment, useCallback, useMemo, useState } from "react"
 import { ActivityIndicator, NativeScrollEvent, NativeSyntheticEvent, ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
@@ -28,6 +28,13 @@ export function SessionListScreen() {
   }, [activeFilter, sessions])
 
   const grouped = useMemo(() => groupByMonth(filteredSessions), [filteredSessions])
+
+  const handleSessionPress = useCallback(
+    (sessionId: string) => {
+      router.push(`/workout/${encodeURIComponent(sessionId)}`)
+    },
+    [router],
+  )
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent
@@ -84,12 +91,11 @@ export function SessionListScreen() {
             {sessions.map((session) => (
               <SessionCard
                 key={session.sessionId}
+                sessionId={session.sessionId}
                 bodyParts={session.bodyParts}
                 kcal={session.kcal}
                 date={session.date}
-                onPress={() =>
-                  router.push(`/workout/${encodeURIComponent(session.sessionId)}`)
-                }
+                onPress={handleSessionPress}
               />
             ))}
           </Fragment>

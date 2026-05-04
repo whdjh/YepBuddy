@@ -9,6 +9,8 @@ import {
   type WorkoutBodyPartSet,
 } from "@/entities/workout-session"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
+import { Chip } from "@/shared/ui/Chip"
+import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 const BODY_PART_KEYS: BodyPart[] = [
   "chest",
@@ -63,8 +65,10 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
           const label = bodyPartLabel(key)
 
           return (
-            <Pressable
+            <Chip
               key={key}
+              variant={active ? "active" : "glass"}
+              label={label}
               onPress={() => {
                 if (suppressNextPressRef.current === key) {
                   suppressNextPressRef.current = null
@@ -76,18 +80,7 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
               }}
               onLongPress={hasDetailOptions ? () => handleLongPress(key) : undefined}
               delayLongPress={400}
-              className={`h-yb-chip rounded-yb-chip border px-[18px] items-center justify-center ${
-                active ? "bg-yb-accent border-yb-accent" : "bg-yb-fill-pale border-yb-border"
-              }`}
-            >
-              <Text
-                className={`text-yb-body-sm font-medium ${
-                  active ? "text-yb-on-accent" : "text-yb-fg"
-                }`}
-              >
-                {label}
-              </Text>
-            </Pressable>
+            />
           )
         })}
       </ScrollView>
@@ -100,22 +93,36 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
         >
           {BODY_PART_DETAILS[detailPart].map((detail) => {
             const active = selectedDetailPartDetails.includes(detail)
-            return (
-              <Pressable
-                key={detail}
-                onPress={() => onToggleDetail?.(detailPart, detail)}
-                className={`px-3 py-1.5 rounded-full border ${
-                  active ? "bg-yb-accent border-yb-accent" : "bg-yb-surface border-yb-border"
-                }`}
-              >
-                <Text
-                  className={`text-yb-body-sm ${
-                    active ? "text-yb-on-accent font-medium" : "text-yb-fg-secondary"
-                  }`}
+
+            if (active) {
+              return (
+                <Pressable
+                  key={detail}
+                  onPress={() => onToggleDetail?.(detailPart, detail)}
+                  className="rounded-full border border-yb-accent bg-yb-accent px-3 py-1.5"
                 >
-                  {bodyPartDetailLabel(detail)}
-                </Text>
-              </Pressable>
+                  <Text className="text-yb-body-sm font-medium text-yb-on-accent">
+                    {bodyPartDetailLabel(detail)}
+                  </Text>
+                </Pressable>
+              )
+            }
+
+            return (
+              <GlassSurface
+                key={detail}
+                cornerRadius={999}
+                fallbackClassName="bg-yb-surface/70"
+              >
+                <Pressable
+                  onPress={() => onToggleDetail?.(detailPart, detail)}
+                  className="rounded-full px-3 py-1.5 active:opacity-80"
+                >
+                  <Text className="text-yb-body-sm text-yb-fg-secondary">
+                    {bodyPartDetailLabel(detail)}
+                  </Text>
+                </Pressable>
+              </GlassSurface>
             )
           })}
         </ScrollView>

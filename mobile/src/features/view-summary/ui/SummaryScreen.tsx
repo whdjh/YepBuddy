@@ -2,6 +2,7 @@ import {
   Pressable,
   ScrollView,
   Text,
+  useColorScheme,
   View,
 } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
@@ -19,9 +20,15 @@ import { SummaryEditControls } from "./SummaryEditControls"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
+const SUMMARY_BACKGROUND_COLORS = {
+  light: ["#FAF7F2", "#FAF7F2"],
+  dark: ["#1C1C1E", "#1C1C1E"],
+} as const
+
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
+  const isDark = useColorScheme() === "dark"
   const insets = useSafeAreaInsets()
   const notificationPermissionRequestDone =
     useNotificationPermissionRequestDone()
@@ -66,8 +73,11 @@ export function SummaryScreen() {
   return (
     <Main>
       <LinearGradient
-        colors={["#FAF7F2", "#EDE4D6", "#DDD2BF", "#EDE4D6", "#FAF7F2"]}
-        locations={[0, 0.25, 0.5, 0.75, 1]}
+        colors={
+          isDark
+            ? SUMMARY_BACKGROUND_COLORS.dark
+            : SUMMARY_BACKGROUND_COLORS.light
+        }
         className="absolute inset-0"
       />
       <ScrollView

@@ -1,6 +1,6 @@
-import { TextInput, type TextInputProps } from "react-native"
-import { Host, TextField as SwiftTextField } from "@expo/ui/swift-ui"
-import { frame, padding, glassEffect } from "@expo/ui/swift-ui/modifiers"
+import { StyleSheet, TextInput, type TextInputProps } from "react-native"
+import { useCardColors } from "@/shared/hooks/useCardColors"
+import { GlassSurface } from "./GlassSurface"
 
 /* Input */
 
@@ -42,21 +42,52 @@ interface GlassTextareaProps {
   minHeight?: number
 }
 
-export function GlassTextarea({ placeholder, defaultValue, value, onChangeText, minHeight = 140 }: GlassTextareaProps) {
+const GLASS_TEXTAREA_RADIUS = 16
+
+export function GlassTextarea({
+  placeholder,
+  defaultValue,
+  value,
+  onChangeText,
+  minHeight = 140,
+}: GlassTextareaProps) {
+  const { accent, fg, fgDisabled } = useCardColors()
+
   return (
-    <Host style={{ minHeight: minHeight + 20 }}>
-      <SwiftTextField
+    <GlassSurface
+      cornerRadius={GLASS_TEXTAREA_RADIUS}
+      minHeight={minHeight + 20}
+      paddingSize={0}
+      fallbackClassName="bg-yb-surface/70"
+    >
+      <TextInput
         placeholder={placeholder}
-        defaultValue={value ?? defaultValue}
+        defaultValue={value == null ? defaultValue : undefined}
+        value={value}
         onChangeText={onChangeText}
+        placeholderTextColor={fgDisabled}
+        selectionColor={accent}
+        autoComplete="off"
+        autoCorrect={false}
+        spellCheck={false}
+        textContentType="none"
         multiline
-        numberOfLines={6}
-        modifiers={[
-          frame({ minHeight, alignment: "topLeading" }),
-          padding({ all: 12 }),
-          glassEffect({ glass: { variant: "regular" }, shape: "roundedRectangle", cornerRadius: 16 }),
+        textAlignVertical="top"
+        style={[
+          styles.glassTextareaInput,
+          {
+            minHeight,
+            color: fg,
+          },
         ]}
       />
-    </Host>
+    </GlassSurface>
   )
 }
+
+const styles = StyleSheet.create({
+  glassTextareaInput: {
+    fontSize: 15,
+    padding: 12,
+  },
+})

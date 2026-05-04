@@ -1,4 +1,5 @@
 export {
+  WorkoutNavigationGuard,
   WorkoutProvider,
   useWorkout,
 } from "./model/WorkoutContext"
