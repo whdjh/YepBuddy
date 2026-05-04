@@ -25,18 +25,18 @@ const variantStyles: Record<IconButtonVariant, string> = {
 }
 
 export function IconButton({ variant = "back-square", children, ...rest }: IconButtonProps) {
-  if (variant === "glass") {
+  if (variant === "back-square" || variant === "glass") {
     return (
-      <Pressable className={variantStyles.glass} {...rest}>
-        <GlassSurface
-          className="h-yb-icon-btn w-yb-icon-btn"
-          cornerRadius={12}
+      <GlassSurface className="h-yb-icon-btn w-yb-icon-btn" cornerRadius={12}>
+        <Pressable
+          className="h-yb-icon-btn w-yb-icon-btn items-center justify-center active:scale-[0.95]"
+          {...rest}
         >
           <View className="h-yb-icon-btn w-yb-icon-btn items-center justify-center">
             {children}
           </View>
-        </GlassSurface>
-      </Pressable>
+        </Pressable>
+      </GlassSurface>
     )
   }
 
