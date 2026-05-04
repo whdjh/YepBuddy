@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import type { SFSymbol } from "sf-symbols-typescript"
-import { View, type ViewProps, type ViewStyle, useColorScheme } from "react-native"
+import { View, type ViewProps, type ViewStyle } from "react-native"
 import { Host, VStack, HStack, Text as SwiftText, Image, Spacer, Divider, Gauge } from "@expo/ui/swift-ui"
 import {
   glassEffect,
@@ -14,18 +14,7 @@ import {
   clipShape,
   shapes,
 } from "@expo/ui/swift-ui/modifiers"
-
-/* 색상 */
-function useCardColors() {
-  const isDark = useColorScheme() === "dark"
-  return {
-    fg: isDark ? "#FFFFFF" : "#3A2A1A",
-    fgSecondary: isDark ? "#EDE4D6" : "#876B45",
-    accent: isDark ? "#D4883A" : "#9B7E56",
-    fillPale: isDark ? "#5A472D" : "#F2EBDD",
-    glassTint: isDark ? "#2C2C2E" : "#FFFFFF",
-  }
-}
+import { useCardColors } from "@/shared/hooks/useCardColors"
 
 /* Card */
 type CardVariant = "default" | "subtle" | "glass"

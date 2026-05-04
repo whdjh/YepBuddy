@@ -1,6 +1,13 @@
 import { TextInput, type TextInputProps } from "react-native"
 import { Host, TextField as SwiftTextField } from "@expo/ui/swift-ui"
-import { frame, padding, glassEffect } from "@expo/ui/swift-ui/modifiers"
+import {
+  foregroundStyle,
+  frame,
+  glassEffect,
+  padding,
+  tint,
+} from "@expo/ui/swift-ui/modifiers"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 
 /* Input */
 
@@ -42,19 +49,32 @@ interface GlassTextareaProps {
   minHeight?: number
 }
 
-export function GlassTextarea({ placeholder, defaultValue, value, onChangeText, minHeight = 140 }: GlassTextareaProps) {
+export function GlassTextarea({
+  placeholder,
+  defaultValue,
+  value,
+  onChangeText,
+  minHeight = 140,
+}: GlassTextareaProps) {
+  const { accent, fg, glassTint } = useCardColors()
+
   return (
     <Host style={{ minHeight: minHeight + 20 }}>
       <SwiftTextField
         placeholder={placeholder}
         defaultValue={value ?? defaultValue}
-        onChangeText={onChangeText}
-        multiline
-        numberOfLines={6}
+        onValueChange={onChangeText}
+        axis="vertical"
         modifiers={[
           frame({ minHeight, alignment: "topLeading" }),
           padding({ all: 12 }),
-          glassEffect({ glass: { variant: "regular" }, shape: "roundedRectangle", cornerRadius: 16 }),
+          foregroundStyle(fg),
+          tint(accent),
+          glassEffect({
+            glass: { variant: "regular", tint: glassTint },
+            shape: "roundedRectangle",
+            cornerRadius: 16,
+          }),
         ]}
       />
     </Host>
