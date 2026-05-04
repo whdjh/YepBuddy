@@ -6,7 +6,6 @@ import type { BodyPart, RoutinePart } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   registerWorkoutToCalendar,
-  syncWorkoutReminderAtNight,
   useWorkout,
 } from "@/entities/workout-session"
 import { useHealthKitWorkout } from "@/features/do-workout/lib/useHealthKitWorkout"
@@ -83,16 +82,45 @@ export function ActiveWorkoutScreen() {
       activeKcal: state.activeKcal,
       totalKcal: state.totalKcal,
     })
-    await registerWorkoutToCalendar({
-      startedAt: completedSession.startedAt,
-      completedAt: completedSession.completedAt,
-      cardioStartedAt: completedSession.cardioStartedAt,
-      memo: completedSession.memo,
-      bodyParts: completedSession.bodyParts,
-    })
-    await syncWorkoutReminderAtNight()
-    router.replace(
-      `/workout/${encodeURIComponent(completedSession.sessionId)}?fromWorkout=1`,
+
+    const goToResult = () => {
+      router.replace({
+        pathname: "/workout/[id]",
+        params: {
+          id: completedSession.sessionId,
+          fromWorkout: "1",
+        },
+      })
+    }
+
+    const addWorkoutToCalendar = async () => {
+      await registerWorkoutToCalendar({
+        startedAt: completedSession.startedAt,
+        completedAt: completedSession.completedAt,
+        cardioStartedAt: completedSession.cardioStartedAt,
+        memo: completedSession.memo,
+        bodyParts: completedSession.bodyParts,
+      })
+      goToResult()
+    }
+
+    Alert.alert(
+      t("workout.calendar.addPromptTitle"),
+      t("workout.calendar.addPromptBody"),
+      [
+        {
+          text: t("workout.calendar.notNow"),
+          style: "cancel",
+          onPress: goToResult,
+        },
+        {
+          text: t("workout.calendar.addAction"),
+          onPress: () => {
+            void addWorkoutToCalendar()
+          },
+        },
+      ],
+      { cancelable: false },
     )
   }
 
