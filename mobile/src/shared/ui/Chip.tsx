@@ -2,7 +2,7 @@ import { Pressable, Text, type PressableProps } from "react-native"
 import { GlassSurface } from "./GlassSurface"
 
 type ChipVariant = "default" | "active" | "glass"
-type FilterPillVariant = "default" | "active"
+type FilterPillVariant = "default" | "active" | "glass"
 type BodyPartPillVariant = "default" | "active"
 
 interface ChipProps extends Omit<PressableProps, "children"> {
@@ -66,14 +66,27 @@ const filterPillContainer: Record<FilterPillVariant, string> = {
     "h-[40px] rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
   active:
     "h-[40px] rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
+  glass:
+    "h-[40px] rounded-yb-chip px-yb-5 items-center justify-center active:scale-[0.97]",
 }
 
 const filterPillLabel: Record<FilterPillVariant, string> = {
   default: "text-yb-fg-secondary text-yb-body-sm font-semibold",
   active:  "text-yb-on-accent text-yb-body-sm font-semibold",
+  glass:   "text-yb-fg-secondary text-yb-body-sm font-semibold",
 }
 
 export function FilterPill({ variant = "default", label, ...rest }: FilterPillProps) {
+  if (variant === "glass") {
+    return (
+      <GlassSurface className="h-[40px]" cornerRadius={22}>
+        <Pressable className={filterPillContainer.glass} {...rest}>
+          <Text className={filterPillLabel.glass}>{label}</Text>
+        </Pressable>
+      </GlassSurface>
+    )
+  }
+
   return (
     <Pressable className={filterPillContainer[variant]} {...rest}>
       <Text className={filterPillLabel[variant]}>{label}</Text>

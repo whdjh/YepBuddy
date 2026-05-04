@@ -30,14 +30,14 @@ export function FilterTabs({ value, onChange }: FilterTabsProps) {
       >
         <FilterPill
           label={t("sessions.filterAll")}
-          variant={value === "all" ? "active" : "default"}
+          variant={value === "all" ? "active" : "glass"}
           onPress={() => onChange("all")}
         />
         {BODY_PART_KEYS.map((key) => (
           <FilterPill
             key={key}
             label={bodyPartLabel(key)}
-            variant={value === key ? "active" : "default"}
+            variant={value === key ? "active" : "glass"}
             onPress={() => onChange(key)}
           />
         ))}
