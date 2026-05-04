@@ -21,15 +21,47 @@ interface BodyPartPillProps {
   onPress?: () => void
 }
 
+/* GlassPill — 공통 글래스 알약 프리미티브 */
+
+interface GlassPillProps extends Omit<PressableProps, "children"> {
+  label: string
+  heightClass: string
+  paddingClass: string
+  labelClass: string
+  fallbackClassName?: string
+}
+
+function GlassPill({
+  label,
+  heightClass,
+  paddingClass,
+  labelClass,
+  fallbackClassName,
+  ...rest
+}: GlassPillProps) {
+  return (
+    <GlassSurface
+      className={heightClass}
+      cornerRadius={22}
+      fallbackClassName={fallbackClassName}
+    >
+      <Pressable
+        className={`${heightClass} ${paddingClass} items-center justify-center active:scale-[0.97]`}
+        {...rest}
+      >
+        <Text className={labelClass}>{label}</Text>
+      </Pressable>
+    </GlassSurface>
+  )
+}
+
 /* Chip */
 
-const chipContainer: Record<ChipVariant, string> = {
+const chipContainer: Record<Exclude<ChipVariant, "glass">, string> = {
   default:
     "h-yb-chip rounded-yb-chip border border-yb-border bg-yb-fill-pale px-yb-6 items-center justify-center",
   active:
     "h-yb-chip rounded-yb-chip border border-yb-accent bg-yb-accent px-yb-6 items-center justify-center",
-  glass:
-    "h-yb-chip rounded-yb-chip px-yb-6 items-center justify-center overflow-hidden active:scale-[0.97]",
 }
 
 const chipLabel: Record<ChipVariant, string> = {
@@ -41,14 +73,13 @@ const chipLabel: Record<ChipVariant, string> = {
 export function Chip({ variant = "default", label, ...rest }: ChipProps) {
   if (variant === "glass") {
     return (
-      <GlassSurface className="h-yb-chip" cornerRadius={22}>
-        <Pressable
-          className="h-yb-chip items-center justify-center px-yb-6 active:scale-[0.97]"
-          {...rest}
-        >
-          <Text className={chipLabel.glass}>{label}</Text>
-        </Pressable>
-      </GlassSurface>
+      <GlassPill
+        label={label}
+        heightClass="h-yb-chip"
+        paddingClass="px-yb-6"
+        labelClass={chipLabel.glass}
+        {...rest}
+      />
     )
   }
 
@@ -61,13 +92,11 @@ export function Chip({ variant = "default", label, ...rest }: ChipProps) {
 
 /* FilterPill */
 
-const filterPillContainer: Record<FilterPillVariant, string> = {
+const filterPillContainer: Record<Exclude<FilterPillVariant, "glass">, string> = {
   default:
     "h-[40px] rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
   active:
     "h-[40px] rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
-  glass:
-    "h-[40px] rounded-yb-chip px-yb-5 items-center justify-center active:scale-[0.97]",
 }
 
 const filterPillLabel: Record<FilterPillVariant, string> = {
@@ -79,11 +108,13 @@ const filterPillLabel: Record<FilterPillVariant, string> = {
 export function FilterPill({ variant = "default", label, ...rest }: FilterPillProps) {
   if (variant === "glass") {
     return (
-      <GlassSurface className="h-[40px]" cornerRadius={22}>
-        <Pressable className={filterPillContainer.glass} {...rest}>
-          <Text className={filterPillLabel.glass}>{label}</Text>
-        </Pressable>
-      </GlassSurface>
+      <GlassPill
+        label={label}
+        heightClass="h-[40px]"
+        paddingClass="px-yb-5"
+        labelClass={filterPillLabel.glass}
+        {...rest}
+      />
     )
   }
 
@@ -100,23 +131,15 @@ export function BodyPartPill({ variant = "default", label, onPress }: BodyPartPi
   const isActive = variant === "active"
 
   return (
-    <GlassSurface
-      className="h-yb-chip"
-      cornerRadius={22}
+    <GlassPill
+      label={label}
+      heightClass="h-yb-chip"
+      paddingClass="px-yb-5"
+      labelClass={`text-yb-body-sm font-semibold ${
+        isActive ? "text-yb-accent" : "text-yb-fg-secondary"
+      }`}
       fallbackClassName={isActive ? "bg-yb-accent/15" : "bg-yb-surface/70"}
-    >
-      <Pressable
-        className="h-yb-chip items-center justify-center px-yb-5 active:scale-[0.97]"
-        onPress={onPress}
-      >
-        <Text
-          className={`text-yb-body-sm font-semibold ${
-            isActive ? "text-yb-accent" : "text-yb-fg-secondary"
-          }`}
-        >
-          {label}
-        </Text>
-      </Pressable>
-    </GlassSurface>
+      onPress={onPress}
+    />
   )
 }
