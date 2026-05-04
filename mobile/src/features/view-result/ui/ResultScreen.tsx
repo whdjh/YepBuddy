@@ -21,7 +21,6 @@ import {
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/Input"
 import { IconButton } from "@/shared/ui/IconButton"
-import { GlassSurface } from "@/shared/ui/GlassSurface"
 import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
@@ -45,15 +44,6 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
-  const deleteCtaBackgroundColor =
-    (useUnstableNativeVariable("--yb-result-delete-cta-bg") as unknown as string) ||
-    "rgba(237,228,214,0.95)"
-  const deleteCtaBorderColor =
-    (useUnstableNativeVariable("--yb-result-delete-cta-border") as unknown as string) ||
-    "rgba(255,255,255,0.70)"
-  const deleteCtaTextColor =
-    (useUnstableNativeVariable("--yb-result-delete-cta-fg") as unknown as string) ||
-    "#BD413F"
   const { data, isLoading } = useSessionDetail(sessionId)
   const stored = data?.stored
   const hk = data?.hk
@@ -271,28 +261,15 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           )}
 
           <View className="mt-yb-8 items-center">
-            <GlassSurface
-              className="min-h-yb-btn-md w-[72%] max-w-[340px] border shadow-lg"
-              cornerRadius={999}
-              fallbackClassName="bg-yb-result-delete-cta-bg"
-              style={{
-                backgroundColor: deleteCtaBackgroundColor,
-                borderColor: deleteCtaBorderColor,
-              }}
+            <Pressable
+              disabled={isDeleting}
+              className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error px-yb-7 py-yb-4 shadow-lg active:opacity-80"
+              onPress={handleDeletePress}
             >
-              <Pressable
-                disabled={isDeleting}
-                className="min-h-yb-btn-md items-center justify-center rounded-full px-yb-7 py-yb-4 active:opacity-80"
-                onPress={handleDeletePress}
-              >
-                <Text
-                  className="text-yb-body-lg font-semibold"
-                  style={{ color: deleteCtaTextColor }}
-                >
-                  {t("workout.result.deleteConfirm")}
-                </Text>
-              </Pressable>
-            </GlassSurface>
+              <Text className="text-yb-body-lg font-semibold text-white">
+                {t("workout.result.deleteConfirm")}
+              </Text>
+            </Pressable>
           </View>
         </ScrollView>
       )}
