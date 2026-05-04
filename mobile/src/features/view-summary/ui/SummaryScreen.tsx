@@ -21,8 +21,8 @@ import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 const SUMMARY_BACKGROUND_COLORS = {
-  light: ["#FAF7F2", "#EDE4D6", "#DDD2BF", "#EDE4D6", "#FAF7F2"],
-  dark: ["#1C1C1E", "#211E1B", "#252017", "#211E1B", "#1C1C1E"],
+  light: ["#FAF7F2", "#FAF7F2"],
+  dark: ["#1C1C1E", "#1C1C1E"],
 } as const
 
 export function SummaryScreen() {
@@ -78,7 +78,6 @@ export function SummaryScreen() {
             ? SUMMARY_BACKGROUND_COLORS.dark
             : SUMMARY_BACKGROUND_COLORS.light
         }
-        locations={[0, 0.25, 0.5, 0.75, 1]}
         className="absolute inset-0"
       />
       <ScrollView

@@ -23,6 +23,7 @@ function useCardColors() {
     fgSecondary: isDark ? "#EDE4D6" : "#876B45",
     accent: isDark ? "#D4883A" : "#9B7E56",
     fillPale: isDark ? "#5A472D" : "#F2EBDD",
+    glassTint: isDark ? "#2C2C2E" : "#FFFFFF",
   }
 }
 
@@ -51,6 +52,8 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
 }
 
 function CardComponent(props: CardProps) {
+  const { glassTint } = useCardColors()
+
   if (props.variant === "glass") {
     const { children, minHeight, cornerRadius = 16, paddingSize = 20 } = props
     const hostStyle: ViewStyle | undefined = minHeight ? { minHeight } : undefined
@@ -63,7 +66,7 @@ function CardComponent(props: CardProps) {
             padding({ top: paddingSize, leading: paddingSize, bottom: paddingSize, trailing: paddingSize }),
             frame({ maxWidth: 9999 }),
             glassEffect({
-              glass: { variant: "regular", interactive: true },
+              glass: { variant: "regular", interactive: true, tint: glassTint },
               shape: "roundedRectangle",
               cornerRadius,
             }),
