@@ -1,29 +1,17 @@
 import { useState } from "react"
 import { Text, View, useColorScheme } from "react-native"
-import { Path, Skia } from "@shopify/react-native-skia"
+import { Path } from "@shopify/react-native-skia"
 import { CartesianChart } from "victory-native"
 import { useTranslation } from "react-i18next"
 
 import type { PriceHistoryPoint } from "../model/types"
+import { buildLinePath } from "../../../shared/lib/skiaChartPaths"
 
 interface PriceTrendChartProps {
   data: PriceHistoryPoint[]
 }
 
 const CHART_H = 180
-const buildLinePath = (points: { x: number; y: number | null | undefined }[]) => {
-  const validPoints = points.filter((point) => typeof point.y === "number")
-  if (validPoints.length === 0) return null
-
-  const builder = Skia.PathBuilder.Make()
-  builder.moveTo(validPoints[0].x, validPoints[0].y as number)
-
-  for (const point of validPoints.slice(1)) {
-    builder.lineTo(point.x, point.y as number)
-  }
-
-  return builder.build()
-}
 
 export function PriceTrendChart({ data }: PriceTrendChartProps) {
   const { t } = useTranslation()
@@ -61,7 +49,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         overflow: "hidden",
       }}
     >
-      {/* Y축 */}
       <View className="flex-row items-center mb-yb-2 gap-yb-3">
         <Text className="text-yb-fg-secondary text-yb-caption font-semibold">
           {t("protein.detail.chartHigh", { value: maxPrice.toLocaleString() })}
@@ -71,7 +58,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         </Text>
       </View>
 
-      {/* 차트 */}
       <View
         style={{ height: CHART_H }}
         onLayout={(e) => setChartW(e.nativeEvent.layout.width)}
@@ -103,7 +89,6 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
         )}
       </View>
 
-      {/* X축 */}
       <View className="flex-row justify-between mt-yb-1">
         <Text className="text-yb-fg-secondary text-yb-caption">{firstDate}</Text>
         <Text className="text-yb-fg-secondary text-yb-caption">{lastDate}</Text>
