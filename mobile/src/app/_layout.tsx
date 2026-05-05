@@ -59,6 +59,7 @@ export default function RootLayout() {
                   }}
                 />
                 <Stack.Screen name="sessions" />
+                <Stack.Screen name="settings" />
                 <Stack.Screen name="protein/[id]" />
               </Stack>
             </View>
