@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native"
 import { useLocalSearchParams } from "expo-router"
 import { useTranslation } from "react-i18next"
@@ -18,13 +18,21 @@ export function WeeklyRoutineToggle() {
   const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
 
   const [isSheetOpen, setIsSheetOpen] = useState(false)
+  const shouldDisableOnSheetCloseRef = useRef(false)
+  const didOpenRoutineSetupRef = useRef(false)
   const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
-    if (routineSetup === "1" && !plan.isLoading) {
+    if (
+      routineSetup === "1" &&
+      !plan.isLoading &&
+      !didOpenRoutineSetupRef.current
+    ) {
+      didOpenRoutineSetupRef.current = true
+      shouldDisableOnSheetCloseRef.current = !plan.hasCustomSettings
       setIsSheetOpen(true)
     }
-  }, [plan.isLoading, routineSetup])
+  }, [plan.hasCustomSettings, plan.isLoading, routineSetup])
 
   const handleToggle = async () => {
     if (updating || plan.isLoading) {
@@ -41,10 +49,25 @@ export function WeeklyRoutineToggle() {
 
       await plan.enableRoutine()
       if (!plan.hasCustomSettings) {
+        shouldDisableOnSheetCloseRef.current = true
         setIsSheetOpen(true)
       }
     } finally {
       setUpdating(false)
+    }
+  }
+
+  const handleOpenDetail = () => {
+    shouldDisableOnSheetCloseRef.current = !plan.hasCustomSettings
+    setIsSheetOpen(true)
+  }
+
+  const handleCloseSheet = () => {
+    setIsSheetOpen(false)
+
+    if (shouldDisableOnSheetCloseRef.current) {
+      shouldDisableOnSheetCloseRef.current = false
+      void plan.disableRoutine()
     }
   }
 
@@ -71,7 +94,7 @@ export function WeeklyRoutineToggle() {
             {plan.isRoutineEnabled && (
               <Pressable
                 className="min-h-[32px] justify-center rounded-yb-md bg-yb-fill-pale px-yb-3 active:opacity-80"
-                onPress={() => setIsSheetOpen(true)}
+                onPress={handleOpenDetail}
               >
                 <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
                   {t("settings.weeklyRoutine.detail")}
@@ -84,7 +107,10 @@ export function WeeklyRoutineToggle() {
       <WeeklyRoutineSettingsSheet
         plan={plan}
         visible={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+        onClose={handleCloseSheet}
+        onSaved={() => {
+          shouldDisableOnSheetCloseRef.current = false
+        }}
       />
     </>
   )
