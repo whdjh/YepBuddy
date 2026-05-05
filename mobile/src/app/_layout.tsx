@@ -10,6 +10,8 @@ import { Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
+  registerWorkoutPlaceArrivalNotificationHandler,
+  syncWorkoutPlaceArrivalReminder,
   syncWorkoutReminderAtNight,
   WorkoutProvider,
 } from "@/entities/workout-session"
@@ -26,7 +28,12 @@ export default function RootLayout() {
   useEffect(() => {
     const unsubscribeProteinSaleNotificationHandler =
       setupProteinSaleNotificationHandler()
+    const unsubscribeWorkoutPlaceArrivalNotificationHandler =
+      registerWorkoutPlaceArrivalNotificationHandler()
 
+    void syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
+      () => undefined,
+    )
     void syncWorkoutReminderAtNight({ allowPrompt: false }).catch(
       () => undefined,
     )
@@ -34,6 +41,7 @@ export default function RootLayout() {
 
     return () => {
       unsubscribeProteinSaleNotificationHandler()
+      unsubscribeWorkoutPlaceArrivalNotificationHandler()
     }
   }, [])
 

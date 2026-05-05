@@ -48,10 +48,10 @@
         "expo-location",
         {
           "locationWhenInUsePermission": "운동 시작 위치를 한 번 기록해 세션 결과에 표시합니다.",
-          "locationAlwaysPermission": false,
-          "locationAlwaysAndWhenInUsePermission": false,
-          "isIosBackgroundLocationEnabled": false,
-          "isAndroidBackgroundLocationEnabled": false
+          "locationAlwaysPermission": "자주 운동한 장소 근처에 도착했을 때 운동 시작 알림을 보내기 위해 백그라운드 위치를 사용합니다.",
+          "locationAlwaysAndWhenInUsePermission": "운동 시작 위치를 기록하고, 자주 운동한 장소 근처에 도착했을 때 운동 시작 알림을 보내기 위해 위치를 사용합니다.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
         }
       ],
       [

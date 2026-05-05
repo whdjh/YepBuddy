@@ -1,4 +1,6 @@
+import { useCallback, useRef } from "react"
 import {
+  Alert,
   Pressable,
   Linking,
   ScrollView,
@@ -7,7 +9,14 @@ import {
   View,
 } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
+import { router } from "expo-router"
+import { useFocusEffect } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import {
+  clearPendingWorkoutPlaceReminderPrompt,
+  getPendingWorkoutPlaceReminderPrompt,
+  useWorkout,
+} from "@/entities/workout-session"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { privacyPolicyUrl, supportUrl } from "@/shared/lib/legalLinks"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
@@ -29,8 +38,10 @@ const SUMMARY_BACKGROUND_COLORS = {
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
+  const { state } = useWorkout()
   const isDark = useColorScheme() === "dark"
   const insets = useSafeAreaInsets()
+  const isPlaceReminderAlertOpenRef = useRef(false)
   const notificationPermissionRequestDone =
     useNotificationPermissionRequestDone()
   const {
@@ -63,6 +74,51 @@ export function SummaryScreen() {
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const hasLegalLinks = Boolean(privacyPolicyUrl || supportUrl)
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false
+
+      void getPendingWorkoutPlaceReminderPrompt().then((prompt) => {
+        if (cancelled || !prompt || isPlaceReminderAlertOpenRef.current) {
+          return
+        }
+
+        isPlaceReminderAlertOpenRef.current = true
+        Alert.alert(
+          t("workoutPlaceReminder.prompt.title"),
+          t("workoutPlaceReminder.prompt.body"),
+          [
+            {
+              text: t("workoutPlaceReminder.prompt.later"),
+              style: "cancel",
+              onPress: () => {
+                void clearPendingWorkoutPlaceReminderPrompt()
+                isPlaceReminderAlertOpenRef.current = false
+              },
+            },
+            {
+              text: t("workoutPlaceReminder.prompt.start"),
+              onPress: () => {
+                void clearPendingWorkoutPlaceReminderPrompt()
+                isPlaceReminderAlertOpenRef.current = false
+                if (state.phase === "recording" || state.phase === "paused") {
+                  router.push("/workout/active")
+                  return
+                }
+                router.push("/workout/countdown")
+              },
+            },
+          ],
+          { cancelable: false },
+        )
+      })
+
+      return () => {
+        cancelled = true
+      }
+    }, [state.phase, t]),
+  )
 
   return (
     <Main>

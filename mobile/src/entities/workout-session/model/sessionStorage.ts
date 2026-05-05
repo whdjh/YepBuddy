@@ -269,6 +269,40 @@ export async function getStoredWorkoutSessionsInRange(
     .filter((session): session is StoredWorkoutSession => session !== null)
 }
 
+/** 저장된 완료 세션 전체를 최신순으로 조회 */
+export async function getAllStoredWorkoutSessions() {
+  const dateKeys = await getStoredWorkoutDateKeys()
+
+  if (dateKeys.length === 0) {
+    return []
+  }
+
+  const indexEntries = await Promise.all(
+    dateKeys.map(async (dateKey) => {
+      const sessionId = await AsyncStorage.getItem(
+        getWorkoutDateStorageKey(dateKey),
+      )
+      return [dateKey, sessionId] as const
+    }),
+  )
+
+  const sessionEntries = await Promise.all(
+    indexEntries
+      .map(([, sessionId]) => sessionId)
+      .filter((sessionId): sessionId is string => sessionId !== null)
+      .map(async (sessionId) => {
+        const value = await AsyncStorage.getItem(
+          getWorkoutSessionStorageKey(sessionId),
+        )
+        return value ? parseStoredWorkoutSession(value) : null
+      }),
+  )
+
+  return sessionEntries.filter(
+    (session): session is StoredWorkoutSession => session !== null,
+  )
+}
+
 /** 특정 월의 완료 세션을 최신순으로 조회 */
 export async function getStoredWorkoutSessionsForMonth(
   year: number,

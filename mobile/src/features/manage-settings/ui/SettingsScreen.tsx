@@ -8,6 +8,7 @@ import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
 import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
 import { WeeklyRoutineToggle } from "./WeeklyRoutineToggle"
+import { WorkoutPlaceArrivalReminderToggle } from "./WorkoutPlaceArrivalReminderToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 
 export function SettingsScreen() {
@@ -51,6 +52,7 @@ export function SettingsScreen() {
           </Text>
           <WeeklyRoutineToggle />
           <WorkoutReminderToggle />
+          <WorkoutPlaceArrivalReminderToggle />
         </View>
 
         <View className="gap-yb-3">

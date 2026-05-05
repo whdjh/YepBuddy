@@ -8,6 +8,11 @@ export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
 export { getWorkoutLocationOnce } from "./lib/location"
 export {
+  disableWorkoutPlaceArrivalReminder,
+  registerWorkoutPlaceArrivalNotificationHandler,
+  syncWorkoutPlaceArrivalReminder,
+} from "./lib/workoutPlaceArrivalReminder"
+export {
   cancelScheduledWorkoutReminder,
   scheduleWorkoutReminder22h,
   syncWorkoutReminderAtNight,
@@ -15,6 +20,7 @@ export {
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
   deleteStoredWorkoutSession,
+  getAllStoredWorkoutSessions,
   getWorkoutReminderEnabled,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
@@ -24,6 +30,20 @@ export {
   setWorkoutReminderEnabled,
   updateStoredWorkoutMemo,
 } from "./model/sessionStorage"
+export {
+  clearPendingWorkoutPlaceReminderPrompt,
+  getPendingWorkoutPlaceReminderPrompt,
+  getWorkoutPlaceReminderEnabled,
+  getWorkoutPlaceReminderPlaces,
+  rebuildWorkoutPlaceReminderPlacesFromSessions,
+  savePendingWorkoutPlaceReminderPrompt,
+  setWorkoutPlaceReminderEnabled,
+  upsertWorkoutPlaceReminderPlaceFromSession,
+} from "./model/workoutPlaceReminderStorage"
+export type {
+  PendingWorkoutPlaceReminderPrompt,
+  WorkoutPlaceReminderPlace,
+} from "./model/workoutPlaceReminderStorage"
 export type {
   BodyPart,
   BodyPartDetail,
