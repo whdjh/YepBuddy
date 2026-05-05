@@ -1,13 +1,19 @@
 import { router, useLocalSearchParams } from "expo-router"
+import { View } from "react-native"
 import { TempoScreen } from "@/features/use-tempo"
+import { SettingsFab } from "@/shared/ui/SettingsFab"
 
 export default function TempoPage() {
   const { fromWorkout } = useLocalSearchParams<{ fromWorkout?: string }>()
+  const isFromWorkout = fromWorkout === "1"
 
   return (
-    <TempoScreen
-      showBackButton={fromWorkout === "1"}
-      onBackPress={() => router.replace("/workout/active")}
-    />
+    <View className="h-full w-full">
+      <TempoScreen
+        showBackButton={isFromWorkout}
+        onBackPress={() => router.replace("/workout/active")}
+      />
+      {!isFromWorkout && <SettingsFab />}
+    </View>
   )
 }
