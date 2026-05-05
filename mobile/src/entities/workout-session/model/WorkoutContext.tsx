@@ -16,6 +16,8 @@ import {
   saveCompletedWorkoutSession,
   saveCurrentWorkoutSnapshot,
 } from "./sessionStorage"
+import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
+import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
 import { getWorkoutCompletedAt } from "../lib/workoutCompletion"
 import type {
   BodyPart,
@@ -204,6 +206,12 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     }
 
     await saveCompletedWorkoutSession(session)
+    await upsertWorkoutPlaceReminderPlaceFromSession(session).catch(
+      () => undefined,
+    )
+    await syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
+      () => undefined,
+    )
     await clearCurrentWorkoutSnapshot()
     return session
   }, [

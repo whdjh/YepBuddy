@@ -1,4 +1,6 @@
+import { useCallback, useRef } from "react"
 import {
+  Alert,
   Pressable,
   Linking,
   ScrollView,
@@ -7,7 +9,14 @@ import {
   View,
 } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
+import { router } from "expo-router"
+import { useFocusEffect } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import {
+  clearPendingWorkoutPlaceReminderPrompt,
+  getPendingWorkoutPlaceReminderPrompt,
+  useWorkout,
+} from "@/entities/workout-session"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { privacyPolicyUrl, supportUrl } from "@/shared/lib/legalLinks"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
@@ -19,7 +28,6 @@ import { useWeeklyRoutineFeaturePrompt } from "../model/useWeeklyRoutineFeatureP
 import { SummaryCardRows } from "./SummaryCardRows"
 import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
-import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 const SUMMARY_BACKGROUND_COLORS = {
@@ -30,8 +38,10 @@ const SUMMARY_BACKGROUND_COLORS = {
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
+  const { state } = useWorkout()
   const isDark = useColorScheme() === "dark"
   const insets = useSafeAreaInsets()
+  const isPlaceReminderAlertOpenRef = useRef(false)
   const notificationPermissionRequestDone =
     useNotificationPermissionRequestDone()
   const {
@@ -55,23 +65,60 @@ export function SummaryScreen() {
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
   const weeklyRoutinePlan = cardData.weeklyRoutinePlan
-  const {
-    isFeatureAlertOpen,
-    isSettingsOpen,
-    closeSettings,
-    handleRoutineTogglePress,
-  } = useWeeklyRoutineFeaturePrompt({
+  const { isFeatureAlertOpen } = useWeeklyRoutineFeaturePrompt({
     notificationPermissionRequestDone,
     weeklyRoutinePlan,
     t,
   })
-  const routineToggleLabel = weeklyRoutinePlan.isRoutineEnabled
-    ? t("summary.routineOn")
-    : t("summary.routineOff")
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
   const hasLegalLinks = Boolean(privacyPolicyUrl || supportUrl)
+
+  useFocusEffect(
+    useCallback(() => {
+      let cancelled = false
+
+      void getPendingWorkoutPlaceReminderPrompt().then((prompt) => {
+        if (cancelled || !prompt || isPlaceReminderAlertOpenRef.current) {
+          return
+        }
+
+        isPlaceReminderAlertOpenRef.current = true
+        Alert.alert(
+          t("workoutPlaceReminder.prompt.title"),
+          t("workoutPlaceReminder.prompt.body"),
+          [
+            {
+              text: t("workoutPlaceReminder.prompt.later"),
+              style: "cancel",
+              onPress: () => {
+                void clearPendingWorkoutPlaceReminderPrompt()
+                isPlaceReminderAlertOpenRef.current = false
+              },
+            },
+            {
+              text: t("workoutPlaceReminder.prompt.start"),
+              onPress: () => {
+                void clearPendingWorkoutPlaceReminderPrompt()
+                isPlaceReminderAlertOpenRef.current = false
+                if (state.phase === "recording" || state.phase === "paused") {
+                  router.push("/workout/active")
+                  return
+                }
+                router.push("/workout/countdown")
+              },
+            },
+          ],
+          { cancelable: false },
+        )
+      })
+
+      return () => {
+        cancelled = true
+      }
+    }, [state.phase, t]),
+  )
 
   return (
     <Main>
@@ -95,21 +142,10 @@ export function SummaryScreen() {
         ) : (
           <>
             {/* 헤더 */}
-            <View className="flex-row items-center justify-between gap-yb-3 pt-yb-4 pb-yb-1">
+            <View className="pt-yb-4 pb-yb-1 pr-yb-12">
               <Text className="shrink text-yb-fg text-yb-display tracking-yb-tight">
                 {t("summary.title")}
               </Text>
-              <Pressable
-                disabled={weeklyRoutinePlan.isLoading}
-                className={`h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4 ${
-                  weeklyRoutinePlan.isLoading ? "opacity-50" : ""
-                }`}
-                onPress={handleRoutineTogglePress}
-              >
-                <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                  {routineToggleLabel}
-                </Text>
-              </Pressable>
             </View>
             <Text className="mb-yb-6 text-yb-label text-yb-fg-secondary">
               {dateString}
@@ -126,9 +162,7 @@ export function SummaryScreen() {
             delayLongPress={450}
           >
             <Text className="text-center text-yb-body-md font-semibold text-yb-fg-secondary">
-              {t("summary.noCards", {
-                defaultValue: "표시 중인 카드가 없습니다.",
-              })}
+              {t("summary.noCards")}
             </Text>
           </Pressable>
         )}
@@ -182,7 +216,7 @@ export function SummaryScreen() {
       {isEditing && (
         <SummaryEditControls
           addLabel={t("summary.add")}
-          doneLabel={t("summary.done", { defaultValue: "완료" })}
+          doneLabel={t("summary.done")}
           topOffset={insets.top + 12}
           onAdd={openCardPicker}
           onDone={exitEditMode}
@@ -196,18 +230,12 @@ export function SummaryScreen() {
         onAddCard={addPickedCard}
         onClose={closeCardPicker}
       />
-      <WeeklyRoutineSettingsSheet
-        plan={weeklyRoutinePlan}
-        visible={isSettingsOpen}
-        onClose={closeSettings}
-      />
       <WeeklyRoutineSetupPromptModal
         plan={weeklyRoutinePlan}
         visible={
           weeklyRoutinePlan.isRoutineEnabled &&
           Boolean(weeklyRoutinePlan.setupPromptKind) &&
           !weeklyRoutinePlan.isLoading &&
-          !isSettingsOpen &&
           !isFeatureAlertOpen
         }
       />

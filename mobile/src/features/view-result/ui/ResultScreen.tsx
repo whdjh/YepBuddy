@@ -14,8 +14,11 @@ import { SymbolView } from "expo-symbols"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   deleteStoredWorkoutSession,
+  getAllStoredWorkoutSessions,
   getStoredWorkoutSessionDurationSeconds,
   getWorkoutBodyPartSetLabel,
+  rebuildWorkoutPlaceReminderPlacesFromSessions,
+  syncWorkoutPlaceArrivalReminder,
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
 import { Main } from "@/shared/ui/Main"
@@ -127,6 +130,12 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
 
     try {
       await deleteStoredWorkoutSession(sessionId)
+      await getAllStoredWorkoutSessions()
+        .then(rebuildWorkoutPlaceReminderPlacesFromSessions)
+        .catch(() => undefined)
+      await syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
+        () => undefined,
+      )
       router.replace("/")
     } catch {
       Alert.alert(

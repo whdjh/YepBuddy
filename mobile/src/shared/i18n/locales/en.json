@@ -24,6 +24,39 @@
     "tempo": "Tempo",
     "protein": "Protein"
   },
+  "settings": {
+    "title": "Settings",
+    "back": "Back",
+    "sections": {
+      "workout": "Workout",
+      "protein": "Protein"
+    },
+    "weeklyRoutine": {
+      "title": "Weekly Routine",
+      "body": "Shows routine progress and suggested sessions in your journal and active workout screens.",
+      "detail": "Details"
+    },
+    "workoutReminder": {
+      "title": "Workout Reminder",
+      "body": "We will remind you once at 22:00 on days when you have not logged a workout."
+    },
+    "workoutPlaceReminder": {
+      "title": "Workout Place Arrival Reminder",
+      "body": "When you arrive near a place where you have worked out at least twice, we will suggest starting a workout."
+    }
+  },
+  "workoutPlaceReminder": {
+    "notification": {
+      "title": "You are near a workout place",
+      "body": "Would you like to start a workout?"
+    },
+    "prompt": {
+      "title": "You are near a workout place",
+      "body": "Would you like to start a workout?",
+      "later": "Later",
+      "start": "Start Workout"
+    }
+  },
   "workout": {
     "record": {
       "title": "Workout Log",

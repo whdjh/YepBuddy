@@ -24,6 +24,39 @@
     "tempo": "템포",
     "protein": "프로틴"
   },
+  "settings": {
+    "title": "설정",
+    "back": "뒤로",
+    "sections": {
+      "workout": "운동",
+      "protein": "프로틴"
+    },
+    "weeklyRoutine": {
+      "title": "주간 루틴",
+      "body": "운동일지와 운동 중 화면에서 루틴 진행률과 추천 세션을 보여줍니다.",
+      "detail": "세부 설정"
+    },
+    "workoutReminder": {
+      "title": "운동 리마인더",
+      "body": "운동을 기록하지 않은 날 22:00에 한 번 알려드릴게요."
+    },
+    "workoutPlaceReminder": {
+      "title": "운동 장소 도착 알림",
+      "body": "2번 이상 운동한 장소 근처에 도착하면 운동 시작을 제안해드릴게요."
+    }
+  },
+  "workoutPlaceReminder": {
+    "notification": {
+      "title": "운동 장소 근처에 도착했어요",
+      "body": "운동을 시작하시겠어요?"
+    },
+    "prompt": {
+      "title": "운동 장소 근처에 도착했어요",
+      "body": "운동을 시작하시겠어요?",
+      "later": "나중에",
+      "start": "운동 시작"
+    }
+  },
   "workout": {
     "record": {
       "title": "운동 기록",

@@ -1,0 +1,97 @@
+import { useEffect, useState } from "react"
+import { ActivityIndicator, Switch } from "react-native"
+import { useTranslation } from "react-i18next"
+import { useUnstableNativeVariable } from "nativewind"
+import {
+  disableWorkoutPlaceArrivalReminder,
+  getWorkoutPlaceReminderEnabled,
+  setWorkoutPlaceReminderEnabled,
+  syncWorkoutPlaceArrivalReminder,
+} from "@/entities/workout-session"
+import { SettingsRow } from "./SettingsRow"
+
+export function WorkoutPlaceArrivalReminderToggle() {
+  const { t } = useTranslation()
+  const accent = useUnstableNativeVariable("--yb-accent") as unknown as string
+  const muted = useUnstableNativeVariable(
+    "--yb-surface-muted",
+  ) as unknown as string
+  const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
+
+  const [enabled, setEnabled] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [updating, setUpdating] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+
+    void getWorkoutPlaceReminderEnabled()
+      .then((storedEnabled) => {
+        if (!cancelled) {
+          setEnabled(storedEnabled)
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleToggle = async () => {
+    if (updating) {
+      return
+    }
+
+    const nextEnabled = !enabled
+    setUpdating(true)
+
+    try {
+      if (nextEnabled) {
+        await setWorkoutPlaceReminderEnabled(true)
+        const synced = await syncWorkoutPlaceArrivalReminder({
+          allowPrompt: true,
+        }).catch(() => false)
+
+        if (!synced) {
+          await setWorkoutPlaceReminderEnabled(false).catch(() => undefined)
+        }
+
+        setEnabled(synced)
+        return
+      }
+
+      await disableWorkoutPlaceArrivalReminder()
+      setEnabled(false)
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  return (
+    <SettingsRow
+      title={t("settings.workoutPlaceReminder.title")}
+      body={t("settings.workoutPlaceReminder.body")}
+      control={
+        loading ? (
+          <ActivityIndicator color={accent} />
+        ) : (
+          <Switch
+            value={enabled}
+            disabled={updating}
+            onValueChange={() => {
+              void handleToggle()
+            }}
+            trackColor={{ false: muted, true: accent }}
+            thumbColor={surface}
+          />
+        )
+      }
+    />
+  )
+}

@@ -4,7 +4,10 @@ export {
   getSaleReminderDate,
 } from "./events"
 export { setupProteinSaleNotificationHandler } from "./handler"
-export { requestProteinSaleNotificationPermissions } from "./permissions"
+export {
+  getProteinSaleNotificationPermissionGranted,
+  requestProteinSaleNotificationPermissions,
+} from "./permissions"
 export {
   cancelProteinSaleNotifications,
   disableProteinSaleNotifications,

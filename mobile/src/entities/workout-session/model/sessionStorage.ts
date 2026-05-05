@@ -6,6 +6,8 @@ import type { StoredWorkoutSession } from "./types"
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
 // 다음 운동 리마인더 notification identifier를 저장하는 키
 export const WORKOUT_REMINDER_STORAGE_KEY = "yb:workout:reminder"
+export const WORKOUT_REMINDER_ENABLED_STORAGE_KEY =
+  "yb:workout:reminder:enabled"
 const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
 const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
 let hasVerifiedStoredWorkoutDateKeys = false
@@ -53,6 +55,21 @@ export async function getWorkoutReminderId() {
 /** 저장된 운동 리마인더 identifier를 삭제 */
 export async function clearWorkoutReminderId() {
   await AsyncStorage.removeItem(WORKOUT_REMINDER_STORAGE_KEY)
+}
+
+/** 운동 리마인더 활성화 저장값을 조회 */
+export async function getWorkoutReminderEnabled() {
+  return (
+    (await AsyncStorage.getItem(WORKOUT_REMINDER_ENABLED_STORAGE_KEY)) === "true"
+  )
+}
+
+/** 운동 리마인더 활성화 저장값을 저장 */
+export async function setWorkoutReminderEnabled(enabled: boolean) {
+  await AsyncStorage.setItem(
+    WORKOUT_REMINDER_ENABLED_STORAGE_KEY,
+    enabled ? "true" : "false",
+  )
 }
 
 /** 날짜별 sessionId 저장 키에서 YYYY-MM-DD 날짜 키만 추출 */
@@ -250,6 +267,40 @@ export async function getStoredWorkoutSessionsInRange(
   return sessionEntries
     .map(([, value]) => (value ? parseStoredWorkoutSession(value) : null))
     .filter((session): session is StoredWorkoutSession => session !== null)
+}
+
+/** 저장된 완료 세션 전체를 최신순으로 조회 */
+export async function getAllStoredWorkoutSessions() {
+  const dateKeys = await getStoredWorkoutDateKeys()
+
+  if (dateKeys.length === 0) {
+    return []
+  }
+
+  const indexEntries = await Promise.all(
+    dateKeys.map(async (dateKey) => {
+      const sessionId = await AsyncStorage.getItem(
+        getWorkoutDateStorageKey(dateKey),
+      )
+      return [dateKey, sessionId] as const
+    }),
+  )
+
+  const sessionEntries = await Promise.all(
+    indexEntries
+      .map(([, sessionId]) => sessionId)
+      .filter((sessionId): sessionId is string => sessionId !== null)
+      .map(async (sessionId) => {
+        const value = await AsyncStorage.getItem(
+          getWorkoutSessionStorageKey(sessionId),
+        )
+        return value ? parseStoredWorkoutSession(value) : null
+      }),
+  )
+
+  return sessionEntries.filter(
+    (session): session is StoredWorkoutSession => session !== null,
+  )
 }
 
 /** 특정 월의 완료 세션을 최신순으로 조회 */

@@ -9,7 +9,12 @@ import {
 import { Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
-import { WorkoutProvider } from "@/entities/workout-session"
+import {
+  registerWorkoutPlaceArrivalNotificationHandler,
+  syncWorkoutPlaceArrivalReminder,
+  syncWorkoutReminderAtNight,
+  WorkoutProvider,
+} from "@/entities/workout-session"
 import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 import {
   setupProteinSaleNotificationHandler,
@@ -23,11 +28,20 @@ export default function RootLayout() {
   useEffect(() => {
     const unsubscribeProteinSaleNotificationHandler =
       setupProteinSaleNotificationHandler()
+    const unsubscribeWorkoutPlaceArrivalNotificationHandler =
+      registerWorkoutPlaceArrivalNotificationHandler()
 
+    void syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
+      () => undefined,
+    )
+    void syncWorkoutReminderAtNight({ allowPrompt: false }).catch(
+      () => undefined,
+    )
     void syncProteinSaleNotificationsIfEnabled().catch(() => undefined)
 
     return () => {
       unsubscribeProteinSaleNotificationHandler()
+      unsubscribeWorkoutPlaceArrivalNotificationHandler()
     }
   }, [])
 
@@ -53,6 +67,7 @@ export default function RootLayout() {
                   }}
                 />
                 <Stack.Screen name="sessions" />
+                <Stack.Screen name="settings" />
                 <Stack.Screen name="protein/[id]" />
               </Stack>
             </View>

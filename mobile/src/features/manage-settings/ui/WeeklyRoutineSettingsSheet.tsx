@@ -15,7 +15,7 @@ import {
   type RoutinePart,
   type WeeklyRoutineSettings,
 } from "@/entities/workout-session"
-import type { WeeklyRoutinePlanResult } from "../model/useWeeklyRoutinePlan"
+import type { WeeklyRoutinePlanResult } from "@/features/view-summary/model/useWeeklyRoutinePlan"
 import {
   CycleStepper,
   RoutineSettingsSaveButton,
@@ -27,6 +27,7 @@ interface WeeklyRoutineSettingsSheetProps {
   plan: WeeklyRoutinePlanResult
   visible: boolean
   onClose: () => void
+  onSaved?: () => void
 }
 
 // 주간 루틴 세션 편집 바텀시트
@@ -34,6 +35,7 @@ export function WeeklyRoutineSettingsSheet({
   plan,
   visible,
   onClose,
+  onSaved,
 }: WeeklyRoutineSettingsSheetProps) {
   const { t } = useTranslation()
   const { currentWeekStartDateKey, settings, updateSettings } = plan
@@ -51,6 +53,7 @@ export function WeeklyRoutineSettingsSheet({
 
   const handleSave = async () => {
     await updateSettings(draft)
+    onSaved?.()
     onClose()
   }
 
