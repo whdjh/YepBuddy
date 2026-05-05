@@ -2,7 +2,7 @@ const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 const path = require("path");
 
-const projectRoot = __dirname;
+const projectRoot = path.dirname(require.resolve("./package.json"));
 const monorepoRoot = path.resolve(projectRoot, "..");
 
 const config = getDefaultConfig(projectRoot);

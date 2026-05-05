@@ -44,7 +44,11 @@
       "openSettings": "Open Settings",
       "cardio": "Cardio",
       "successTitle": "Added to Calendar",
-      "successBody": "Your workout event was added to the calendar."
+      "successBody": "Your workout event was added to the calendar.",
+      "addPromptTitle": "Add to Calendar?",
+      "addPromptBody": "You can save this completed workout as an event in your device calendar.",
+      "addAction": "Add to Calendar",
+      "notNow": "Not Now"
     },
     "reminder": {
       "title": "Workout Reminder",
@@ -273,6 +277,14 @@
         "blackFriday": "Black Friday",
         "yearEnd": "Year-End Sale"
       }
+    },
+    "disclosure": {
+      "coupangPartners": "As part of Coupang Partners activities,\nwe may receive a commission from qualifying purchases."
     }
+  },
+  "legal": {
+    "privacyPolicy": "Privacy Policy",
+    "support": "Support",
+    "footerLabel": "Privacy and support"
   }
 }

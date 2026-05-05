@@ -44,7 +44,11 @@
       "openSettings": "설정으로 이동",
       "cardio": "유산소",
       "successTitle": "캘린더 등록 완료",
-      "successBody": "운동 일정이 캘린더에 추가되었습니다."
+      "successBody": "운동 일정이 캘린더에 추가되었습니다.",
+      "addPromptTitle": "캘린더에 추가할까요?",
+      "addPromptBody": "완료한 운동 시간을 기기 캘린더에 일정으로 저장할 수 있습니다.",
+      "addAction": "캘린더에 추가",
+      "notNow": "지금은 안 함"
     },
     "reminder": {
       "title": "운동 리마인더",
@@ -273,6 +277,14 @@
         "blackFriday": "블랙프라이데이",
         "yearEnd": "연말 결산"
       }
+    },
+    "disclosure": {
+      "coupangPartners": "이 포스팅은 쿠팡파트너스 활동의 일환으로\n이에 따른 일정액의 수수료를 제공받습니다"
     }
+  },
+  "legal": {
+    "privacyPolicy": "개인정보 처리방침",
+    "support": "문의",
+    "footerLabel": "개인정보 및 지원"
   }
 }

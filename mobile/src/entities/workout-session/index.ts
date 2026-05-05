@@ -7,11 +7,7 @@ export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
 export { getWorkoutLocationOnce } from "./lib/location"
-export {
-  cancelScheduledWorkoutReminder,
-  scheduleWorkoutReminder22h,
-  syncWorkoutReminderAtNight,
-} from "./lib/reminder"
+export { cancelScheduledWorkoutReminder } from "./lib/reminder"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
   deleteStoredWorkoutSession,

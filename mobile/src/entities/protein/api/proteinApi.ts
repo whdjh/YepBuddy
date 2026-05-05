@@ -1,4 +1,4 @@
-import { supabase } from "./supabaseClient"
+import { getSupabaseClient } from "./supabaseClient"
 import { decideBadge } from "../model/badge"
 import type { PriceStats } from "../model/badge"
 import type {
@@ -11,6 +11,7 @@ import type {
 
 // 상품 목록을 최신 등록순으로 조회하고 검색어/카테고리 필터를 선택적으로 적용
 export async function fetchProteins(params?: { q?: string; topic?: ProteinCategory }) {
+  const supabase = getSupabaseClient()
   let query = supabase
     .from("proteins")
     .select("*")
@@ -26,6 +27,7 @@ export async function fetchProteins(params?: { q?: string; topic?: ProteinCatego
 
 // 단일 상품이 없으면 null을 반환해 상세 화면에서 빈 상태를 처리
 export async function fetchProtein(id: string) {
+  const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from("proteins")
     .select("*")
@@ -41,6 +43,7 @@ export async function fetchProtein(id: string) {
 
 // 목록 화면에서 사용할 각 상품의 최신 가격과 가격대 배지를 조회
 export async function fetchLatestProteinPrices(): Promise<ApiProteinPrice[]> {
+  const supabase = getSupabaseClient()
   const { data, error } = await supabase.rpc("get_latest_protein_prices")
   if (error) throw new Error(error.message)
 
@@ -66,6 +69,7 @@ export async function fetchLatestProteinPrices(): Promise<ApiProteinPrice[]> {
 
 // 특정 상품의 가격 히스토리와 최신 가격 기준 배지를 함께 조회
 export async function fetchProteinPrices(id: string, limit = 180): Promise<ApiProteinPriceResult> {
+  const supabase = getSupabaseClient()
   const { data, error } = await supabase.rpc("get_protein_price_history", {
     p_protein_id: Number(id),
     p_limit: limit,
@@ -103,6 +107,7 @@ export async function fetchProteinPrices(id: string, limit = 180): Promise<ApiPr
 
 // 맛 정보는 호불호가 낮은 항목, 티어, 이름 순서로 정렬해 상세 특징에 표시
 export async function fetchProteinFlavors(id: string): Promise<ApiProteinFlavor[]> {
+  const supabase = getSupabaseClient()
   const { data, error } = await supabase
     .from("protein_flavors")
     .select("flavor_id, name, tier, polarizing, note")

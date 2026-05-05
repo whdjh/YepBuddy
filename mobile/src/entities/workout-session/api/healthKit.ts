@@ -1,4 +1,5 @@
 import { Platform } from "react-native"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import AppleHealthKit, {
   type HealthValue,
   type HKWorkoutQueriedSampleType,
@@ -18,7 +19,12 @@ const HEALTH_PERMISSIONS = {
   },
 } as const
 
+const HEALTH_KIT_ACCESS_STORAGE_KEY = "yb:healthkit:access"
+
+type HealthKitAccessState = "enabled" | "denied"
+
 let healthKitInitialized = false
+let healthKitAccessState: HealthKitAccessState | null | undefined
 
 /** 현재 런타임에서 HealthKit 사용 가능 여부를 판단 */
 function isHealthKitAvailable() {
@@ -28,6 +34,22 @@ function isHealthKitAvailable() {
 /** 네이티브 브리지에 특정 HealthKit 메서드가 연결됐는지 확인 */
 function hasHealthKitMethod(name: keyof typeof AppleHealthKit) {
   return typeof AppleHealthKit?.[name] === "function"
+}
+
+async function getHealthKitAccessState() {
+  if (healthKitAccessState !== undefined) {
+    return healthKitAccessState
+  }
+
+  const stored = await AsyncStorage.getItem(HEALTH_KIT_ACCESS_STORAGE_KEY)
+  healthKitAccessState =
+    stored === "enabled" || stored === "denied" ? stored : null
+  return healthKitAccessState
+}
+
+async function saveHealthKitAccessState(state: HealthKitAccessState) {
+  healthKitAccessState = state
+  await AsyncStorage.setItem(HEALTH_KIT_ACCESS_STORAGE_KEY, state)
 }
 
 /** 지정한 기간의 workout 샘플 목록을 읽음 */
@@ -120,8 +142,8 @@ async function getHeartRateSamples(params: {
   })
 }
 
-/** 권한 요청과 초기화를 수행하고 결과를 캐시 */
-export async function initHealthKit() {
+/** HealthKit 네이티브 초기화/권한 요청을 실제로 실행하고 결과를 캐시 */
+async function authorizeHealthKit() {
   if (!isHealthKitAvailable() || healthKitInitialized) {
     return healthKitInitialized
   }
@@ -142,9 +164,33 @@ export async function initHealthKit() {
   })
 }
 
-/** 운동 시작 시점에 HealthKit 초기화만 보장 */
+async function ensureHealthKitReady(options?: { prompt?: boolean }) {
+  if (healthKitInitialized) {
+    return true
+  }
+
+  if (options?.prompt) {
+    return requestHealthKitAccess()
+  }
+
+  const accessState = await getHealthKitAccessState()
+  if (accessState !== "enabled") {
+    return false
+  }
+
+  return authorizeHealthKit()
+}
+
+/** 사용자가 운동 시작 등 명시적 행동을 했을 때만 HealthKit 연결을 요청 */
+export async function requestHealthKitAccess() {
+  const ready = await authorizeHealthKit()
+  await saveHealthKitAccessState(ready ? "enabled" : "denied")
+  return ready
+}
+
+/** 운동 시작 시점에 HealthKit 권한/세션 사용 준비 */
 export async function startWorkoutSession() {
-  await initHealthKit()
+  await ensureHealthKitReady({ prompt: true })
 }
 
 /** pause는 앱 상태로만 관리하고 HealthKit에는 즉시 반영하지 않음 */
@@ -166,7 +212,7 @@ export async function endWorkoutSession(params: {
   activeKcal: number
   totalKcal: number
 }) {
-  const ready = await initHealthKit()
+  const ready = await ensureHealthKitReady()
   if (!ready || !hasHealthKitMethod("saveWorkout")) {
     return false
   }
@@ -186,7 +232,7 @@ export async function endWorkoutSession(params: {
 
 /** 최근 심박 샘플을 읽어 라이브 운동 수치 형태로 정리 */
 export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
-  const ready = await initHealthKit()
+  const ready = await ensureHealthKitReady()
   if (!ready || !hasHealthKitMethod("getHeartRateSamples")) {
     return { heartRate: null, activeKcal: 0, totalKcal: 0 }
   }
@@ -220,7 +266,7 @@ export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
 export async function getWorkoutDetail(
   sessionId: string,
 ): Promise<WorkoutHealthKitDetail | null> {
-  const ready = await initHealthKit()
+  const ready = await ensureHealthKitReady()
   if (!ready) {
     return null
   }
@@ -267,7 +313,7 @@ export async function getWorkoutDetail(
 export async function getWorkoutSummariesForDate(
   dateKey: string,
 ): Promise<WorkoutHealthKitWorkout[]> {
-  const ready = await initHealthKit()
+  const ready = await ensureHealthKitReady()
   if (!ready) {
     return []
   }
@@ -292,7 +338,7 @@ export async function getWorkoutSummariesForMonth(
   year: number,
   month: number,
 ): Promise<WorkoutHealthKitWorkout[]> {
-  const ready = await initHealthKit()
+  const ready = await ensureHealthKitReady()
   if (!ready) {
     return []
   }
