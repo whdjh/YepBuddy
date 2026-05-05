@@ -1,4 +1,4 @@
-import { ScrollView, Text, useColorScheme, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { SymbolView } from "expo-symbols"
 import { useRouter } from "expo-router"
@@ -6,36 +6,25 @@ import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
+import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
-
-const SETTINGS_BACKGROUND_COLORS = {
-  light: ["#FAF7F2", "#FAF7F2"],
-  dark: ["#1C1C1E", "#1C1C1E"],
-} as const
 
 export function SettingsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
-  const isDark = useColorScheme() === "dark"
-  const fgColor =
-    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const bgColor = useUnstableNativeVariable("--yb-bg") as unknown as string
+  const fgColor = useUnstableNativeVariable("--yb-fg") as unknown as string
 
   return (
     <Main>
       <LinearGradient
-        colors={
-          isDark
-            ? SETTINGS_BACKGROUND_COLORS.dark
-            : SETTINGS_BACKGROUND_COLORS.light
-        }
+        colors={[bgColor, bgColor]}
         className="absolute inset-0"
       />
 
       <View className="flex-row items-center gap-yb-3 px-yb-5 pt-yb-2 pb-yb-1">
         <IconButton
-          accessibilityLabel={t("settings.back", {
-            defaultValue: t("common.back"),
-          })}
+          accessibilityLabel={t("settings.back")}
           variant="back-square"
           onPress={() => router.back()}
         >
@@ -45,7 +34,7 @@ export function SettingsScreen() {
           className="text-center text-yb-heading-md text-yb-fg"
           style={{ flex: 1 }}
         >
-          {t("settings.title", { defaultValue: "설정" })}
+          {t("settings.title")}
         </Text>
         <View className="w-yb-icon-btn" />
       </View>
@@ -57,15 +46,16 @@ export function SettingsScreen() {
       >
         <View className="gap-yb-3">
           <Text className="text-yb-label font-semibold text-yb-fg-secondary">
-            {t("settings.sections.workout", { defaultValue: "운동" })}
+            {t("settings.sections.workout")}
           </Text>
           <WorkoutReminderToggle />
         </View>
 
         <View className="gap-yb-3">
           <Text className="text-yb-label font-semibold text-yb-fg-secondary">
-            {t("settings.sections.protein", { defaultValue: "프로틴" })}
+            {t("settings.sections.protein")}
           </Text>
+          <ProteinSaleNotificationToggle />
         </View>
       </ScrollView>
     </Main>

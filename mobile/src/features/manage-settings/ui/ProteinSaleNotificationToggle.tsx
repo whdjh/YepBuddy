@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Switch, Text, View } from "react-native"
+import { ActivityIndicator, Switch } from "react-native"
 import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
-import { GlassSurface } from "@/shared/ui/GlassSurface"
 import {
   disableProteinSaleNotifications,
   getProteinSaleNotificationEnabled,
   scheduleProteinSaleNotifications,
 } from "@/shared/lib/protein-sale-notification"
+import { SettingsRow } from "./SettingsRow"
 
 export function ProteinSaleNotificationToggle() {
   const { t } = useTranslation()
-  const accent =
-    (useUnstableNativeVariable("--yb-accent") as unknown as string) || "#9B7E56"
-  const muted =
-    (useUnstableNativeVariable("--yb-surface-muted") as unknown as string) ||
-    "#EDE4D6"
-  const surface =
-    (useUnstableNativeVariable("--yb-surface") as unknown as string) || "#FFFFFF"
+  const accent = useUnstableNativeVariable("--yb-accent") as unknown as string
+  const muted = useUnstableNativeVariable(
+    "--yb-surface-muted",
+  ) as unknown as string
+  const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
 
   const [enabled, setEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -56,7 +54,7 @@ export function ProteinSaleNotificationToggle() {
       if (nextEnabled) {
         const scheduled = await scheduleProteinSaleNotifications({
           allowPrompt: true,
-        })
+        }).catch(() => false)
         setEnabled(scheduled)
         return
       }
@@ -69,22 +67,11 @@ export function ProteinSaleNotificationToggle() {
   }
 
   return (
-    <GlassSurface
-      className="mx-yb-5 mt-yb-4 border border-yb-glass-border"
-      cornerRadius={16}
-      paddingSize={16}
-      fallbackClassName="bg-yb-glass-bg"
-    >
-      <View className="flex-row items-center gap-yb-3">
-        <View className="shrink grow">
-          <Text className="text-yb-body-lg font-semibold text-yb-fg">
-            {t("protein.saleNotifications.toggleTitle")}
-          </Text>
-          <Text className="mt-yb-1 text-yb-caption text-yb-fg-secondary">
-            {t("protein.saleNotifications.toggleBody")}
-          </Text>
-        </View>
-        {loading ? (
+    <SettingsRow
+      title={t("protein.saleNotifications.toggleTitle")}
+      body={t("protein.saleNotifications.toggleBody")}
+      control={
+        loading ? (
           <ActivityIndicator color={accent} />
         ) : (
           <Switch
@@ -96,8 +83,8 @@ export function ProteinSaleNotificationToggle() {
             trackColor={{ false: muted, true: accent }}
             thumbColor={surface}
           />
-        )}
-      </View>
-    </GlassSurface>
+        )
+      }
+    />
   )
 }

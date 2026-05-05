@@ -11,13 +11,11 @@ import { SettingsRow } from "./SettingsRow"
 
 export function WorkoutReminderToggle() {
   const { t } = useTranslation()
-  const accent =
-    (useUnstableNativeVariable("--yb-accent") as unknown as string) || "#9B7E56"
-  const muted =
-    (useUnstableNativeVariable("--yb-surface-muted") as unknown as string) ||
-    "#EDE4D6"
-  const surface =
-    (useUnstableNativeVariable("--yb-surface") as unknown as string) || "#FFFFFF"
+  const accent = useUnstableNativeVariable("--yb-accent") as unknown as string
+  const muted = useUnstableNativeVariable(
+    "--yb-surface-muted",
+  ) as unknown as string
+  const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
 
   const [enabled, setEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -75,12 +73,8 @@ export function WorkoutReminderToggle() {
 
   return (
     <SettingsRow
-      title={t("settings.workoutReminder.title", {
-        defaultValue: "운동 리마인더",
-      })}
-      body={t("settings.workoutReminder.body", {
-        defaultValue: "운동을 기록하지 않은 날 22:00에 한 번 알려드릴게요.",
-      })}
+      title={t("settings.workoutReminder.title")}
+      body={t("settings.workoutReminder.body")}
       control={
         loading ? (
           <ActivityIndicator color={accent} />
