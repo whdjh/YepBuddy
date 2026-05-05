@@ -15,7 +15,7 @@ import {
   type RoutinePart,
   type WeeklyRoutineSettings,
 } from "@/entities/workout-session"
-import type { WeeklyRoutinePlanResult } from "../model/useWeeklyRoutinePlan"
+import type { WeeklyRoutinePlanResult } from "@/features/view-summary/model/useWeeklyRoutinePlan"
 import {
   CycleStepper,
   RoutineSettingsSaveButton,

@@ -19,7 +19,7 @@ import { useWeeklyRoutineFeaturePrompt } from "../model/useWeeklyRoutineFeatureP
 import { SummaryCardRows } from "./SummaryCardRows"
 import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
-import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
+import { WeeklyRoutineSettingsSheet } from "@/features/manage-settings/ui/WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 const SUMMARY_BACKGROUND_COLORS = {
