@@ -19,7 +19,6 @@ import { useWeeklyRoutineFeaturePrompt } from "../model/useWeeklyRoutineFeatureP
 import { SummaryCardRows } from "./SummaryCardRows"
 import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
-import { WeeklyRoutineSettingsSheet } from "@/features/manage-settings/ui/WeeklyRoutineSettingsSheet"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
 const SUMMARY_BACKGROUND_COLORS = {
@@ -55,19 +54,11 @@ export function SummaryScreen() {
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
   const weeklyRoutinePlan = cardData.weeklyRoutinePlan
-  const {
-    isFeatureAlertOpen,
-    isSettingsOpen,
-    closeSettings,
-    handleRoutineTogglePress,
-  } = useWeeklyRoutineFeaturePrompt({
+  const { isFeatureAlertOpen } = useWeeklyRoutineFeaturePrompt({
     notificationPermissionRequestDone,
     weeklyRoutinePlan,
     t,
   })
-  const routineToggleLabel = weeklyRoutinePlan.isRoutineEnabled
-    ? t("summary.routineOn")
-    : t("summary.routineOff")
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
@@ -95,21 +86,10 @@ export function SummaryScreen() {
         ) : (
           <>
             {/* 헤더 */}
-            <View className="flex-row items-center justify-between gap-yb-3 pt-yb-4 pb-yb-1">
+            <View className="pt-yb-4 pb-yb-1 pr-yb-12">
               <Text className="shrink text-yb-fg text-yb-display tracking-yb-tight">
                 {t("summary.title")}
               </Text>
-              <Pressable
-                disabled={weeklyRoutinePlan.isLoading}
-                className={`h-yb-9 justify-center rounded-yb-md bg-yb-fill-pale px-yb-4 ${
-                  weeklyRoutinePlan.isLoading ? "opacity-50" : ""
-                }`}
-                onPress={handleRoutineTogglePress}
-              >
-                <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                  {routineToggleLabel}
-                </Text>
-              </Pressable>
             </View>
             <Text className="mb-yb-6 text-yb-label text-yb-fg-secondary">
               {dateString}
@@ -126,9 +106,7 @@ export function SummaryScreen() {
             delayLongPress={450}
           >
             <Text className="text-center text-yb-body-md font-semibold text-yb-fg-secondary">
-              {t("summary.noCards", {
-                defaultValue: "표시 중인 카드가 없습니다.",
-              })}
+              {t("summary.noCards")}
             </Text>
           </Pressable>
         )}
@@ -182,7 +160,7 @@ export function SummaryScreen() {
       {isEditing && (
         <SummaryEditControls
           addLabel={t("summary.add")}
-          doneLabel={t("summary.done", { defaultValue: "완료" })}
+          doneLabel={t("summary.done")}
           topOffset={insets.top + 12}
           onAdd={openCardPicker}
           onDone={exitEditMode}
@@ -196,18 +174,12 @@ export function SummaryScreen() {
         onAddCard={addPickedCard}
         onClose={closeCardPicker}
       />
-      <WeeklyRoutineSettingsSheet
-        plan={weeklyRoutinePlan}
-        visible={isSettingsOpen}
-        onClose={closeSettings}
-      />
       <WeeklyRoutineSetupPromptModal
         plan={weeklyRoutinePlan}
         visible={
           weeklyRoutinePlan.isRoutineEnabled &&
           Boolean(weeklyRoutinePlan.setupPromptKind) &&
           !weeklyRoutinePlan.isLoading &&
-          !isSettingsOpen &&
           !isFeatureAlertOpen
         }
       />

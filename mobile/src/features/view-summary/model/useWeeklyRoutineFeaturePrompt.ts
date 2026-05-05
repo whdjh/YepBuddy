@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import type { TFunction } from "i18next"
+import { router } from "expo-router"
 import { Alert } from "react-native"
 import type { WeeklyRoutinePlanResult } from "./useWeeklyRoutinePlan"
 
@@ -14,24 +15,12 @@ export function useWeeklyRoutineFeaturePrompt({
   weeklyRoutinePlan,
   t,
 }: UseWeeklyRoutineFeaturePromptParams) {
-  // 루틴 안내/설정 노출 상태
   const [isFeatureAlertOpen, setIsFeatureAlertOpen] = useState(false)
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const isFeatureAlertOpenRef = useRef(false)
 
-  // 루틴 안내 닫기
   const closeFeatureAlert = useCallback(() => {
     isFeatureAlertOpenRef.current = false
     setIsFeatureAlertOpen(false)
-  }, [])
-
-  // 루틴 설정 열기/닫기
-  const openSettings = useCallback(() => {
-    setIsSettingsOpen(true)
-  }, [])
-
-  const closeSettings = useCallback(() => {
-    setIsSettingsOpen(false)
   }, [])
 
   const showFeatureAlert = useCallback(() => {
@@ -56,20 +45,18 @@ export function useWeeklyRoutineFeaturePrompt({
           text: t("workout.weeklyRoutine.featurePrompt.accept"),
           onPress: () => {
             closeFeatureAlert()
-            openSettings()
+            router.push("/settings?routineSetup=1")
           },
         },
       ],
       { cancelable: false },
     )
-  }, [closeFeatureAlert, openSettings, t, weeklyRoutinePlan])
+  }, [closeFeatureAlert, t, weeklyRoutinePlan])
 
-  // 최초 루틴 안내 조건
   const shouldShowFeatureAlert =
     notificationPermissionRequestDone &&
     weeklyRoutinePlan.featureStatus === "unasked" &&
-    !weeklyRoutinePlan.isLoading &&
-    !isSettingsOpen
+    !weeklyRoutinePlan.isLoading
 
   useEffect(() => {
     if (shouldShowFeatureAlert) {
@@ -77,19 +64,7 @@ export function useWeeklyRoutineFeaturePrompt({
     }
   }, [shouldShowFeatureAlert, showFeatureAlert])
 
-  const handleRoutineTogglePress = useCallback(() => {
-    if (weeklyRoutinePlan.isRoutineEnabled) {
-      void weeklyRoutinePlan.disableRoutine()
-      return
-    }
-
-    showFeatureAlert()
-  }, [showFeatureAlert, weeklyRoutinePlan])
-
   return {
     isFeatureAlertOpen,
-    isSettingsOpen,
-    closeSettings,
-    handleRoutineTogglePress,
   }
 }
