@@ -6,6 +6,8 @@ import type { StoredWorkoutSession } from "./types"
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
 // 다음 운동 리마인더 notification identifier를 저장하는 키
 export const WORKOUT_REMINDER_STORAGE_KEY = "yb:workout:reminder"
+export const WORKOUT_REMINDER_ENABLED_STORAGE_KEY =
+  "yb:workout:reminder:enabled"
 const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
 const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
 let hasVerifiedStoredWorkoutDateKeys = false
@@ -53,6 +55,21 @@ export async function getWorkoutReminderId() {
 /** 저장된 운동 리마인더 identifier를 삭제 */
 export async function clearWorkoutReminderId() {
   await AsyncStorage.removeItem(WORKOUT_REMINDER_STORAGE_KEY)
+}
+
+/** 운동 리마인더 활성화 저장값을 조회 */
+export async function getWorkoutReminderEnabled() {
+  return (
+    (await AsyncStorage.getItem(WORKOUT_REMINDER_ENABLED_STORAGE_KEY)) === "true"
+  )
+}
+
+/** 운동 리마인더 활성화 저장값을 저장 */
+export async function setWorkoutReminderEnabled(enabled: boolean) {
+  await AsyncStorage.setItem(
+    WORKOUT_REMINDER_ENABLED_STORAGE_KEY,
+    enabled ? "true" : "false",
+  )
 }
 
 /** 날짜별 sessionId 저장 키에서 YYYY-MM-DD 날짜 키만 추출 */

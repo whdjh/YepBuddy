@@ -11,11 +11,13 @@ export { cancelScheduledWorkoutReminder } from "./lib/reminder"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
   deleteStoredWorkoutSession,
+  getWorkoutReminderEnabled,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
   getStoredWorkoutSessionsForMonth,
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
+  setWorkoutReminderEnabled,
   updateStoredWorkoutMemo,
 } from "./model/sessionStorage"
 export type {
