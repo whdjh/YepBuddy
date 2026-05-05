@@ -7,6 +7,7 @@ import { useUnstableNativeVariable } from "nativewind"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
 import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
+import { WeeklyRoutineToggle } from "./WeeklyRoutineToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 
 export function SettingsScreen() {
@@ -48,6 +49,7 @@ export function SettingsScreen() {
           <Text className="text-yb-label font-semibold text-yb-fg-secondary">
             {t("settings.sections.workout")}
           </Text>
+          <WeeklyRoutineToggle />
           <WorkoutReminderToggle />
         </View>
 
