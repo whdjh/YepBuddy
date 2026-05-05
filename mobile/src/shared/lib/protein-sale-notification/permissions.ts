@@ -1,18 +1,33 @@
 import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 
-// iOS 알림 권한 확인 및 요청 — Android no-op, Provisional 포함 허용 시 true 반환
+/** granted 또는 iOS provisional 상태를 프로틴 세일 알림 수신 동의로 */
+function isProteinSaleNotificationPermissionGranted(
+  permissions: Notifications.NotificationPermissionsStatus,
+) {
+  return (
+    permissions.granted ||
+    permissions.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  )
+}
+
+/** 현재 프로틴 세일 알림 권한만 확인 */
+export async function getProteinSaleNotificationPermissionGranted(): Promise<boolean> {
+  if (Platform.OS !== "ios") {
+    return false
+  }
+
+  const existing = await Notifications.getPermissionsAsync()
+  return isProteinSaleNotificationPermissionGranted(existing)
+}
+
+/** 사용자 ON 액션에서만 iOS 알림 권한을 요청 */
 export async function requestProteinSaleNotificationPermissions(): Promise<boolean> {
   if (Platform.OS !== "ios") {
     return false
   }
 
-  // 이미 허용(또는 Provisional) 상태면 재요청 없이 통과
-  const existing = await Notifications.getPermissionsAsync()
-  if (
-    existing.granted ||
-    existing.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
-  ) {
+  if (await getProteinSaleNotificationPermissionGranted()) {
     return true
   }
 
@@ -25,8 +40,5 @@ export async function requestProteinSaleNotificationPermissions(): Promise<boole
     },
   })
 
-  return (
-    requested.granted ||
-    requested.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
-  )
+  return isProteinSaleNotificationPermissionGranted(requested)
 }

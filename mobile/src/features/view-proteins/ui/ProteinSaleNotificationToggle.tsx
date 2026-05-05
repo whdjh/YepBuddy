@@ -54,7 +54,9 @@ export function ProteinSaleNotificationToggle() {
 
     try {
       if (nextEnabled) {
-        const scheduled = await scheduleProteinSaleNotifications()
+        const scheduled = await scheduleProteinSaleNotifications({
+          allowPrompt: true,
+        })
         setEnabled(scheduled)
         return
       }
