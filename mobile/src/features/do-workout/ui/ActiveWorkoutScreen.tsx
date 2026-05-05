@@ -102,6 +102,7 @@ export function ActiveWorkoutScreen() {
         cardioStartedAt: completedSession.cardioStartedAt,
         memo: completedSession.memo,
         bodyParts: completedSession.bodyParts,
+        location: completedSession.location,
       })
       goToResult()
     }

@@ -1,5 +1,6 @@
 import { Alert, Linking, Platform } from "react-native"
 import * as Calendar from "expo-calendar"
+import * as Location from "expo-location"
 import i18n from "@/shared/i18n/i18n"
 import {
   findYepBuddyCalendarId,
@@ -12,7 +13,7 @@ import {
   getCardioDurationMinutes,
 } from "./cardioSession"
 import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
-import type { WorkoutBodyPartSet } from "../model/types"
+import type { WorkoutBodyPartSet, WorkoutLocation } from "../model/types"
 
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   chest: "workout.bodyParts.chest",
@@ -94,6 +95,37 @@ async function getOrCreateYepBuddyCalendarId() {
   return Calendar.createCalendarAsync(details)
 }
 
+/** 좌표를 사람이 읽을 수 있는 주소 문자열로 변환. 실패 시 좌표 문자열로 폴백 */
+async function formatWorkoutCalendarLocation(
+  location: WorkoutLocation,
+): Promise<string> {
+  const fallback = `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`
+
+  try {
+    const results = await Location.reverseGeocodeAsync({
+      latitude: location.lat,
+      longitude: location.lng,
+    })
+    const place = results[0]
+    if (!place) {
+      return fallback
+    }
+
+    const parts = [
+      place.region,
+      place.city,
+      place.district,
+      place.street,
+      place.name,
+    ].filter((value): value is string => Boolean(value && value.length > 0))
+
+    const unique = Array.from(new Set(parts))
+    return unique.length > 0 ? unique.join(" ") : fallback
+  } catch {
+    return fallback
+  }
+}
+
 /** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
 export async function registerWorkoutToCalendar(params: {
   startedAt: string
@@ -101,6 +133,7 @@ export async function registerWorkoutToCalendar(params: {
   cardioStartedAt?: string | null
   memo: string
   bodyParts: WorkoutBodyPartSet[]
+  location?: WorkoutLocation | null
 }) {
   const permission = await Calendar.getCalendarPermissionsAsync()
   let status = permission.status
@@ -131,6 +164,10 @@ export async function registerWorkoutToCalendar(params: {
     return false
   }
 
+  const eventLocation = params.location
+    ? await formatWorkoutCalendarLocation(params.location)
+    : undefined
+
   await Calendar.createEventAsync(calendarId, {
     title: formatWorkoutCalendarTitle({
       bodyParts: params.bodyParts,
@@ -140,6 +177,7 @@ export async function registerWorkoutToCalendar(params: {
     startDate: new Date(params.startedAt),
     endDate: new Date(params.completedAt),
     notes: params.memo || undefined,
+    location: eventLocation,
   })
 
   Alert.alert(
