@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "yepbuddy",
+    "name": "옙버디",
     "slug": "yepbuddy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.juhun.yepbuddy"
+      "bundleIdentifier": "com.juhun.yepbuddy",
+      "infoPlist": {
+        "CFBundleDisplayName": "옙버디"
+      }
     },
     "android": {
       "adaptiveIcon": {
