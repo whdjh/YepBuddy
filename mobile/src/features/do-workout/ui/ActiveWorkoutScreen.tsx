@@ -6,6 +6,7 @@ import type { BodyPart, RoutinePart } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   registerWorkoutToCalendar,
+  syncWorkoutReminderAtNight,
   useWorkout,
 } from "@/entities/workout-session"
 import { useHealthKitWorkout } from "@/features/do-workout/lib/useHealthKitWorkout"
@@ -82,6 +83,7 @@ export function ActiveWorkoutScreen() {
       activeKcal: state.activeKcal,
       totalKcal: state.totalKcal,
     })
+    await syncWorkoutReminderAtNight({ allowPrompt: false })
 
     const goToResult = () => {
       router.replace({
