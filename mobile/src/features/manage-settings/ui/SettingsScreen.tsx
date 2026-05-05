@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next"
 import { useUnstableNativeVariable } from "nativewind"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
+import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 
 const SETTINGS_BACKGROUND_COLORS = {
   light: ["#FAF7F2", "#FAF7F2"],
@@ -58,6 +59,7 @@ export function SettingsScreen() {
           <Text className="text-yb-label font-semibold text-yb-fg-secondary">
             {t("settings.sections.workout", { defaultValue: "운동" })}
           </Text>
+          <WorkoutReminderToggle />
         </View>
 
         <View className="gap-yb-3">
