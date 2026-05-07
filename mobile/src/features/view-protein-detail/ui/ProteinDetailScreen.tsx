@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Linking, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
@@ -9,6 +9,7 @@ import { Badge } from "@/shared/ui/Badge"
 import { Button } from "@/shared/ui/Button"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Card } from "@/shared/ui/Card"
+import { getSafeWebUrl, openWebUrl } from "@/shared/lib/legalLinks"
 import {
   buildProteinDetail,
   fetchProtein,
@@ -72,13 +73,18 @@ export function ProteinDetailScreen() {
 
   const price = protein?.price != null ? protein.price.toLocaleString() : "-"
   const pricePerGram = protein?.pricePerGram != null ? protein.pricePerGram.toLocaleString() : "-"
+  const purchaseUrl = getSafeWebUrl(protein?.purchaseUrl)
 
   return (
     <View className="h-full w-full bg-yb-bg" style={{ paddingTop: insets.top }}>
       {/* 헤더 */}
       <View className="px-yb-5 pb-yb-4">
         <View className="flex-row items-center gap-yb-3 py-yb-2">
-          <IconButton variant="back-square" onPress={() => router.back()}>
+          <IconButton
+            accessibilityLabel={t("common.back")}
+            variant="back-square"
+            onPress={() => router.back()}
+          >
             <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
           </IconButton>
           <View className="shrink">
@@ -165,10 +171,10 @@ export function ProteinDetailScreen() {
         <Button
           variant="glass"
           label={t("protein.detail.buyNow")}
-          disabled={!protein?.purchaseUrl}
+          disabled={!purchaseUrl}
           onPress={() => {
-            if (protein?.purchaseUrl) {
-              Linking.openURL(protein.purchaseUrl)
+            if (purchaseUrl) {
+              void openWebUrl(purchaseUrl)
             }
           }}
         />

@@ -2,7 +2,6 @@ import { useCallback, useRef } from "react"
 import {
   Alert,
   Pressable,
-  Linking,
   ScrollView,
   Text,
   useColorScheme,
@@ -18,7 +17,7 @@ import {
   useWorkout,
 } from "@/entities/workout-session"
 import { formatDateWithDay } from "@/shared/lib/format"
-import { privacyPolicyUrl, supportUrl } from "@/shared/lib/legalLinks"
+import { openWebUrl, privacyPolicyUrl, supportUrl } from "@/shared/lib/legalLinks"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
@@ -186,7 +185,7 @@ export function SummaryScreen() {
               <Pressable
                 className="min-h-[36px] justify-center px-yb-2 active:opacity-70"
                 onPress={() => {
-                  void Linking.openURL(privacyPolicyUrl)
+                  void openWebUrl(privacyPolicyUrl)
                 }}
               >
                 <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
@@ -201,7 +200,7 @@ export function SummaryScreen() {
               <Pressable
                 className="min-h-[36px] justify-center px-yb-2 active:opacity-70"
                 onPress={() => {
-                  void Linking.openURL(supportUrl)
+                  void openWebUrl(supportUrl)
                 }}
               >
                 <Text className="text-yb-caption font-semibold text-yb-fg-secondary">

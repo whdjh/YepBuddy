@@ -151,6 +151,10 @@ export async function saveCompletedWorkoutSession(
   session: StoredWorkoutSession,
 ) {
   const dateKey = getLocalDateKeyFromIso(session.startedAt)
+  if (!dateKey) {
+    throw new Error("Invalid workout session start date")
+  }
+
   const storedDateKeys = await getStoredWorkoutDateKeys()
   const nextDateKeys = storedDateKeys.includes(dateKey)
     ? storedDateKeys
@@ -192,6 +196,11 @@ export async function deleteStoredWorkoutSession(sessionId: string) {
   }
 
   const dateKey = getLocalDateKeyFromIso(session.startedAt)
+  if (!dateKey) {
+    await AsyncStorage.removeItem(getWorkoutSessionStorageKey(sessionId))
+    return session
+  }
+
   const storedDateKeys = await getStoredWorkoutDateKeys()
   const nextDateKeys = storedDateKeys.filter((key) => key !== dateKey)
 
