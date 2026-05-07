@@ -1,15 +1,13 @@
 import type { ReactNode } from "react"
 import type { SFSymbol } from "sf-symbols-typescript"
 import { StyleSheet, View, type ViewProps } from "react-native"
-import { Host, VStack, HStack, Text as SwiftText, Image, Spacer, Divider, Gauge } from "@expo/ui/swift-ui"
+import { Host, VStack, HStack, Text as SwiftText, Image, Spacer, Divider } from "@expo/ui/swift-ui"
 import {
   frame,
   padding,
   font,
   foregroundStyle,
   background,
-  gaugeStyle,
-  tint,
   clipShape,
   shapes,
 } from "@expo/ui/swift-ui/modifiers"
@@ -23,7 +21,7 @@ interface CardBaseProps extends ViewProps {
   variant?: Exclude<CardVariant, "glass">
 }
 
-interface CardGlassProps {
+interface CardGlassProps extends Omit<ViewProps, "children"> {
   variant: "glass"
   children: ReactNode
   minHeight?: number
@@ -42,7 +40,14 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
 
 function CardComponent(props: CardProps) {
   if (props.variant === "glass") {
-    const { children, minHeight, cornerRadius = 20, paddingSize = 20 } = props
+    const {
+      variant: _variant,
+      children,
+      minHeight,
+      cornerRadius = 16,
+      paddingSize = 24,
+      ...rest
+    } = props
     const contentMinHeight =
       minHeight != null ? Math.max(0, minHeight - paddingSize * 2) : undefined
 
@@ -51,6 +56,7 @@ function CardComponent(props: CardProps) {
         cornerRadius={cornerRadius}
         minHeight={minHeight}
         paddingSize={paddingSize}
+        {...rest}
       >
         <Host
           matchContents={{ vertical: true }}
@@ -257,31 +263,6 @@ function Column({ children, spacing, alignment }: {
   )
 }
 
-/** 원형 프로그레스 게이지 */
-function CardGauge({ current, target, width = 90, height = 90, children }: {
-  current: number
-  target: number
-  width?: number
-  height?: number
-  children?: ReactNode
-}) {
-  const { accent, fgSecondary } = useCardColors()
-  const progress = target > 0 ? current / target : 0
-  const color = progress > 0 ? accent : fgSecondary
-  return (
-    <Gauge
-      value={progress}
-      modifiers={[
-        gaugeStyle("circularCapacity"),
-        frame({ width, height }),
-        tint(color),
-      ]}
-    >
-      {children}
-    </Gauge>
-  )
-}
-
 /* ── Export ── */
 
 export const Card = Object.assign(CardComponent, {
@@ -294,7 +275,6 @@ export const Card = Object.assign(CardComponent, {
   Icon,
   Dot,
   Chevron,
-  Gauge: CardGauge,
   Spacer: CardSpacer,
   Divider: CardDivider,
   Row,

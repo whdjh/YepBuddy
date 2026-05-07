@@ -20,24 +20,55 @@ type ScheduleProteinSaleNotificationsOptions = {
   allowPrompt?: boolean
 }
 
-// 저장된 예약 id 전체 취소 및 목록 초기화
-export async function cancelProteinSaleNotifications(): Promise<void> {
-  const ids = await getProteinSaleNotificationIds()
+let proteinSaleNotificationTask: Promise<unknown> = Promise.resolve()
 
-  await Promise.all(
-    ids.map((id) =>
-      Notifications.cancelScheduledNotificationAsync(id).catch(() => undefined),
-    ),
-  )
+// 여러 알림 작업이 동시에 들어와도 앞 작업이 끝난 뒤 다음 작업을 실행
+function runProteinSaleNotificationTask<T>(task: () => Promise<T>): Promise<T> {
+  const nextTask = proteinSaleNotificationTask.then(task, task)
+  proteinSaleNotificationTask = nextTask.catch(() => undefined)
+  return nextTask
+}
+
+async function cancelNotificationIds(ids: string[]): Promise<string[]> {
+  const failedIds: string[] = []
+
+  for (const id of ids) {
+    try {
+      await Notifications.cancelScheduledNotificationAsync(id)
+    } catch {
+      failedIds.push(id)
+    }
+  }
+
+  return failedIds
+}
+
+async function cancelProteinSaleNotificationsNow(): Promise<void> {
+  const ids = await getProteinSaleNotificationIds()
+  const failedIds = await cancelNotificationIds(ids)
+
+  if (failedIds.length > 0) {
+    await saveProteinSaleNotificationIds(failedIds)
+    return
+  }
 
   await clearProteinSaleNotificationIds()
 }
 
+// 저장된 예약 id 전체 취소 및 목록 초기화
+export function cancelProteinSaleNotifications(): Promise<void> {
+  return runProteinSaleNotificationTask(cancelProteinSaleNotificationsNow)
+}
+
 /** 권한 모드에 따라 향후 세일 알림 전체를 재예약 */
-export async function scheduleProteinSaleNotifications({
+async function scheduleProteinSaleNotificationsNow({
   allowPrompt = true,
 }: ScheduleProteinSaleNotificationsOptions = {}): Promise<boolean> {
+  const scheduledIds: string[] = []
+
   if (Platform.OS !== "ios") {
+    await setProteinSaleNotificationEnabled(false).catch(() => undefined)
+    await cancelProteinSaleNotificationsNow().catch(() => undefined)
     return false
   }
 
@@ -47,14 +78,13 @@ export async function scheduleProteinSaleNotifications({
       : await getProteinSaleNotificationPermissionGranted()
     if (!granted) {
       await setProteinSaleNotificationEnabled(false)
-      await cancelProteinSaleNotifications()
+      await cancelProteinSaleNotificationsNow()
       return false
     }
 
-    await cancelProteinSaleNotifications()
+    await cancelProteinSaleNotificationsNow()
 
     const plans = buildProteinSaleNotificationPlans()
-    const ids: string[] = []
 
     for (const plan of plans) {
       const eventName = i18n.t(plan.titleKey)
@@ -79,32 +109,60 @@ export async function scheduleProteinSaleNotifications({
         },
       })
 
-      ids.push(id)
+      scheduledIds.push(id)
     }
 
-    await saveProteinSaleNotificationIds(ids)
+    await saveProteinSaleNotificationIds(scheduledIds)
     await setProteinSaleNotificationEnabled(true)
     return true
   } catch {
+    if (scheduledIds.length === 0) {
+      await setProteinSaleNotificationEnabled(false).catch(() => undefined)
+      await cancelProteinSaleNotificationsNow().catch(() => undefined)
+      return false
+    }
+
+    const failedIds = await cancelNotificationIds(scheduledIds).catch(
+      () => scheduledIds,
+    )
+
     await setProteinSaleNotificationEnabled(false).catch(() => undefined)
-    await cancelProteinSaleNotifications().catch(() => undefined)
+    if (failedIds.length > 0) {
+      await saveProteinSaleNotificationIds(failedIds).catch(() => undefined)
+    } else {
+      await clearProteinSaleNotificationIds().catch(() => undefined)
+    }
     return false
   }
 }
 
+export function scheduleProteinSaleNotifications(
+  options: ScheduleProteinSaleNotificationsOptions = {},
+): Promise<boolean> {
+  return runProteinSaleNotificationTask(() =>
+    scheduleProteinSaleNotificationsNow(options),
+  )
+}
+
 // 알림 비활성화 및 예약 전체 취소
-export async function disableProteinSaleNotifications(): Promise<void> {
+async function disableProteinSaleNotificationsNow(): Promise<void> {
   await setProteinSaleNotificationEnabled(false)
-  await cancelProteinSaleNotifications()
+  await cancelProteinSaleNotificationsNow()
+}
+
+export function disableProteinSaleNotifications(): Promise<void> {
+  return runProteinSaleNotificationTask(disableProteinSaleNotificationsNow)
 }
 
 // 앱 시작 시 활성화 상태 확인 후 예약 동기화
-export async function syncProteinSaleNotificationsIfEnabled(): Promise<void> {
-  if (!(await getProteinSaleNotificationEnabled())) {
-    return
-  }
+export function syncProteinSaleNotificationsIfEnabled(): Promise<void> {
+  return runProteinSaleNotificationTask(async () => {
+    if (!(await getProteinSaleNotificationEnabled())) {
+      return
+    }
 
-  await scheduleProteinSaleNotifications({ allowPrompt: false }).catch(
-    () => undefined,
-  )
+    await scheduleProteinSaleNotificationsNow({ allowPrompt: false }).catch(
+      () => undefined,
+    )
+  })
 }

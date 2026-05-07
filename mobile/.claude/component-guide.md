@@ -14,7 +14,6 @@ src/shared/
 │   ├── Input.tsx
 │   ├── Textarea.tsx
 │   ├── NumberInput.tsx
-│   ├── SegmentToggle.tsx
 │   ├── PillNav.tsx
 │   ├── RingProgress.tsx
 │   ├── CalendarCell.tsx
@@ -194,22 +193,7 @@ Input 확장. multiline + 높이만 다름.
 
 ## Level 4: 배열 기반 + 콜백 (map 렌더링)
 
-### 4-1. SegmentToggle
-
-2~3개 옵션을 토글하는 컨트롤.
-
-- **props**: `options: { key: string; label: string }[]`, `activeKey: string`, `onSelect: (key: string) => void`
-- **스펙**: r-outer:12, r-inner:10, h:44, padding:4px, bg:surface-muted
-  - active: bg=surface, shadow=sm, text=fg font-semibold
-  - inactive: text=fg-tertiary
-
-**핵심 패턴**: `options.map()`으로 렌더링. `isActive = option.key === activeKey`
-
-**사용할 RN 컴포넌트**: `View`, `Pressable`, `Text`
-
----
-
-### 4-2. PillNav
+### PillNav
 
 하단 알약형 네비게이션. 항상 expanded.
 
@@ -219,7 +203,7 @@ Input 확장. multiline + 높이만 다름.
   - label: text=on-strong, caption size
   - shadow: lg
 
-**핵심 패턴**: SegmentToggle과 동일한 map 패턴. 차이는 세로 방향 (icon + label) + pill 모양.
+**핵심 패턴**: 세로 방향 (icon + label) + pill 모양.
 
 **사용할 RN 컴포넌트**: `View`, `Pressable`, `Text`
 

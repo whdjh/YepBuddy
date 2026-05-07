@@ -50,7 +50,11 @@ export function SessionListScreen() {
     <Main>
       {/* 헤더 */}
       <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-1">
-        <IconButton variant="back-square" onPress={() => router.back()}>
+        <IconButton
+          accessibilityLabel={t("common.back")}
+          variant="back-square"
+          onPress={() => router.back()}
+        >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
         <Text className="text-yb-fg text-yb-heading-sm font-bold text-center" style={{ flex: 1 }}>

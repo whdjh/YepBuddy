@@ -1,4 +1,4 @@
-import { Text, View, useColorScheme } from "react-native"
+import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { RingProgress } from "@/shared/ui/RingProgress"
 
@@ -23,8 +23,6 @@ export function TempoRingDisplay({
 }: TempoRingDisplayProps) {
   const { t } = useTranslation()
 
-  const isDark = useColorScheme() === "dark"
-
   const STATUS_LABELS: Record<TempoStatus, string> = {
     idle: t("tempo.waiting"),
     countdown: t("tempo.preparing"),
@@ -46,9 +44,7 @@ export function TempoRingDisplay({
         <RingProgress
           size={160}
           strokeWidth={12}
-          progress={isCountdown ? progress : progress}
-          trackColor={isDark ? "#4A3A28" : "#EDE4D6"}
-          fillColor={isDark ? "#D4883A" : "#9B7E56"}
+          progress={progress}
         >
           {isCountdown ? (
             <Text className="text-yb-fg text-yb-num-44">

@@ -1,8 +1,10 @@
 import { SymbolView } from "expo-symbols"
 import type { ReactNode } from "react"
 import { useEffect, useMemo, useRef } from "react"
-import { View, useColorScheme } from "react-native"
+import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
+import { useTranslation } from "react-i18next"
+import { useUnstableNativeVariable } from "nativewind"
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -34,8 +36,9 @@ export function EditableSummaryCardFrame({
   onDrag,
   onMoveWithinRow,
 }: EditableSummaryCardFrameProps) {
-  const isDark = useColorScheme() === "dark"
-  const symbolTintColor = isDark ? "#F8E7D0" : "#5B4126"
+  const { t } = useTranslation()
+  const symbolTintColor =
+    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const wiggle = useSharedValue(0)
@@ -124,7 +127,7 @@ export function EditableSummaryCardFrame({
           <View className="absolute -right-yb-2 -top-yb-2 z-10">
             <IconButton
               variant="edit"
-              accessibilityLabel="삭제"
+              accessibilityLabel={t("common.delete")}
               onPress={onRemove}
             >
               <SymbolView

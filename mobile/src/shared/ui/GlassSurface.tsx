@@ -13,6 +13,7 @@ interface GlassSurfaceProps extends Omit<ViewProps, "children"> {
   cornerRadius?: number
   minHeight?: number
   paddingSize?: number
+  className?: string
   contentStyle?: StyleProp<ViewStyle>
   fallbackClassName?: string
 }
@@ -22,13 +23,15 @@ export function GlassSurface({
   cornerRadius = 16,
   minHeight,
   paddingSize = 0,
+  className,
   contentStyle,
-  fallbackClassName = "bg-yb-surface/70",
+  fallbackClassName = "bg-yb-surface/95",
   style,
   ...rest
 }: GlassSurfaceProps) {
   return (
     <View
+      className={`border border-yb-glass-border${className ? ` ${className}` : ""}`}
       style={[
         styles.container,
         {

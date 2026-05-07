@@ -1,7 +1,19 @@
 import i18n from "@/shared/i18n/i18n"
 
+function isValidDate(date: Date) {
+  return Number.isFinite(date.getTime())
+}
+
+function safePositiveNumber(value: number) {
+  return Number.isFinite(value) ? Math.max(0, value) : 0
+}
+
 /** Date → "MM.DD 요일" */
 export function formatDateWithDay(date: Date): string {
+  if (!isValidDate(date)) {
+    return ""
+  }
+
   const m = String(date.getMonth() + 1).padStart(2, "0")
   const d = String(date.getDate()).padStart(2, "0")
   const mondayFirstDayIndex = (date.getDay() + 6) % 7
@@ -11,6 +23,10 @@ export function formatDateWithDay(date: Date): string {
 
 /** Date → "YYYY년 M월" */
 export function formatMonthYear(date: Date): string {
+  if (!isValidDate(date)) {
+    return ""
+  }
+
   return i18n.t("sessions.monthHeader", {
     year: date.getFullYear(),
     month: date.getMonth() + 1,
@@ -29,17 +45,19 @@ export function bodyPartDetailLabel(key: string): string {
 
 /** HKWorkout.duration(초) → "H:MM:SS" */
 export function formatDuration(seconds: number): string {
-  const h = Math.floor(seconds / 3600)
-  const m = Math.floor((seconds % 3600) / 60)
-  const s = Math.floor(seconds % 60)
+  const safeSeconds = safePositiveNumber(seconds)
+  const h = Math.floor(safeSeconds / 3600)
+  const m = Math.floor((safeSeconds % 3600) / 60)
+  const s = Math.floor(safeSeconds % 60)
   return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
 }
 
 /** 밀리초 → "MM:SS.CC" */
 export function formatElapsedMs(ms: number): string {
-  const minutes = Math.floor(ms / 60000)
-  const seconds = Math.floor((ms % 60000) / 1000)
-  const centiseconds = Math.floor((ms % 1000) / 10)
+  const safeMs = safePositiveNumber(ms)
+  const minutes = Math.floor(safeMs / 60000)
+  const seconds = Math.floor((safeMs % 60000) / 1000)
+  const centiseconds = Math.floor((safeMs % 1000) / 10)
 
   return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(centiseconds).padStart(2, "0")}`
 }
@@ -47,5 +65,9 @@ export function formatElapsedMs(ms: number): string {
 /** ISO timestamp → "H:MM" (24시간) */
 export function formatTime(iso: string): string {
   const d = new Date(iso)
+  if (!isValidDate(d)) {
+    return ""
+  }
+
   return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`
 }

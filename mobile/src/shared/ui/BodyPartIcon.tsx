@@ -7,6 +7,7 @@ import chest from "@/assets/images/bodyparts/chest.png"
 import core from "@/assets/images/bodyparts/core.png"
 import legs from "@/assets/images/bodyparts/legs.png"
 import shoulders from "@/assets/images/bodyparts/shoulders.png"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import type { BodyPart } from "@/entities/workout-session"
 
 type BodyPartIconSize = "xs" | "drawer" | "sm" | "md" | "lg" | "xl"
@@ -58,6 +59,7 @@ export function BodyPartIcon({
   size = "md",
   framed = true,
 }: BodyPartIconProps) {
+  const { accent, fillPale } = useCardColors()
   const frameSize = frameSizeBySize[size]
   const iconSize = iconSizeBySize[size]
   const iconSource = bodyPart ? iconSourceByBodyPart[bodyPart] : null
@@ -66,7 +68,7 @@ export function BodyPartIcon({
     <View
       style={{
         alignItems: "center",
-        backgroundColor: framed ? "#F2EBDD" : "transparent",
+        backgroundColor: framed ? fillPale : "transparent",
         borderRadius: framed ? radiusBySize[size] : 0,
         height: frameSize,
         justifyContent: "center",
@@ -84,7 +86,7 @@ export function BodyPartIcon({
         <SymbolView
           name="dumbbell.fill"
           size={Math.round(iconSize * 0.58)}
-          tintColor="#9B7E56"
+          tintColor={accent}
         />
       )}
     </View>

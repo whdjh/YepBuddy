@@ -3,22 +3,17 @@ import { GlassSurface } from "./GlassSurface"
 
 type ChipVariant = "default" | "active" | "glass"
 type FilterPillVariant = "default" | "active" | "glass"
-type BodyPartPillVariant = "default" | "active"
 
 interface ChipProps extends Omit<PressableProps, "children"> {
   variant?: ChipVariant
   label: string
+  className?: string
 }
 
 interface FilterPillProps extends Omit<PressableProps, "children"> {
   variant?: FilterPillVariant
   label: string
-}
-
-interface BodyPartPillProps {
-  variant?: BodyPartPillVariant
-  label: string
-  onPress?: () => void
+  className?: string
 }
 
 /* GlassPill — 공통 글래스 알약 프리미티브 */
@@ -29,6 +24,7 @@ interface GlassPillProps extends Omit<PressableProps, "children"> {
   paddingClass: string
   labelClass: string
   fallbackClassName?: string
+  className?: string
 }
 
 function GlassPill({
@@ -37,6 +33,7 @@ function GlassPill({
   paddingClass,
   labelClass,
   fallbackClassName,
+  className,
   ...rest
 }: GlassPillProps) {
   return (
@@ -46,7 +43,7 @@ function GlassPill({
       fallbackClassName={fallbackClassName}
     >
       <Pressable
-        className={`${heightClass} ${paddingClass} items-center justify-center active:scale-[0.97]`}
+        className={`${heightClass} ${paddingClass} items-center justify-center active:scale-[0.97]${className ? ` ${className}` : ""}`}
         {...rest}
       >
         <Text className={labelClass}>{label}</Text>
@@ -70,7 +67,7 @@ const chipLabel: Record<ChipVariant, string> = {
   glass:   "text-yb-fg text-yb-body-sm font-medium",
 }
 
-export function Chip({ variant = "default", label, ...rest }: ChipProps) {
+export function Chip({ variant = "default", label, className, ...rest }: ChipProps) {
   if (variant === "glass") {
     return (
       <GlassPill
@@ -78,13 +75,17 @@ export function Chip({ variant = "default", label, ...rest }: ChipProps) {
         heightClass="h-yb-chip"
         paddingClass="px-yb-6"
         labelClass={chipLabel.glass}
+        className={className}
         {...rest}
       />
     )
   }
 
   return (
-    <Pressable className={chipContainer[variant]} {...rest}>
+    <Pressable
+      className={`${chipContainer[variant]}${className ? ` ${className}` : ""}`}
+      {...rest}
+    >
       <Text className={chipLabel[variant]}>{label}</Text>
     </Pressable>
   )
@@ -94,9 +95,9 @@ export function Chip({ variant = "default", label, ...rest }: ChipProps) {
 
 const filterPillContainer: Record<Exclude<FilterPillVariant, "glass">, string> = {
   default:
-    "h-[40px] rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
+    "h-yb-10 rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
   active:
-    "h-[40px] rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
+    "h-yb-10 rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
 }
 
 const filterPillLabel: Record<FilterPillVariant, string> = {
@@ -105,41 +106,26 @@ const filterPillLabel: Record<FilterPillVariant, string> = {
   glass:   "text-yb-fg-secondary text-yb-body-sm font-semibold",
 }
 
-export function FilterPill({ variant = "default", label, ...rest }: FilterPillProps) {
+export function FilterPill({ variant = "default", label, className, ...rest }: FilterPillProps) {
   if (variant === "glass") {
     return (
       <GlassPill
         label={label}
-        heightClass="h-[40px]"
+        heightClass="h-yb-10"
         paddingClass="px-yb-5"
         labelClass={filterPillLabel.glass}
+        className={className}
         {...rest}
       />
     )
   }
 
   return (
-    <Pressable className={filterPillContainer[variant]} {...rest}>
+    <Pressable
+      className={`${filterPillContainer[variant]}${className ? ` ${className}` : ""}`}
+      {...rest}
+    >
       <Text className={filterPillLabel[variant]}>{label}</Text>
     </Pressable>
-  )
-}
-
-/* BodyPartPill */
-
-export function BodyPartPill({ variant = "default", label, onPress }: BodyPartPillProps) {
-  const isActive = variant === "active"
-
-  return (
-    <GlassPill
-      label={label}
-      heightClass="h-yb-chip"
-      paddingClass="px-yb-5"
-      labelClass={`text-yb-body-sm font-semibold ${
-        isActive ? "text-yb-accent" : "text-yb-fg-secondary"
-      }`}
-      fallbackClassName={isActive ? "bg-yb-accent/15" : "bg-yb-surface/70"}
-      onPress={onPress}
-    />
   )
 }

@@ -7,10 +7,10 @@ interface IconBoxProps extends ViewProps {
 }
 
 const sizeStyles: Record<IconBoxSize, string> = {
-  sm: "w-[44px] h-[44px] rounded-yb-icon",
-  md: "w-[48px] h-[48px] rounded-yb-icon",
-  lg: "w-[56px] h-[56px] rounded-yb-icon",
-  xl: "w-[80px] h-[80px] rounded-full",
+  sm: "h-yb-icon-sm w-yb-icon-sm rounded-yb-icon",
+  md: "h-yb-icon-md w-yb-icon-md rounded-yb-icon",
+  lg: "h-yb-icon-lg w-yb-icon-lg rounded-yb-icon",
+  xl: "h-yb-icon-box-xl w-yb-icon-box-xl rounded-full",
 }
 
 export function IconBox({ size = "md", className, children, ...rest }: IconBoxProps) {

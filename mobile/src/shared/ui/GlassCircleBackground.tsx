@@ -1,15 +1,14 @@
 import { StyleSheet, View } from "react-native"
-import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect"
+import { GlassView } from "expo-glass-effect"
 import { useUnstableNativeVariable } from "nativewind"
-
-const IS_LIQUID_GLASS_AVAILABLE = isLiquidGlassAvailable()
+import { useGlassEffectState } from "./GlassBackground"
 
 export function GlassCircleBackground() {
   const glassTintColor =
-    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) ||
-    "rgba(255,255,255,0.65)"
+    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) || undefined
+  const { glassEffectEnabled } = useGlassEffectState()
 
-  if (IS_LIQUID_GLASS_AVAILABLE) {
+  if (glassEffectEnabled) {
     return (
       <GlassView
         glassEffectStyle="regular"
@@ -24,7 +23,7 @@ export function GlassCircleBackground() {
 
   return (
     <View
-      className="absolute inset-0 bg-yb-glass-bg"
+      className="absolute inset-0 bg-yb-surface/95"
       pointerEvents="none"
     />
   )

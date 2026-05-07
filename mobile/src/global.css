@@ -22,6 +22,7 @@
     --yb-border-strong: #B59768;
     --yb-on-accent: #FAF7F2;
     --yb-on-strong: #FAF7F2;
+    --yb-on-danger: #FFFFFF;
     --yb-glass-bg: rgba(255,255,255,0.65);
     --yb-glass-border: rgba(255,255,255,0.5);
 
@@ -89,6 +90,7 @@
     --yb-border-strong: #7B6548;
     --yb-on-accent: #1C1C1E;
     --yb-on-strong: #1C1C1E;
+    --yb-on-danger: #FFFFFF;
     --yb-glass-bg: rgba(255,255,255,0.12);
     --yb-glass-border: rgba(255,255,255,0.18);
 

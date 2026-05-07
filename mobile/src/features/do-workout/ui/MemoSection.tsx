@@ -1,6 +1,6 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { GlassTextarea } from "@/shared/ui/Input"
+import { GlassTextarea } from "@/shared/ui/GlassTextarea"
 
 interface MemoSectionProps {
   value: string

@@ -29,7 +29,7 @@ const labelStyles: Record<Exclude<ButtonVariant, "glass">, string> = {
   accent:  "text-yb-on-accent text-yb-body-lg font-semibold",
   outline: "text-yb-accent text-yb-body-lg font-semibold",
   ghost:   "text-yb-fg-secondary text-yb-body-sm font-medium",
-  danger:  "text-white text-yb-body-lg font-semibold",
+  danger:  "text-yb-on-danger text-yb-body-lg font-semibold",
 }
 
 export function Button({ variant = "primary", label, className, disabled, onPress, ...rest }: ButtonProps) {
