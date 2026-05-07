@@ -16,8 +16,7 @@ export function GlassBackground({
   fallbackClassName = "bg-yb-surface-muted/80",
 }: GlassBackgroundProps) {
   const tintColor =
-    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) ||
-    "rgba(255,255,255,0.65)"
+    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) || undefined
   const fillStyle = [StyleSheet.absoluteFill, { borderRadius: cornerRadius }]
 
   if (IS_GLASS) {

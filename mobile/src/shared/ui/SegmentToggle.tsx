@@ -15,7 +15,7 @@ export function SegmentToggle({
 }: SegmentToggleProps) {
   return (
     <View
-      className={`flex-row bg-yb-surface-muted rounded-yb-icon p-[4px]${className ? ` ${className}` : ""}`}
+      className={`flex-row bg-yb-surface-muted rounded-yb-icon p-yb-1${className ? ` ${className}` : ""}`}
       {...rest}
     >
       {segments.map((label, i) => {

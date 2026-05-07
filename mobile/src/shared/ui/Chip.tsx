@@ -94,9 +94,9 @@ export function Chip({ variant = "default", label, ...rest }: ChipProps) {
 
 const filterPillContainer: Record<Exclude<FilterPillVariant, "glass">, string> = {
   default:
-    "h-[40px] rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
+    "h-yb-10 rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
   active:
-    "h-[40px] rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
+    "h-yb-10 rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
 }
 
 const filterPillLabel: Record<FilterPillVariant, string> = {
@@ -110,7 +110,7 @@ export function FilterPill({ variant = "default", label, ...rest }: FilterPillPr
     return (
       <GlassPill
         label={label}
-        heightClass="h-[40px]"
+        heightClass="h-yb-10"
         paddingClass="px-yb-5"
         labelClass={filterPillLabel.glass}
         {...rest}

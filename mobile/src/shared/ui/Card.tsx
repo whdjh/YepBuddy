@@ -23,7 +23,7 @@ interface CardBaseProps extends ViewProps {
   variant?: Exclude<CardVariant, "glass">
 }
 
-interface CardGlassProps {
+interface CardGlassProps extends Omit<ViewProps, "children"> {
   variant: "glass"
   children: ReactNode
   minHeight?: number
@@ -42,7 +42,14 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
 
 function CardComponent(props: CardProps) {
   if (props.variant === "glass") {
-    const { children, minHeight, cornerRadius = 20, paddingSize = 20 } = props
+    const {
+      variant: _variant,
+      children,
+      minHeight,
+      cornerRadius = 20,
+      paddingSize = 20,
+      ...rest
+    } = props
     const contentMinHeight =
       minHeight != null ? Math.max(0, minHeight - paddingSize * 2) : undefined
 
@@ -51,6 +58,7 @@ function CardComponent(props: CardProps) {
         cornerRadius={cornerRadius}
         minHeight={minHeight}
         paddingSize={paddingSize}
+        {...rest}
       >
         <Host
           matchContents={{ vertical: true }}

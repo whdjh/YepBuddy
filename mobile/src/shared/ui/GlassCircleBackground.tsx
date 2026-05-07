@@ -6,8 +6,7 @@ const IS_LIQUID_GLASS_AVAILABLE = isLiquidGlassAvailable()
 
 export function GlassCircleBackground() {
   const glassTintColor =
-    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) ||
-    "rgba(255,255,255,0.65)"
+    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) || undefined
 
   if (IS_LIQUID_GLASS_AVAILABLE) {
     return (
