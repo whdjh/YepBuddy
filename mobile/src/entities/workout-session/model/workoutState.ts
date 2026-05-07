@@ -1,3 +1,4 @@
+import { getTimestampMsFromIso } from "@/shared/lib/date"
 import type {
   BodyPart,
   BodyPartDetail,
@@ -54,6 +55,11 @@ interface StartRecordingPayload {
   startedAt: string
 }
 
+/** 외부에서 들어온 실시간 수치를 음수 없는 정수 카운트로 정리 */
+function normalizeCount(value: number) {
+  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0
+}
+
 // workoutReducer가 처리하는 액션 타입 목록
 export type WorkoutAction =
   | { type: "START_COUNTDOWN" }
@@ -81,7 +87,10 @@ export type WorkoutAction =
   | { type: "PAUSE"; payload: { pausedAt: string } }
   | { type: "RESUME"; payload: { resumedAt: string } }
   | { type: "COMPLETE"; payload: { completedAt: string } }
-  | { type: "TOGGLE_BODY_PART_DETAIL"; payload: { part: BodyPart; detail: BodyPartDetail } }
+  | {
+      type: "TOGGLE_BODY_PART_DETAIL"
+      payload: { part: BodyPart; detail: BodyPartDetail }
+    }
   | { type: "APPLY_BODY_PART_TEMPLATE"; payload: RoutinePart[] }
   | { type: "RESET" }
   | { type: "HYDRATE"; payload: WorkoutState }
@@ -136,14 +145,21 @@ export function workoutReducer(
         location: action.payload,
       }
     // 실시간 운동 수치 반영 액션 처리
-    case "SET_LIVE_STATS":
+    case "SET_LIVE_STATS": {
+      const heartRate =
+        action.payload.heartRate != null &&
+        Number.isFinite(action.payload.heartRate)
+          ? Math.max(0, Math.round(action.payload.heartRate))
+          : null
+
       return {
         // Apple HealthKit 같은 외부 소스에서 들어온 실시간 수치를 반영
         ...state,
-        heartRate: action.payload.heartRate,
-        activeKcal: action.payload.activeKcal,
-        totalKcal: action.payload.totalKcal,
+        heartRate,
+        activeKcal: normalizeCount(action.payload.activeKcal),
+        totalKcal: normalizeCount(action.payload.totalKcal),
       }
+    }
     // 운동 부위 토글 액션 처리
     case "TOGGLE_BODY_PART": {
       const exists = state.bodyParts.find(({ part }) => part === action.payload)
@@ -159,17 +175,22 @@ export function workoutReducer(
       }
     }
     // 세트 수 변경 액션 처리
-    case "UPDATE_SET_COUNT":
+    case "UPDATE_SET_COUNT": {
       // 선택한 운동 부위의 세트 수를 바꾸되 최소 1세트는 유지
+      const normalizedSetCount = Number.isFinite(action.payload.setCount)
+        ? Math.max(1, Math.round(action.payload.setCount))
+        : 1
+
       return {
         ...state,
         bodyParts: state.bodyParts.map((item) =>
           item.part === action.payload.part &&
           item.detail === action.payload.detail
-            ? { ...item, setCount: Math.max(1, action.payload.setCount) }
+            ? { ...item, setCount: normalizedSetCount }
             : item,
         ),
       }
+    }
     // 메모 변경 액션 처리
     case "UPDATE_MEMO":
       // 사용자가 입력한 운동 메모를 그대로 반영
@@ -177,6 +198,7 @@ export function workoutReducer(
         ...state,
         memo: action.payload,
       }
+    // 유산소 시작 시각은 실제 운동 기록 중 한 번만 저장
     case "START_CARDIO":
       if (state.phase !== "recording" || state.cardioStartedAt) {
         return state
@@ -188,6 +210,10 @@ export function workoutReducer(
       }
     // 일시정지 액션 처리
     case "PAUSE":
+      if (state.phase !== "recording") {
+        return state
+      }
+
       // 일시정지 시각을 저장하고 phase를 paused로 전환
       return {
         ...state,
@@ -196,14 +222,17 @@ export function workoutReducer(
       }
     // 운동 재개 액션 처리
     case "RESUME": {
-      if (!state.pausedAt) {
+      if (state.phase !== "paused" || !state.pausedAt) {
         return state
       }
 
       // 이번 pause 구간 길이를 누적해서 실제 운동 시간 계산에 사용
+      const resumedAtMs = getTimestampMsFromIso(action.payload.resumedAt)
+      const pausedAtMs = getTimestampMsFromIso(state.pausedAt)
       const pausedMs =
-        new Date(action.payload.resumedAt).getTime() -
-        new Date(state.pausedAt).getTime()
+        resumedAtMs === null || pausedAtMs === null
+          ? 0
+          : resumedAtMs - pausedAtMs
 
       // pause된 시간을 누적하고 다시 recording 단계로 복귀
       return {
@@ -222,6 +251,7 @@ export function workoutReducer(
         completedAt: action.payload.completedAt,
         pausedAt: null,
       }
+    // 운동 부위의 세부 부위는 part + detail 조합 기준으로 토글
     case "TOGGLE_BODY_PART_DETAIL": {
       const { part, detail } = action.payload
       const exists = state.bodyParts.some(

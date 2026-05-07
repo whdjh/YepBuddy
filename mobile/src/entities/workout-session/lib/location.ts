@@ -8,9 +8,13 @@ export async function getWorkoutLocationOnce(): Promise<WorkoutLocation | null> 
     return null
   }
 
-  const location = await Location.getCurrentPositionAsync({})
-  return {
-    lat: location.coords.latitude,
-    lng: location.coords.longitude,
+  try {
+    const location = await Location.getCurrentPositionAsync({})
+    return {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    }
+  } catch {
+    return null
   }
 }

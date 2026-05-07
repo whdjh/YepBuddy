@@ -164,21 +164,31 @@ export async function registerWorkoutToCalendar(params: {
     return false
   }
 
+  const startDate = new Date(params.startedAt)
+  const endDate = new Date(params.completedAt)
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return false
+  }
+
   const eventLocation = params.location
     ? await formatWorkoutCalendarLocation(params.location)
     : undefined
 
-  await Calendar.createEventAsync(calendarId, {
-    title: formatWorkoutCalendarTitle({
-      bodyParts: params.bodyParts,
-      cardioStartedAt: params.cardioStartedAt,
-      completedAt: params.completedAt,
-    }),
-    startDate: new Date(params.startedAt),
-    endDate: new Date(params.completedAt),
-    notes: params.memo || undefined,
-    location: eventLocation,
-  })
+  try {
+    await Calendar.createEventAsync(calendarId, {
+      title: formatWorkoutCalendarTitle({
+        bodyParts: params.bodyParts,
+        cardioStartedAt: params.cardioStartedAt,
+        completedAt: params.completedAt,
+      }),
+      startDate,
+      endDate,
+      notes: params.memo || undefined,
+      location: eventLocation,
+    })
+  } catch {
+    return false
+  }
 
   Alert.alert(
     i18n.t("workout.calendar.successTitle"),

@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { parseJsonOrNull } from "@/shared/lib/json"
 import {
   DEFAULT_SUMMARY_CARD_IDS,
   sanitizeSummaryCardIds,
@@ -15,14 +16,10 @@ export async function loadSummaryCardIds() {
     return DEFAULT_SUMMARY_CARD_IDS
   }
 
-  try {
-    const parsed = JSON.parse(value)
-    return Array.isArray(parsed)
-      ? sanitizeSummaryCardIds(parsed)
-      : DEFAULT_SUMMARY_CARD_IDS
-  } catch {
-    return DEFAULT_SUMMARY_CARD_IDS
-  }
+  const parsed = parseJsonOrNull<unknown>(value)
+  return Array.isArray(parsed)
+    ? sanitizeSummaryCardIds(parsed)
+    : DEFAULT_SUMMARY_CARD_IDS
 }
 
 // 카드 순서를 sanitize한 뒤 AsyncStorage에 저장. 정제된 배열을 반환

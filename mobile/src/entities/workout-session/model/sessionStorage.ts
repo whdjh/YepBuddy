@@ -1,6 +1,15 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { getLocalDateKeyFromIso } from "@/shared/lib/date"
-import type { StoredWorkoutSession } from "./types"
+import { getLocalDateKeyFromIso, getTimestampMsFromIso } from "@/shared/lib/date"
+import { isValidCoordinates } from "@/shared/lib/geo"
+import { parseJsonOrNull } from "@/shared/lib/json"
+import {
+  BODY_PART_DETAILS,
+  type BodyPart,
+  type BodyPartDetail,
+  type StoredWorkoutSession,
+  type WorkoutBodyPartSet,
+  type WorkoutLocation,
+} from "./types"
 
 // 현재 진행 중인 운동 세션 스냅샷을 저장하는 키
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
@@ -14,6 +23,80 @@ let hasVerifiedStoredWorkoutDateKeys = false
 
 type PersistedWorkoutSession = Omit<StoredWorkoutSession, "cardioStartedAt"> &
   Partial<Pick<StoredWorkoutSession, "cardioStartedAt">>
+
+const BODY_PART_KEYS = Object.keys(BODY_PART_DETAILS) as BodyPart[]
+
+/** 저장값이 현재 앱에서 지원하는 운동 부위 키인지 확인 */
+function isBodyPart(value: unknown): value is BodyPart {
+  return typeof value === "string" && BODY_PART_KEYS.includes(value as BodyPart)
+}
+
+/** 저장값이 해당 운동 부위에 허용된 세부 부위인지 확인 */
+function isBodyPartDetail(
+  part: BodyPart,
+  value: unknown,
+): value is BodyPartDetail {
+  return (
+    typeof value === "string" &&
+    BODY_PART_DETAILS[part].includes(value as BodyPartDetail)
+  )
+}
+
+/** 저장된 운동 부위/세트 값을 현재 WorkoutBodyPartSet 형태로 정규화 */
+function normalizeWorkoutBodyPartSet(
+  value: unknown,
+): WorkoutBodyPartSet | null {
+  if (!value || typeof value !== "object") {
+    return null
+  }
+
+  const item = value as Partial<WorkoutBodyPartSet>
+
+  if (
+    !isBodyPart(item.part) ||
+    typeof item.setCount !== "number" ||
+    !Number.isFinite(item.setCount)
+  ) {
+    return null
+  }
+
+  const part = item.part
+  const detail = isBodyPartDetail(part, item.detail) ? item.detail : undefined
+  const details = Array.isArray(item.details)
+    ? item.details.filter((detail): detail is BodyPartDetail =>
+        isBodyPartDetail(part, detail),
+      )
+    : []
+
+  return {
+    part,
+    ...(detail ? { detail } : {}),
+    ...(details.length > 0 ? { details } : {}),
+    setCount: Math.max(1, Math.round(item.setCount)),
+  }
+}
+
+/** 저장된 위치값이 유효한 위도/경도인지 검증하고 앱 위치 타입으로 정리 */
+function normalizeWorkoutLocation(value: unknown): WorkoutLocation | null {
+  if (!value || typeof value !== "object") {
+    return null
+  }
+
+  const location = value as Partial<WorkoutLocation>
+
+  if (
+    typeof location.lat !== "number" ||
+    typeof location.lng !== "number" ||
+    !isValidCoordinates(location.lat, location.lng)
+  ) {
+    return null
+  }
+
+  return {
+    lat: location.lat,
+    lng: location.lng,
+  }
+}
 
 // 완료된 운동 세션 본문은 sessionId 기준으로 저장
 export const getWorkoutSessionStorageKey = (sessionId: string) =>
@@ -34,7 +117,7 @@ export async function saveCurrentWorkoutSnapshot<T>(snapshot: T) {
 /** 진행 중 운동 세션 스냅샷 */
 export async function loadCurrentWorkoutSnapshot<T>() {
   const value = await AsyncStorage.getItem(CURRENT_WORKOUT_STORAGE_KEY)
-  return value ? (JSON.parse(value) as T) : null
+  return value ? parseJsonOrNull<T>(value) : null
 }
 
 /** 진행 중 운동 세션 스냅샷을 삭제 */
@@ -97,7 +180,7 @@ async function getStoredWorkoutDateKeysFromIndex() {
     return null
   }
 
-  const parsed = JSON.parse(value) as unknown
+  const parsed = parseJsonOrNull<unknown>(value)
   if (!Array.isArray(parsed) || parsed.some((key) => typeof key !== "string")) {
     return null
   }
@@ -139,10 +222,29 @@ function isDateKeyInRange(
 
 /** 저장된 세션 JSON을 현재 StoredWorkoutSession 형태로 정규화 */
 function parseStoredWorkoutSession(value: string) {
-  const session = JSON.parse(value) as PersistedWorkoutSession
+  const session = parseJsonOrNull<PersistedWorkoutSession>(value)
+  if (
+    !session ||
+    typeof session.sessionId !== "string" ||
+    typeof session.startedAt !== "string" ||
+    getTimestampMsFromIso(session.startedAt) === null ||
+    typeof session.completedAt !== "string" ||
+    getTimestampMsFromIso(session.completedAt) === null ||
+    !Array.isArray(session.bodyParts) ||
+    typeof session.memo !== "string"
+  ) {
+    return null
+  }
+
+  const bodyParts = session.bodyParts
+    .map(normalizeWorkoutBodyPartSet)
+    .filter((item): item is WorkoutBodyPartSet => item !== null)
+
   return {
     ...session,
+    bodyParts,
     cardioStartedAt: session.cardioStartedAt ?? null,
+    location: normalizeWorkoutLocation(session.location),
   }
 }
 

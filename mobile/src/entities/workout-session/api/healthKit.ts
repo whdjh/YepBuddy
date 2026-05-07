@@ -85,10 +85,36 @@ async function getWorkoutSamples(params: {
 
 /** 날짜 키를 해당 날짜의 로컬 시작/끝 ISO 범위로 변환 */
 function getLocalDateBounds(dateKey: string) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) {
+    return null
+  }
+
   const [year, month, day] = dateKey.split("-").map((value) => Number(value))
+  if (
+    !Number.isInteger(year) ||
+    year < 1 ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day) ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return null
+  }
 
   const startDate = new Date(year, month - 1, day, 0, 0, 0, 0)
   const endDate = new Date(year, month - 1, day, 23, 59, 59, 999)
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return null
+  }
+  if (
+    startDate.getFullYear() !== year ||
+    startDate.getMonth() !== month - 1 ||
+    startDate.getDate() !== day
+  ) {
+    return null
+  }
 
   return {
     endDate: endDate.toISOString(),
@@ -98,8 +124,21 @@ function getLocalDateBounds(dateKey: string) {
 
 /** 연/월을 해당 월의 로컬 시작/끝 ISO 범위로 변환 */
 function getLocalMonthBounds(year: number, month: number) {
+  if (
+    !Number.isInteger(year) ||
+    year < 1 ||
+    !Number.isInteger(month) ||
+    month < 1 ||
+    month > 12
+  ) {
+    return null
+  }
+
   const startDate = new Date(year, month - 1, 1, 0, 0, 0, 0)
   const endDate = new Date(year, month, 0, 23, 59, 59, 999)
+  if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+    return null
+  }
 
   return {
     endDate: endDate.toISOString(),
@@ -130,13 +169,20 @@ async function getHeartRateSamples(params: {
           return
         }
 
-        resolve(
-          (results ?? []).map((sample) => ({
-            bpm: Math.round(sample.value),
-            endDate: sample.endDate,
-            startDate: sample.startDate,
-          })),
-        )
+        const heartRateSamples = (results ?? []).flatMap((sample) => {
+          if (!Number.isFinite(sample.value)) {
+            return []
+          }
+
+          return [
+            {
+              bpm: Math.round(sample.value),
+              endDate: sample.endDate,
+              startDate: sample.startDate,
+            },
+          ]
+        })
+        resolve(heartRateSamples)
       },
     )
   })
@@ -251,9 +297,12 @@ export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
         }
 
         const sample = results?.[0]
+        const heartRate =
+          typeof sample?.value === "number" && Number.isFinite(sample.value)
+            ? Math.round(sample.value)
+            : null
         resolve({
-          heartRate:
-            typeof sample?.value === "number" ? Math.round(sample.value) : null,
+          heartRate,
           activeKcal: 0,
           totalKcal: 0,
         })
@@ -318,7 +367,12 @@ export async function getWorkoutSummariesForDate(
     return []
   }
 
-  const { startDate, endDate } = getLocalDateBounds(dateKey)
+  const bounds = getLocalDateBounds(dateKey)
+  if (!bounds) {
+    return []
+  }
+
+  const { startDate, endDate } = bounds
   const workoutSamples = await getWorkoutSamples({ endDate, startDate })
 
   return workoutSamples
@@ -343,7 +397,12 @@ export async function getWorkoutSummariesForMonth(
     return []
   }
 
-  const { startDate, endDate } = getLocalMonthBounds(year, month)
+  const bounds = getLocalMonthBounds(year, month)
+  if (!bounds) {
+    return []
+  }
+
+  const { startDate, endDate } = bounds
   const workoutSamples = await getWorkoutSamples({ endDate, startDate })
 
   return workoutSamples
