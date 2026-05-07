@@ -21,22 +21,28 @@ export function PriceTrendChart({ data }: PriceTrendChartProps) {
 
   const [chartW, setChartW] = useState(0)
 
-  if (data.length <= 1) return null
+  const safeData = data.flatMap((point) => {
+    const date = typeof point.date === "string" ? point.date.trim() : ""
+    if (!date || !Number.isFinite(point.price)) return []
+    return [{ date, price: point.price }]
+  })
+
+  if (safeData.length <= 1) return null
 
   const lineColor = accent
 
-  const prices = data.map((d) => d.price)
+  const prices = safeData.map((d) => d.price)
   const minPrice = Math.min(...prices)
   const maxPrice = Math.max(...prices)
 
-  const chartData = data.map((d, i) => ({ x: i, y: d.price }))
+  const chartData = safeData.map((d, i) => ({ x: i, y: d.price }))
 
   const priceRange = maxPrice - minPrice || 1
   const domainMin = minPrice - priceRange * 0.1
   const domainMax = maxPrice + priceRange * 0.1
 
-  const firstDate = data[0].date
-  const lastDate = data[data.length - 1].date
+  const firstDate = safeData[0].date
+  const lastDate = safeData[safeData.length - 1].date
 
   return (
     <GlassSurface cornerRadius={20} paddingSize={20}>
