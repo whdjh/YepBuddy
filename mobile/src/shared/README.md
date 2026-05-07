@@ -294,7 +294,6 @@ useDebouncedEffect(
 주요 사용처:
 
 - `WorkoutContext`
-- `useWorkoutPersistence`
 
 ## Lib
 
