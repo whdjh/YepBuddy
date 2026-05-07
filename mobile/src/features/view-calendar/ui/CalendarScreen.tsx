@@ -33,7 +33,11 @@ export function CalendarScreen() {
   return (
     <Main>
       <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-1 gap-yb-3">
-        <IconButton variant="back-square" onPress={() => router.back()}>
+        <IconButton
+          accessibilityLabel={t("common.back")}
+          variant="back-square"
+          onPress={() => router.back()}
+        >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
         <Text

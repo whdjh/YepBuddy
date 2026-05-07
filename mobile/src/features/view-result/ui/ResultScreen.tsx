@@ -22,7 +22,7 @@ import {
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
 import { Main } from "@/shared/ui/Main"
-import { GlassTextarea } from "@/shared/ui/Input"
+import { GlassTextarea } from "@/shared/ui/GlassTextarea"
 import { IconButton } from "@/shared/ui/IconButton"
 import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
@@ -174,6 +174,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
       {/* 네비게이션 */}
       <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-4 gap-yb-3">
         <IconButton
+          accessibilityLabel={t("common.back")}
           variant="back-square"
           onPress={() =>
             fromWorkout ? router.replace("/") : router.back()
@@ -275,7 +276,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error px-yb-7 py-yb-4 shadow-lg active:opacity-80"
               onPress={handleDeletePress}
             >
-              <Text className="text-yb-body-lg font-semibold text-white">
+              <Text className="text-yb-body-lg font-semibold text-yb-on-danger">
                 {t("workout.result.deleteConfirm")}
               </Text>
             </Pressable>

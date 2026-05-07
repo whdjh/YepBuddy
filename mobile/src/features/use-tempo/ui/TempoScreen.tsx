@@ -35,7 +35,11 @@ export function TempoScreen({
       >
         {showBackButton && onBackPress ? (
           <View className="flex-row items-center mb-yb-4 gap-yb-3">
-            <IconButton variant="back-square" onPress={onBackPress}>
+            <IconButton
+              accessibilityLabel={t("common.back")}
+              variant="back-square"
+              onPress={onBackPress}
+            >
               <SymbolView
                 name="chevron.left"
                 size={20}
