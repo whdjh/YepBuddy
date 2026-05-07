@@ -1,12 +1,13 @@
 import { View, type ViewProps } from "react-native"
+import { useUnstableNativeVariable } from "nativewind"
 import Svg, { Circle } from "react-native-svg"
 
 interface RingProgressProps extends Omit<ViewProps, "children"> {
   size: number
   strokeWidth?: number
   progress: number
-  trackColor: string
-  fillColor: string
+  trackColor?: string
+  fillColor?: string
   children?: React.ReactNode
 }
 
@@ -18,41 +19,53 @@ export function RingProgress({
   fillColor,
   children,
   className,
+  style,
   ...rest
 }: RingProgressProps) {
-  const radius = (size - strokeWidth) / 2
+  const tokenTrackColor =
+    (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
+  const tokenFillColor =
+    (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
+  const safeSize = Number.isFinite(size) ? Math.max(0, size) : 0
+  const safeStrokeWidth = Number.isFinite(strokeWidth)
+    ? Math.min(Math.max(0, strokeWidth), safeSize)
+    : 0
+  const radius = (safeSize - safeStrokeWidth) / 2
   const circumference = 2 * Math.PI * radius
-  const clampedProgress = Math.min(Math.max(progress, 0), 1)
+  const safeProgress = Number.isFinite(progress) ? progress : 0
+  const clampedProgress = Math.min(Math.max(safeProgress, 0), 1)
   const strokeDashoffset = circumference * (1 - clampedProgress)
+  const resolvedTrackColor = trackColor ?? tokenTrackColor
+  const resolvedFillColor = fillColor ?? tokenFillColor
 
   return (
     <View
       className={`items-center justify-center${className ? ` ${className}` : ""}`}
-      style={{ width: size, height: size }}
+      style={[style, { width: safeSize, height: safeSize }]}
       {...rest}
     >
-      <Svg width={size} height={size} style={{ transform: [{ rotate: "-90deg" }] }}>
+      <Svg width={safeSize} height={safeSize} style={{ transform: [{ rotate: "-90deg" }] }}>
         <Circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={safeSize / 2}
+          cy={safeSize / 2}
           r={radius}
           fill="none"
-          stroke={trackColor}
-          strokeWidth={strokeWidth}
+          stroke={resolvedTrackColor}
+          strokeWidth={safeStrokeWidth}
         />
         <Circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={safeSize / 2}
+          cy={safeSize / 2}
           r={radius}
           fill="none"
-          stroke={fillColor}
-          strokeWidth={strokeWidth}
+          stroke={resolvedFillColor}
+          strokeWidth={safeStrokeWidth}
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
         />
       </Svg>
-      {children && (
+      {children != null && (
         <View className="absolute items-center justify-center">
           {children}
         </View>
