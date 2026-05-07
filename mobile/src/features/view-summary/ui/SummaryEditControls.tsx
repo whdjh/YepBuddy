@@ -1,12 +1,13 @@
 import { useEffect } from "react"
 import { Pressable, useColorScheme } from "react-native"
 import { SymbolView } from "expo-symbols"
-import { useUnstableNativeVariable } from "nativewind"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from "react-native-reanimated"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { GlassCircleBackground } from "@/shared/ui/GlassCircleBackground"
 
 interface SummaryEditControlsProps {
@@ -25,14 +26,11 @@ export function SummaryEditControls({
   onDone,
 }: SummaryEditControlsProps) {
   const isDark = useColorScheme() === "dark"
-  const onStrongColor =
-    (useUnstableNativeVariable("--yb-on-strong") as unknown as string) ||
-    "#FAF7F2"
-  const foregroundColor =
-    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#FFFFFF"
-  const successTextColor =
-    (useUnstableNativeVariable("--yb-status-success-text") as unknown as string) ||
-    "#17501D"
+  const onStrongColor = useResolvedColorToken(semanticColorTokens.onStrong)
+  const foregroundColor = useResolvedColorToken(semanticColorTokens.fg)
+  const successTextColor = useResolvedColorToken(
+    semanticColorTokens.statusSuccessText,
+  )
   const progress = useSharedValue(0)
 
   useEffect(() => {

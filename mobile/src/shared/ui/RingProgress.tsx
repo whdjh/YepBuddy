@@ -1,6 +1,7 @@
 import { View, type ViewProps } from "react-native"
-import { useUnstableNativeVariable } from "nativewind"
 import Svg, { Circle } from "react-native-svg"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 
 interface RingProgressProps extends Omit<ViewProps, "children"> {
   size: number
@@ -22,10 +23,8 @@ export function RingProgress({
   style,
   ...rest
 }: RingProgressProps) {
-  const tokenTrackColor =
-    (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
-  const tokenFillColor =
-    (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
+  const tokenTrackColor = useResolvedColorToken(semanticColorTokens.ringTrack)
+  const tokenFillColor = useResolvedColorToken(semanticColorTokens.ringFill)
   const safeSize = Number.isFinite(size) ? Math.max(0, size) : 0
   const safeStrokeWidth = Number.isFinite(strokeWidth)
     ? Math.min(Math.max(0, strokeWidth), safeSize)

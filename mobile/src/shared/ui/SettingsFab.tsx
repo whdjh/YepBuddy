@@ -2,14 +2,14 @@ import { Pressable, View } from "react-native"
 import { SymbolView } from "expo-symbols"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { GlassSurface } from "./GlassSurface"
 
 export function SettingsFab() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
-  const fgColor = useUnstableNativeVariable("--yb-fg") as unknown as string
+  const { fg: fgColor } = useCardColors()
 
   return (
     <View className="absolute right-yb-5 z-20" style={{ top: insets.top + 16 }}>

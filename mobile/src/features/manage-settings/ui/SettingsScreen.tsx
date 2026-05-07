@@ -3,7 +3,8 @@ import { LinearGradient } from "expo-linear-gradient"
 import { SymbolView } from "expo-symbols"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
 import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
@@ -14,8 +15,8 @@ import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 export function SettingsScreen() {
   const router = useRouter()
   const { t } = useTranslation()
-  const bgColor = useUnstableNativeVariable("--yb-bg") as unknown as string
-  const fgColor = useUnstableNativeVariable("--yb-fg") as unknown as string
+  const bgColor = useResolvedColorToken(semanticColorTokens.bg)
+  const fgColor = useResolvedColorToken(semanticColorTokens.fg)
 
   return (
     <Main>

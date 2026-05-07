@@ -1,7 +1,8 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 
 interface StatsSectionProps {
   heartRate: number | null
@@ -11,7 +12,7 @@ interface StatsSectionProps {
 
 export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionProps) {
   const { t } = useTranslation()
-  const heartColor = (useUnstableNativeVariable("--yb-heart") as unknown as string) || "#E85854"
+  const heartColor = useResolvedColorToken(semanticColorTokens.heart)
 
   return (
     <>
