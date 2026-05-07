@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, View } from "react-native"
 
 type BadgeLevel = "low" | "mid" | "high"
 
@@ -27,7 +27,7 @@ interface BadgeProps {
 export function Badge({ level, label }: BadgeProps) {
   return (
     <View
-      className={`h-[28px] justify-center px-yb-3 rounded-full ${badgeStyles[level].container}`}
+      className={`h-yb-badge justify-center px-yb-3 rounded-full ${badgeStyles[level].container}`}
     >
       <Text
         className={`text-yb-caption font-bold ${badgeStyles[level].text}`}
