@@ -1,15 +1,13 @@
-import { getWorkoutBodyPartSetLabel } from "@/entities/workout-session/model/bodyPartSet"
 import {
+  getWorkoutBodyPartSetLabel,
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
-} from "@/entities/workout-session/lib/sessionMetrics"
-import type {
-  BodyPart,
-  BodyPartDetail,
-  StoredWorkoutSession,
-} from "@/entities/workout-session/model/types"
-import type { WeeklyRoutineProgress } from "@/entities/workout-session/lib/weeklyRoutineProgress"
-import type { WeeklyRoutineSession } from "@/entities/workout-session/model/weeklyRoutine"
+  type BodyPart,
+  type BodyPartDetail,
+  type StoredWorkoutSession,
+  type WeeklyRoutineProgress,
+  type WeeklyRoutineSession,
+} from "@/entities/workout-session"
 
 export type WeeklySessionRowStatus = "completed" | "planned"
 

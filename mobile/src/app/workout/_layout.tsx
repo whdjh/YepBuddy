@@ -1,5 +1,5 @@
 import { Stack } from "expo-router"
-import { WorkoutNavigationGuard } from "@/entities/workout-session"
+import { WorkoutNavigationGuard } from "@/features/do-workout"
 
 export default function WorkoutLayout() {
   return (

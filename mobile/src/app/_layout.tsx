@@ -6,7 +6,7 @@ import {
   DarkTheme,
   DefaultTheme,
 } from "@react-navigation/native"
-import { Stack } from "expo-router"
+import { router, Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
@@ -29,7 +29,7 @@ export default function RootLayout() {
     const unsubscribeProteinSaleNotificationHandler =
       setupProteinSaleNotificationHandler()
     const unsubscribeWorkoutPlaceArrivalNotificationHandler =
-      registerWorkoutPlaceArrivalNotificationHandler()
+      registerWorkoutPlaceArrivalNotificationHandler(() => router.push("/"))
 
     void syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
       () => undefined,
