@@ -1,6 +1,6 @@
 # Shared Guide
 
-`mobile/src/shared`는  앱 전체에서 같이 쓰는 UI, 훅, 유틸, 다국어 리소스를 모아둔 곳입니다. 
+`mobile/src/shared`는 앱 전체에서 같이 쓰는 UI, 훅, 유틸, 다국어 리소스를 모아둔 곳입니다.
 
 ```
 shared/
@@ -13,6 +13,9 @@ shared/
 ## 기본 원칙
 
 - 색상, 크기, 간격은 `yb-*` 토큰을 먼저 씁니다. 없는 값이 반복되면 `tailwind.config.js`와 `global.css`에 토큰을 추가합니다.
+- `className`이 먹는 RN UI는 `text-yb-*`, `bg-yb-*`, `border-yb-*` 클래스를 우선 사용합니다.
+- SwiftUI modifier, Skia, SVG, `placeholderTextColor`, 외부 네이티브 API처럼 실제 색상 문자열이 필요한 곳은 `useResolvedColorToken()`이나 `useCardColors()`를 사용합니다.
+- `primitive.json`은 `shared/lib/designTokens`에서만 직접 import합니다. 호출부는 `designTokens` export나 hook을 통해 접근합니다.
 - `IconButton`, `Pressable`처럼 아이콘만 보이는 버튼은 호출부에서 `accessibilityLabel`을 넘깁니다.
 - 글래스 UI는 `GlassSurface`, `GlassBackground`, `GlassCircleBackground`를 통해서만 만듭니다.
 - 외부 URL은 `openWebUrl()` 또는 `getSafeWebUrl()`로 검증한 뒤 엽니다.
@@ -48,6 +51,22 @@ shared/
 | `text-yb-on-accent`, `text-yb-on-strong`, `text-yb-on-danger` | 강한 배경 위 텍스트 |
 | `border-yb-border`, `border-yb-glass-border` | 기본/글래스 border |
 | `bg-yb-status-*`, `text-yb-status-*` | 성공/정보/에러 상태 |
+
+실제 색상 문자열이 필요한 코드에서는 아래 경로를 사용합니다.
+
+| 파일 | 역할 |
+| --- | --- |
+| `shared/lib/designTokens.ts` | primitive token 원천과 semantic/card/status fallback 색상 정의 |
+| `shared/hooks/useResolvedColorToken.ts` | NativeWind/CSS 변수를 읽고 fallback으로 실제 색상 문자열 반환 |
+| `shared/hooks/useCardColors.ts` | 카드, SwiftUI, Skia, SVG에서 자주 쓰는 색상 묶음 반환 |
+
+사용 기준:
+
+- RN `View`, `Text`, `Pressable` 스타일링은 className token을 우선합니다.
+- SwiftUI modifier의 `foregroundStyle`, `background`, SVG 색상, Skia 색상, `placeholderTextColor`는 hook으로 실제 색상 문자열을 넘깁니다.
+- 상태 색상 badge처럼 의미가 있는 색상은 `statusColorTokens`를 사용합니다.
+- 앱 accent처럼 외부 API가 hex를 요구하는 단일 값은 `appAccentColor`를 사용합니다.
+- primitive scale 전체가 필요해도 호출부에서 JSON을 직접 읽지 말고 `primitiveColors`, `primitiveSpacing` 같은 export를 사용합니다.
 
 ## Glass
 
@@ -277,6 +296,23 @@ NativeWind CSS 변수를 실제 색상 문자열로 읽어옵니다. SwiftUI, Sk
 - `HeartRateChart`
 - `PriceTrendChart`
 
+### useResolvedColorToken
+
+단일 CSS 변수와 fallback 값을 실제 색상 문자열로 해석합니다. `useCardColors()`보다 더 낮은 단계의 hook입니다.
+
+```ts
+const fill = useResolvedColorToken({
+  variable: "--yb-status-success-bg",
+  fallback: primitiveColors.success["50"],
+})
+```
+
+사용 기준:
+
+- 새로운 공용 색상 묶음은 가능하면 `designTokens.ts`에 token 객체를 추가한 뒤 이 hook으로 읽습니다.
+- 컴포넌트 안에서 `useUnstableNativeVariable`을 직접 호출하지 않습니다.
+- fallback 없이 호출해야 하는 상황은 피합니다. 런타임 CSS 변수가 없을 때도 UI가 깨지지 않아야 합니다.
+
 ### useDebouncedEffect
 
 의존성이 바뀐 뒤 지정한 시간 동안 추가 변경이 없으면 effect를 한 번 실행합니다.
@@ -296,6 +332,23 @@ useDebouncedEffect(
 - `WorkoutContext`
 
 ## Lib
+
+### designTokens.ts
+
+`primitive.json`을 직접 읽는 유일한 shared 진입점입니다.
+
+| Export | 용도 |
+| --- | --- |
+| `primitive` | 전체 primitive token 원천 |
+| `primitiveColors` | primitive color scale |
+| `primitiveFont`, `primitiveSpacing`, `primitiveRadius`, `primitiveSize` | 비색상 primitive token |
+| `primitiveBorderWidth`, `primitiveShadow`, `primitiveDarkShadow`, `primitiveGlass` | border/shadow/glass primitive token |
+| `semanticColorTokens` | 앱 semantic CSS 변수와 fallback |
+| `cardColorTokens` | 카드/SwiftUI 표면에서 쓰는 CSS 변수와 fallback |
+| `statusColorTokens` | success/info/error badge 색상 변수와 fallback |
+| `appAccentColor` | 외부 API에 넘기는 앱 accent hex |
+
+호출부는 `@/tokens/primitive.json`을 직접 import하지 않습니다.
 
 ### date.ts
 
@@ -348,6 +401,30 @@ useDebouncedEffect(
 
 - `SummaryScreen`
 - `ProteinDetailScreen`
+
+### url.ts
+
+| Export | 용도 |
+| --- | --- |
+| `getSafeWebUrl(value)` | 도메인과 무관한 안전한 웹 URL 검증 |
+
+`legalLinks.ts`는 이 함수를 re-export하고, 개인정보/지원 URL 같은 앱 설정 링크 열기 책임을 가진다.
+
+### json.ts
+
+| Export | 용도 |
+| --- | --- |
+| `parseJsonOrNull<T>(value)` | 깨진 JSON이면 `null` 반환 |
+
+저장소에서 가져온 JSON은 직접 `JSON.parse`하지 않고 이 helper를 사용합니다.
+
+### geo.ts
+
+| Export | 용도 |
+| --- | --- |
+| `isValidCoordinates(latitude, longitude)` | 위도/경도 범위와 finite number 검증 |
+
+운동 위치 저장소와 반복 장소 계산처럼 도메인 저장 형식은 각 entity에 두고, 좌표 자체의 순수 검증만 shared에 둡니다.
 
 ### group.ts
 
