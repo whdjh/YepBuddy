@@ -39,6 +39,7 @@ export function WeeklyRoutineSettingsSheet({
 }: WeeklyRoutineSettingsSheetProps) {
   const { t } = useTranslation()
   const { currentWeekStartDateKey, settings, updateSettings } = plan
+  const [isSaving, setIsSaving] = useState(false)
   const [draft, setDraft] = useState<WeeklyRoutineSettings>(() =>
     createDefaultWeeklyRoutineSettings(currentWeekStartDateKey),
   )
@@ -52,8 +53,27 @@ export function WeeklyRoutineSettingsSheet({
   }, [currentWeekStartDateKey, settings, visible])
 
   const handleSave = async () => {
-    await updateSettings(draft)
-    onSaved?.()
+    if (isSaving) {
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      await updateSettings(draft)
+      onSaved?.()
+      onClose()
+    } catch {
+      return
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleRequestClose = () => {
+    if (isSaving) {
+      return
+    }
+
     onClose()
   }
 
@@ -111,11 +131,16 @@ export function WeeklyRoutineSettingsSheet({
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={onClose}
+      onRequestClose={handleRequestClose}
     >
       <GestureHandlerRootView style={StyleSheet.absoluteFill}>
         <View className="absolute inset-0 justify-end bg-black/25">
-          <GesturePressable style={StyleSheet.absoluteFill} onPress={onClose} />
+          <GesturePressable
+            style={StyleSheet.absoluteFill}
+            onPress={handleRequestClose}
+            accessibilityRole="button"
+            accessibilityLabel={t("common.close")}
+          />
           <View className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
             <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
             <ScrollView
@@ -165,6 +190,7 @@ export function WeeklyRoutineSettingsSheet({
             </ScrollView>
             <RoutineSettingsSaveButton
               label={t("workout.weeklyRoutine.settings.save")}
+              disabled={isSaving}
               onPress={handleSave}
             />
           </View>

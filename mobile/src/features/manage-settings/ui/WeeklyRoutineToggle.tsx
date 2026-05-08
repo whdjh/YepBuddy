@@ -51,6 +51,8 @@ export function WeeklyRoutineToggle() {
         shouldDisableOnSheetCloseRef.current = true
         setIsSheetOpen(true)
       }
+    } catch {
+      return
     } finally {
       setUpdating(false)
     }
@@ -66,7 +68,7 @@ export function WeeklyRoutineToggle() {
 
     if (shouldDisableOnSheetCloseRef.current) {
       shouldDisableOnSheetCloseRef.current = false
-      void plan.disableRoutine()
+      void plan.disableRoutine().catch(() => undefined)
     }
   }
 
@@ -82,7 +84,14 @@ export function WeeklyRoutineToggle() {
             ) : (
               <Switch
                 value={plan.isRoutineEnabled}
-                disabled={updating}
+                disabled={updating || plan.isLoading}
+                accessibilityRole="switch"
+                accessibilityLabel={t("settings.weeklyRoutine.title")}
+                accessibilityHint={t("settings.weeklyRoutine.body")}
+                accessibilityState={{
+                  checked: plan.isRoutineEnabled,
+                  disabled: updating || plan.isLoading,
+                }}
                 onValueChange={() => {
                   void handleToggle()
                 }}
@@ -94,6 +103,8 @@ export function WeeklyRoutineToggle() {
               <Pressable
                 className="min-h-[32px] justify-center rounded-yb-md bg-yb-fill-pale px-yb-3 active:opacity-80"
                 onPress={handleOpenDetail}
+                accessibilityRole="button"
+                accessibilityLabel={t("settings.weeklyRoutine.detail")}
               >
                 <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
                   {t("settings.weeklyRoutine.detail")}

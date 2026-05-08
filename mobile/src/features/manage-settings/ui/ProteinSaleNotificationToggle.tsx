@@ -46,20 +46,23 @@ export function ProteinSaleNotificationToggle() {
       return
     }
 
-    const nextEnabled = !enabled
+    const previousEnabled = enabled
+    const nextEnabled = !previousEnabled
     setUpdating(true)
 
     try {
       if (nextEnabled) {
         const scheduled = await scheduleProteinSaleNotifications({
           allowPrompt: true,
-        }).catch(() => false)
+        })
         setEnabled(scheduled)
         return
       }
 
       await disableProteinSaleNotifications()
       setEnabled(false)
+    } catch {
+      setEnabled(previousEnabled)
     } finally {
       setUpdating(false)
     }
@@ -76,6 +79,10 @@ export function ProteinSaleNotificationToggle() {
           <Switch
             value={enabled}
             disabled={updating}
+            accessibilityRole="switch"
+            accessibilityLabel={t("protein.saleNotifications.toggleTitle")}
+            accessibilityHint={t("protein.saleNotifications.toggleBody")}
+            accessibilityState={{ checked: enabled, disabled: updating }}
             onValueChange={() => {
               void handleToggle()
             }}

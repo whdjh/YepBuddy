@@ -42,6 +42,7 @@ interface RoutineSessionPartEditorProps {
 
 interface RoutineSettingsSaveButtonProps {
   label: string
+  disabled?: boolean
   onPress: () => void
 }
 
@@ -68,6 +69,9 @@ export function CycleStepper({
         <View className="flex-row items-center rounded-full bg-yb-surface-muted p-yb-0.5">
           <Pressable
             disabled={decrementDisabled}
+            accessibilityRole="button"
+            accessibilityLabel={label}
+            accessibilityState={{ disabled: decrementDisabled }}
             className={`h-yb-8 w-yb-8 items-center justify-center rounded-full ${
               decrementDisabled
                 ? "bg-yb-surface/50"
@@ -88,6 +92,9 @@ export function CycleStepper({
           </Text>
           <Pressable
             disabled={incrementDisabled}
+            accessibilityRole="button"
+            accessibilityLabel={label}
+            accessibilityState={{ disabled: incrementDisabled }}
             className={`h-yb-8 w-yb-8 items-center justify-center rounded-full ${
               incrementDisabled
                 ? "bg-yb-surface/50"
@@ -113,12 +120,20 @@ export function CycleStepper({
 
 export function RoutineSettingsSaveButton({
   label,
+  disabled = false,
   onPress,
 }: RoutineSettingsSaveButtonProps) {
   return (
     <Pressable
       onPress={onPress}
-      className="mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      className={`mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full px-yb-6 shadow-yb-md ${
+        disabled
+          ? "bg-yb-accent/50"
+          : "bg-yb-accent active:opacity-90"
+      }`}
     >
       <Text className="text-yb-body-lg text-yb-on-accent">{label}</Text>
     </Pressable>
@@ -155,6 +170,9 @@ export function RoutineSessionPartEditor({
               >
                 <Pressable
                   onPress={() => onTogglePart(index, part)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: active }}
+                  accessibilityLabel={bodyPartLabel(part)}
                   className={`h-[38px] items-center justify-center px-yb-2.5 ${
                     active ? "active:opacity-90" : "active:opacity-80"
                   }`}
@@ -200,6 +218,9 @@ export function RoutineSessionPartEditor({
                         onPress={() =>
                           onToggleDetail(index, routinePart.part, detail)
                         }
+                        accessibilityRole="checkbox"
+                        accessibilityState={{ checked: active }}
+                        accessibilityLabel={bodyPartDetailLabel(detail)}
                         className="min-h-[34px] items-center justify-center px-yb-3 active:opacity-80"
                       >
                         {active && (

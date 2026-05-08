@@ -46,15 +46,14 @@ export function WorkoutReminderToggle() {
       return
     }
 
-    const nextEnabled = !enabled
+    const previousEnabled = enabled
+    const nextEnabled = !previousEnabled
     setUpdating(true)
 
     try {
       if (nextEnabled) {
         await setWorkoutReminderEnabled(true)
-        const synced = await syncWorkoutReminderAtNight({
-          allowPrompt: true,
-        }).catch(() => false)
+        const synced = await syncWorkoutReminderAtNight({ allowPrompt: true })
         if (!synced) {
           await setWorkoutReminderEnabled(false).catch(() => undefined)
         }
@@ -65,6 +64,9 @@ export function WorkoutReminderToggle() {
       await setWorkoutReminderEnabled(false)
       await syncWorkoutReminderAtNight({ allowPrompt: false })
       setEnabled(false)
+    } catch {
+      setEnabled(previousEnabled)
+      await setWorkoutReminderEnabled(previousEnabled).catch(() => undefined)
     } finally {
       setUpdating(false)
     }
@@ -81,6 +83,10 @@ export function WorkoutReminderToggle() {
           <Switch
             value={enabled}
             disabled={updating}
+            accessibilityRole="switch"
+            accessibilityLabel={t("settings.workoutReminder.title")}
+            accessibilityHint={t("settings.workoutReminder.body")}
+            accessibilityState={{ checked: enabled, disabled: updating }}
             onValueChange={() => {
               void handleToggle()
             }}
