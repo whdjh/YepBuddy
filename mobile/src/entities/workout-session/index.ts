@@ -59,7 +59,7 @@ export type {
   WorkoutLocation,
 } from "./model/types"
 export type { WorkoutState } from "./model/workoutState"
-export { BODY_PART_DETAILS } from "./model/types"
+export { BODY_PART_DETAILS, EMPTY_WORKOUT_LIVE_STATS } from "./model/types"
 export {
   getUniqueWorkoutBodyParts,
   getWorkoutBodyPartDetails,
@@ -99,6 +99,11 @@ export {
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
+export {
+  buildWeeklyRoutineProgressSnapshot,
+  loadWeeklyRoutineProgressSnapshot,
+} from "./lib/weeklyRoutineProgressSnapshot"
+export type { WeeklyRoutineProgressSnapshot } from "./lib/weeklyRoutineProgressSnapshot"
 export {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,

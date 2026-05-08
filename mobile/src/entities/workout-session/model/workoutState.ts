@@ -5,6 +5,7 @@ import type {
   WorkoutBodyPartSet,
   WorkoutLocation,
 } from "./types"
+import { EMPTY_WORKOUT_LIVE_STATS } from "./types"
 import type { RoutinePart } from "./weeklyRoutine"
 
 // 운동 세션이 화면에서 어떤 단계에 있는지
@@ -107,9 +108,7 @@ export const initialWorkoutState: WorkoutState = {
   bodyParts: [],
   memo: "",
   location: null,
-  heartRate: null,
-  activeKcal: 0,
-  totalKcal: 0,
+  ...EMPTY_WORKOUT_LIVE_STATS,
 }
 
 export function workoutReducer(

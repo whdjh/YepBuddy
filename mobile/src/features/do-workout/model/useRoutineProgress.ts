@@ -1,16 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
-  buildWeeklyRoutineProgress,
-  getNextRoutineSuggestion,
-  getStoredWorkoutSessionsInRange,
-  loadWeeklyRoutineFeatureStatus,
-  loadWeeklyRoutineSettings,
-  normalizeWeeklyRoutineSettings,
-  type StoredWorkoutSession,
-  type WeeklyRoutineFeatureStatus,
+  buildWeeklyRoutineProgressSnapshot,
+  loadWeeklyRoutineProgressSnapshot,
   type WeeklyRoutineProgress,
   type WeeklyRoutineSession,
-  type WeeklyRoutineSettings,
+  type WeeklyRoutineProgressSnapshot,
 } from "@/entities/workout-session"
 import { getThisWeekDateRange } from "@/shared/lib/date"
 
@@ -26,12 +20,13 @@ export interface RoutineProgressResult {
 // 운동 중 화면에서 주간 루틴 진행률과 다음 추천 세션을 계산
 export function useRoutineProgress(): RoutineProgressResult {
   const loadRequestIdRef = useRef(0)
-  const [settings, setSettings] = useState<WeeklyRoutineSettings | null>(null)
-  const [featureStatus, setFeatureStatus] =
-    useState<WeeklyRoutineFeatureStatus>("unasked")
-  const [sessions, setSessions] = useState<StoredWorkoutSession[]>([])
-  const [currentWeekStartDateKey, setCurrentWeekStartDateKey] = useState(
-    () => getThisWeekDateRange().startDateKey,
+  const [snapshot, setSnapshot] = useState<WeeklyRoutineProgressSnapshot>(() =>
+    buildWeeklyRoutineProgressSnapshot({
+      currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
+      featureStatus: "unasked",
+      sessions: [],
+      settings: null,
+    }),
   )
   const [isLoading, setIsLoading] = useState(true)
 
@@ -41,21 +36,27 @@ export function useRoutineProgress(): RoutineProgressResult {
     loadRequestIdRef.current = requestId
     setIsLoading(true)
     try {
-      const { startDateKey, endDateKey } = getThisWeekDateRange()
-      const [raw, loadedFeatureStatus, weekSessions] = await Promise.all([
-        loadWeeklyRoutineSettings(),
-        loadWeeklyRoutineFeatureStatus(),
-        getStoredWorkoutSessionsInRange(startDateKey, endDateKey),
-      ])
+      const loadedSnapshot = await loadWeeklyRoutineProgressSnapshot()
 
       if (loadRequestIdRef.current !== requestId) {
         return
       }
 
-      setCurrentWeekStartDateKey(startDateKey)
-      setSettings(raw)
-      setFeatureStatus(loadedFeatureStatus)
-      setSessions(weekSessions)
+      setSnapshot(loadedSnapshot)
+    } catch {
+      if (loadRequestIdRef.current !== requestId) {
+        return
+      }
+
+      // 저장소/권한 오류가 나도 화면은 안전한 기본 상태로 유지
+      setSnapshot(
+        buildWeeklyRoutineProgressSnapshot({
+          currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
+          featureStatus: "unasked",
+          sessions: [],
+          settings: null,
+        }),
+      )
     } finally {
       if (loadRequestIdRef.current === requestId) {
         setIsLoading(false)
@@ -67,35 +68,19 @@ export function useRoutineProgress(): RoutineProgressResult {
     void load()
   }, [load])
 
-  const isRoutineEnabled = featureStatus === "enabled"
-
-  // 루틴 OFF 상태에서는 진행률과 다음 추천이 표시되지 않도록 세션 목록을 비움
-  const routineSessions = useMemo(
-    () =>
-      isRoutineEnabled
-        ? normalizeWeeklyRoutineSettings(
-            settings ?? {},
-            currentWeekStartDateKey,
-          ).sessions
-        : [],
-    [currentWeekStartDateKey, isRoutineEnabled, settings],
-  )
-
-  const progress = useMemo(
-    () => buildWeeklyRoutineProgress(routineSessions, sessions),
-    [routineSessions, sessions],
-  )
-
-  const nextSuggestion = useMemo(
-    () => (isRoutineEnabled ? getNextRoutineSuggestion(progress) : null),
-    [isRoutineEnabled, progress],
+  useEffect(
+    () => () => {
+      // unmount 이후에는 진행 중 load 응답을 모두 무시
+      loadRequestIdRef.current += 1
+    },
+    [],
   )
 
   return {
-    hasCustomSettings: settings !== null,
-    isRoutineEnabled,
-    progress,
-    nextSuggestion,
+    hasCustomSettings: snapshot.hasCustomSettings,
+    isRoutineEnabled: snapshot.isRoutineEnabled,
+    progress: snapshot.progress,
+    nextSuggestion: snapshot.nextSuggestion,
     isLoading,
     reload: load,
   }

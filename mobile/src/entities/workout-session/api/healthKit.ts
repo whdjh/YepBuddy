@@ -11,6 +11,7 @@ import type {
   WorkoutHealthKitWorkout,
   WorkoutLiveStats,
 } from "../model/types"
+import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
 
 const HEALTH_PERMISSIONS = {
   permissions: {
@@ -280,7 +281,7 @@ export async function endWorkoutSession(params: {
 export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
   const ready = await ensureHealthKitReady()
   if (!ready || !hasHealthKitMethod("getHeartRateSamples")) {
-    return { heartRate: null, activeKcal: 0, totalKcal: 0 }
+    return EMPTY_WORKOUT_LIVE_STATS
   }
 
   return new Promise<WorkoutLiveStats>((resolve) => {
@@ -292,7 +293,7 @@ export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
       } as never,
       (error: unknown, results?: { value?: number }[]) => {
         if (error) {
-          resolve({ heartRate: null, activeKcal: 0, totalKcal: 0 })
+          resolve(EMPTY_WORKOUT_LIVE_STATS)
           return
         }
 
