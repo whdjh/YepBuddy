@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native"
 import { useLocalSearchParams } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { useWeeklyRoutinePlan } from "@/features/view-summary/model/useWeeklyRoutinePlan"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { SettingsRow } from "./SettingsRow"
 import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
 
@@ -11,11 +12,9 @@ export function WeeklyRoutineToggle() {
   const { t } = useTranslation()
   const { routineSetup } = useLocalSearchParams<{ routineSetup?: string }>()
   const plan = useWeeklyRoutinePlan()
-  const accent = useUnstableNativeVariable("--yb-accent") as unknown as string
-  const muted = useUnstableNativeVariable(
-    "--yb-surface-muted",
-  ) as unknown as string
-  const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
+  const accent = useResolvedColorToken(semanticColorTokens.accent)
+  const muted = useResolvedColorToken(semanticColorTokens.surfaceMuted)
+  const surface = useResolvedColorToken(semanticColorTokens.surface)
 
   const [isSheetOpen, setIsSheetOpen] = useState(false)
   const shouldDisableOnSheetCloseRef = useRef(false)

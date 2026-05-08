@@ -1,8 +1,8 @@
 import { useReducer } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { Main } from "@/shared/ui/Main"
 import { Button } from "@/shared/ui/Button"
 import { IconButton } from "@/shared/ui/IconButton"
@@ -22,8 +22,7 @@ export function TempoScreen({
   onBackPress,
 }: TempoScreenProps) {
   const { t } = useTranslation()
-  const fgColor =
-    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const { fg: fgColor } = useCardColors()
   const [state, dispatch] = useReducer(tempoReducer, initialTempoState)
   const timer = useTempoTimer(state)
 

@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef } from "react"
 import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
@@ -14,6 +13,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { IconButton } from "@/shared/ui/IconButton"
 
 const DRAG_REORDER_THRESHOLD_Y = 72
@@ -37,8 +37,7 @@ export function EditableSummaryCardFrame({
   onMoveWithinRow,
 }: EditableSummaryCardFrameProps) {
   const { t } = useTranslation()
-  const symbolTintColor =
-    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const { fg: symbolTintColor } = useCardColors()
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const wiggle = useSharedValue(0)

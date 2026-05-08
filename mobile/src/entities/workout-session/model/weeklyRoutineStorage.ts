@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { parseJsonOrNull } from "@/shared/lib/json"
 import {
   DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
   resolveWeeklyRoutineFeatureStatus,
@@ -21,7 +22,7 @@ export async function saveWeeklyRoutineSettings(
 // 저장된 주간 루틴 설정을 불러옴. 없으면 null 반환
 export async function loadWeeklyRoutineSettings(): Promise<WeeklyRoutineSettings | null> {
   const raw = await AsyncStorage.getItem(KEY)
-  return raw ? (JSON.parse(raw) as WeeklyRoutineSettings) : null
+  return raw ? parseJsonOrNull<WeeklyRoutineSettings>(raw) : null
 }
 
 // 저장소 값이 깨졌거나 예전 형식이면 마이그레이션 로직에서 보정하도록 null 반환
@@ -62,7 +63,11 @@ export async function loadWeeklyRoutinePromptState(): Promise<WeeklyRoutinePromp
     return DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE
   }
 
-  const parsed = JSON.parse(raw) as Partial<WeeklyRoutinePromptState>
+  const parsed = parseJsonOrNull<Partial<WeeklyRoutinePromptState>>(raw)
+  if (!parsed) {
+    return DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE
+  }
+
   return {
     cycleRenewalDismissedForWeekStartDateKey:
       parsed.cycleRenewalDismissedForWeekStartDateKey ?? null,

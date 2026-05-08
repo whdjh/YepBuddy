@@ -2,8 +2,8 @@ import { useCallback } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { Main } from "@/shared/ui/Main"
 import { IconButton } from "@/shared/ui/IconButton"
 import { getDateParts } from "../lib/getTodayParts"
@@ -20,8 +20,7 @@ export function CalendarScreen() {
   const months = useInfiniteMonths(anchorDate)
   const today = getDateParts(anchorDate)
 
-  const fgColor =
-    (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const { fg: fgColor } = useCardColors()
 
   const handleDayPress = useCallback(
     (sessionId: string) => {

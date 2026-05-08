@@ -7,7 +7,8 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from "react-native-reanimated"
-import { useUnstableNativeVariable } from "nativewind"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import {
   canEndWorkoutFromDrawer,
   getWorkoutDrawerExpandedToggleLabelKey,
@@ -48,18 +49,10 @@ export function WorkoutDrawer({
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
-  const dangerColor =
-    (useUnstableNativeVariable("--yb-status-error") as unknown as string) ||
-    "#E5484D"
-  const accentColor =
-    (useUnstableNativeVariable("--yb-accent") as unknown as string) ||
-    "#9B7E56"
-  const cardioColor =
-    (useUnstableNativeVariable("--yb-status-success") as unknown as string) ||
-    "#308639"
-  const onDangerColor =
-    (useUnstableNativeVariable("--yb-on-accent") as unknown as string) ||
-    "#FFFFFF"
+  const dangerColor = useResolvedColorToken(semanticColorTokens.statusError)
+  const accentColor = useResolvedColorToken(semanticColorTokens.accent)
+  const cardioColor = useResolvedColorToken(semanticColorTokens.statusSuccess)
+  const onDangerColor = useResolvedColorToken(semanticColorTokens.onAccent)
 
   const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)

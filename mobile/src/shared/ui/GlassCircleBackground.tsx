@@ -1,11 +1,11 @@
 import { StyleSheet, View } from "react-native"
 import { GlassView } from "expo-glass-effect"
-import { useUnstableNativeVariable } from "nativewind"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { useGlassEffectState } from "./GlassBackground"
 
 export function GlassCircleBackground() {
-  const glassTintColor =
-    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) || undefined
+  const glassTintColor = useResolvedColorToken(semanticColorTokens.glassBg)
   const { glassEffectEnabled } = useGlassEffectState()
 
   if (glassEffectEnabled) {

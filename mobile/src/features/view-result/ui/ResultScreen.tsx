@@ -9,7 +9,6 @@ import {
 } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import { SymbolView } from "expo-symbols"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
@@ -21,6 +20,7 @@ import {
   syncWorkoutPlaceArrivalReminder,
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/GlassTextarea"
 import { IconButton } from "@/shared/ui/IconButton"
@@ -46,7 +46,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const router = useRouter()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
-  const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+  const { fg: fgColor } = useCardColors()
   const { data, isLoading } = useSessionDetail(sessionId)
   const stored = data?.stored
   const hk = data?.hk

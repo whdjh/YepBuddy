@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import { AccessibilityInfo, StyleSheet, View } from "react-native"
 import { GlassView, isLiquidGlassAvailable } from "expo-glass-effect"
-import { useUnstableNativeVariable } from "nativewind"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 
 interface GlassBackgroundProps {
   /** 코너 라운드 (포인트) */
@@ -54,8 +55,7 @@ export function GlassBackground({
   cornerRadius = 16,
   fallbackClassName = "bg-yb-surface/95",
 }: GlassBackgroundProps) {
-  const tintColor =
-    (useUnstableNativeVariable("--yb-glass-bg") as unknown as string) || undefined
+  const tintColor = useResolvedColorToken(semanticColorTokens.glassBg)
   const fillStyle = [StyleSheet.absoluteFill, { borderRadius: cornerRadius }]
   const { glassEffectEnabled, reduceTransparencyEnabled } = useGlassEffectState()
   const resolvedFallbackClassName = reduceTransparencyEnabled

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import type { WorkoutState } from "@/entities/workout-session/model/workoutState"
+import type { WorkoutState } from "@/entities/workout-session"
 import { formatElapsedMs } from "@/shared/lib/format"
 import { calculateWorkoutElapsedMs } from "./calculateWorkoutElapsedMs"
 

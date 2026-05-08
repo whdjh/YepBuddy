@@ -6,13 +6,14 @@ import { SymbolView } from "expo-symbols"
 import Animated, {
   useAnimatedProps,
 } from "react-native-reanimated"
-import { useUnstableNativeVariable } from "nativewind"
 import Svg, { Circle } from "react-native-svg"
 import {
   cancelScheduledWorkoutReminder,
   getWorkoutLocationOnce,
   useWorkout,
 } from "@/entities/workout-session"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { IconBox } from "@/shared/ui/IconBox"
 import { Main } from "@/shared/ui/Main"
 import { useCountdown } from "../lib/useCountdown"
@@ -28,9 +29,9 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle)
 export function CountdownScreen() {
   const { t } = useTranslation()
   const { setLocation, startCountdown, startRecording } = useWorkout()
-  const ringTrack = (useUnstableNativeVariable("--yb-ring-track") as unknown as string) || "#EDE4D6"
-  const ringFill = (useUnstableNativeVariable("--yb-ring-fill") as unknown as string) || "#9B7E56"
-  const iconTint = (useUnstableNativeVariable("--yb-icon-tint") as unknown as string) || "#9B7E56"
+  const ringTrack = useResolvedColorToken(semanticColorTokens.ringTrack)
+  const ringFill = useResolvedColorToken(semanticColorTokens.ringFill)
+  const iconTint = useResolvedColorToken(semanticColorTokens.iconTint)
 
   const handleComplete = useCallback(() => {
     startRecording()

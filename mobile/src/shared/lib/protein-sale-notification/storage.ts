@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { parseJsonOrNull } from "@/shared/lib/json"
 
 const ENABLED_KEY = "yb:protein-sale-notification:enabled"
 const IDS_KEY = "yb:protein-sale-notification:ids"
@@ -22,17 +23,12 @@ export async function getProteinSaleNotificationIds(): Promise<string[]> {
     return []
   }
 
-  try {
-    const parsed: unknown = JSON.parse(raw)
-
-    if (!Array.isArray(parsed)) {
-      return []
-    }
-
-    return parsed.filter((id): id is string => typeof id === "string")
-  } catch {
+  const parsed = parseJsonOrNull<unknown>(raw)
+  if (!Array.isArray(parsed)) {
     return []
   }
+
+  return parsed.filter((id): id is string => typeof id === "string")
 }
 
 // 예약 id 목록 저장

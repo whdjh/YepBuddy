@@ -1,5 +1,4 @@
 import { useDebouncedEffect } from "@/shared/hooks/useDebouncedEffect"
-import { usePathname, useRouter } from "expo-router"
 import {
   createContext,
   useCallback,
@@ -75,8 +74,6 @@ interface WorkoutContextValue {
 
 // Provider 밖에서 잘못 사용할 경우를 잡기 위해 초기값은 null
 const WorkoutContext = createContext<WorkoutContextValue | null>(null)
-const ACTIVE_WORKOUT_ALLOWED_PATHS = new Set(["/workout/active", "/tempo"])
-
 export function WorkoutProvider({ children }: PropsWithChildren) {
   // 실제 운동 세션 상태 관리
   const [state, dispatch] = useReducer(workoutReducer, initialWorkoutState)
@@ -287,25 +284,4 @@ export function useWorkout() {
   }
 
   return context
-}
-
-export function WorkoutNavigationGuard() {
-  const { isHydrated, state } = useWorkout()
-  const pathname = usePathname()
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!isHydrated) {
-      return
-    }
-
-    const isRecoverable =
-      state.phase === "recording" || state.phase === "paused"
-
-    if (isRecoverable && !ACTIVE_WORKOUT_ALLOWED_PATHS.has(pathname)) {
-      router.replace("/workout/active")
-    }
-  }, [isHydrated, pathname, router, state.phase])
-
-  return null
 }

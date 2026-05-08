@@ -1,6 +1,8 @@
+import { appAccentColor } from "@/shared/lib/designTokens"
+
 export const YEPBUDDY_CALENDAR_TITLE = "YepBuddy"
 export const YEPBUDDY_CALENDAR_NAME = "yepbuddy"
-export const YEPBUDDY_CALENDAR_COLOR = "#9B7E56"
+export const YEPBUDDY_CALENDAR_COLOR = appAccentColor
 
 interface CalendarCandidate {
   id: string

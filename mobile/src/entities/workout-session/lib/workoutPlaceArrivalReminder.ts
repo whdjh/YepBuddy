@@ -1,7 +1,6 @@
 import * as Location from "expo-location"
 import * as Notifications from "expo-notifications"
 import * as TaskManager from "expo-task-manager"
-import { router } from "expo-router"
 import { Platform } from "react-native"
 import i18n from "@/shared/i18n/i18n"
 import {
@@ -158,7 +157,9 @@ export async function syncWorkoutPlaceArrivalReminder(
 }
 
 /** 장소 도착 알림 탭 응답을 운동일지 pending prompt로 변환한다. */
-export function registerWorkoutPlaceArrivalNotificationHandler() {
+export function registerWorkoutPlaceArrivalNotificationHandler(
+  onPromptReady?: () => void,
+) {
   const handleResponse = (
     response: Notifications.NotificationResponse | null | undefined,
   ) => {
@@ -183,7 +184,7 @@ export function registerWorkoutPlaceArrivalNotificationHandler() {
       placeId,
       createdAt: new Date().toISOString(),
     }).then(() => {
-      router.push("/")
+      onPromptReady?.()
     })
 
     void Notifications.clearLastNotificationResponseAsync().catch(

@@ -3,8 +3,8 @@ import { ScrollView, Text, View } from "react-native"
 import { useLocalSearchParams, useRouter } from "expo-router"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "react-native-css-interop"
 import { SymbolView } from "expo-symbols"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { Badge } from "@/shared/ui/Badge"
 import { Button } from "@/shared/ui/Button"
 import { IconButton } from "@/shared/ui/IconButton"
@@ -28,8 +28,8 @@ export function ProteinDetailScreen() {
   const insets = useSafeAreaInsets()
 
   const { t } = useTranslation()
-  
-  const fgColor = (useUnstableNativeVariable("--yb-fg") as unknown as string) || "#3A2A1A"
+
+  const { fg: fgColor } = useCardColors()
   const [protein, setProtein] = useState<ProteinDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

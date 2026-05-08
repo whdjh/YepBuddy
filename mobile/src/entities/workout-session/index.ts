@@ -1,11 +1,14 @@
-export {
-  WorkoutNavigationGuard,
-  WorkoutProvider,
-  useWorkout,
-} from "./model/WorkoutContext"
+export { WorkoutProvider, useWorkout } from "./model/WorkoutContext"
 export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
+export {
+  endWorkoutSession,
+  pauseWorkoutSession,
+  readLiveWorkoutStats,
+  resumeWorkoutSession,
+  startWorkoutSession,
+} from "./api/healthKit"
 export { getWorkoutLocationOnce } from "./lib/location"
 export {
   disableWorkoutPlaceArrivalReminder,
@@ -55,6 +58,7 @@ export type {
   WorkoutLiveStats,
   WorkoutLocation,
 } from "./model/types"
+export type { WorkoutState } from "./model/workoutState"
 export { BODY_PART_DETAILS } from "./model/types"
 export {
   getUniqueWorkoutBodyParts,

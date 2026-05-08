@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react"
 import { ActivityIndicator, Switch } from "react-native"
 import { useTranslation } from "react-i18next"
-import { useUnstableNativeVariable } from "nativewind"
 import {
   getWorkoutReminderEnabled,
   setWorkoutReminderEnabled,
   syncWorkoutReminderAtNight,
 } from "@/entities/workout-session"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { SettingsRow } from "./SettingsRow"
 
 export function WorkoutReminderToggle() {
   const { t } = useTranslation()
-  const accent = useUnstableNativeVariable("--yb-accent") as unknown as string
-  const muted = useUnstableNativeVariable(
-    "--yb-surface-muted",
-  ) as unknown as string
-  const surface = useUnstableNativeVariable("--yb-surface") as unknown as string
+  const accent = useResolvedColorToken(semanticColorTokens.accent)
+  const muted = useResolvedColorToken(semanticColorTokens.surfaceMuted)
+  const surface = useResolvedColorToken(semanticColorTokens.surface)
 
   const [enabled, setEnabled] = useState(false)
   const [loading, setLoading] = useState(true)

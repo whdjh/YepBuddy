@@ -5,8 +5,8 @@ import {
   readLiveWorkoutStats,
   resumeWorkoutSession,
   startWorkoutSession,
-} from "@/entities/workout-session/api/healthKit"
-import { useWorkout } from "@/entities/workout-session"
+  useWorkout,
+} from "@/entities/workout-session"
 
 export function useHealthKitWorkout() {
   // 앱의 운동 세션 상태를 기준으로 HealthKit 세션을 동기화

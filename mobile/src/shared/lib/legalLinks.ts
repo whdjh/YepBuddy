@@ -1,5 +1,8 @@
 import Constants from "expo-constants"
 import { Linking } from "react-native"
+import { getSafeWebUrl } from "./url"
+
+export { getSafeWebUrl } from "./url"
 
 type LegalLinkConfig = {
   privacyPolicyUrl?: string
@@ -7,12 +10,6 @@ type LegalLinkConfig = {
 }
 
 const legalLinkConfig = Constants.expoConfig?.extra as LegalLinkConfig | undefined
-const WEB_URL_PATTERN = /^https?:\/\/\S+$/i
-
-export function getSafeWebUrl(value?: string | null) {
-  const url = value?.trim() ?? ""
-  return WEB_URL_PATTERN.test(url) ? url : ""
-}
 
 export async function openWebUrl(value?: string | null) {
   const url = getSafeWebUrl(value)

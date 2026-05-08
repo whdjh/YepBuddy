@@ -29,6 +29,14 @@ function priceLevelOf(badge?: { kind: PriceLevel } | null): PriceLevel {
   return badge?.kind ?? "mid"
 }
 
+/** 차트에 그릴 수 있는 날짜/가격 값만 가격 히스토리 포인트로 변환 */
+function toPriceHistoryPoint(price: ApiProteinPrice): PriceHistoryPoint | null {
+  const date =
+    typeof price.observed_date === "string" ? price.observed_date.trim() : ""
+  if (!date || !Number.isFinite(price.price)) return null
+  return { date, price: price.price }
+}
+
 // 상세 화면에 표시할 특징 목록을 설명 문장과 맛 정보로 구성
 function toFeatureLines(protein: ApiProtein, flavors: ApiProteinFlavor[]) {
   const lines: string[] = []
@@ -85,7 +93,10 @@ export function buildProteinDetail(
   // API는 최신순으로 내려주므로 차트 표시용으로 오래된 날짜부터 정렬한다.
   const priceHistory: PriceHistoryPoint[] = [...priceResult.items]
     .reverse()
-    .map((price) => ({ date: price.observed_date, price: price.price }))
+    .flatMap((price) => {
+      const point = toPriceHistoryPoint(price)
+      return point ? [point] : []
+    })
 
   return {
     id: String(protein.protein_id),
