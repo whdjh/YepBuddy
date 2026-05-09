@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { TFunction } from "i18next"
 import { router } from "expo-router"
 import { Alert } from "react-native"
-import type { WeeklyRoutinePlanResult } from "./useWeeklyRoutinePlan"
+import type { WeeklyRoutinePlanResult } from "@/entities/workout-session"
 
 interface UseWeeklyRoutineFeaturePromptParams {
   notificationPermissionRequestDone: boolean

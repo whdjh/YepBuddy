@@ -266,6 +266,9 @@
   },
   "protein": {
     "title": "프로틴",
+    "loading": "불러오는 중...",
+    "empty": "표시할 프로틴이 없습니다",
+    "loadError": "프로틴 목록을 불러오지 못했습니다",
     "filterAll": "전체",
     "category": "카테고리",
     "volume": "용량",
@@ -278,6 +281,7 @@
       "priceTrend": "가격 추이",
       "buyNow": "구매하러 가기",
       "notFound": "제품을 찾을 수 없습니다",
+      "loadError": "제품 정보를 불러오지 못했습니다",
       "priceUnit": "원",
       "pricePerGram": "g당 {{value}}원",
       "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
@@ -316,8 +320,9 @@
     }
   },
   "legal": {
+    "appInfo": "앱 정보",
     "privacyPolicy": "개인정보 처리방침",
     "support": "문의",
-    "footerLabel": "개인정보 및 지원"
+    "footerLabel": "앱 정보 및 지원"
   }
 }
