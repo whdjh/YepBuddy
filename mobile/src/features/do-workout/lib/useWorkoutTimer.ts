@@ -7,8 +7,8 @@ export function useWorkoutTimer(state: WorkoutState) {
   const [nowMs, setNowMs] = useState(Date.now())
 
   useEffect(() => {
-    // 운동이 진행 중이거나 일시정지 상태일 때만 타이머를 갱신
-    if (state.phase !== "recording" && state.phase !== "paused") {
+    // 실제 기록 중일 때만 ticking
+    if (state.phase !== "recording") {
       return
     }
 
@@ -18,6 +18,13 @@ export function useWorkoutTimer(state: WorkoutState) {
     }, 50)
 
     return () => clearInterval(interval)
+  }, [state.phase])
+
+  useEffect(() => {
+    if (state.phase === "paused") {
+      // paused 진입 시점에 한 번만 갱신해 화면 타이머를 고정
+      setNowMs(Date.now())
+    }
   }, [state.phase])
 
   return useMemo(() => {

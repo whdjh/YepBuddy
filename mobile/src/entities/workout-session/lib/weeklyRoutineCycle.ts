@@ -6,6 +6,10 @@ import { getElapsedWeeksBetweenDateKeys } from "@/shared/lib/date"
 
 export type WeeklyRoutineSetupPromptKind = "cycleComplete"
 
+// 루틴 사이클의 현재 표시 상태
+export type WeeklyRoutineCyclePhase = "regular" | "deload" | "complete"
+
+// 현재 주차 기준 루틴 사이클 계산 결과
 export interface WeeklyRoutineCycleState {
   currentWeekNumber: number
   totalCycleWeeks: number
@@ -54,6 +58,17 @@ export function restartWeeklyRoutineCycle(
     ...settings,
     cycleStartDateKey,
   }
+}
+
+// 사이클 상태를 화면에서 쓰기 쉬운 phase 값으로 변환
+export function getWeeklyRoutineCyclePhase(
+  cycleState: WeeklyRoutineCycleState,
+): WeeklyRoutineCyclePhase {
+  if (cycleState.isCycleComplete) {
+    return "complete"
+  }
+
+  return cycleState.isDeloadWeek ? "deload" : "regular"
 }
 
 // 설정된 루틴 사이클이 끝났을 때 안내 모달을 보여줄지 판단

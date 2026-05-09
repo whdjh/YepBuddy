@@ -36,7 +36,6 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
           bodyParts={todayBodyParts}
           representativeBodyPart={todayRepresentativeBodyPart}
           totalSets={todayTotalSets}
-          targetSets={Math.max(24, todayTotalSets || 24)}
           onLongPress={onLongPress}
         />
       )

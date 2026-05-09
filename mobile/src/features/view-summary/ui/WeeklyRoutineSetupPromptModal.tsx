@@ -1,6 +1,6 @@
 import { Modal, Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import type { WeeklyRoutinePlanResult } from "../model/useWeeklyRoutinePlan"
+import type { WeeklyRoutinePlanResult } from "@/entities/workout-session"
 
 interface WeeklyRoutineSetupPromptModalProps {
   plan: WeeklyRoutinePlanResult

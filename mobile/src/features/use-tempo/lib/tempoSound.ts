@@ -93,22 +93,22 @@ function play(key: string): void {
 
 export function playContractionTick(): void {
   play('pip')
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
+  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)
 }
 
 export function playRelaxationTick(): void {
   play('pik')
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
 }
 
 export function playRestStart(): void {
   play('restStart')
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+  void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
 }
 
 export function playRestWarning(): void {
   play('restWarning')
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
 }
 
 export function playCount(rep: number): void {
@@ -120,5 +120,5 @@ export function playCount(rep: number): void {
 }
 
 export function playComplete(): void {
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+  void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
 }

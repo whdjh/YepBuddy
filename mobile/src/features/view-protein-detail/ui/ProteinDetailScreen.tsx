@@ -21,7 +21,7 @@ import {
 import type { ProteinDetail } from "@/entities/protein"
 
 export function ProteinDetailScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>()
+  const params = useLocalSearchParams<{ id?: string | string[] }>()
 
   const router = useRouter()
 
@@ -34,28 +34,41 @@ export function ProteinDetailScreen() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  const routeProteinId = Array.isArray(params.id) ? params.id[0] : params.id
+  const proteinId =
+    typeof routeProteinId === "string" && routeProteinId.length > 0
+      ? routeProteinId
+      : null
+
   useEffect(() => {
-    if (!id) return
+    if (!proteinId) {
+      setProtein(null)
+      setError(null)
+      setLoading(false)
+      return
+    }
 
     let cancelled = false
+    const selectedProteinId = proteinId
 
     async function loadProtein() {
       setLoading(true)
       setError(null)
+      setProtein(null)
 
       try {
         const [proteinData, priceData, flavors] = await Promise.all([
-          fetchProtein(id),
-          fetchProteinPrices(id),
-          fetchProteinFlavors(id),
+          fetchProtein(selectedProteinId),
+          fetchProteinPrices(selectedProteinId),
+          fetchProteinFlavors(selectedProteinId),
         ])
 
         if (!cancelled) {
           setProtein(proteinData ? buildProteinDetail(proteinData, priceData, flavors) : null)
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Failed to load protein")
+          setError(t("protein.detail.loadError"))
         }
       } finally {
         if (!cancelled) {
@@ -69,11 +82,17 @@ export function ProteinDetailScreen() {
     return () => {
       cancelled = true
     }
-  }, [id])
+  }, [proteinId, t])
 
   const price = protein?.price != null ? protein.price.toLocaleString() : "-"
-  const pricePerGram = protein?.pricePerGram != null ? protein.pricePerGram.toLocaleString() : "-"
+  const pricePerGram = protein?.pricePerGram != null ? protein.pricePerGram.toLocaleString() : null
   const purchaseUrl = getSafeWebUrl(protein?.purchaseUrl)
+  const statusMessage = loading
+    ? t("protein.loading")
+    : error ?? t("protein.detail.notFound")
+  const pricePerGramLabel = pricePerGram
+    ? t("protein.detail.pricePerGram", { value: pricePerGram })
+    : "-"
 
   return (
     <View className="h-full w-full bg-yb-bg" style={{ paddingTop: insets.top }}>
@@ -115,7 +134,7 @@ export function ProteinDetailScreen() {
       {(loading || error || !protein) && (
         <View className="px-yb-5 pt-yb-4">
           <Text className="text-yb-fg-secondary text-yb-body">
-            {loading ? "불러오는 중..." : error ?? t("protein.detail.notFound")}
+            {statusMessage}
           </Text>
         </View>
       )}
@@ -139,7 +158,7 @@ export function ProteinDetailScreen() {
               unitSize={16}
             />
             <Card.Spacer />
-            <Card.Caption>{t("protein.detail.pricePerGram", { value: pricePerGram })}</Card.Caption>
+            <Card.Caption>{pricePerGramLabel}</Card.Caption>
           </Card.Row>
         </Card>
 

@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
+import { useWeeklyRoutinePlan } from "@/entities/workout-session"
 import { formatDateWithDay, bodyPartLabel, bodyPartDetailLabel } from "@/shared/lib/format"
 import { useLatestSession } from "./useLatestSession"
 import { useThisWeekSessions } from "./useThisWeekSessions"
 import { useTodayCompleted } from "./useTodayCompleted"
 import { useTodaySummary } from "./useTodaySummary"
-import { useWeeklyRoutinePlan } from "./useWeeklyRoutinePlan"
 import { buildWeeklySessionRows } from "./weeklySessionRows"
 import { getBodyPartsLabel, getRepresentativeBodyPart } from "./summaryHelpers"
 

@@ -12,6 +12,15 @@ export function useCountdown(from: number, onComplete: () => void) {
   const progress = useSharedValue(1)  // 애니메이션용 값 저장소
 
   useEffect(() => {
+    if (from <= 0) {
+      progress.value = 0
+      onComplete()
+      return
+    }
+
+    countRef.current = from
+    setCount(from)
+
     // 값을 일정 시간 동안 부드럽게 바꾸는 애니메이션
     progress.value = withTiming(0, {
       duration: from * 1000,

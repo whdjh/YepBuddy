@@ -32,6 +32,9 @@ export function FilterTabs({ value, onChange }: FilterTabsProps) {
           label={t("sessions.filterAll")}
           variant={value === "all" ? "active" : "glass"}
           onPress={() => onChange("all")}
+          accessibilityRole="button"
+          accessibilityLabel={t("sessions.filterAll")}
+          accessibilityState={{ selected: value === "all" }}
         />
         {BODY_PART_KEYS.map((key) => (
           <FilterPill
@@ -39,6 +42,9 @@ export function FilterTabs({ value, onChange }: FilterTabsProps) {
             label={bodyPartLabel(key)}
             variant={value === key ? "active" : "glass"}
             onPress={() => onChange(key)}
+            accessibilityRole="button"
+            accessibilityLabel={bodyPartLabel(key)}
+            accessibilityState={{ selected: value === key }}
           />
         ))}
       </ScrollView>

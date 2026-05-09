@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Pressable, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
-  getNextRoutineSuggestion,
   type RoutinePart,
   type WeeklyRoutineProgress,
   type WeeklyRoutineSession,
@@ -11,6 +10,7 @@ import { bodyPartLabel } from "@/shared/lib/format"
 
 interface RoutineSessionPickerProps {
   progress: WeeklyRoutineProgress
+  nextSuggestion: WeeklyRoutineSession | null
   onSelectSlot: (parts: RoutinePart[]) => void
 }
 
@@ -20,6 +20,7 @@ function getRoutineLabel(parts: RoutinePart[]) {
 
 export function RoutineSessionPicker({
   progress,
+  nextSuggestion,
   onSelectSlot,
 }: RoutineSessionPickerProps) {
   const { t } = useTranslation()
@@ -28,10 +29,6 @@ export function RoutineSessionPicker({
   )
   const didAutoSelectRef = useRef(false)
 
-  const nextSuggestion = useMemo(
-    () => getNextRoutineSuggestion(progress),
-    [progress],
-  )
   const hasAvailableRoutine = progress.slots.some(
     (slot) => slot.status !== "completed",
   )
@@ -72,6 +69,9 @@ export function RoutineSessionPicker({
               <Pressable
                 key={`${slot.routineSession.id}-${slot.index}`}
                 disabled={disabled}
+                accessibilityRole="button"
+                accessibilityLabel={getRoutineLabel(slot.routineSession.parts)}
+                accessibilityState={{ disabled, selected: active }}
                 className={`h-yb-chip rounded-yb-chip border-yb-input px-[18px] items-center justify-center ${
                   active
                     ? "bg-yb-accent border-yb-accent"

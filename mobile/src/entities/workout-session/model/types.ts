@@ -61,6 +61,12 @@ export interface WorkoutLiveStats {
   totalKcal: number
 }
 
+export const EMPTY_WORKOUT_LIVE_STATS: WorkoutLiveStats = {
+  heartRate: null,
+  activeKcal: 0,
+  totalKcal: 0,
+}
+
 export interface WorkoutHeartRateSample {
   bpm: number
   startDate: string

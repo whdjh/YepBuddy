@@ -266,6 +266,9 @@
   },
   "protein": {
     "title": "Protein",
+    "loading": "Loading...",
+    "empty": "No proteins to show",
+    "loadError": "Failed to load proteins",
     "filterAll": "All",
     "category": "Category",
     "volume": "Volume",
@@ -278,6 +281,7 @@
       "priceTrend": "Price Trend",
       "buyNow": "Buy Now",
       "notFound": "Product not found",
+      "loadError": "Failed to load product details",
       "priceUnit": "KRW",
       "pricePerGram": "{{value}} KRW/g",
       "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
@@ -316,8 +320,9 @@
     }
   },
   "legal": {
+    "appInfo": "App Info",
     "privacyPolicy": "Privacy Policy",
     "support": "Support",
-    "footerLabel": "Privacy and support"
+    "footerLabel": "App information and support"
   }
 }

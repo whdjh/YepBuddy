@@ -96,7 +96,9 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const representativeBodyPart = stored?.bodyParts[0]?.part ?? null
   const startTime = stored?.startedAt ? formatTime(stored.startedAt) : "--"
   const endTime = stored?.completedAt ? formatTime(stored.completedAt) : "--"
-  const locationLabel = stored?.location ? t("workout.result.location") : null
+  const locationLabel = stored?.location
+    ? `${stored.location.lat.toFixed(4)}, ${stored.location.lng.toFixed(4)}`
+    : null
   const totalSets =
     stored?.bodyParts.reduce((sum, item) => sum + item.setCount, 0) ?? 0
   const avgHeartRate =
@@ -265,7 +267,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               <LocationMap
                 latitude={stored.location.lat}
                 longitude={stored.location.lng}
-                locationName={t("workout.result.unspecified")}
+                locationName={`${stored.location.lat.toFixed(4)}, ${stored.location.lng.toFixed(4)}`}
               />
             </>
           )}
@@ -275,6 +277,9 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               disabled={isDeleting}
               className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error px-yb-7 py-yb-4 shadow-lg active:opacity-80"
               onPress={handleDeletePress}
+              accessibilityRole="button"
+              accessibilityLabel={t("workout.result.deleteConfirm")}
+              accessibilityState={{ disabled: isDeleting, busy: isDeleting }}
             >
               <Text className="text-yb-body-lg font-semibold text-yb-on-danger">
                 {t("workout.result.deleteConfirm")}

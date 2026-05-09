@@ -1,6 +1,7 @@
 import { useRef, useState } from "react"
 import { Dimensions, Modal, Pressable, Text, View } from "react-native"
 import type { BodyPart } from "@/entities/workout-session"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { BodyPartBadge } from "./BodyPartBadge"
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window")
@@ -24,6 +25,7 @@ export function DayCell({
   disabled,
   onPress,
 }: DayCellProps) {
+  const { accent, fg } = useCardColors()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [tooltipWidth, setTooltipWidth] = useState(0)
@@ -55,6 +57,9 @@ export function DayCell({
         onPress={onPress}
         onLongPress={handleLongPress}
         disabled={disabled}
+        accessibilityRole="button"
+        accessibilityLabel={`Day ${day}${hasWorkout ? ", workout available" : ""}`}
+        accessibilityState={{ disabled }}
       >
         <View style={{ height: 24, alignItems: "center", justifyContent: "center" }}>
           {isToday ? (
@@ -82,7 +87,7 @@ export function DayCell({
                   fontSize: 8,
                   fontWeight: "700",
                   lineHeight: 12,
-                  color: "#9B7E56",
+                  color: accent,
                 }}
               >
                 +{hiddenBadgeCount}
@@ -117,7 +122,7 @@ export function DayCell({
                 gap: 6,
                 padding: 8,
                 opacity: tooltipWidth === 0 ? 0 : 1,
-                shadowColor: "#3A2A1A",
+                shadowColor: fg,
                 shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 0.15,
                 shadowRadius: 8,

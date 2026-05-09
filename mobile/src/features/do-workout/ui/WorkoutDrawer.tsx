@@ -2,6 +2,7 @@ import { Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { SymbolView } from "expo-symbols"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
+import type { WorkoutState } from "@/entities/workout-session"
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { useWorkoutTimer } from "../lib/useWorkoutTimer"
 import {
   canEndWorkoutFromDrawer,
   getWorkoutDrawerExpandedToggleLabelKey,
@@ -26,7 +28,7 @@ export const DRAWER_VISIBLE_HEIGHT = 96
 const SPRING_CONFIG = { damping: 20, stiffness: 200 }
 
 interface WorkoutDrawerProps {
-  timerDisplay: string
+  workoutState: WorkoutState
   isPaused: boolean
   hasCardioStarted: boolean
   onStartCardio: () => void
@@ -37,8 +39,21 @@ interface WorkoutDrawerProps {
   bottomPadding: number
 }
 
+function WorkoutTimerText({ state }: { state: WorkoutState }) {
+  const { timerDisplay } = useWorkoutTimer(state)
+
+  return (
+    <Text
+      className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"
+      style={{ fontVariant: ["tabular-nums"] }}
+    >
+      {timerDisplay}
+    </Text>
+  )
+}
+
 export function WorkoutDrawer({
-  timerDisplay,
+  workoutState,
   isPaused,
   hasCardioStarted,
   onStartCardio,
@@ -112,7 +127,9 @@ export function WorkoutDrawer({
           <Pressable
             onPress={onStartCardio}
             disabled={!canStartCardio}
+            accessibilityRole="button"
             accessibilityLabel={t("workout.calendar.cardio")}
+            accessibilityState={{ disabled: !canStartCardio }}
             className="items-center justify-center rounded-yb-icon"
             style={{
               backgroundColor: hasCardioStarted
@@ -134,16 +151,13 @@ export function WorkoutDrawer({
             />
           </Pressable>
 
-          <Text
-            className="text-yb-num-28 text-yb-drawer-fg tracking-yb-wide"
-            style={{ fontVariant: ["tabular-nums"] }}
-          >
-            {timerDisplay}
-          </Text>
+          <WorkoutTimerText state={workoutState} />
 
           <Pressable
             onPress={handleTimerControlPress}
+            accessibilityRole="button"
             accessibilityLabel={t(timerControl.labelKey)}
+            accessibilityState={{ disabled: false }}
             className="items-center justify-center rounded-full"
             style={{
               backgroundColor: isPaused ? accentColor : dangerColor,
@@ -163,6 +177,8 @@ export function WorkoutDrawer({
         <View className="gap-yb-3">
           <Pressable
             onPress={onTempo}
+            accessibilityRole="button"
+            accessibilityLabel={t("tabs.tempo")}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
           >
             <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
@@ -172,6 +188,8 @@ export function WorkoutDrawer({
 
           <Pressable
             onPress={onTogglePause}
+            accessibilityRole="button"
+            accessibilityLabel={t(getWorkoutDrawerExpandedToggleLabelKey(isPaused))}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon border-yb-input border-yb-drawer-border"
           >
             <Text className="text-yb-body-sm font-semibold text-yb-drawer-fg">
@@ -182,6 +200,9 @@ export function WorkoutDrawer({
           <Pressable
             onPress={onEnd}
             disabled={!canEndWorkout}
+            accessibilityRole="button"
+            accessibilityLabel={t("workout.active.endWorkout")}
+            accessibilityState={{ disabled: !canEndWorkout }}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-accent"
           >
             <Text className="text-yb-body-sm font-bold text-yb-on-accent">
@@ -191,6 +212,8 @@ export function WorkoutDrawer({
 
           <Pressable
             onPress={onDiscard}
+            accessibilityRole="button"
+            accessibilityLabel={t("workout.active.discardWorkout")}
             className="h-yb-btn-sm items-center justify-center rounded-yb-icon bg-yb-drawer-danger-bg"
           >
             <Text className="text-yb-body-sm font-bold text-yb-drawer-danger-fg">

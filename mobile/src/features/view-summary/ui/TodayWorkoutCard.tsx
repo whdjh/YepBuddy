@@ -2,14 +2,13 @@ import { Pressable } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import type { BodyPart } from "@/entities/workout-session"
-import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
+import { BodyPartIconHost } from "@/entities/workout-session"
 import { Card } from "@/shared/ui/Card"
 
 interface TodayWorkoutCardProps {
   bodyParts: string
   representativeBodyPart: BodyPart | null
   totalSets: number
-  targetSets: number
   onLongPress?: () => void
 }
 

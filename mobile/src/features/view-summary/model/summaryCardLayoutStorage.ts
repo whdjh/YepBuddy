@@ -17,9 +17,18 @@ export async function loadSummaryCardIds() {
   }
 
   const parsed = parseJsonOrNull<unknown>(value)
-  return Array.isArray(parsed)
-    ? sanitizeSummaryCardIds(parsed)
-    : DEFAULT_SUMMARY_CARD_IDS
+  if (!Array.isArray(parsed)) {
+    return DEFAULT_SUMMARY_CARD_IDS
+  }
+
+  const sanitizedCardIds = sanitizeSummaryCardIds(parsed)
+
+  // 사용자가 모든 카드를 숨긴 빈 배열은 유지하고, 깨진 저장값만 기본값으로 복구
+  if (parsed.length > 0 && sanitizedCardIds.length === 0) {
+    return DEFAULT_SUMMARY_CARD_IDS
+  }
+
+  return sanitizedCardIds
 }
 
 // 카드 순서를 sanitize한 뒤 AsyncStorage에 저장. 정제된 배열을 반환

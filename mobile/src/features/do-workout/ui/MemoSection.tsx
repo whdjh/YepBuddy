@@ -17,7 +17,6 @@ export function MemoSection({ value, onChangeText }: MemoSectionProps) {
       </Text>
       <GlassTextarea
         placeholder={t("workout.active.memoPlaceholder")}
-        defaultValue={value}
         value={value}
         onChangeText={onChangeText}
       />

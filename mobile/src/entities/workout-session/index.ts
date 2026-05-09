@@ -1,4 +1,5 @@
 export { WorkoutProvider, useWorkout } from "./model/WorkoutContext"
+export { BodyPartIcon, BodyPartIconHost } from "./ui/BodyPartIcon"
 export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
@@ -59,7 +60,7 @@ export type {
   WorkoutLocation,
 } from "./model/types"
 export type { WorkoutState } from "./model/workoutState"
-export { BODY_PART_DETAILS } from "./model/types"
+export { BODY_PART_DETAILS, EMPTY_WORKOUT_LIVE_STATS } from "./model/types"
 export {
   getUniqueWorkoutBodyParts,
   getWorkoutBodyPartDetails,
@@ -78,6 +79,10 @@ export {
   normalizeWeeklyRoutineSettings,
   resizeWeeklyRoutineSessions,
 } from "./model/weeklyRoutine"
+export {
+  useWeeklyRoutinePlan,
+  type WeeklyRoutinePlanResult,
+} from "./model/useWeeklyRoutinePlan"
 export type {
   RoutinePart,
   WeeklyRoutineFeatureStatus,
@@ -100,11 +105,17 @@ export {
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
 export {
+  buildWeeklyRoutineProgressSnapshot,
+  loadWeeklyRoutineProgressSnapshot,
+} from "./lib/weeklyRoutineProgressSnapshot"
+export type { WeeklyRoutineProgressSnapshot } from "./lib/weeklyRoutineProgressSnapshot"
+export {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {
+  getWeeklyRoutineCyclePhase,
   getWeeklyRoutineCycleState,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
@@ -115,6 +126,7 @@ export type {
   WeeklyRoutineSlotStatus,
 } from "./lib/weeklyRoutineProgress"
 export type {
+  WeeklyRoutineCyclePhase,
   WeeklyRoutineCycleState,
   WeeklyRoutineSetupPromptKind,
 } from "./lib/weeklyRoutineCycle"

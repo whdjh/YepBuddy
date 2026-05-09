@@ -2,7 +2,7 @@ import { memo, useCallback } from "react"
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/shared/ui/Card"
-import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
+import { BodyPartIconHost } from "@/entities/workout-session"
 import { formatDateWithDay, bodyPartLabel } from "@/shared/lib/format"
 import type { BodyPart } from "@/entities/workout-session"
 
@@ -25,7 +25,12 @@ function SessionCardComponent({ sessionId, bodyParts, kcal, date, onPress }: Ses
   const handlePress = useCallback(() => onPress(sessionId), [onPress, sessionId])
 
   return (
-    <Pressable className="mb-yb-3" onPress={handlePress}>
+    <Pressable
+      className="mb-yb-3"
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={`${formatDateWithDay(date)} ${bodyPartLabelText}`}
+    >
       <Card variant="glass">
         <Card.Row spacing={14} alignment="center">
           <BodyPartIconHost bodyPart={representativeBodyPart} size="md" />
