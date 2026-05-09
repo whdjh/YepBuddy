@@ -25,7 +25,12 @@ function SessionCardComponent({ sessionId, bodyParts, kcal, date, onPress }: Ses
   const handlePress = useCallback(() => onPress(sessionId), [onPress, sessionId])
 
   return (
-    <Pressable className="mb-yb-3" onPress={handlePress}>
+    <Pressable
+      className="mb-yb-3"
+      onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel={`${formatDateWithDay(date)} ${bodyPartLabelText}`}
+    >
       <Card variant="glass">
         <Card.Row spacing={14} alignment="center">
           <BodyPartIconHost bodyPart={representativeBodyPart} size="md" />

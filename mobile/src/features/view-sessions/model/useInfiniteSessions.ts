@@ -1,5 +1,5 @@
 import { AppState } from "react-native"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { loadSessionsByMonth } from "./useSessionsByMonth"
 import type { SessionListItem, SessionMonthEntry } from "./types"
 
@@ -48,25 +48,45 @@ export function useInfiniteSessions() {
   const [loadedMonths, setLoadedMonths] = useState<SessionMonthEntry[]>([])
   const [isLoadingInitial, setIsLoadingInitial] = useState(true)
   const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const requestIdRef = useRef(0)
   // 값이 바뀌면 초기 로딩 effect가 다시 실행되어 전체 월 목록을 새로 가져옴
   const [refreshKey, setRefreshKey] = useState(0)
 
-  const loadMonthEntry = useCallback(async (entry: SessionMonthEntry) => {
-    const nextSessions = await loadSessionsByMonth(entry.year, entry.month)
+  const loadMonthEntry = useCallback(
+    async (entry: SessionMonthEntry, requestId = requestIdRef.current) => {
+      try {
+        const nextSessions = await loadSessionsByMonth(entry.year, entry.month)
+        if (requestId !== requestIdRef.current) {
+          return false
+        }
 
-    // 월별 응답을 기존 목록에 합치되, sessionId 기준으로 중복을 제거한다.
-    setSessions((currentSessions) => mergeSessions(currentSessions, nextSessions))
-    setLoadedMonths((currentMonths) => {
-      const monthKey = getMonthKey(entry)
-      if (currentMonths.some((currentMonth) => getMonthKey(currentMonth) === monthKey)) {
-        return currentMonths
+        // 월별 응답을 기존 목록에 합치되, sessionId 기준으로 중복을 제거한다.
+        setSessions((currentSessions) =>
+          mergeSessions(currentSessions, nextSessions),
+        )
+        setLoadedMonths((currentMonths) => {
+          const monthKey = getMonthKey(entry)
+          if (
+            currentMonths.some(
+              (currentMonth) => getMonthKey(currentMonth) === monthKey,
+            )
+          ) {
+            return currentMonths
+          }
+
+          return [...currentMonths, entry]
+        })
+        return true
+      } catch {
+        return false
       }
-
-      return [...currentMonths, entry]
-    })
-  }, [])
+    },
+    [],
+  )
 
   const loadInitialMonths = useCallback(async () => {
+    const requestId = requestIdRef.current + 1
+    requestIdRef.current = requestId
     const firstMonth = getCurrentMonthEntry()
     const monthEntries: SessionMonthEntry[] = []
     let currentMonth = firstMonth
@@ -83,7 +103,10 @@ export function useInfiniteSessions() {
 
     // 월별 로딩을 순차 실행해서 loadedMonths의 순서를 안정적으로 유지
     for (const monthEntry of monthEntries) {
-      await loadMonthEntry(monthEntry)
+      const loaded = await loadMonthEntry(monthEntry, requestId)
+      if (!loaded || requestId !== requestIdRef.current) {
+        return
+      }
     }
   }, [loadMonthEntry])
 
@@ -107,6 +130,7 @@ export function useInfiniteSessions() {
 
     return () => {
       active = false
+      requestIdRef.current += 1
     }
   }, [loadInitialMonths, refreshKey])
 
@@ -154,15 +178,18 @@ export function useInfiniteSessions() {
     }
 
     setIsLoadingMore(true)
+    const requestId = requestIdRef.current
 
     try {
       // 마지막으로 적재한 월의 바로 이전 달을 이어서 가져옴
       const lastLoadedMonth =
         loadedMonths[loadedMonths.length - 1] ?? getCurrentMonthEntry()
       const nextMonth = getPreviousMonth(lastLoadedMonth)
-      await loadMonthEntry(nextMonth)
+      await loadMonthEntry(nextMonth, requestId)
     } finally {
-      setIsLoadingMore(false)
+      if (requestId === requestIdRef.current) {
+        setIsLoadingMore(false)
+      }
     }
   }, [isLoadingInitial, isLoadingMore, loadMonthEntry, loadedMonths])
 

@@ -1,6 +1,7 @@
 import { SymbolView } from "expo-symbols"
 import { View } from "react-native"
 import type { BodyPart } from "@/entities/workout-session"
+import { useCardColors } from "@/shared/hooks/useCardColors"
 import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
 
 interface BodyPartBadgeProps {
@@ -24,6 +25,8 @@ export function BodyPartBadge({
   size = "sm",
   variant = "bodyPart",
 }: BodyPartBadgeProps) {
+  const { accent } = useCardColors()
+
   if (variant === "cardio") {
     return (
       <View
@@ -37,7 +40,7 @@ export function BodyPartBadge({
         <SymbolView
           name="figure.run"
           size={cardioIconSizeBySize[size]}
-          tintColor="#9B7E56"
+          tintColor={accent}
         />
       </View>
     )
