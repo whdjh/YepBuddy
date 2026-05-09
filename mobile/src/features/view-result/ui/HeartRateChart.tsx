@@ -4,6 +4,8 @@ import { CartesianChart } from "victory-native"
 import { DashPathEffect, Path, vec, Line as SkiaLine } from "@shopify/react-native-skia"
 
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { buildAreaPath, buildLinePath } from "@/shared/lib/skiaChartPaths"
 import { GlassSurface } from "@/shared/ui/GlassSurface"
 
@@ -29,15 +31,16 @@ export function HeartRateChart({
 }: HeartRateChartProps) {
   const isDark = useColorScheme() === "dark"
   const { fgSecondary } = useCardColors()
+  const heartColor = useResolvedColorToken(semanticColorTokens.heart)
 
   const [chartW, setChartW] = useState(0)
 
   if (data.length === 0) return null
 
-  const lineColor = isDark ? "#E8734E" : "#C4652E"
-  const fillColor = isDark ? "rgba(232,115,78,0.15)" : "rgba(196,101,46,0.12)"
+  const lineColor = heartColor
   const labelColor = fgSecondary
-  const dashColor = isDark ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)"
+  const dashOpacity = isDark ? 0.25 : 0.15
+  const fillOpacity = isDark ? 0.15 : 0.12
 
   const bpmValues = data.map((d) => d.bpm)
   const globalMin = Math.min(...bpmValues)
@@ -100,11 +103,11 @@ export function HeartRateChart({
 
               return (
                 <>
-                  <SkiaLine p1={vec(left, yMax)} p2={vec(right, yMax)} color={dashColor} strokeWidth={1}>
+                  <SkiaLine p1={vec(left, yMax)} p2={vec(right, yMax)} color={labelColor} strokeWidth={1} opacity={dashOpacity}>
                     <DashPathEffect intervals={[4, 4]} />
                   </SkiaLine>
 
-                  <SkiaLine p1={vec(left, yMin)} p2={vec(right, yMin)} color={dashColor} strokeWidth={1}>
+                  <SkiaLine p1={vec(left, yMin)} p2={vec(right, yMin)} color={labelColor} strokeWidth={1} opacity={dashOpacity}>
                     <DashPathEffect intervals={[4, 4]} />
                   </SkiaLine>
 
@@ -114,7 +117,14 @@ export function HeartRateChart({
                     </SkiaLine>
                   )}
 
-                  {areaPath && <Path path={areaPath} color={fillColor} style="fill" />}
+                  {areaPath && (
+                    <Path
+                      path={areaPath}
+                      color={lineColor}
+                      opacity={fillOpacity}
+                      style="fill"
+                    />
+                  )}
 
                   {linePath && (
                     <Path

@@ -33,17 +33,28 @@ export function useSessionDetail(sessionId: string) {
         setIsLoading(true)
       }
 
-      const [stored, hk] = await Promise.all([
-        getStoredWorkoutSession(sessionId),
-        getWorkoutDetail(sessionId),
-      ])
+      try {
+        const [stored, hk] = await Promise.all([
+          getStoredWorkoutSession(sessionId),
+          getWorkoutDetail(sessionId),
+        ])
 
-      if (!active) {
-        return
+        if (!active) {
+          return
+        }
+
+        setData({ hk, stored })
+      } catch {
+        if (!active) {
+          return
+        }
+
+        setData(null)
+      } finally {
+        if (active) {
+          setIsLoading(false)
+        }
       }
-
-      setData({ hk, stored })
-      setIsLoading(false)
     }
 
     void load()
