@@ -11,6 +11,7 @@ import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
 import { WeeklyRoutineToggle } from "./WeeklyRoutineToggle"
 import { WorkoutPlaceArrivalReminderToggle } from "./WorkoutPlaceArrivalReminderToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
+import { SettingsLegalFooter } from "./SettingsLegalFooter"
 
 export function SettingsScreen() {
   const router = useRouter()
@@ -62,6 +63,8 @@ export function SettingsScreen() {
           </Text>
           <ProteinSaleNotificationToggle />
         </View>
+
+        <SettingsLegalFooter />
       </ScrollView>
     </Main>
   )
