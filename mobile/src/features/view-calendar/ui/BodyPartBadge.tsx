@@ -2,7 +2,7 @@ import { SymbolView } from "expo-symbols"
 import { View } from "react-native"
 import type { BodyPart } from "@/entities/workout-session"
 import { useCardColors } from "@/shared/hooks/useCardColors"
-import { BodyPartIcon } from "@/shared/ui/BodyPartIcon"
+import { BodyPartIcon } from "@/entities/workout-session"
 
 interface BodyPartBadgeProps {
   bodyPart?: BodyPart | null

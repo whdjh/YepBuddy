@@ -243,22 +243,6 @@ View(border/radius)
 - `progress`는 내부에서 0~1로 맞춥니다.
 - `style`은 병합하되, `size`로 정한 width/height가 마지막에 적용됩니다.
 
-### BodyPartIcon / BodyPartIconHost
-
-렌더링:
-
-- `BodyPartIcon`: RN `View`, PNG `Image`, fallback `SymbolView`
-- `BodyPartIconHost`: SwiftUI 카드 내부에 RN 아이콘을 넣기 위한 bridge
-
-주요 사용처:
-
-- `BodyPartBadge`
-- `SessionHeader`
-- `TodayWorkoutCard`
-- `WeeklySessionList`
-- `SessionLinkCard`
-- `SessionCard`
-
 ### Layout / 기타
 
 | 컴포넌트 | 렌더링 | 사용처 |
@@ -292,7 +276,6 @@ NativeWind CSS 변수를 실제 색상 문자열로 읽어옵니다. SwiftUI, Sk
 - `Card`
 - `GlassTextarea`
 - `Button`
-- `BodyPartIcon`
 - `HeartRateChart`
 - `PriceTrendChart`
 

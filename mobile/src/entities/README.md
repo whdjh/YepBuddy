@@ -95,6 +95,7 @@ mobile/src/entities
 - 장소 도착 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceArrivalNotificationHandler`, pending prompt API
 - 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `deleteStoredWorkoutSession`
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
+- 세션 표시 UI: `BodyPartIcon`, `BodyPartIconHost`
 - 주간 루틴: 기본 설정, normalize/resize, 저장소 load/save, progress/cycle 계산
 - 타입: `BodyPart`, `WorkoutBodyPartSet`, `StoredWorkoutSession`, `WorkoutState`, weekly routine 타입들
 
@@ -108,7 +109,7 @@ Feature 사용처:
 - `features/view-calendar`: 날짜 범위별 저장 세션 조회
 - `features/view-summary`: 오늘/이번 주/최근 세션, 주간 루틴 진행률과 사이클, 장소 알림 pending prompt 처리
 - `features/manage-settings`: 운동 리마인더, 장소 도착 리마인더, 주간 루틴 설정 UI
-- `shared/ui/BodyPartIcon`: `BodyPart` 타입만 사용
+- `entities/workout-session/ui/BodyPartIcon`: 운동 부위 아이콘 표시
 
 ### 왜 일부 코드가 feature/app으로 이동했나
 

@@ -8,7 +8,7 @@ import core from "@/assets/images/bodyparts/core.png"
 import legs from "@/assets/images/bodyparts/legs.png"
 import shoulders from "@/assets/images/bodyparts/shoulders.png"
 import { useCardColors } from "@/shared/hooks/useCardColors"
-import type { BodyPart } from "@/entities/workout-session"
+import type { BodyPart } from "../model/types"
 
 type BodyPartIconSize = "xs" | "drawer" | "sm" | "md" | "lg" | "xl"
 
@@ -45,6 +45,7 @@ const radiusBySize: Record<BodyPartIconSize, number> = {
   xl: 18,
 }
 
+// 운동 부위 도메인 값을 화면 아이콘 asset으로 매핑
 const iconSourceByBodyPart: Record<BodyPart, ImageSourcePropType> = {
   arms,
   back,
@@ -93,6 +94,7 @@ export function BodyPartIcon({
   )
 }
 
+// SwiftUI 카드 내부에 RN 아이콘을 넣기 위한 bridge
 export function BodyPartIconHost(props: BodyPartIconProps) {
   return (
     <RNHostView matchContents>

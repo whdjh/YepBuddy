@@ -2,7 +2,7 @@ import { memo, useCallback } from "react"
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/shared/ui/Card"
-import { BodyPartIconHost } from "@/shared/ui/BodyPartIcon"
+import { BodyPartIconHost } from "@/entities/workout-session"
 import { formatDateWithDay, bodyPartLabel } from "@/shared/lib/format"
 import type { BodyPart } from "@/entities/workout-session"
 

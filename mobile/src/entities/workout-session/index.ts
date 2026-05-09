@@ -1,4 +1,5 @@
 export { WorkoutProvider, useWorkout } from "./model/WorkoutContext"
+export { BodyPartIcon, BodyPartIconHost } from "./ui/BodyPartIcon"
 export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
