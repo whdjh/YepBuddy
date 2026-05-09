@@ -42,9 +42,9 @@ export function ProteinListScreen() {
         if (!cancelled) {
           setProteins(mergeProteinListItems(proteinItems, priceItems))
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Failed to load proteins")
+          setError(t("protein.loadError"))
         }
       } finally {
         if (!cancelled) {
@@ -58,12 +58,17 @@ export function ProteinListScreen() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [t])
 
   const filteredProteins = useMemo(() => {
     if (activeFilter === "all") return proteins
     return proteins.filter((p) => p.category === activeFilter)
   }, [activeFilter, proteins])
+
+  const statusMessage = loading
+    ? t("protein.loading")
+    : error ?? null
+  const emptyMessage = t("protein.empty")
 
   return (
     <Main>
@@ -84,6 +89,13 @@ export function ProteinListScreen() {
               key={cat}
               label={cat === "all" ? t("protein.filterAll") : getProteinCategoryLabel(cat)}
               variant={activeFilter === cat ? "active" : "default"}
+              accessibilityRole="button"
+              accessibilityState={{ selected: activeFilter === cat }}
+              accessibilityLabel={
+                cat === "all"
+                  ? t("protein.filterAll")
+                  : getProteinCategoryLabel(cat)
+              }
               onPress={() => setActiveFilter(cat)}
             />
           ))}
@@ -96,19 +108,14 @@ export function ProteinListScreen() {
         showsVerticalScrollIndicator={false}
       >
         <CoupangPartnersDisclosure />
-        {loading && (
+        {statusMessage && (
           <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
-            불러오는 중...
-          </Text>
-        )}
-        {error && (
-          <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
-            {error}
+            {statusMessage}
           </Text>
         )}
         {!loading && !error && filteredProteins.length === 0 && (
           <Text className="text-yb-fg-secondary text-yb-body py-yb-4">
-            표시할 프로틴이 없습니다
+            {emptyMessage}
           </Text>
         )}
         {filteredProteins.map((protein) => (
