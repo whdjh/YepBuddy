@@ -30,7 +30,7 @@ export function tempoReducer(
 ): TempoState {
   switch (action.type) {
     case "SET_MODE":
-      return { ...state, modeIndex: action.payload }
+      return { ...state, modeIndex: action.payload === 1 ? 1 : 0 }
     case "SET_CONTRACTION":
       return { ...state, contraction: Math.max(1, action.payload) }
     case "SET_RELAXATION":
@@ -41,5 +41,7 @@ export function tempoReducer(
       return { ...state, sets: Math.max(1, action.payload) }
     case "SET_REST":
       return { ...state, rest: Math.max(0, action.payload) }
+    default:
+      return state
   }
 }

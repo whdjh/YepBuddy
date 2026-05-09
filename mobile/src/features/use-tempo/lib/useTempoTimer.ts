@@ -60,6 +60,7 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
     setRemainingRest(null)
     setCountdownRemaining(null)
     setIsRunning(false)
+    isStartingRef.current = false
     startedAtRef.current = null
     prevPositionRef.current = null
     if (rafRef.current !== null) {
@@ -174,6 +175,9 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
         startedAtRef.current = Date.now()
         prevPositionRef.current = null
         setIsRunning(true)
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current)
+        }
         rafRef.current = requestAnimationFrame(tick)
         isStartingRef.current = false
       })
@@ -182,7 +186,7 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
   // 화면을 떠날 때만 오디오 리소스를 정리한다.
   useEffect(() => {
     return () => {
-      cleanupAudio()
+      void cleanupAudio()
     }
   }, [])
 
@@ -199,7 +203,10 @@ export function useTempoTimer(settings: TempoSettings): UseTempoTimerReturn {
   useEffect(() => {
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "active" && startedAtRef.current !== null) {
-        tick()
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current)
+        }
+        rafRef.current = requestAnimationFrame(tick)
       }
     })
     return () => subscription.remove()
