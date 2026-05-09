@@ -4,10 +4,8 @@ import {
   Pressable,
   ScrollView,
   Text,
-  useColorScheme,
   View,
 } from "react-native"
-import { LinearGradient } from "expo-linear-gradient"
 import { router } from "expo-router"
 import { useFocusEffect } from "@react-navigation/native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -29,16 +27,10 @@ import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
 import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
 
-const SUMMARY_BACKGROUND_COLORS = {
-  light: ["#FAF7F2", "#FAF7F2"],
-  dark: ["#1C1C1E", "#1C1C1E"],
-} as const
-
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
   const { t } = cardData
   const { state } = useWorkout()
-  const isDark = useColorScheme() === "dark"
   const insets = useSafeAreaInsets()
   const isPlaceReminderAlertOpenRef = useRef(false)
   const notificationPermissionRequestDone =
@@ -121,14 +113,6 @@ export function SummaryScreen() {
 
   return (
     <Main>
-      <LinearGradient
-        colors={
-          isDark
-            ? SUMMARY_BACKGROUND_COLORS.dark
-            : SUMMARY_BACKGROUND_COLORS.light
-        }
-        className="absolute inset-0"
-      />
       <ScrollView
         className="grow"
         contentContainerClassName="px-yb-5 pb-yb-30"

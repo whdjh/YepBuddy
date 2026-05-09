@@ -78,6 +78,10 @@ export {
   normalizeWeeklyRoutineSettings,
   resizeWeeklyRoutineSessions,
 } from "./model/weeklyRoutine"
+export {
+  useWeeklyRoutinePlan,
+  type WeeklyRoutinePlanResult,
+} from "./model/useWeeklyRoutinePlan"
 export type {
   RoutinePart,
   WeeklyRoutineFeatureStatus,
@@ -110,6 +114,7 @@ export {
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {
+  getWeeklyRoutineCyclePhase,
   getWeeklyRoutineCycleState,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
@@ -120,6 +125,7 @@ export type {
   WeeklyRoutineSlotStatus,
 } from "./lib/weeklyRoutineProgress"
 export type {
+  WeeklyRoutineCyclePhase,
   WeeklyRoutineCycleState,
   WeeklyRoutineSetupPromptKind,
 } from "./lib/weeklyRoutineCycle"

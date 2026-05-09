@@ -1,5 +1,5 @@
 import { AppState } from "react-native"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 interface UseSummaryRefreshOptions<T> {
   initialData: T
@@ -17,9 +17,14 @@ export function useSummaryRefresh<T>({
   initialData,
   load,
 }: UseSummaryRefreshOptions<T>) {
+  const initialDataRef = useRef(initialData)
   const [data, setData] = useState<T>(initialData)
   const [error, setError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    initialDataRef.current = initialData
+  }, [initialData])
 
   useEffect(() => {
     let mounted = true
@@ -48,7 +53,7 @@ export function useSummaryRefresh<T>({
           return
         }
 
-        setData(initialData)
+        setData(initialDataRef.current)
         setError(
           caughtError instanceof Error
             ? caughtError
@@ -96,7 +101,7 @@ export function useSummaryRefresh<T>({
         clearTimeout(midnightTimer)
       }
     }
-  }, [initialData, load])
+  }, [load])
 
   return {
     data,

@@ -9,7 +9,6 @@ interface TodayWorkoutCardProps {
   bodyParts: string
   representativeBodyPart: BodyPart | null
   totalSets: number
-  targetSets: number
   onLongPress?: () => void
 }
 
