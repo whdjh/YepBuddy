@@ -151,7 +151,9 @@
 
 현재 특성:
 
-- 플랫폼: iOS 중심으로 동작한다. (`scheduleProteinSaleNotifications`는 Android에서 false 반환)
+- 플랫폼: iOS와 Android에서 동작한다.
+- Android는 알림 채널 `protein-sale`을 사용한다.
+- Android 13+에서는 채널 생성 후 OS 알림 권한 프롬프트가 표시될 수 있다.
 - 설정 화면의 토글 ON 시:
   - 권한 확인
   - 권한이 없으면 OS 알림 권한 요청 가능
@@ -172,6 +174,16 @@
 - 고정 세일: 세일 시작일 전날 19:00
 - 블랙프라이데이: 해당 연도 11월 마지막 금요일 전날 19:00
 - 현재 연도 + 다음 연도 일정 중 “지금 이후” 일정만 예약
+
+### 5.4.1 Android 알림 채널
+
+Android에서는 다음 notification channel을 사용한다.
+
+| 채널 ID | 소유 모듈 | 용도 |
+| --- | --- | --- |
+| `workout-reminders` | `entities/workout-session` | 매일 22:00 운동 리마인더 |
+| `workout-place-arrival` | `entities/workout-session` | 반복 운동 장소 도착 알림 |
+| `protein-sale` | `entities/protein` | 마이프로틴 세일 알림 |
 
 ### 5.5 프로틴 알림 탭 라우팅
 
