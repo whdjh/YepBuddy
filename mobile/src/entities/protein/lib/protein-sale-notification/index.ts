@@ -3,7 +3,7 @@ export {
   getBlackFridayDate,
   getSaleReminderDate,
 } from "./events"
-export { setupProteinSaleNotificationHandler } from "./handler"
+export { ensureProteinSaleNotificationChannel } from "./channels"
 export {
   getProteinSaleNotificationPermissionGranted,
   requestProteinSaleNotificationPermissions,

@@ -40,7 +40,7 @@
 현재 entity는 두 개다.
 
 - `workout-session`: 운동 세션, 저장된 운동 기록, HealthKit, 캘린더, 운동 리마인더, 운동 장소 도착 리마인더, 주간 루틴
-- `protein`: 프로틴 상품/가격 데이터, 가격 배지, 상세 모델 조립, 가격 차트와 목록 카드
+- `protein`: 프로틴 상품/가격 데이터, 가격 배지, 상세 모델 조립, 가격 차트, 목록 카드, 프로틴 세일 알림
 
 ## 전체 구조
 
@@ -48,6 +48,7 @@
 mobile/src/entities
 ├── protein
 │   ├── api      # Supabase 조회
+│   ├── lib      # 프로틴 세일 알림 예약/권한/저장소
 │   ├── model    # API row를 화면 모델로 바꾸는 adapter, 가격 배지, 타입
 │   └── ui       # 프로틴 도메인 카드/차트/disclosure
 └── workout-session

@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications"
-import { Platform } from "react-native"
+import { ensureProteinSaleNotificationChannel } from "./channels"
 
 /** granted 또는 iOS provisional 상태를 프로틴 세일 알림 수신 동의로 */
 function isProteinSaleNotificationPermissionGranted(
@@ -13,19 +13,13 @@ function isProteinSaleNotificationPermissionGranted(
 
 /** 현재 프로틴 세일 알림 권한만 확인 */
 export async function getProteinSaleNotificationPermissionGranted(): Promise<boolean> {
-  if (Platform.OS !== "ios") {
-    return false
-  }
-
   const existing = await Notifications.getPermissionsAsync()
   return isProteinSaleNotificationPermissionGranted(existing)
 }
 
-/** 사용자 ON 액션에서만 iOS 알림 권한을 요청 */
+/** 사용자 ON 액션에서만 알림 권한을 요청 */
 export async function requestProteinSaleNotificationPermissions(): Promise<boolean> {
-  if (Platform.OS !== "ios") {
-    return false
-  }
+  await ensureProteinSaleNotificationChannel()
 
   if (await getProteinSaleNotificationPermissionGranted()) {
     return true

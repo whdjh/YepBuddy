@@ -16,11 +16,12 @@ import {
   syncWorkoutReminderAtNight,
   WorkoutProvider,
 } from "@/entities/workout-session"
-import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 import {
-  setupProteinSaleNotificationHandler,
+  ensureProteinSaleNotificationChannel,
   syncProteinSaleNotificationsIfEnabled,
-} from "@/shared/lib/protein-sale-notification"
+} from "@/entities/protein"
+import { setupProteinSaleNotificationHandler } from "@/features/protein-sale-notification"
+import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 
 export default function RootLayout() {
   const colorScheme = useColorScheme()
@@ -33,14 +34,17 @@ export default function RootLayout() {
       registerWorkoutPlaceArrivalNotificationHandler(() => router.push("/"))
 
     void (async () => {
-      await ensureWorkoutSessionNotificationChannels()
+      await Promise.all([
+        ensureWorkoutSessionNotificationChannels(),
+        ensureProteinSaleNotificationChannel(),
+      ])
 
       await Promise.all([
         syncWorkoutPlaceArrivalReminder({ allowPrompt: false }),
         syncWorkoutReminderAtNight({ allowPrompt: false }),
+        syncProteinSaleNotificationsIfEnabled(),
       ])
     })().catch(() => undefined)
-    void syncProteinSaleNotificationsIfEnabled().catch(() => undefined)
 
     return () => {
       unsubscribeProteinSaleNotificationHandler()

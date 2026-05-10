@@ -68,6 +68,14 @@ async function getDefaultCalendarSource(): Promise<Calendar.Source> {
   }
 }
 
+/** Android 알림 채널을 포함한 단백질 할인 알림 1회성 예약 trigger 생성 */
+function getWritableFallbackCalendarId(
+  calendars: Calendar.Calendar[],
+): string | null {
+  const calendar = calendars.find((item) => item.allowsModifications)
+  return calendar?.id ?? null
+}
+
 /** YepBuddy 전용 캘린더를 찾고, 없으면 앱 색상으로 새로 만듬 */
 async function getOrCreateYepBuddyCalendarId() {
   const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
@@ -92,7 +100,15 @@ async function getOrCreateYepBuddyCalendarId() {
     details.sourceId = source.id
   }
 
-  return Calendar.createCalendarAsync(details)
+  try {
+    return await Calendar.createCalendarAsync(details)
+  } catch {
+    if (Platform.OS === "android") {
+      return getWritableFallbackCalendarId(calendars)
+    }
+
+    return null
+  }
 }
 
 /** 좌표를 사람이 읽을 수 있는 주소 문자열로 변환. 실패 시 좌표 문자열로 폴백 */
@@ -124,6 +140,14 @@ async function formatWorkoutCalendarLocation(
   } catch {
     return fallback
   }
+}
+
+/** 운동 캘린더 등록 실패 알림 표시 */
+function showCalendarRegistrationFailureAlert() {
+  Alert.alert(
+    i18n.t("workout.calendar.failureTitle"),
+    i18n.t("workout.calendar.failureBody"),
+  )
 }
 
 /** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
@@ -158,9 +182,16 @@ export async function registerWorkoutToCalendar(params: {
     return false
   }
 
-  const calendarId = await getOrCreateYepBuddyCalendarId()
+  let calendarId: string | null = null
+
+  try {
+    calendarId = await getOrCreateYepBuddyCalendarId()
+  } catch {
+    calendarId = null
+  }
 
   if (!calendarId) {
+    showCalendarRegistrationFailureAlert()
     return false
   }
 
@@ -187,6 +218,7 @@ export async function registerWorkoutToCalendar(params: {
       location: eventLocation,
     })
   } catch {
+    showCalendarRegistrationFailureAlert()
     return false
   }
 

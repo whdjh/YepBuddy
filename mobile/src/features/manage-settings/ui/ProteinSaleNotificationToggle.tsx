@@ -5,7 +5,7 @@ import {
   disableProteinSaleNotifications,
   getProteinSaleNotificationEnabled,
   scheduleProteinSaleNotifications,
-} from "@/shared/lib/protein-sale-notification"
+} from "@/entities/protein"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { SettingsRow } from "./SettingsRow"

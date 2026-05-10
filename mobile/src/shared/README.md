@@ -438,31 +438,6 @@ useDebouncedEffect(
 | `NotificationPermissionRequestProvider` | 루트에서 상태 제공 |
 | `useNotificationPermissionRequestDone` | 안내 모달 표시 가능 여부 확인 |
 
-## Protein Sale Notification
-
-프로틴 세일 알림은 `shared/lib/protein-sale-notification` 아래에 있습니다.
-
-| 파일 | 역할 |
-| --- | --- |
-| `events.ts` | 세일 일정과 알림 예정일 계산 |
-| `scheduler.ts` | 권한 확인, 예약, 취소, 앱 시작 동기화 |
-| `storage.ts` | 알림 ON/OFF와 예약 ID 저장 |
-| `permissions.ts` | iOS 알림 권한 확인/요청 |
-| `handler.ts` | 알림 탭 처리와 `/protein` 이동 |
-| `index.ts` | 외부 공개 API |
-
-공개 API:
-
-| Export | 사용처 | 사이드 이펙트 |
-| --- | --- | --- |
-| `setupProteinSaleNotificationHandler` | `app/_layout.tsx` | 알림 응답 리스너 등록 |
-| `syncProteinSaleNotificationsIfEnabled` | `app/_layout.tsx` | enabled 상태면 권한 팝업 없이 재예약 |
-| `scheduleProteinSaleNotifications` | `ProteinSaleNotificationToggle` | 권한 요청/확인, 기존 예약 취소, 미래 알림 예약 |
-| `disableProteinSaleNotifications` | `ProteinSaleNotificationToggle` | enabled=false 저장, 예약 취소 |
-| `getProteinSaleNotificationEnabled` | toggle, scheduler | 저장된 ON/OFF 조회 |
-
-`scheduler.ts`는 알림 작업이 겹쳐 들어와도 앞 작업이 끝난 뒤 다음 작업을 처리합니다. 새 예약 중 실패하면 이미 잡은 알림을 직접 취소하고, 취소에 실패한 ID는 저장소에 남겨 다음 취소 때 다시 시도할 수 있게 합니다.
-
 ## i18n
 
 `i18n.ts`는 `expo-localization`으로 기기 언어를 읽고, 기본 언어와 fallback 언어는 `ko`로 둡니다.

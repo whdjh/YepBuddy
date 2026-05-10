@@ -360,11 +360,13 @@ features/
 - `getWorkoutPlaceReminderEnabled`, `setWorkoutPlaceReminderEnabled`, `disableWorkoutPlaceArrivalReminder`, `syncWorkoutPlaceArrivalReminder`
 - weekly routine defaults/types/constants/session resize API
 
+사용하는 `entities/protein` API:
+- 프로틴 세일 알림 scheduler/storage API
+
 사용하는 shared API:
 - `Main`, `IconButton`, `GlassSurface`
 - `useResolvedColorToken`, `semanticColorTokens`
 - `bodyPartLabel`, `bodyPartDetailLabel`
-- `shared/lib/protein-sale-notification` scheduler/storage API
 
 주요 side effect:
 - notification permission/schedule/cancel through entity or shared notification APIs
