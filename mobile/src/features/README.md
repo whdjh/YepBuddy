@@ -49,7 +49,7 @@ features/
 - `SummaryScreen`이 카드 레이아웃, 편집 상태, 데이터 hook, 주간 루틴 안내 prompt를 조합한다.
 - `useSummaryCardLayout`이 카드 순서/숨김 상태를 `AsyncStorage`에 저장한다.
 - `SummaryCardRows` → `EditableSummaryCardFrame` → `SummaryCardRenderer` 순서로 카드가 렌더링된다.
-- `SummaryCardRenderer`는 오늘 운동, 운동 시간, 세트 수, 최근 세션, 운동 시작, 이번 주 세션 카드를 분기한다.
+- `SummaryCardRenderer`는 오늘 운동, 운동 시간, 세트 수, 최근 세션, 운동 시작, 분할 루틴 카드를 분기한다.
 - 장소 도착 알림 pending prompt가 있으면 요약 화면 focus 시 확인 Alert를 띄우고 `/workout/countdown` 또는 `/workout/active`로 보낸다.
 - 주간 루틴 첫 안내는 `useWeeklyRoutineFeaturePrompt`가 `/settings?routineSetup=1`로 연결한다.
 

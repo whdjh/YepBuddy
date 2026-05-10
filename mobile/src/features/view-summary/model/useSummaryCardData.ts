@@ -8,6 +8,7 @@ import { useTodayCompleted } from "./useTodayCompleted"
 import { useTodaySummary } from "./useTodaySummary"
 import { buildWeeklySessionRows } from "./weeklySessionRows"
 import { getBodyPartsLabel, getRepresentativeBodyPart } from "./summaryHelpers"
+import { getRoutineProgressBadge } from "./routineProgressBadge"
 
 export function useSummaryCardData() {
   const router = useRouter()
@@ -47,6 +48,10 @@ export function useSummaryCardData() {
     bodyPartLabel,
     bodyPartDetailLabel,
   })
+  const routineProgress =
+    weeklyRoutinePlan.isRoutineEnabled
+      ? getRoutineProgressBadge(weeklyRoutinePlan.progress)
+      : undefined
 
   return {
     router,
@@ -64,5 +69,6 @@ export function useSummaryCardData() {
     todayCompleted,
     weeklySessions,
     weeklyRoutinePlan,
+    routineProgress,
   }
 }

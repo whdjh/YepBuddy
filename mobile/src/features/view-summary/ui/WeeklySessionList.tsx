@@ -7,6 +7,7 @@ import type { WeeklySessionRow } from "../model/weeklySessionRows"
 
 interface WeeklySessionListProps {
   sessions: WeeklySessionRow[]
+  progress?: { current: number; total: number }
   onMorePress?: () => void
   onSessionPress?: (sessionId: string) => void
   onLongPress?: () => void
@@ -14,18 +15,20 @@ interface WeeklySessionListProps {
 
 export function WeeklySessionList({
   sessions,
+  progress,
   onMorePress,
   onSessionPress,
   onLongPress,
 }: WeeklySessionListProps) {
   const { t } = useTranslation()
+  const badgeText = progress ? `${progress.current}/${progress.total}` : undefined
 
   return (
     <Pressable onLongPress={onLongPress} delayLongPress={450}>
       <Card variant="glass">
         <Card.Header
           label={t("summary.thisWeekSessions")}
-          more={t("summary.moreLink")}
+          badge={badgeText}
           chevron
           onMorePress={onMorePress}
         />
