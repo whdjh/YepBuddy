@@ -1,7 +1,6 @@
 import * as Notifications from "expo-notifications"
 import { router } from "expo-router"
-import { Platform } from "react-native"
-import { PROTEIN_SALE_NOTIFICATION_KIND } from "./scheduler"
+import { PROTEIN_SALE_NOTIFICATION_KIND } from "@/entities/protein"
 
 // 동일 알림 중복 처리 방지용 id 캐시
 const handledResponseIds = new Set<string>()
@@ -30,12 +29,8 @@ function handleProteinSaleNotificationResponse(
   }
 }
 
-// 알림 응답 리스너 등록 및 콜드스타트 응답 처리 — Android no-op, 언마운트 시 구독 해제 함수 반환
+// 알림 응답 리스너 등록 및 콜드스타트 응답 처리, 언마운트 시 구독 해제 함수 반환
 export function setupProteinSaleNotificationHandler(): () => void {
-  if (Platform.OS !== "ios") {
-    return () => {}
-  }
-
   handleProteinSaleNotificationResponse(
     Notifications.getLastNotificationResponse(),
   )

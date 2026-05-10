@@ -1,5 +1,10 @@
 import * as Notifications from "expo-notifications"
+import { Platform } from "react-native"
 import i18n from "@/shared/i18n/i18n"
+import {
+  ensureWorkoutReminderNotificationChannel,
+  WORKOUT_REMINDER_NOTIFICATION_CHANNEL_ID,
+} from "./notificationChannels"
 import {
   clearWorkoutReminderId,
   getWorkoutReminderEnabled,
@@ -27,6 +32,10 @@ function isNotificationPermissionGranted(
 async function getWorkoutReminderPermission({
   allowPrompt,
 }: SyncWorkoutReminderAtNightOptions) {
+  if (allowPrompt) {
+    await ensureWorkoutReminderNotificationChannel()
+  }
+
   const existing = await Notifications.getPermissionsAsync()
 
   if (isNotificationPermissionGranted(existing)) {
@@ -61,6 +70,23 @@ function getNextWorkoutReminderDate() {
   return reminderDate
 }
 
+/** 운동 리마인더 알림을 특정 날짜/시간에 한 번 울리도록 하는 trigger 객체를 만들어주는 헬퍼 */
+function getWorkoutReminderNotificationTrigger(date: Date) {
+  const trigger: Notifications.DateTriggerInput = {
+    type: Notifications.SchedulableTriggerInputTypes.DATE,
+    date,
+  }
+
+  if (Platform.OS !== "android") {
+    return trigger
+  }
+
+  return {
+    ...trigger,
+    channelId: WORKOUT_REMINDER_NOTIFICATION_CHANNEL_ID,
+  }
+}
+
 /** 기존 버전에서 예약됐을 수 있는 운동 리마인더 하나만 찾아 취소 */
 export async function cancelScheduledWorkoutReminder() {
   const identifier = await getWorkoutReminderId()
@@ -93,6 +119,7 @@ export async function syncWorkoutReminderAtNight(
     return false
   }
 
+  await ensureWorkoutReminderNotificationChannel()
   await cancelScheduledWorkoutReminder()
 
   const identifier = await Notifications.scheduleNotificationAsync({
@@ -103,10 +130,7 @@ export async function syncWorkoutReminderAtNight(
         kind: WORKOUT_REMINDER_NOTIFICATION_KIND,
       },
     },
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.DATE,
-      date: getNextWorkoutReminderDate(),
-    },
+    trigger: getWorkoutReminderNotificationTrigger(getNextWorkoutReminderDate()),
   })
 
   await saveWorkoutReminderId(identifier)

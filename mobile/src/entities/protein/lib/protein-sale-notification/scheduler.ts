@@ -1,6 +1,10 @@
 import * as Notifications from "expo-notifications"
 import { Platform } from "react-native"
 import i18n from "@/shared/i18n/i18n"
+import {
+  ensureProteinSaleNotificationChannel,
+  PROTEIN_SALE_NOTIFICATION_CHANNEL_ID,
+} from "./channels"
 import { buildProteinSaleNotificationPlans } from "./events"
 import {
   getProteinSaleNotificationPermissionGranted,
@@ -60,17 +64,27 @@ export function cancelProteinSaleNotifications(): Promise<void> {
   return runProteinSaleNotificationTask(cancelProteinSaleNotificationsNow)
 }
 
+function getProteinSaleNotificationTrigger(date: Date) {
+  const trigger: Notifications.DateTriggerInput = {
+    type: Notifications.SchedulableTriggerInputTypes.DATE,
+    date,
+  }
+
+  if (Platform.OS !== "android") {
+    return trigger
+  }
+
+  return {
+    ...trigger,
+    channelId: PROTEIN_SALE_NOTIFICATION_CHANNEL_ID,
+  }
+}
+
 /** 권한 모드에 따라 향후 세일 알림 전체를 재예약 */
 async function scheduleProteinSaleNotificationsNow({
   allowPrompt = true,
 }: ScheduleProteinSaleNotificationsOptions = {}): Promise<boolean> {
   const scheduledIds: string[] = []
-
-  if (Platform.OS !== "ios") {
-    await setProteinSaleNotificationEnabled(false).catch(() => undefined)
-    await cancelProteinSaleNotificationsNow().catch(() => undefined)
-    return false
-  }
 
   try {
     const granted = allowPrompt
@@ -82,6 +96,7 @@ async function scheduleProteinSaleNotificationsNow({
       return false
     }
 
+    await ensureProteinSaleNotificationChannel()
     await cancelProteinSaleNotificationsNow()
 
     const plans = buildProteinSaleNotificationPlans()
@@ -103,10 +118,7 @@ async function scheduleProteinSaleNotificationsNow({
             year: plan.year,
           },
         },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.DATE,
-          date: plan.notificationDate,
-        },
+        trigger: getProteinSaleNotificationTrigger(plan.notificationDate),
       })
 
       scheduledIds.push(id)

@@ -21,6 +21,7 @@ export {
   scheduleWorkoutReminder22h,
   syncWorkoutReminderAtNight,
 } from "./lib/reminder"
+export { ensureWorkoutSessionNotificationChannels } from "./lib/notificationChannels"
 export { registerWorkoutToCalendar } from "./lib/calendar"
 export {
   deleteStoredWorkoutSession,
