@@ -42,7 +42,10 @@
     },
     "workoutPlaceReminder": {
       "title": "Workout Place Arrival Reminder",
-      "body": "When you arrive near a place where you have worked out at least twice, we will suggest starting a workout."
+      "body": "When you arrive near a place where you have worked out at least twice, we will suggest starting a workout.",
+      "backgroundPermissionTitle": "Background Location Permission Needed",
+      "backgroundPermissionBody": "To detect arrival near workout places when the app is not open, change location access to Always on the next screen.",
+      "backgroundPermissionAction": "Open Permission Settings"
     }
   },
   "workoutPlaceReminder": {

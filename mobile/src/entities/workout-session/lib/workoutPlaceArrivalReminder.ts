@@ -1,8 +1,12 @@
 import * as Location from "expo-location"
 import * as Notifications from "expo-notifications"
 import * as TaskManager from "expo-task-manager"
-import { Platform } from "react-native"
+import { Alert, Platform } from "react-native"
 import i18n from "@/shared/i18n/i18n"
+import {
+  ensureWorkoutPlaceArrivalNotificationChannel,
+  WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID,
+} from "./notificationChannels"
 import {
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderGeofencePlaces,
@@ -19,7 +23,6 @@ export const WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE =
   "workout-place-arrival"
 
 const GEOFENCE_RADIUS_METERS = 150
-const ANDROID_NOTIFICATION_CHANNEL_ID = "workout-place-arrival"
 const handledResponseIds = new Set<string>()
 
 type SyncWorkoutPlaceArrivalReminderOptions = {
@@ -44,19 +47,43 @@ function isNotificationPermissionGranted(
   )
 }
 
-/** Android 로컬 알림 표시를 위한 채널을 준비한다. */
-async function ensureWorkoutPlaceArrivalNotificationChannel() {
+async function confirmAndroidBackgroundLocationRequest(): Promise<boolean> {
   if (Platform.OS !== "android") {
-    return
+    return true
   }
 
-  await Notifications.setNotificationChannelAsync(
-    ANDROID_NOTIFICATION_CHANNEL_ID,
-    {
-      name: i18n.t("settings.workoutPlaceReminder.title"),
-      importance: Notifications.AndroidImportance.DEFAULT,
-    },
-  )
+  return new Promise((resolve) => {
+    let settled = false
+    const settle = (value: boolean) => {
+      if (settled) {
+        return
+      }
+      settled = true
+      resolve(value)
+    }
+
+    Alert.alert(
+      i18n.t("settings.workoutPlaceReminder.backgroundPermissionTitle"),
+      i18n.t("settings.workoutPlaceReminder.backgroundPermissionBody"),
+      [
+        {
+          text: i18n.t("common.cancel"),
+          style: "cancel",
+          onPress: () => settle(false),
+        },
+        {
+          text: i18n.t(
+            "settings.workoutPlaceReminder.backgroundPermissionAction",
+          ),
+          onPress: () => settle(true),
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => settle(false),
+      },
+    )
+  })
 }
 
 /** 자동 경로에서는 현재 권한만 확인하고, 명시적 ON 경로에서만 권한을 요청한다. */
@@ -69,6 +96,7 @@ async function getWorkoutPlaceArrivalPermissions({
   )
 
   if (!notificationGranted && allowPrompt) {
+    await ensureWorkoutPlaceArrivalNotificationChannel()
     notificationGranted = isNotificationPermissionGranted(
       await Notifications.requestPermissionsAsync({
         ios: {
@@ -94,9 +122,14 @@ async function getWorkoutPlaceArrivalPermissions({
   let backgroundGranted = isPermissionGranted(backgroundPermission)
 
   if (!backgroundGranted && allowPrompt && foregroundGranted) {
-    backgroundGranted = isPermissionGranted(
-      await Location.requestBackgroundPermissionsAsync(),
-    )
+    const shouldRequestBackgroundPermission =
+      await confirmAndroidBackgroundLocationRequest()
+
+    if (shouldRequestBackgroundPermission) {
+      backgroundGranted = isPermissionGranted(
+        await Location.requestBackgroundPermissionsAsync(),
+      )
+    }
   }
 
   return notificationGranted && foregroundGranted && backgroundGranted
@@ -224,11 +257,11 @@ async function handleWorkoutPlaceArrivalEnter(placeId: string) {
         type: WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE,
         placeId,
       },
-      ...(Platform.OS === "android"
-        ? { channelId: ANDROID_NOTIFICATION_CHANNEL_ID }
-        : null),
     },
-    trigger: null,
+    trigger:
+      Platform.OS === "android"
+        ? { channelId: WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID }
+        : null,
   })
 }
 
