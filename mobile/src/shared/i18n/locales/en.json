@@ -217,7 +217,7 @@
     "workout": "Workout",
     "strengthTraining": "Strength Training",
     "startWorkout": "Start Workout",
-    "thisWeekSessions": "This Week",
+    "thisWeekSessions": "Routine Split",
     "moreLink": "More",
     "routineSettings": "Routine",
     "routineOn": "Routine ON",
@@ -234,7 +234,7 @@
       "sets": "Sets",
       "latestSession": "Latest Session",
       "startWorkout": "Start Workout",
-      "weeklySessions": "This Week"
+      "weeklySessions": "Routine Split"
     },
     "minuteUnit": "min",
     "setsUnit": "sets",

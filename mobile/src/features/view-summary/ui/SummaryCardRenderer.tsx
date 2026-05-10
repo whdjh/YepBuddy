@@ -27,6 +27,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     latestSessionDay,
     todayCompleted,
     weeklySessions,
+    routineProgress,
   } = data
 
   switch (cardId) {
@@ -88,6 +89,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
       return (
         <WeeklySessionList
           sessions={weeklySessions}
+          progress={routineProgress}
           onLongPress={onLongPress}
           onMorePress={() => router.push("/sessions")}
           onSessionPress={(sessionId) =>

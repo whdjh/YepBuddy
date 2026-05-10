@@ -86,19 +86,30 @@ function CardComponent(props: CardProps) {
 }
 
 /* Sub-components */
-/** 헤더: 라벨 + 선택적 더보기/셰브론 */
-function Header({ label, chevron, more, onMorePress }: {
+/** 헤더: 라벨 + 선택적 배지/더보기/셰브론 */
+function Header({ label, chevron, more, onMorePress, badge }: {
   label: string
   chevron?: boolean
   more?: string
   onMorePress?: () => void
+  badge?: string
 }) {
   const { fgSecondary, accent } = useCardColors()
   return (
-    <HStack>
+    <HStack spacing={6}>
       <SwiftText modifiers={[font({ size: 13, weight: "medium" }), foregroundStyle(fgSecondary)]}>
         {label}
       </SwiftText>
+      {badge && (
+        <SwiftText
+          modifiers={[
+            font({ size: 13, weight: "semibold" }),
+            foregroundStyle(accent),
+          ]}
+        >
+          {badge}
+        </SwiftText>
+      )}
       <Spacer />
       {more && (
         <SwiftText modifiers={[font({ size: 13, weight: "medium" }), foregroundStyle(fgSecondary)]}>
