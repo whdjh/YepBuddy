@@ -30,6 +30,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-asset",
       [
         "expo-splash-screen",
         {
@@ -73,6 +74,11 @@
         }
       ]
     ],
+    "extra": {
+      "eas": {
+        "projectId": "a6699f81-f2c2-4419-bbd1-e5b54e23ef77"
+      }
+    },
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
