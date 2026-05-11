@@ -3,6 +3,7 @@ import type { TFunction } from "i18next"
 import { router } from "expo-router"
 import { Alert } from "react-native"
 import type { WeeklyRoutinePlanResult } from "@/entities/workout-session"
+import { acceptWeeklyRoutineFeaturePrompt } from "./weeklyRoutineFeaturePromptActions"
 
 interface UseWeeklyRoutineFeaturePromptParams {
   notificationPermissionRequestDone: boolean
@@ -44,8 +45,13 @@ export function useWeeklyRoutineFeaturePrompt({
         {
           text: t("workout.weeklyRoutine.featurePrompt.accept"),
           onPress: () => {
-            closeFeatureAlert()
-            router.push("/settings?routineSetup=1")
+            void acceptWeeklyRoutineFeaturePrompt({
+              enableRoutine: weeklyRoutinePlan.enableRoutine,
+              closeFeatureAlert,
+              openRoutineSettings: () => {
+                router.push("/settings?routineSetup=1")
+              },
+            })
           },
         },
       ],
