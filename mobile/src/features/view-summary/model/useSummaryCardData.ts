@@ -50,7 +50,7 @@ export function useSummaryCardData() {
   })
   const routineProgress =
     weeklyRoutinePlan.isRoutineEnabled
-      ? getRoutineProgressBadge(weeklyRoutinePlan.progress)
+      ? getRoutineProgressBadge(weeklyRoutinePlan.cycleState)
       : undefined
 
   return {
