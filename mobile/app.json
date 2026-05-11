@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.juhun.yepbuddy",
+      "bundleIdentifier": "com.juhun.yepbuddy.app",
       "infoPlist": {
         "CFBundleDisplayName": "옙버디"
       }
