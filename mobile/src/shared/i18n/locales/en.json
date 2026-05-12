@@ -36,6 +36,17 @@
       "body": "Shows routine progress and suggested sessions in your journal and active workout screens.",
       "detail": "Details"
     },
+    "healthKit": {
+      "title": "Health Data",
+      "body": "Shows heart rate and calories during workouts, and saves completed workouts to Apple Health.",
+      "action": "Connect",
+      "connected": "Connected",
+      "deniedTitle": "Health Permission Needed",
+      "deniedBody": "Allow health data access to show heart rate and calories. If you already denied it, turn it back on from iOS Settings or the health permissions screen.",
+      "openSettings": "Open Settings",
+      "unavailableTitle": "Only Available on iOS",
+      "unavailableBody": "Health data connection is available on iPhone devices that support HealthKit."
+    },
     "workoutReminder": {
       "title": "Workout Reminder",
       "body": "We will remind you once at 22:00 on days when you have not logged a workout."
@@ -96,6 +107,9 @@
       "heartRate": "Heart Rate",
       "activeKcal": "Active Kilocalories",
       "totalKcal": "Total Kilocalories",
+      "heartRateWaiting": "Waiting for heart-rate signal",
+      "heartRatePermissionError": "Check Health permissions",
+      "heartRateSensorError": "Check heart-rate sensor connection",
       "bodyPart": "Body Part",
       "sets": "Sets",
       "setsUnit": "sets",

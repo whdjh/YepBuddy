@@ -1,6 +1,10 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { SymbolView } from "expo-symbols"
+import type {
+  WorkoutMetricSource,
+  WorkoutMetricStatus,
+} from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
 
@@ -8,11 +12,33 @@ interface StatsSectionProps {
   heartRate: number | null
   activeKcal: number
   totalKcal: number
+  liveMetricSource: WorkoutMetricSource
+  liveMetricStatus: WorkoutMetricStatus
+  liveMetricErrorCode: string | null
 }
 
-export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionProps) {
+export function StatsSection({
+  heartRate,
+  activeKcal,
+  totalKcal,
+  liveMetricSource,
+  liveMetricStatus,
+  liveMetricErrorCode,
+}: StatsSectionProps) {
   const { t } = useTranslation()
   const heartColor = useResolvedColorToken(semanticColorTokens.heart)
+  const shouldShowHeartRateStatus =
+    liveMetricSource !== "healthKitFallback" || liveMetricStatus !== "idle"
+
+  const heartRateStatusLabel = !shouldShowHeartRateStatus
+    ? null
+    : liveMetricStatus === "error"
+      ? liveMetricErrorCode === "healthkit_authorization_failed"
+        ? t("workout.active.heartRatePermissionError")
+        : t("workout.active.heartRateSensorError")
+      : liveMetricStatus === "waitingSensor"
+        ? t("workout.active.heartRateWaiting")
+        : null
 
   return (
     <>
@@ -29,6 +55,11 @@ export function StatsSection({ heartRate, activeKcal, totalKcal }: StatsSectionP
           />
         </View>
       </View>
+      {heartRateStatusLabel && (
+        <Text className="-mt-yb-6 mb-yb-7 px-yb-6 text-yb-label font-medium text-yb-fg-secondary">
+          {heartRateStatusLabel}
+        </Text>
+      )}
 
       {/* 칼로리 */}
       <View className="flex-row gap-yb-12 mb-yb-9 px-yb-6">

@@ -176,6 +176,9 @@ export function ActiveWorkoutContent() {
           heartRate={state.heartRate}
           activeKcal={state.activeKcal}
           totalKcal={state.totalKcal}
+          liveMetricSource={state.liveMetricSource}
+          liveMetricStatus={state.liveMetricStatus}
+          liveMetricErrorCode={state.liveMetricErrorCode}
         />
         {!routineProgress.isLoading && routineProgress.isRoutineEnabled && (
           <RoutineSessionPicker

@@ -9,7 +9,6 @@ import { Badge } from "@/shared/ui/Badge"
 import { Button } from "@/shared/ui/Button"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Card } from "@/shared/ui/Card"
-import { getSafeWebUrl, openWebUrl } from "@/shared/lib/legalLinks"
 import {
   buildProteinDetail,
   fetchProtein,
@@ -86,7 +85,6 @@ export function ProteinDetailScreen() {
 
   const price = protein?.price != null ? protein.price.toLocaleString() : "-"
   const pricePerGram = protein?.pricePerGram != null ? protein.pricePerGram.toLocaleString() : null
-  const purchaseUrl = getSafeWebUrl(protein?.purchaseUrl)
   const statusMessage = loading
     ? t("protein.loading")
     : error ?? t("protein.detail.notFound")
@@ -190,12 +188,7 @@ export function ProteinDetailScreen() {
         <Button
           variant="glass"
           label={t("protein.detail.buyNow")}
-          disabled={!purchaseUrl}
-          onPress={() => {
-            if (purchaseUrl) {
-              void openWebUrl(purchaseUrl)
-            }
-          }}
+          disabled
         />
       </View>
     </View>
