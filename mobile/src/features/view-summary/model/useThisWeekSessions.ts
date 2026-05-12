@@ -1,8 +1,6 @@
 import { useCallback } from "react"
-import {
-  getStoredWorkoutSessionsInRange,
-  type StoredWorkoutSession,
-} from "@/entities/workout-session"
+import { getStoredWorkoutSessionsInRange } from "@/entities/workout-session/model/sessionStorage"
+import type { StoredWorkoutSession } from "@/entities/workout-session/model/types"
 import { getThisWeekDateRange } from "@/shared/lib/date"
 import { useSummaryRefresh } from "./useSummaryRefresh"
 

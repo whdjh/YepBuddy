@@ -12,8 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   clearPendingWorkoutPlaceReminderPrompt,
   getPendingWorkoutPlaceReminderPrompt,
-  useWorkout,
-} from "@/entities/workout-session"
+} from "@/entities/workout-session/model/workoutPlaceReminderStorage"
+import { useWorkout } from "@/entities/workout-session/model/WorkoutContext"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"

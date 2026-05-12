@@ -6,28 +6,28 @@ export const buildLinePath = (points: ChartPoint[]) => {
   const validPoints = points.filter((point) => typeof point.y === "number")
   if (validPoints.length < 2) return null
 
-  const builder = Skia.PathBuilder.Make()
-  builder.moveTo(validPoints[0].x, validPoints[0].y as number)
+  const path = Skia.Path.Make()
+  path.moveTo(validPoints[0].x, validPoints[0].y as number)
   for (const point of validPoints.slice(1)) {
-    builder.lineTo(point.x, point.y as number)
+    path.lineTo(point.x, point.y as number)
   }
-  return builder.build()
+  return path
 }
 
 export const buildAreaPath = (points: ChartPoint[], y0: number) => {
   const validPoints = points.filter((point) => typeof point.y === "number")
   if (validPoints.length < 2) return null
 
-  const builder = Skia.PathBuilder.Make()
+  const path = Skia.Path.Make()
   const first = validPoints[0]
   const last = validPoints[validPoints.length - 1]
   if (!first || !last) return null
 
-  builder.moveTo(first.x, y0)
+  path.moveTo(first.x, y0)
   for (const point of validPoints) {
-    builder.lineTo(point.x, point.y as number)
+    path.lineTo(point.x, point.y as number)
   }
-  builder.lineTo(last.x, y0)
-  builder.close()
-  return builder.build()
+  path.lineTo(last.x, y0)
+  path.close()
+  return path
 }

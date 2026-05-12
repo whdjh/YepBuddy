@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from "expo-router"
 import { View } from "react-native"
-import { TempoScreen } from "@/features/use-tempo"
+import { TempoScreen } from "@/features/use-tempo/ui/TempoScreen"
 import { SettingsFab } from "@/shared/ui/SettingsFab"
 
 export default function TempoPage() {

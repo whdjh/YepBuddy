@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
-import { useWeeklyRoutinePlan } from "@/entities/workout-session"
+import { useWeeklyRoutinePlan } from "@/entities/workout-session/model/useWeeklyRoutinePlan"
 import { formatDateWithDay, bodyPartLabel, bodyPartDetailLabel } from "@/shared/lib/format"
 import { useLatestSession } from "./useLatestSession"
 import { useThisWeekSessions } from "./useThisWeekSessions"

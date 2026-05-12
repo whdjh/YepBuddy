@@ -1,5 +1,5 @@
-import type { StoredWorkoutSession } from "@/entities/workout-session"
-import { getWorkoutBodyPartSetLabel } from "@/entities/workout-session"
+import { getWorkoutBodyPartSetLabel } from "@/entities/workout-session/model/bodyPartSet"
+import type { StoredWorkoutSession } from "@/entities/workout-session/model/types"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
 
 export function getBodyPartsLabel(
