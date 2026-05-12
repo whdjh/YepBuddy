@@ -1,10 +1,10 @@
 import { useCallback } from "react"
 import { getLocalDateKey } from "@/shared/lib/date"
+import { getWorkoutSummariesForDate } from "@/entities/workout-session/api/healthKit"
 import {
   getStoredWorkoutSession,
   getStoredWorkoutSessionIdByDate,
-  getWorkoutSummariesForDate,
-} from "@/entities/workout-session"
+} from "@/entities/workout-session/model/sessionStorage"
 import {
   EMPTY_TODAY_SUMMARY,
   mergeTodaySummary,

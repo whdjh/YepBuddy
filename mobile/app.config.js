@@ -1,7 +1,6 @@
 const fs = require("node:fs")
 const path = require("node:path")
 
-const appJson = require("./app.json")
 // __dirname에 의존하지 않도록 app.json 위치를 기준으로 앱 경로를 계산합니다.
 const appRoot = path.dirname(require.resolve("./app.json"))
 
@@ -28,13 +27,13 @@ function loadEnvFile(filePath) {
 loadEnvFile(path.resolve(appRoot, "../.env.local"))
 loadEnvFile(path.resolve(appRoot, ".env.local"))
 
-module.exports = {
-  ...appJson.expo,
+module.exports = ({ config }) => ({
+  ...config,
   extra: {
-    ...appJson.expo.extra,
+    ...config.extra,
     supabaseUrl: process.env.EXPO_PUBLIC_SUPABASE_URL ?? process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? process.env.SUPABASE_ANON_KEY,
     privacyPolicyUrl: process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL,
     supportUrl: process.env.EXPO_PUBLIC_SUPPORT_URL,
   },
-}
+})

@@ -8,5 +8,13 @@
     "web": "bun run --env-file=../.env.local --env-file=.env.local --cwd web dev",
     "worker": "bun run --env-file=../.env.local --env-file=.env.local --cwd worker trackers/all.js"
   },
-  "packageManager": "pnpm@10.0.0"
+  "packageManager": "pnpm@10.0.0",
+  "pnpm": {
+    "overrides": {
+      "react-native-health>@expo/config-plugins": "55.0.8"
+    },
+    "onlyBuiltDependencies": [
+      "@shopify/react-native-skia"
+    ]
+  }
 }

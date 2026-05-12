@@ -2,8 +2,8 @@ import type {
   StoredWorkoutSession,
   WorkoutBodyPartSet,
   WorkoutHealthKitWorkout,
-} from "@/entities/workout-session"
-import { getStoredWorkoutSessionDurationMinutes } from "@/entities/workout-session"
+} from "@/entities/workout-session/model/types"
+import { getStoredWorkoutSessionDurationMinutes } from "@/entities/workout-session/lib/sessionMetrics"
 
 /** 메인 요약 화면에서 오늘 카드/통계가 함께 쓰는 계산 결과 타입 */
 export interface TodaySummary {

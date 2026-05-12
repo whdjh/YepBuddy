@@ -1,8 +1,6 @@
 import { useCallback } from "react"
-import {
-  getLatestStoredWorkoutSession,
-  type StoredWorkoutSession,
-} from "@/entities/workout-session"
+import { getLatestStoredWorkoutSession } from "@/entities/workout-session/model/sessionStorage"
+import type { StoredWorkoutSession } from "@/entities/workout-session/model/types"
 import { useSummaryRefresh } from "./useSummaryRefresh"
 
 export function useLatestSession() {

@@ -1,5 +1,5 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs"
-import { WorkoutNavigationGuard } from "@/features/do-workout"
+import { WorkoutNavigationGuard } from "@/features/do-workout/ui/WorkoutNavigationGuard"
 
 export default function TabLayout() {
   return (

@@ -1,6 +1,6 @@
 import { useCallback } from "react"
 import { getLocalDateKeyFromIso } from "@/shared/lib/date"
-import { getStoredWorkoutSessionIdByDate } from "@/entities/workout-session"
+import { getStoredWorkoutSessionIdByDate } from "@/entities/workout-session/model/sessionStorage"
 import { useSummaryRefresh } from "./useSummaryRefresh"
 
 export function useTodayCompleted() {

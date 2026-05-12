@@ -10,17 +10,19 @@ import { router, Stack } from "expo-router"
 import { useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
-  ensureWorkoutSessionNotificationChannels,
-  registerWorkoutPlaceArrivalNotificationHandler,
-  syncWorkoutPlaceArrivalReminder,
-  syncWorkoutReminderAtNight,
-  WorkoutProvider,
-} from "@/entities/workout-session"
-import {
   ensureProteinSaleNotificationChannel,
   syncProteinSaleNotificationsIfEnabled,
-} from "@/entities/protein"
-import { setupProteinSaleNotificationHandler } from "@/features/protein-sale-notification"
+} from "@/entities/protein/lib/protein-sale-notification"
+import { ensureWorkoutSessionNotificationChannels } from "@/entities/workout-session/lib/notificationChannels"
+import { syncWorkoutReminderAtNight } from "@/entities/workout-session/lib/reminder"
+import {
+  registerWorkoutPlaceArrivalNotificationHandler,
+  syncWorkoutPlaceArrivalReminder,
+} from "@/entities/workout-session/lib/workoutPlaceArrivalReminder"
+import {
+  WorkoutProvider,
+} from "@/entities/workout-session/model/WorkoutContext"
+import { setupProteinSaleNotificationHandler } from "@/features/protein-sale-notification/lib/handler"
 import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 
 export default function RootLayout() {
