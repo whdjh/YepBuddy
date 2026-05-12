@@ -5,6 +5,7 @@ import {
   readLiveWorkoutStats,
   resumeWorkoutSession,
   startWorkoutSession,
+  subscribeLiveWorkoutStats,
   useWorkout,
 } from "@/entities/workout-session"
 import { startHealthKitWorkoutSync } from "./healthKitWorkoutSync"
@@ -21,8 +22,10 @@ export function useHealthKitWorkout() {
       readLiveWorkoutStats,
       setLiveStats,
       startWorkoutSession,
+      subscribeLiveWorkoutStats,
+      workoutStartedAt: state.startedAt,
     })
-  }, [setLiveStats, state.phase])
+  }, [setLiveStats, state.phase, state.startedAt])
 
   const pauseWorkout = useCallback(
     () => pauseWorkoutSession().catch(() => undefined),

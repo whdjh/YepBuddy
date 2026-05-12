@@ -11,11 +11,12 @@ import type {
   WorkoutHealthKitWorkout,
   WorkoutLiveStats,
 } from "../model/types"
-import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
+import { healthKitFallbackProvider } from "./healthKitFallbackProvider"
+import { iphoneLiveWorkoutProvider } from "./iphoneLiveWorkoutProvider"
 
 const HEALTH_PERMISSIONS = {
   permissions: {
-    read: ["HeartRate", "ActiveEnergyBurned", "BasalEnergyBurned"],
+    read: ["HeartRate", "ActiveEnergyBurned", "BasalEnergyBurned", "Workout"],
     write: ["Workout"],
   },
 } as const
@@ -37,6 +38,7 @@ function hasHealthKitMethod(name: keyof typeof AppleHealthKit) {
   return typeof AppleHealthKit?.[name] === "function"
 }
 
+/** HealthKit 접근 상태 메모리/스토리지 조회 */
 async function getHealthKitAccessState() {
   if (healthKitAccessState !== undefined) {
     return healthKitAccessState
@@ -48,6 +50,7 @@ async function getHealthKitAccessState() {
   return healthKitAccessState
 }
 
+/** HealthKit 접근 상태 메모리/스토리지 저장 */
 async function saveHealthKitAccessState(state: HealthKitAccessState) {
   healthKitAccessState = state
   await AsyncStorage.setItem(HEALTH_KIT_ACCESS_STORAGE_KEY, state)
@@ -211,6 +214,7 @@ async function authorizeHealthKit() {
   })
 }
 
+/** HealthKit 초기화 상태 확인 및 선택적 권한 요청 */
 async function ensureHealthKitReady(options?: { prompt?: boolean }) {
   if (healthKitInitialized) {
     return true
@@ -237,19 +241,26 @@ export async function requestHealthKitAccess() {
 
 /** 운동 시작 시점에 HealthKit 권한/세션 사용 준비 */
 export async function startWorkoutSession() {
-  await ensureHealthKitReady({ prompt: true })
+  if (iphoneLiveWorkoutProvider.isAvailable()) {
+    return iphoneLiveWorkoutProvider.start()
+  }
+
+  const ready = await ensureHealthKitReady({ prompt: true })
+  if (!ready) {
+    return iphoneLiveWorkoutProvider.start()
+  }
+
+  return healthKitFallbackProvider.read()
 }
 
-/** pause는 앱 상태로만 관리하고 HealthKit에는 즉시 반영하지 않음 */
+/** 운동 일시정지를 HealthKit live session에도 반영 */
 export async function pauseWorkoutSession() {
-  // react-native-health만으로는 여기서 신뢰할 수 있는 실시간 pause API를 쓰기 어려우므로 우선 앱의 일시정지 상태만 유지하고, HealthKit은 종료 시점 저장으로 처리
-  return
+  return iphoneLiveWorkoutProvider.pause()
 }
 
-/** resume도 앱 상태로만 관리하고 HealthKit에는 즉시 반영하지 않음 */
+/** 운동 재개를 HealthKit live session에도 반영 */
 export async function resumeWorkoutSession() {
-  // react-native-health만으로는 여기서 신뢰할 수 있는 실시간 pause API를 쓰기 어려우므로 우선 앱의 일시정지 상태만 유지하고, HealthKit은 종료 시점 저장으로 처리
-  return
+  return iphoneLiveWorkoutProvider.resume()
 }
 
 /** 운동 종료 시 완료 구간을 HealthKit workout 하나로 저장 */
@@ -259,6 +270,12 @@ export async function endWorkoutSession(params: {
   activeKcal: number
   totalKcal: number
 }) {
+  const endedStats = await iphoneLiveWorkoutProvider.end()
+
+  if (endedStats.status === "ended") {
+    return true
+  }
+
   const ready = await ensureHealthKitReady()
   if (!ready || !hasHealthKitMethod("saveWorkout")) {
     return false
@@ -278,38 +295,32 @@ export async function endWorkoutSession(params: {
 }
 
 /** 최근 심박 샘플을 읽어 라이브 운동 수치 형태로 정리 */
-export async function readLiveWorkoutStats(): Promise<WorkoutLiveStats> {
-  const ready = await ensureHealthKitReady()
-  if (!ready || !hasHealthKitMethod("getHeartRateSamples")) {
-    return EMPTY_WORKOUT_LIVE_STATS
+export async function readLiveWorkoutStats(params?: {
+  startDate?: string
+}): Promise<WorkoutLiveStats> {
+  const nativeStats = await iphoneLiveWorkoutProvider.read(params)
+  if (nativeStats.status === "live" || nativeStats.status === "paused") {
+    return nativeStats
   }
 
-  return new Promise<WorkoutLiveStats>((resolve) => {
-    AppleHealthKit.getHeartRateSamples(
-      {
-        startDate: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
-        endDate: new Date().toISOString(),
-        limit: 1,
-      } as never,
-      (error: unknown, results?: { value?: number }[]) => {
-        if (error) {
-          resolve(EMPTY_WORKOUT_LIVE_STATS)
-          return
-        }
+  const ready = await ensureHealthKitReady()
+  if (!ready) {
+    return nativeStats
+  }
 
-        const sample = results?.[0]
-        const heartRate =
-          typeof sample?.value === "number" && Number.isFinite(sample.value)
-            ? Math.round(sample.value)
-            : null
-        resolve({
-          heartRate,
-          activeKcal: 0,
-          totalKcal: 0,
-        })
-      },
-    )
-  })
+  const sampledStats = await healthKitFallbackProvider.read(params)
+  if (nativeStats.heartRate != null || nativeStats.activeKcal > 0) {
+    return nativeStats
+  }
+
+  return sampledStats
+}
+
+/** live workout stats 이벤트 구독 */
+export function subscribeLiveWorkoutStats(
+  listener: (stats: WorkoutLiveStats) => void,
+) {
+  return iphoneLiveWorkoutProvider.subscribe(listener)
 }
 
 /** sessionId 근처의 HealthKit workout 하나를 찾아 결과 화면용 상세로 변환 */

@@ -3,6 +3,7 @@ import type {
   BodyPart,
   BodyPartDetail,
   WorkoutBodyPartSet,
+  WorkoutLiveStats,
   WorkoutLocation,
 } from "./types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "./types"
@@ -49,6 +50,14 @@ export interface WorkoutState {
   activeKcal: number
   /** 칼로리 정보 */
   totalKcal: number
+  /** 실시간 수치 제공 경로 */
+  liveMetricSource: WorkoutLiveStats["source"]
+  /** 실시간 수치 연결 상태 */
+  liveMetricStatus: WorkoutLiveStats["status"]
+  /** 마지막 실시간 수치 갱신 시각 */
+  liveMetricUpdatedAt: string | null
+  /** 실시간 수치 오류 코드 */
+  liveMetricErrorCode: string | null
 }
 
 interface StartRecordingPayload {
@@ -68,11 +77,7 @@ export type WorkoutAction =
   | { type: "SET_LOCATION"; payload: WorkoutLocation | null }
   | {
       type: "SET_LIVE_STATS"
-      payload: {
-        heartRate: number | null
-        activeKcal: number
-        totalKcal: number
-      }
+      payload: WorkoutLiveStats
     }
   | { type: "TOGGLE_BODY_PART"; payload: WorkoutBodyPartSet["part"] }
   | {
@@ -108,7 +113,13 @@ export const initialWorkoutState: WorkoutState = {
   bodyParts: [],
   memo: "",
   location: null,
-  ...EMPTY_WORKOUT_LIVE_STATS,
+  heartRate: EMPTY_WORKOUT_LIVE_STATS.heartRate,
+  activeKcal: EMPTY_WORKOUT_LIVE_STATS.activeKcal,
+  totalKcal: EMPTY_WORKOUT_LIVE_STATS.totalKcal,
+  liveMetricSource: EMPTY_WORKOUT_LIVE_STATS.source,
+  liveMetricStatus: EMPTY_WORKOUT_LIVE_STATS.status,
+  liveMetricUpdatedAt: EMPTY_WORKOUT_LIVE_STATS.updatedAt,
+  liveMetricErrorCode: EMPTY_WORKOUT_LIVE_STATS.errorCode ?? null,
 }
 
 export function workoutReducer(
@@ -157,6 +168,10 @@ export function workoutReducer(
         heartRate,
         activeKcal: normalizeCount(action.payload.activeKcal),
         totalKcal: normalizeCount(action.payload.totalKcal),
+        liveMetricSource: action.payload.source,
+        liveMetricStatus: action.payload.status,
+        liveMetricUpdatedAt: action.payload.updatedAt,
+        liveMetricErrorCode: action.payload.errorCode ?? null,
       }
     }
     // 운동 부위 토글 액션 처리

@@ -55,16 +55,38 @@ export interface StoredWorkoutSession {
   location: WorkoutLocation | null
 }
 
+export type WorkoutMetricSource =
+  | "iphoneLiveWorkout"
+  | "watchMirroredWorkout"
+  | "healthKitFallback"
+
+export type WorkoutMetricStatus =
+  | "idle"
+  | "starting"
+  | "waitingSensor"
+  | "live"
+  | "paused"
+  | "ended"
+  | "error"
+
 export interface WorkoutLiveStats {
   heartRate: number | null
   activeKcal: number
   totalKcal: number
+  source: WorkoutMetricSource
+  status: WorkoutMetricStatus
+  updatedAt: string | null
+  errorCode?: string | null
 }
 
 export const EMPTY_WORKOUT_LIVE_STATS: WorkoutLiveStats = {
   heartRate: null,
   activeKcal: 0,
   totalKcal: 0,
+  source: "healthKitFallback",
+  status: "idle",
+  updatedAt: null,
+  errorCode: null,
 }
 
 export interface WorkoutHeartRateSample {

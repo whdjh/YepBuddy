@@ -7,10 +7,22 @@ export {
   endWorkoutSession,
   pauseWorkoutSession,
   readLiveWorkoutStats,
+  requestHealthKitAccess,
   resumeWorkoutSession,
   startWorkoutSession,
+  subscribeLiveWorkoutStats,
 } from "./api/healthKit"
+export {
+  normalizeWorkoutLiveStats,
+  resolveWorkoutMetricSource,
+  type WorkoutMetricProvider,
+  type WorkoutSensorPreference,
+} from "./api/workoutMetricsProvider"
 export { getWorkoutLocationOnce } from "./lib/location"
+export {
+  formatWorkoutLocationCoordinates,
+  formatWorkoutLocationLabel,
+} from "./lib/locationLabel"
 export {
   disableWorkoutPlaceArrivalReminder,
   registerWorkoutPlaceArrivalNotificationHandler,
@@ -59,6 +71,8 @@ export type {
   WorkoutHeartRateSample,
   WorkoutLiveStats,
   WorkoutLocation,
+  WorkoutMetricSource,
+  WorkoutMetricStatus,
 } from "./model/types"
 export type { WorkoutState } from "./model/workoutState"
 export { BODY_PART_DETAILS, EMPTY_WORKOUT_LIVE_STATS } from "./model/types"

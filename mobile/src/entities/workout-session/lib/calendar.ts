@@ -1,6 +1,5 @@
 import { Alert, Linking, Platform } from "react-native"
 import * as Calendar from "expo-calendar"
-import * as Location from "expo-location"
 import i18n from "@/shared/i18n/i18n"
 import {
   findYepBuddyCalendarId,
@@ -12,6 +11,7 @@ import {
   appendCardioDurationToTitle,
   getCardioDurationMinutes,
 } from "./cardioSession"
+import { formatWorkoutLocationLabel } from "./locationLabel"
 import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
 import type { WorkoutBodyPartSet, WorkoutLocation } from "../model/types"
 
@@ -111,37 +111,6 @@ async function getOrCreateYepBuddyCalendarId() {
   }
 }
 
-/** 좌표를 사람이 읽을 수 있는 주소 문자열로 변환. 실패 시 좌표 문자열로 폴백 */
-async function formatWorkoutCalendarLocation(
-  location: WorkoutLocation,
-): Promise<string> {
-  const fallback = `${location.lat.toFixed(5)}, ${location.lng.toFixed(5)}`
-
-  try {
-    const results = await Location.reverseGeocodeAsync({
-      latitude: location.lat,
-      longitude: location.lng,
-    })
-    const place = results[0]
-    if (!place) {
-      return fallback
-    }
-
-    const parts = [
-      place.region,
-      place.city,
-      place.district,
-      place.street,
-      place.name,
-    ].filter((value): value is string => Boolean(value && value.length > 0))
-
-    const unique = Array.from(new Set(parts))
-    return unique.length > 0 ? unique.join(" ") : fallback
-  } catch {
-    return fallback
-  }
-}
-
 /** 운동 캘린더 등록 실패 알림 표시 */
 function showCalendarRegistrationFailureAlert() {
   Alert.alert(
@@ -202,7 +171,7 @@ export async function registerWorkoutToCalendar(params: {
   }
 
   const eventLocation = params.location
-    ? await formatWorkoutCalendarLocation(params.location)
+    ? await formatWorkoutLocationLabel(params.location)
     : undefined
 
   try {

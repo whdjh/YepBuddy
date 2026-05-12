@@ -10,7 +10,7 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.juhun.yepbuddy.app",
-      "buildNumber": "4",
+      "buildNumber": "9",
       "infoPlist": {
         "CFBundleDisplayName": "옙버디",
         "ITSAppUsesNonExemptEncryption": false,
@@ -53,6 +53,7 @@
           }
         }
       ],
+      "./plugins/with-yb-workout-session",
       [
         "react-native-health",
         {
