@@ -10,8 +10,14 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.juhun.yepbuddy.app",
+      "buildNumber": "4",
       "infoPlist": {
-        "CFBundleDisplayName": "옙버디"
+        "CFBundleDisplayName": "옙버디",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCalendarsUsageDescription": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
+        "NSCalendarsFullAccessUsageDescription": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
+        "NSRemindersUsageDescription": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다.",
+        "NSRemindersFullAccessUsageDescription": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다."
       }
     },
     "android": {
@@ -62,7 +68,7 @@
         "expo-calendar",
         {
           "calendarPermission": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
-          "remindersPermission": false
+          "remindersPermission": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다."
         }
       ],
       [

@@ -10,6 +10,9 @@
   },
   "packageManager": "pnpm@10.0.0",
   "pnpm": {
+    "overrides": {
+      "react-native-health>@expo/config-plugins": "55.0.8"
+    },
     "onlyBuiltDependencies": [
       "@shopify/react-native-skia"
     ]
