@@ -2,14 +2,16 @@ import Foundation
 import HealthKit
 import React
 
-// React Native에서 YBWorkoutSession 이름으로 접근하는 iPhone HealthKit live workout 브리지
+// React Native YBWorkoutSession 모듈 브리지
 @objc(YBWorkoutSession)
 final class YBWorkoutSession: RCTEventEmitter {
   private let healthStore = HKHealthStore()
-  private var liveSession: AnyObject? // iOS 26 전용 API는 availability guard 안에서만 구체 타입으로 캐스팅해 사용
+  // iOS 26 전용 API 구체 타입 캐스팅 경계
+  private var liveSession: AnyObject?
   private var liveBuilder: AnyObject?
   private var hasListeners = false
-  private var pendingEndResolve: RCTPromiseResolveBlock?  // end()는 stopActivity -> delegate -> endCollection/finishWorkout 순서가 끝난 뒤 promise를 완료
+  // end() 비동기 완료 promise 보관
+  private var pendingEndResolve: RCTPromiseResolveBlock?
   private var pendingEndReject: RCTPromiseRejectBlock?
 
   @objc
@@ -22,7 +24,7 @@ final class YBWorkoutSession: RCTEventEmitter {
   }
 
   override func startObserving() {
-    // JS listener가 붙은 뒤에만 이벤트를 보내 React Native warning을 피함
+    // JS listener 등록 이후 이벤트 발행
     hasListeners = true
   }
 
@@ -35,7 +37,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     _ resolve: @escaping RCTPromiseResolveBlock,
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
-    // iPad/시뮬레이터처럼 HealthKit 데이터를 사용할 수 없는 런타임은 시작 전에 차단
+    // HealthKit 미지원 런타임 사전 차단
     guard HKHealthStore.isHealthDataAvailable() else {
       reject("healthkit_unavailable", "HealthKit is not available on this device.", nil)
       return
@@ -55,7 +57,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     _ resolve: @escaping RCTPromiseResolveBlock,
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
-    // JS 쪽 fallback 흐름을 유지할 수 있게 미지원/미시작 상태는 false로만 응답
+    // 미지원/미시작 상태 false 응답 계약
     guard #available(iOS 26.0, *) else {
       resolve(false)
       return
@@ -75,7 +77,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     _ resolve: @escaping RCTPromiseResolveBlock,
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
-    // pause와 같은 계약: 네이티브 세션이 없으면 실패가 아니라 no-op 결과를 돌려줌
+    // pause와 동일한 no-op 응답 계약
     guard #available(iOS 26.0, *) else {
       resolve(false)
       return
@@ -114,7 +116,7 @@ final class YBWorkoutSession: RCTEventEmitter {
 
     let endDate = Date()
     emitSessionState("ending")
-    // 실제 저장/정리는 HKWorkoutSessionDelegate의 .stopped 상태에서 이어짐
+    // .stopped delegate 상태 기반 저장/정리
     session.stopActivity(with: endDate)
   }
 
@@ -186,7 +188,8 @@ final class YBWorkoutSession: RCTEventEmitter {
     var stats = readStats(from: builder, isRunning: liveSession != nil)
     let hasHeartRate = !(stats["heartRate"] is NSNull)
     stats["source"] = "iphoneLiveWorkout"
-    stats["status"] = hasHeartRate ? "live" : status  // 센서 값이 아직 없으면 JS가 waiting/error 상태를 표시하고, 값이 들어오면 live로 승격
+    // 심박 센서 미수집 상태의 waiting/error payload
+    stats["status"] = hasHeartRate ? "live" : status
     stats["updatedAt"] = nowIsoString()
     if let errorCode, !hasHeartRate {
       stats["errorCode"] = errorCode
@@ -211,7 +214,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     if liveSession != nil {
-      // 중복 start 호출은 새 세션을 만들지 않고 현재 builder 상태를 다시 내보냄
+      // 중복 start 호출의 현재 builder 상태 재발행
       if let builder = liveBuilder as? HKLiveWorkoutBuilder {
         emitStats(
           from: builder,
@@ -262,7 +265,7 @@ final class YBWorkoutSession: RCTEventEmitter {
         session.delegate = self
         builder.delegate = self
 
-        // UI에서 표시하는 실시간 수치만 수집 대상으로 명시한다.
+        // UI 표시용 실시간 quantity 수집 대상
         [
           HKQuantityType.quantityType(forIdentifier: .heartRate),
           HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned),
@@ -282,7 +285,7 @@ final class YBWorkoutSession: RCTEventEmitter {
         self.emitSessionState("starting")
         self.log("YBWorkoutSession.prepare requested", details: startDate)
 
-        // prepare 직후 바로 시작하지 않고 짧게 기다려 HealthKit 세션 전환이 안정적으로 진행
+        // prepare 이후 HealthKit 세션 전환 안정화 대기
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { [weak self] in
           guard let self else {
             reject("workout_session_released", "Workout session module was released.", nil)
@@ -342,7 +345,7 @@ final class YBWorkoutSession: RCTEventEmitter {
       return
     }
 
-    // builder에 새 quantity sample이 들어올 때마다 JS로 최신 합산 값을 보냄
+    // 새 quantity sample 기반 최신 합산 값 발행
     emitStats(from: workoutBuilder, status: "live")
   }
 
@@ -365,7 +368,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     ])
 
     switch toState {
-    // running 진입 직후에는 심박 센서가 아직 비어 있을 수 있어 waiting 상태로 먼저 알림
+    // running 진입 직후 심박 센서 대기 상태 발행
     case .running:
       if let builder = liveBuilder as? HKLiveWorkoutBuilder {
         emitStats(
@@ -378,7 +381,7 @@ final class YBWorkoutSession: RCTEventEmitter {
       if let builder = liveBuilder as? HKLiveWorkoutBuilder {
         emitStats(from: builder, status: "paused")
       }
-    // stopActivity 호출의 결과 상태이며, 여기서 collection 종료와 workout 저장을 진행
+    // stopActivity 결과 상태의 collection 종료 및 workout 저장
     case .stopped:
       finishStoppedWorkout(at: date)
     case .ended:
@@ -401,8 +404,9 @@ final class YBWorkoutSession: RCTEventEmitter {
   @available(iOS 26.0, *)
   private func requestHealthKitAuthorization(
     completion: @escaping (Bool, Error?) -> Void
-  )     
-    var readTypes = Set<HKObjectType>() // live 표시용 quantity는 read 권한, 운동 기록 저장은 workout share 권한이 필요
+  ) {
+    // live 표시용 read 권한 및 workout 저장용 share 권한
+    var readTypes = Set<HKObjectType>()
     if let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) {
       readTypes.insert(heartRateType)
     }
@@ -442,7 +446,7 @@ final class YBWorkoutSession: RCTEventEmitter {
       return
     }
 
-    // HealthKit 권장 순서대로 수집 종료 후 workout을 저장하고, 마지막에 session.end()를 호출
+    // HealthKit collection 종료, workout 저장, session 종료 순서
     builder.endCollection(withEnd: endDate) { [weak self] success, error in
       guard let self else {
         return
@@ -501,7 +505,7 @@ final class YBWorkoutSession: RCTEventEmitter {
     let bpmUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
     let kcalUnit = HKUnit.kilocalorie()
 
-    // heartRate는 최근값, 칼로리는 세션 누적값을 앱의 LiveStats payload 형태로 맞춤
+    // heartRate 최근값 및 칼로리 세션 누적값
     let heartRate = heartRateType
       .flatMap { builder.statistics(for: $0)?.mostRecentQuantity() }
       .map { Int(round($0.doubleValue(for: bpmUnit))) }
@@ -538,7 +542,7 @@ final class YBWorkoutSession: RCTEventEmitter {
   }
 
   private func clearLiveWorkout() {
-    // 세션 종료/실패 후 delegate 참조를 먼저 끊어 늦게 도착한 HealthKit callback을 무시
+    // 세션 종료/실패 후 delegate 참조 해제
     if #available(iOS 26.0, *) {
       (liveSession as? HKWorkoutSession)?.delegate = nil
       (liveBuilder as? HKLiveWorkoutBuilder)?.delegate = nil
