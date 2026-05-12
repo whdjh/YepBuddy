@@ -17,7 +17,13 @@
         "NSCalendarsUsageDescription": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
         "NSCalendarsFullAccessUsageDescription": "완료한 운동 시간을 기기 캘린더에 일정으로 추가합니다.",
         "NSRemindersUsageDescription": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다.",
-        "NSRemindersFullAccessUsageDescription": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다."
+        "NSRemindersFullAccessUsageDescription": "운동 일정 기능 초기화 시 기기 미리 알림 권한 상태를 확인합니다.",
+        "UIBackgroundModes": [
+          "audio",
+          "fetch",
+          "location",
+          "remote-notification"
+        ]
       }
     },
     "android": {
@@ -77,6 +83,14 @@
           "enableBackgroundPlayback": true,
           "microphonePermission": false,
           "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true
+          }
         }
       ]
     ],
