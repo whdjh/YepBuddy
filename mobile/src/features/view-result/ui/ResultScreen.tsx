@@ -13,6 +13,8 @@ import { SymbolView } from "expo-symbols"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   deleteStoredWorkoutSession,
+  formatWorkoutLocationCoordinates,
+  formatWorkoutLocationLabel,
   getAllStoredWorkoutSessions,
   getStoredWorkoutSessionDurationSeconds,
   getWorkoutBodyPartSetLabel,
@@ -51,12 +53,35 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const stored = data?.stored
   const hk = data?.hk
   const [memo, setMemo] = useState(stored?.memo ?? "")
+  const [locationLabel, setLocationLabel] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setMemo(stored?.memo ?? "")
   }, [sessionId, stored?.memo])
+
+  useEffect(() => {
+    let cancelled = false
+
+    if (!stored?.location) {
+      setLocationLabel(null)
+      return
+    }
+
+    const fallback = formatWorkoutLocationCoordinates(stored.location)
+    setLocationLabel(fallback)
+
+    void formatWorkoutLocationLabel(stored.location).then((label) => {
+      if (!cancelled) {
+        setLocationLabel(label)
+      }
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [stored?.location])
 
   useEffect(() => {
     const initialMemo = stored?.memo ?? ""
@@ -96,9 +121,6 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const representativeBodyPart = stored?.bodyParts[0]?.part ?? null
   const startTime = stored?.startedAt ? formatTime(stored.startedAt) : "--"
   const endTime = stored?.completedAt ? formatTime(stored.completedAt) : "--"
-  const locationLabel = stored?.location
-    ? `${stored.location.lat.toFixed(4)}, ${stored.location.lng.toFixed(4)}`
-    : null
   const totalSets =
     stored?.bodyParts.reduce((sum, item) => sum + item.setCount, 0) ?? 0
   const avgHeartRate =
@@ -267,7 +289,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               <LocationMap
                 latitude={stored.location.lat}
                 longitude={stored.location.lng}
-                locationName={`${stored.location.lat.toFixed(4)}, ${stored.location.lng.toFixed(4)}`}
+                locationName={locationLabel ?? formatWorkoutLocationCoordinates(stored.location)}
               />
             </>
           )}
