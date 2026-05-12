@@ -1,0 +1,191 @@
+import {
+  NativeEventEmitter,
+  NativeModules,
+  Platform,
+  type EmitterSubscription,
+} from "react-native"
+import type { WorkoutLiveStats } from "../model/types"
+import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
+import {
+  normalizeWorkoutLiveStats,
+  type WorkoutMetricProvider,
+} from "./workoutMetricsProvider"
+
+// 네이티브 start 응답 payload
+interface NativeWorkoutStartResult {
+  started: boolean
+  source: "iphoneLiveWorkout"
+  status: WorkoutLiveStats["status"]
+}
+
+// 네이티브 end 응답 payload
+interface NativeWorkoutEndResult {
+  ended: boolean
+  source: "iphoneLiveWorkout"
+  status: "ended" | "error"
+  workoutUUID?: string | null
+}
+
+// YBWorkoutSession 브리지 메서드 계약
+interface NativeWorkoutSessionModule {
+  end: () => Promise<NativeWorkoutEndResult | boolean>
+  pause: () => Promise<boolean>
+  readLiveStats: () => Promise<Partial<WorkoutLiveStats>>
+  resume: () => Promise<boolean>
+  start: () => Promise<NativeWorkoutStartResult | boolean>
+}
+
+// iOS 전용 네이티브 모듈 참조
+const nativeModule =
+  Platform.OS === "ios"
+    ? (NativeModules.YBWorkoutSession as NativeWorkoutSessionModule | undefined)
+    : undefined
+
+// JS 이벤트 구독용 네이티브 emitter
+const nativeEmitter =
+  Platform.OS === "ios" && nativeModule
+    ? new NativeEventEmitter(NativeModules.YBWorkoutSession)
+    : null
+
+function fromStatus(
+  status: WorkoutLiveStats["status"],
+  errorCode?: string | null,
+): WorkoutLiveStats {
+  // 상태 전용 LiveStats 기본 payload
+  return {
+    ...EMPTY_WORKOUT_LIVE_STATS,
+    source: "iphoneLiveWorkout",
+    status,
+    updatedAt: new Date().toISOString(),
+    errorCode: errorCode ?? null,
+  }
+}
+
+// 네이티브 readLiveStats 안전 래퍼
+async function safeRead(): Promise<WorkoutLiveStats> {
+  if (!nativeModule) {
+    // 네이티브 모듈 부재 error payload
+    return normalizeWorkoutLiveStats({
+      source: "iphoneLiveWorkout",
+      status: "error",
+      errorCode: "native_module_unavailable",
+    })
+  }
+
+  try {
+    // 네이티브 partial stats 표준 payload 정규화
+    return normalizeWorkoutLiveStats({
+      ...(await nativeModule.readLiveStats()),
+      source: "iphoneLiveWorkout",
+    })
+  } catch {
+    // 네이티브 read 실패 error payload
+    return normalizeWorkoutLiveStats({
+      source: "iphoneLiveWorkout",
+      status: "error",
+      errorCode: "read_failed",
+    })
+  }
+}
+
+// iPhone live workout metric provider
+export const iphoneLiveWorkoutProvider: WorkoutMetricProvider = {
+  source: "iphoneLiveWorkout",
+
+  // provider 사용 가능 조건
+  isAvailable: () => Platform.OS === "ios" && Boolean(nativeModule),
+
+  async start() {
+    if (!nativeModule) {
+      // 네이티브 모듈 부재 error payload
+      return normalizeWorkoutLiveStats({
+        source: "iphoneLiveWorkout",
+        status: "error",
+        errorCode: "native_module_unavailable",
+      })
+    }
+
+    try {
+      const result = await nativeModule.start()
+      if (typeof result === "boolean") {
+        // legacy boolean start 응답 호환
+        return fromStatus(result ? "starting" : "error")
+      }
+
+      // 네이티브 start 결과 표준 payload 정규화
+      return normalizeWorkoutLiveStats({
+        source: "iphoneLiveWorkout",
+        status: result.status,
+        errorCode: result.started ? null : "start_failed",
+      })
+    } catch {
+      return normalizeWorkoutLiveStats({
+        source: "iphoneLiveWorkout",
+        status: "error",
+        errorCode: "start_failed",
+      })
+    }
+  },
+
+  async pause() {
+    if (!nativeModule) {
+      return fromStatus("error", "native_module_unavailable")
+    }
+
+    // 네이티브 pause 실패의 error 상태 변환
+    const paused = await nativeModule.pause().catch(() => false)
+    return fromStatus(paused ? "paused" : "error", paused ? null : "pause_failed")
+  },
+
+  async resume() {
+    if (!nativeModule) {
+      return fromStatus("error", "native_module_unavailable")
+    }
+
+    // 네이티브 resume 실패의 error 상태 변환
+    const resumed = await nativeModule.resume().catch(() => false)
+    return fromStatus(
+      resumed ? "starting" : "error",
+      resumed ? null : "resume_failed",
+    )
+  },
+
+  async end() {
+    if (!nativeModule) {
+      return fromStatus("error", "native_module_unavailable")
+    }
+
+    const ended = await nativeModule.end().catch(() => false)
+    if (typeof ended === "boolean") {
+      // legacy boolean end 응답 호환
+      return fromStatus(ended ? "ended" : "error", ended ? null : "end_failed")
+    }
+
+    return fromStatus(ended.ended ? "ended" : "error")
+  },
+
+  read: safeRead,
+
+  subscribe(listener) {
+    if (!nativeEmitter) {
+      // 네이티브 emitter 부재 no-op unsubscribe
+      return () => undefined
+    }
+
+    // workoutStatsChanged 이벤트 구독 및 payload 정규화
+    const subscription: EmitterSubscription = nativeEmitter.addListener(
+      "workoutStatsChanged",
+      (payload: Partial<WorkoutLiveStats>) => {
+        listener(
+          normalizeWorkoutLiveStats({
+            ...payload,
+            source: "iphoneLiveWorkout",
+          }),
+        )
+      },
+    )
+
+    // React Native event subscription 해제
+    return () => subscription.remove()
+  },
+}
