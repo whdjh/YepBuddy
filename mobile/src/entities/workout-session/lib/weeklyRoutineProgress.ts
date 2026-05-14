@@ -1,8 +1,12 @@
 import type { StoredWorkoutSession, WorkoutBodyPartSet } from "../model/types"
 import type { RoutinePart, WeeklyRoutineSession } from "../model/weeklyRoutine"
 
-/** 루틴 슬롯의 진행 상태: 미시작 / 일부 완료 / 완전 완료 */
-export type WeeklyRoutineSlotStatus = "pending" | "partial" | "completed"
+/** 루틴 슬롯의 진행 상태: 미시작 / 일부 완료 / 완전 완료 / 이번 주 대체 완료 */
+export type WeeklyRoutineSlotStatus =
+  | "pending"
+  | "partial"
+  | "completed"
+  | "substituted"
 
 /** 하나의 루틴 슬롯에 대한 진행 정보 */
 export interface WeeklyRoutineSlotProgress {
@@ -40,14 +44,41 @@ function partOverlaps(required: RoutinePart, completed: WorkoutBodyPartSet) {
   return required.part === completed.part
 }
 
-/** 하나의 완료 세션이 루틴 세션의 모든 파트를 충족하는지 판단하고 루틴에 정의된 모든 part(+details)가 세션에 있어야 true
- */
+/** 실제 운동 부위가 루틴 세션의 모든 파트를 충족하는지 판단 */
+export function areBodyPartsMatchingRoutineSession(
+  bodyParts: WorkoutBodyPartSet[],
+  routineSession: WeeklyRoutineSession,
+) {
+  return routineSession.parts.every((required) =>
+    bodyParts.some((completed) => partMatches(required, completed)),
+  )
+}
+
+/** 하나의 완료 세션이 루틴 세션의 모든 파트를 충족하는지 판단 */
 export function isSessionMatchingRoutineSession(
   session: StoredWorkoutSession,
   routineSession: WeeklyRoutineSession,
 ) {
-  return routineSession.parts.every((required) =>
-    session.bodyParts.some((completed) => partMatches(required, completed)),
+  return areBodyPartsMatchingRoutineSession(
+    session.bodyParts,
+    routineSession,
+  )
+}
+
+/** 대체 완료 메타데이터가 특정 루틴 슬롯을 가리키는지 판단 */
+function isSessionSubstitutingRoutineSession(
+  session: StoredWorkoutSession,
+  routineSession: WeeklyRoutineSession,
+  index: number,
+) {
+  const substitution = session.routineSubstitution
+  if (!substitution) {
+    return false
+  }
+
+  return (
+    substitution.routineSessionId === routineSession.id &&
+    substitution.routineSessionIndex === index
   )
 }
 
@@ -82,6 +113,22 @@ export function buildWeeklyRoutineProgress(
 
   const slots = routineSessions.map<WeeklyRoutineSlotProgress>(
     (routineSession, index) => {
+      const substitutedSession = weekSessions.find(
+        (session) =>
+          !usedCompletedSessionIds.has(session.sessionId) &&
+          isSessionSubstitutingRoutineSession(session, routineSession, index),
+      )
+
+      if (substitutedSession) {
+        usedCompletedSessionIds.add(substitutedSession.sessionId)
+        return {
+          index,
+          routineSession,
+          matchedSession: substitutedSession,
+          status: "substituted",
+        }
+      }
+
       const matchedSession = weekSessions.find(
         (session) =>
           !usedCompletedSessionIds.has(session.sessionId) &&
@@ -112,7 +159,7 @@ export function buildWeeklyRoutineProgress(
   )
 
   const completedSessions = slots.filter(
-    (slot) => slot.status === "completed",
+    (slot) => slot.status === "completed" || slot.status === "substituted",
   ).length
 
   return {
@@ -131,7 +178,8 @@ export function getNextRoutineSuggestion(
   progress: WeeklyRoutineProgress,
 ): WeeklyRoutineSession | null {
   return (
-    progress.slots.find((slot) => slot.status !== "completed")
-      ?.routineSession ?? null
+    progress.slots.find(
+      (slot) => slot.status !== "completed" && slot.status !== "substituted",
+    )?.routineSession ?? null
   )
 }
