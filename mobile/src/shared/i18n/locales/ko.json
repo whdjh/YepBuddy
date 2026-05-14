@@ -56,7 +56,10 @@
       "body": "2번 이상 운동한 장소 근처에 도착하면 운동 시작을 제안해드릴게요.",
       "backgroundPermissionTitle": "백그라운드 위치 권한이 필요해요",
       "backgroundPermissionBody": "앱을 열지 않아도 운동 장소 근처 도착을 감지하려면 다음 화면에서 위치 권한을 항상 허용으로 바꿔주세요.",
-      "backgroundPermissionAction": "권한 설정하기"
+      "backgroundPermissionAction": "권한 설정하기",
+      "statusPermissionDenied": "위치 또는 알림 권한 확인이 필요해요.",
+      "statusRegistrationFailed": "장소 알림 등록에 실패했어요.",
+      "statusNoPlaces": "반복 운동 장소가 생기면 자동 등록됩니다."
     }
   },
   "workoutPlaceReminder": {

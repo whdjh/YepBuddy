@@ -11,10 +11,15 @@ import {
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderGeofencePlaces,
   getWorkoutPlaceReminderPlaces,
+  getWorkoutPlaceReminderSyncStatus,
   getWorkoutPlaceReminderTodayDateKey,
   markWorkoutPlaceReminderNotified,
   savePendingWorkoutPlaceReminderPrompt,
+  saveWorkoutPlaceReminderSyncEvent,
+  saveWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
+  type WorkoutPlaceReminderPlace,
+  type WorkoutPlaceReminderSyncStatusReason,
 } from "../model/workoutPlaceReminderStorage"
 
 export const WORKOUT_PLACE_ARRIVAL_TASK_NAME =
@@ -25,19 +30,39 @@ export const WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE =
 const GEOFENCE_RADIUS_METERS = 150
 const handledResponseIds = new Set<string>()
 
+/** 동기화 옵션 */
 type SyncWorkoutPlaceArrivalReminderOptions = {
   allowPrompt: boolean
 }
 
+/** Geofence task 데이터 */
 interface GeofencingTaskData {
   eventType: Location.GeofencingEventType
   region: Location.LocationRegion
 }
 
+/** 장소 알림 권한 상태 */
+interface WorkoutPlaceArrivalPermissionState {
+  granted: boolean
+  notificationGranted: boolean
+  foregroundLocationGranted: boolean
+  backgroundLocationGranted: boolean
+}
+
+/** 권한 거부 기본값 */
+const deniedPermissions: WorkoutPlaceArrivalPermissionState = {
+  backgroundLocationGranted: false,
+  foregroundLocationGranted: false,
+  granted: false,
+  notificationGranted: false,
+}
+
+/** 위치 권한 허용 여부 */
 function isPermissionGranted(status: { status: string; granted?: boolean }) {
   return status.granted === true || status.status === "granted"
 }
 
+/** 알림 권한 허용 여부 */
 function isNotificationPermissionGranted(
   permissions: Notifications.NotificationPermissionsStatus,
 ) {
@@ -47,6 +72,7 @@ function isNotificationPermissionGranted(
   )
 }
 
+/** Android 백그라운드 위치 권한 안내 */
 async function confirmAndroidBackgroundLocationRequest(): Promise<boolean> {
   if (Platform.OS !== "android") {
     return true
@@ -132,7 +158,53 @@ async function getWorkoutPlaceArrivalPermissions({
     }
   }
 
-  return notificationGranted && foregroundGranted && backgroundGranted
+  return {
+    backgroundLocationGranted: backgroundGranted,
+    foregroundLocationGranted: foregroundGranted,
+    granted: notificationGranted && foregroundGranted && backgroundGranted,
+    notificationGranted,
+  }
+}
+
+/** 오류 메시지 */
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
+}
+
+/** 동기화 상태 스냅샷 */
+async function saveSyncStatusSnapshot({
+  enabled,
+  errorMessage = null,
+  operational,
+  permissions = deniedPermissions,
+  places = [],
+  reason,
+}: {
+  enabled: boolean
+  errorMessage?: string | null
+  operational: boolean
+  permissions?: WorkoutPlaceArrivalPermissionState
+  places?: WorkoutPlaceReminderPlace[]
+  reason: WorkoutPlaceReminderSyncStatusReason
+}) {
+  const currentStatus = await getWorkoutPlaceReminderSyncStatus()
+  const now = new Date().toISOString()
+
+  await saveWorkoutPlaceReminderSyncStatus({
+    backgroundLocationGranted: permissions.backgroundLocationGranted,
+    enabled,
+    foregroundLocationGranted: permissions.foregroundLocationGranted,
+    geofencePlaceCount: places.length,
+    lastErrorMessage: errorMessage,
+    lastEventAt: currentStatus?.lastEventAt ?? null,
+    lastEventPlaceId: currentStatus?.lastEventPlaceId ?? null,
+    lastEventType: currentStatus?.lastEventType ?? null,
+    lastSyncedAt: now,
+    notificationGranted: permissions.notificationGranted,
+    operational,
+    reason,
+    registeredRegionIds: operational ? places.map((place) => place.id) : [],
+  })
 }
 
 /** 운동 장소 도착 알림을 완전히 끄고 geofence 등록을 중지한다. */
@@ -141,6 +213,11 @@ export async function disableWorkoutPlaceArrivalReminder() {
   await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
     () => undefined,
   )
+  await saveSyncStatusSnapshot({
+    enabled: false,
+    operational: false,
+    reason: "disabled",
+  })
 }
 
 /** enabled, 권한, 반복 장소 상태를 기준으로 OS geofence 등록을 맞춘다. */
@@ -151,13 +228,29 @@ export async function syncWorkoutPlaceArrivalReminder(
     await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
       () => undefined,
     )
+    await saveSyncStatusSnapshot({
+      enabled: false,
+      operational: false,
+      reason: "disabled",
+    })
     return false
   }
 
-  const granted = await getWorkoutPlaceArrivalPermissions(options)
+  const permissions = await getWorkoutPlaceArrivalPermissions(options)
 
-  if (!granted) {
-    await disableWorkoutPlaceArrivalReminder()
+  if (!permissions.granted) {
+    await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
+      () => undefined,
+    )
+    if (options.allowPrompt) {
+      await setWorkoutPlaceReminderEnabled(false)
+    }
+    await saveSyncStatusSnapshot({
+      enabled: !options.allowPrompt,
+      operational: false,
+      permissions,
+      reason: "permission-denied",
+    })
     return false
   }
 
@@ -170,22 +263,53 @@ export async function syncWorkoutPlaceArrivalReminder(
       () => undefined,
     )
     await setWorkoutPlaceReminderEnabled(true)
+    await saveSyncStatusSnapshot({
+      enabled: true,
+      operational: false,
+      permissions,
+      reason: "no-places",
+    })
     return true
   }
 
-  await Location.startGeofencingAsync(
-    WORKOUT_PLACE_ARRIVAL_TASK_NAME,
-    places.map((place) => ({
-      identifier: place.id,
-      latitude: place.latitude,
-      longitude: place.longitude,
-      radius: GEOFENCE_RADIUS_METERS,
-      notifyOnEnter: true,
-      notifyOnExit: false,
-    })),
-  )
+  try {
+    await Location.startGeofencingAsync(
+      WORKOUT_PLACE_ARRIVAL_TASK_NAME,
+      places.map((place) => ({
+        identifier: place.id,
+        latitude: place.latitude,
+        longitude: place.longitude,
+        notifyOnEnter: true,
+        notifyOnExit: true,
+        radius: GEOFENCE_RADIUS_METERS,
+      })),
+    )
+  } catch (error) {
+    await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
+      () => undefined,
+    )
+    if (options.allowPrompt) {
+      await setWorkoutPlaceReminderEnabled(false)
+    }
+    await saveSyncStatusSnapshot({
+      enabled: !options.allowPrompt,
+      errorMessage: getErrorMessage(error),
+      operational: false,
+      permissions,
+      places,
+      reason: "registration-failed",
+    })
+    return false
+  }
 
   await setWorkoutPlaceReminderEnabled(true)
+  await saveSyncStatusSnapshot({
+    enabled: true,
+    operational: true,
+    permissions,
+    places,
+    reason: "registered",
+  })
   return true
 }
 
@@ -269,12 +393,38 @@ if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
   TaskManager.defineTask<GeofencingTaskData>(
     WORKOUT_PLACE_ARRIVAL_TASK_NAME,
     async ({ data, error }) => {
-      if (error || data?.eventType !== Location.GeofencingEventType.Enter) {
+      if (error) {
+        await saveSyncStatusSnapshot({
+          enabled: await getWorkoutPlaceReminderEnabled(),
+          errorMessage: error.message,
+          operational: false,
+          reason: "registration-failed",
+        }).catch(() => undefined)
+        return
+      }
+
+      if (
+        data?.eventType !== Location.GeofencingEventType.Enter &&
+        data?.eventType !== Location.GeofencingEventType.Exit
+      ) {
         return
       }
 
       const placeId = data.region.identifier
       if (typeof placeId !== "string") {
+        return
+      }
+
+      await saveWorkoutPlaceReminderSyncEvent({
+        eventType:
+          data.eventType === Location.GeofencingEventType.Enter
+            ? "enter"
+            : "exit",
+        occurredAt: new Date().toISOString(),
+        placeId,
+      }).catch(() => undefined)
+
+      if (data.eventType !== Location.GeofencingEventType.Enter) {
         return
       }
 
