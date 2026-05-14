@@ -7,6 +7,7 @@ import type {
   WorkoutLocation,
 } from "./types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "./types"
+import { normalizeMetricCount } from "./metricNormalization"
 import type { RoutinePart } from "./weeklyRoutine"
 
 // 운동 세션이 화면에서 어떤 단계에 있는지
@@ -63,11 +64,6 @@ export interface WorkoutState {
 interface StartRecordingPayload {
   sessionId: string
   startedAt: string
-}
-
-/** 외부에서 들어온 실시간 수치를 음수 없는 정수 카운트로 정리 */
-function normalizeCount(value: number) {
-  return Number.isFinite(value) ? Math.max(0, Math.round(value)) : 0
 }
 
 // workoutReducer가 처리하는 액션 타입 목록
@@ -166,8 +162,8 @@ export function workoutReducer(
         // Apple HealthKit 같은 외부 소스에서 들어온 실시간 수치를 반영
         ...state,
         heartRate,
-        activeKcal: normalizeCount(action.payload.activeKcal),
-        totalKcal: normalizeCount(action.payload.totalKcal),
+        activeKcal: normalizeMetricCount(action.payload.activeKcal),
+        totalKcal: normalizeMetricCount(action.payload.totalKcal),
         liveMetricSource: action.payload.source,
         liveMetricStatus: action.payload.status,
         liveMetricUpdatedAt: action.payload.updatedAt,
