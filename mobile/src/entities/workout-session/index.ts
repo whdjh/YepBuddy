@@ -5,6 +5,7 @@ export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
 export {
   endWorkoutSession,
+  discardWorkoutSession,
   pauseWorkoutSession,
   readLiveWorkoutStats,
   requestHealthKitAccess,

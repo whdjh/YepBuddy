@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getLocalDateKeyFromIso, getTimestampMsFromIso } from "@/shared/lib/date"
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
+import { normalizeOptionalMetricCount } from "./metricNormalization"
 import {
   BODY_PART_DETAILS,
   type BodyPart,
@@ -21,8 +22,13 @@ const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
 const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
 let hasVerifiedStoredWorkoutDateKeys = false
 
-type PersistedWorkoutSession = Omit<StoredWorkoutSession, "cardioStartedAt"> &
-  Partial<Pick<StoredWorkoutSession, "cardioStartedAt">>
+type PersistedWorkoutSession = Omit<
+  StoredWorkoutSession,
+  "activeKcal" | "cardioStartedAt" | "totalKcal"
+> &
+  Partial<
+    Pick<StoredWorkoutSession, "activeKcal" | "cardioStartedAt" | "totalKcal">
+  >
 
 const BODY_PART_KEYS = Object.keys(BODY_PART_DETAILS) as BodyPart[]
 
@@ -244,6 +250,8 @@ function parseStoredWorkoutSession(value: string) {
     ...session,
     bodyParts,
     cardioStartedAt: session.cardioStartedAt ?? null,
+    activeKcal: normalizeOptionalMetricCount(session.activeKcal),
+    totalKcal: normalizeOptionalMetricCount(session.totalKcal),
     location: normalizeWorkoutLocation(session.location),
   }
 }

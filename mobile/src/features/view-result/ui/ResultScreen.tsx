@@ -260,7 +260,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
                   ? formatDuration(getStoredWorkoutSessionDurationSeconds(stored))
                   : null
             }
-            calories={hk?.activeKcal ?? null}
+            calories={hk?.activeKcal ?? stored?.activeKcal ?? null}
             totalSets={totalSets}
             avgHeartRate={avgHeartRate}
           />

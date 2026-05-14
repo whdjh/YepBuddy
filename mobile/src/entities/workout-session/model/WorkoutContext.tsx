@@ -17,7 +17,10 @@ import {
 } from "./sessionStorage"
 import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
 import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
-import { getWorkoutCompletedAt } from "../lib/workoutCompletion"
+import {
+  buildCompletedWorkoutSession,
+  getWorkoutCompletedAt,
+} from "../lib/workoutCompletion"
 import type {
   BodyPart,
   BodyPartDetail,
@@ -192,14 +195,21 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
     dispatch({ type: "COMPLETE", payload: { completedAt } })
 
-    const session: StoredWorkoutSession = {
-      sessionId: state.sessionId,
-      startedAt: state.startedAt,
+    const session = buildCompletedWorkoutSession(
+      {
+        activeKcal: state.activeKcal,
+        bodyParts: state.bodyParts,
+        cardioStartedAt: state.cardioStartedAt,
+        location: state.location,
+        memo: state.memo,
+        sessionId: state.sessionId,
+        startedAt: state.startedAt,
+        totalKcal: state.totalKcal,
+      },
       completedAt,
-      cardioStartedAt: state.cardioStartedAt ?? null,
-      bodyParts: state.bodyParts,
-      memo: state.memo,
-      location: state.location,
+    )
+    if (!session) {
+      return null
     }
 
     await saveCompletedWorkoutSession(session)
@@ -213,12 +223,14 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     return session
   }, [
     state.bodyParts,
+    state.activeKcal,
     state.cardioStartedAt,
     state.location,
     state.memo,
     state.pausedAt,
     state.sessionId,
     state.startedAt,
+    state.totalKcal,
   ])
 
   const resetWorkout = useCallback(async () => {

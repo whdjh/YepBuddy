@@ -50,6 +50,8 @@ export interface StoredWorkoutSession {
   startedAt: string
   completedAt: string
   cardioStartedAt: string | null
+  activeKcal: number | null
+  totalKcal: number | null
   bodyParts: WorkoutBodyPartSet[]
   memo: string
   location: WorkoutLocation | null

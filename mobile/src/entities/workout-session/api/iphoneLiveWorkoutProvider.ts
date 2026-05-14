@@ -26,8 +26,9 @@ interface NativeWorkoutEndResult {
   workoutUUID?: string | null
 }
 
-// YBWorkoutSession 브리지 메서드 계약
+// WorkoutSession 브리지 메서드 계약
 interface NativeWorkoutSessionModule {
+  discard: () => Promise<NativeWorkoutEndResult | boolean>
   end: () => Promise<NativeWorkoutEndResult | boolean>
   pause: () => Promise<boolean>
   readLiveStats: () => Promise<Partial<WorkoutLiveStats>>
@@ -38,13 +39,13 @@ interface NativeWorkoutSessionModule {
 // iOS 전용 네이티브 모듈 참조
 const nativeModule =
   Platform.OS === "ios"
-    ? (NativeModules.YBWorkoutSession as NativeWorkoutSessionModule | undefined)
+    ? (NativeModules.WorkoutSession as NativeWorkoutSessionModule | undefined)
     : undefined
 
 // JS 이벤트 구독용 네이티브 emitter
 const nativeEmitter =
   Platform.OS === "ios" && nativeModule
-    ? new NativeEventEmitter(NativeModules.YBWorkoutSession)
+    ? new NativeEventEmitter(NativeModules.WorkoutSession)
     : null
 
 function fromStatus(
@@ -86,6 +87,26 @@ async function safeRead(): Promise<WorkoutLiveStats> {
       errorCode: "read_failed",
     })
   }
+}
+
+// 진행 중인 iPhone live workout 세션을 저장 없이 폐기
+export async function discardIphoneLiveWorkout() {
+  if (!nativeModule) {
+    return fromStatus("error", "native_module_unavailable")
+  }
+
+  // 네이티브 discard 실패 시 false로 fallback
+  const discarded = await nativeModule.discard().catch(() => false)
+  if (typeof discarded === "boolean") {
+    // legacy boolean discard 응답 호환
+    return fromStatus(
+      discarded ? "ended" : "error",
+      discarded ? null : "discard_failed",
+    )
+  }
+
+  // 네이티브 discard 결과 표준 payload 변환
+  return fromStatus(discarded.ended ? "ended" : "error")
 }
 
 // iPhone live workout metric provider

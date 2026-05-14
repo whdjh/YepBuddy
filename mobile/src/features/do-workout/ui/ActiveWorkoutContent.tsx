@@ -42,6 +42,7 @@ export function ActiveWorkoutContent() {
     resetWorkout,
   } = useWorkout()
   const {
+    discardWorkout: discardHealthKitWorkout,
     endWorkout,
     pauseWorkout: pauseHealthKit,
     resumeWorkout: resumeHealthKit,
@@ -136,6 +137,7 @@ export function ActiveWorkoutContent() {
 
   const discardWorkoutAndGoHome = async () => {
     try {
+      await discardHealthKitWorkout().catch(() => false)
       await resetWorkout()
     } finally {
       router.replace("/")

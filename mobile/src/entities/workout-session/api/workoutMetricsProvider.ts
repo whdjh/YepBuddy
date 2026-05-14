@@ -4,6 +4,7 @@ import type {
   WorkoutMetricStatus,
 } from "../model/types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
+import { normalizeMetricCount } from "../model/metricNormalization"
 
 // 운동 센서 선택 옵션
 export type WorkoutSensorPreference = "auto" | "airpods" | "appleWatch"
@@ -31,13 +32,6 @@ interface PartialWorkoutLiveStats {
   errorCode?: string | null
 }
 
-// 음수/소수/비정상 count 값 정규화
-function normalizeCount(value: unknown) {
-  return typeof value === "number" && Number.isFinite(value)
-    ? Math.max(0, Math.round(value))
-    : 0
-}
-
 export function normalizeWorkoutLiveStats(
   stats: PartialWorkoutLiveStats,
 ): WorkoutLiveStats {
@@ -50,8 +44,8 @@ export function normalizeWorkoutLiveStats(
   // LiveStats 기본값 병합 및 숫자 필드 보정
   return {
     heartRate,
-    activeKcal: normalizeCount(stats.activeKcal),
-    totalKcal: normalizeCount(stats.totalKcal),
+    activeKcal: normalizeMetricCount(stats.activeKcal),
+    totalKcal: normalizeMetricCount(stats.totalKcal),
     source: stats.source ?? EMPTY_WORKOUT_LIVE_STATS.source,
     status: stats.status ?? EMPTY_WORKOUT_LIVE_STATS.status,
     updatedAt: stats.updatedAt ?? null,
