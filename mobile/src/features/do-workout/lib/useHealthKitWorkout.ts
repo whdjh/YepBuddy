@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react"
 import {
   endWorkoutSession,
+  discardWorkoutSession,
   pauseWorkoutSession,
   readLiveWorkoutStats,
   resumeWorkoutSession,
@@ -40,13 +41,18 @@ export function useHealthKitWorkout() {
       endWorkoutSession(params).catch(() => false),
     [],
   )
+  const discardWorkout = useCallback(
+    () => discardWorkoutSession().catch(() => false),
+    [],
+  )
 
   return useMemo(
     () => ({
+      discardWorkout,
       endWorkout,
       pauseWorkout,
       resumeWorkout,
     }),
-    [endWorkout, pauseWorkout, resumeWorkout],
+    [discardWorkout, endWorkout, pauseWorkout, resumeWorkout],
   )
 }

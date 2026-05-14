@@ -12,7 +12,10 @@ import type {
   WorkoutLiveStats,
 } from "../model/types"
 import { healthKitFallbackProvider } from "./healthKitFallbackProvider"
-import { iphoneLiveWorkoutProvider } from "./iphoneLiveWorkoutProvider"
+import {
+  discardIphoneLiveWorkout,
+  iphoneLiveWorkoutProvider,
+} from "./iphoneLiveWorkoutProvider"
 
 const HEALTH_PERMISSIONS = {
   permissions: {
@@ -242,7 +245,11 @@ export async function requestHealthKitAccess() {
 /** 운동 시작 시점에 HealthKit 권한/세션 사용 준비 */
 export async function startWorkoutSession() {
   if (iphoneLiveWorkoutProvider.isAvailable()) {
-    return iphoneLiveWorkoutProvider.start()
+    const stats = await iphoneLiveWorkoutProvider.start()
+    if (stats.status !== "error") {
+      await saveHealthKitAccessState("enabled").catch(() => undefined)
+    }
+    return stats
   }
 
   const ready = await ensureHealthKitReady({ prompt: true })
@@ -251,6 +258,11 @@ export async function startWorkoutSession() {
   }
 
   return healthKitFallbackProvider.read()
+}
+
+/** 저장하지 않고 운동을 취소할 때 HealthKit live session도 종료 */
+export async function discardWorkoutSession() {
+  return discardIphoneLiveWorkout()
 }
 
 /** 운동 일시정지를 HealthKit live session에도 반영 */
