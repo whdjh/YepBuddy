@@ -53,14 +53,19 @@ export {
   getPendingWorkoutPlaceReminderPrompt,
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderPlaces,
+  getWorkoutPlaceReminderSyncStatus,
   rebuildWorkoutPlaceReminderPlacesFromSessions,
   savePendingWorkoutPlaceReminderPrompt,
+  saveWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
   upsertWorkoutPlaceReminderPlaceFromSession,
 } from "./model/workoutPlaceReminderStorage"
 export type {
   PendingWorkoutPlaceReminderPrompt,
   WorkoutPlaceReminderPlace,
+  WorkoutPlaceReminderSyncEventType,
+  WorkoutPlaceReminderSyncStatus,
+  WorkoutPlaceReminderSyncStatusReason,
 } from "./model/workoutPlaceReminderStorage"
 export type {
   BodyPart,

@@ -50,7 +50,12 @@ export function useMonthWorkoutDates(
 
         const nextWorkoutDates = sessions.reduce<Record<string, DayWorkout>>(
           (accumulator, session: StoredWorkoutSession) => {
-            accumulator[getLocalDateKeyFromIso(session.startedAt)] = {
+            const dateKey = getLocalDateKeyFromIso(session.startedAt)
+            if (accumulator[dateKey]) {
+              return accumulator
+            }
+
+            accumulator[dateKey] = {
               sessionId: session.sessionId,
               bodyParts: getUniqueWorkoutBodyParts(session.bodyParts),
               hasCardio: Boolean(session.cardioStartedAt),

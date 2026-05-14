@@ -23,8 +23,9 @@
 - geofence 반경은 150m다.
 - `Location.startGeofencingAsync()`로 반복 운동 장소를 등록한다.
 - `TaskManager.defineTask()`는 앱 번들 로드 시 전역 scope에서 등록된다.
-- Enter 이벤트만 처리하고 Exit 이벤트는 알림을 보내지 않는다.
-- 장소 도착 알림 OFF 또는 권한 꺼짐 상태에서는 `Location.stopGeofencingAsync()`로 등록을 중지한다.
+- Enter 이벤트에서만 알림을 보내고, Exit 이벤트는 마지막 이벤트 상태만 저장한다.
+- 장소 도착 알림 OFF 상태에서는 `Location.stopGeofencingAsync()`로 등록을 중지한다.
+- 권한이 꺼진 자동 동기화에서는 사용자 enabled 값은 유지하고 실제 등록 가능 상태만 `operational: false`로 저장한다.
 
 ## 4. 권한 원칙
 
@@ -33,7 +34,7 @@
 - Android 11+에서는 background location 권한 요청 시 시스템 설정 화면으로 이동한다. 앱은 설정 화면으로 보내기 전에 백그라운드 위치가 필요한 이유를 Alert로 설명한다.
 - 앱 시작, 운동 완료, 운동 기록 삭제 후 재동기화는 권한 상태만 확인한다.
 - 자동 동기화 경로는 OS 권한 프롬프트를 띄우지 않는다.
-- 자동 동기화에서 알림 또는 위치 권한이 꺼져 있으면 enabled 값을 false로 저장하고 geofence 등록을 중지한다.
+- 자동 동기화에서 알림 또는 위치 권한이 꺼져 있으면 geofence 등록을 중지하고 동기화 상태에 권한 실패를 저장한다.
 
 ## 5. 알림 규칙
 
@@ -61,3 +62,5 @@
   - 값: 반복 운동 장소 후보 배열(JSON)
 - `yb:workout-place-reminder:pending-prompt`
   - 값: 알림 탭 후 운동일지에서 표시할 pending prompt(JSON)
+- `yb:workout-place-reminder:sync-status`
+  - 값: enabled, operational, 권한 상태, 등록 region, 마지막 geofence 이벤트 상태(JSON)

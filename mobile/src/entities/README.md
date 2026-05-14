@@ -200,6 +200,7 @@ Workout session AsyncStorage:
 - `yb:healthkit:access`: `"enabled"` 또는 `"denied"`. HealthKit을 사용자가 명시적으로 허용했는지 캐시한다.
 - `yb:workout:current`: 진행 중 운동의 `WorkoutState` JSON. 앱 재시작 후 복구용이다.
 - `yb:workout:session:${sessionId}`: 완료된 `StoredWorkoutSession` JSON.
+- `yb:workout:sessions`: 완료 세션 `sessionId` 배열 JSON. 없거나 깨지면 실제 `yb:workout:session:*` 키를 스캔해 재생성한다.
 - `yb:workout:date:${YYYY-MM-DD}`: 해당 날짜 대표 `sessionId`.
 - `yb:workout:dates`: 완료 세션이 있는 날짜 키 배열 JSON. 없거나 깨지면 실제 `yb:workout:date:*` 키를 스캔해 재생성한다.
 - `yb:workout:reminder`: 예약된 운동 리마인더 notification identifier.
@@ -210,8 +211,7 @@ Workout session AsyncStorage:
 - `yb:workout-place-reminder:enabled`: `"true"` 또는 `"false"`.
 - `yb:workout-place-reminder:places`: `WorkoutPlaceReminderPlace[]` JSON. 반복 운동 장소 후보다.
 - `yb:workout-place-reminder:pending-prompt`: `PendingWorkoutPlaceReminderPrompt` JSON. 장소 도착 알림을 탭한 뒤 요약 화면에서 운동 시작 확인을 띄우기 위한 값이다.
-
-현재 날짜별 인덱스는 날짜당 `sessionId` 하나를 저장한다. 같은 날짜에 여러 완료 세션을 제품 요구사항으로 지원해야 한다면 이 저장 구조를 먼저 바꿔야 한다.
+- `yb:workout-place-reminder:sync-status`: `WorkoutPlaceReminderSyncStatus` JSON. 토글 enabled 값과 실제 geofence 등록 가능 상태를 분리해 저장한다.
 
 Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사용한다.
 
@@ -229,9 +229,9 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `getWorkoutLocationOnce`는 foreground location 권한을 요청하고 현재 위치를 한 번 읽는다.
 - `registerWorkoutToCalendar`는 캘린더 권한 요청, YepBuddy 캘린더 생성, 이벤트 생성, 권한 거부 시 설정 안내 Alert를 수행한다.
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
-- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 반복 장소 후보에 맞춰 geofence를 등록/중지한다.
+- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 반복 장소 후보에 맞춰 geofence를 등록/중지하고 동기화 상태를 저장한다.
 - `registerWorkoutPlaceArrivalNotificationHandler`는 장소 알림 탭을 pending prompt 저장으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
-- `TaskManager.defineTask`는 장소 도착 이벤트에서 하루 1회 알림을 예약한다.
+- `TaskManager.defineTask`는 장소 Enter 이벤트에서 하루 1회 알림을 예약하고 Enter/Exit 이벤트 상태를 저장한다.
 - `fetch*Protein*` 함수는 Supabase network 요청을 수행하고 실패 시 `Error`를 throw한다.
 
 ## 에러 처리 기준

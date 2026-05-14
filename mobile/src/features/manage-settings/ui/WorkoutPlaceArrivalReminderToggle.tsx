@@ -4,8 +4,10 @@ import { useTranslation } from "react-i18next"
 import {
   disableWorkoutPlaceArrivalReminder,
   getWorkoutPlaceReminderEnabled,
+  getWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
   syncWorkoutPlaceArrivalReminder,
+  type WorkoutPlaceReminderSyncStatus,
 } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
@@ -19,15 +21,21 @@ export function WorkoutPlaceArrivalReminderToggle() {
 
   const [enabled, setEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [syncStatus, setSyncStatus] =
+    useState<WorkoutPlaceReminderSyncStatus | null>(null)
   const [updating, setUpdating] = useState(false)
 
   useEffect(() => {
     let cancelled = false
 
-    void getWorkoutPlaceReminderEnabled()
-      .then((storedEnabled) => {
+    void Promise.all([
+      getWorkoutPlaceReminderEnabled(),
+      getWorkoutPlaceReminderSyncStatus(),
+    ])
+      .then(([storedEnabled, storedSyncStatus]) => {
         if (!cancelled) {
           setEnabled(storedEnabled)
+          setSyncStatus(storedSyncStatus)
         }
       })
       .catch(() => undefined)
@@ -63,11 +71,17 @@ export function WorkoutPlaceArrivalReminderToggle() {
         }
 
         setEnabled(synced)
+        setSyncStatus(
+          await getWorkoutPlaceReminderSyncStatus().catch(() => null),
+        )
         return
       }
 
       await disableWorkoutPlaceArrivalReminder()
       setEnabled(false)
+      setSyncStatus(
+        await getWorkoutPlaceReminderSyncStatus().catch(() => null),
+      )
     } catch {
       setEnabled(previousEnabled)
       await setWorkoutPlaceReminderEnabled(previousEnabled).catch(
@@ -78,10 +92,24 @@ export function WorkoutPlaceArrivalReminderToggle() {
     }
   }
 
+  const statusMessage =
+    enabled && syncStatus && !syncStatus.operational
+      ? syncStatus.reason === "permission-denied"
+        ? t("settings.workoutPlaceReminder.statusPermissionDenied")
+        : syncStatus.reason === "registration-failed"
+          ? t("settings.workoutPlaceReminder.statusRegistrationFailed")
+          : syncStatus.reason === "no-places"
+            ? t("settings.workoutPlaceReminder.statusNoPlaces")
+            : null
+      : null
+  const body = statusMessage
+    ? `${t("settings.workoutPlaceReminder.body")}\n${statusMessage}`
+    : t("settings.workoutPlaceReminder.body")
+
   return (
     <SettingsRow
       title={t("settings.workoutPlaceReminder.title")}
-      body={t("settings.workoutPlaceReminder.body")}
+      body={body}
       control={
         loading ? (
           <ActivityIndicator color={accent} />

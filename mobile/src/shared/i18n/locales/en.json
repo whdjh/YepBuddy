@@ -56,7 +56,10 @@
       "body": "When you arrive near a place where you have worked out at least twice, we will suggest starting a workout.",
       "backgroundPermissionTitle": "Background Location Permission Needed",
       "backgroundPermissionBody": "To detect arrival near workout places when the app is not open, change location access to Always on the next screen.",
-      "backgroundPermissionAction": "Open Permission Settings"
+      "backgroundPermissionAction": "Open Permission Settings",
+      "statusPermissionDenied": "Location or notification permissions need attention.",
+      "statusRegistrationFailed": "Could not register place alerts.",
+      "statusNoPlaces": "Places will register after repeated workouts."
     }
   },
   "workoutPlaceReminder": {
