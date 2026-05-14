@@ -8,7 +8,13 @@ const {
 const plist = require("@expo/plist").default
 
 // Expo prebuild 앱 타깃 네이티브 브리지 파일
-const MODULE_FILES = ["YBWorkoutSession.swift", "YBWorkoutSessionBridge.m"]
+const MODULE_FILES = [
+  "WorkoutSessionModule.swift",
+  "WorkoutSessionBridge.m",
+  "LiveWorkoutSessionController.swift",
+  "WorkoutSessionPayload.swift",
+  "HealthKitWorkoutAuthorization.swift",
+]
 
 // Expo/RN PBXGroup 이름 fallback
 function findAppGroup(project, projectName) {
@@ -44,7 +50,7 @@ function normalizeHealthKitEntitlementsFile(entitlementsPath) {
 }
 
 // config plugin 체인 메모리상 entitlements 선보정
-module.exports = function withYBWorkoutSession(config) {
+module.exports = function withWorkoutSession(config) {
   config = withEntitlementsPlist(config, (config) => {
     normalizeHealthKitEntitlements(config.modResults)
 
@@ -71,7 +77,12 @@ module.exports = function withYBWorkoutSession(config) {
     const project = config.modResults
     const projectName = config.modRequest.projectName
     const iosRoot = config.modRequest.platformProjectRoot
-    const sourceRoot = path.join(config.modRequest.projectRoot, "plugins", "ios")
+    const sourceRoot = path.join(
+      config.modRequest.projectRoot,
+      "plugins",
+      "ios",
+      "workout-session",
+    )
     const appRoot = path.join(iosRoot, projectName)
     const appGroup = findAppGroup(project, projectName)
     const target = project.getFirstTarget().uuid
@@ -88,7 +99,7 @@ module.exports = function withYBWorkoutSession(config) {
     fs.mkdirSync(appRoot, { recursive: true })
 
     for (const fileName of MODULE_FILES) {
-      // plugins/ios 원본 파일의 prebuild 산출물 복사
+      // plugins/ios/workout-session 원본 파일의 prebuild 산출물 복사
       const sourcePath = path.join(sourceRoot, fileName)
       const destinationPath = path.join(appRoot, fileName)
       const projectPath = `${projectName}/${fileName}`

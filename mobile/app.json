@@ -53,7 +53,7 @@
           }
         }
       ],
-      "./plugins/with-yb-workout-session",
+      "./plugins/with-workout-session",
       [
         "react-native-health",
         {
