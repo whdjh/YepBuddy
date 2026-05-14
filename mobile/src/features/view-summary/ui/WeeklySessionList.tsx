@@ -59,7 +59,7 @@ export function WeeklySessionList({
                       <Card.Title>{session.bodyPart}</Card.Title>
                       <Card.Row spacing={4}>
                         <Card.Caption>{session.day}</Card.Caption>
-                        {session.status === "completed" && (
+                        {session.status !== "planned" && (
                           <>
                             <Card.Dot />
                             <Card.Caption>{`${session.durationMin}${t("summary.minuteUnit")}`}</Card.Caption>
@@ -76,7 +76,7 @@ export function WeeklySessionList({
                           ? t("workout.weeklyRoutine.status.pending")
                           : String(session.kcal)}
                       </Card.Accent>
-                      {session.status === "completed" && (
+                      {session.status !== "planned" && (
                         <Card.Caption size={11}>{t("summary.kcalUnit")}</Card.Caption>
                       )}
                     </Card.Column>

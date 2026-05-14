@@ -30,7 +30,7 @@ export function RoutineSessionPicker({
   const didAutoSelectRef = useRef(false)
 
   const hasAvailableRoutine = progress.slots.some(
-    (slot) => slot.status !== "completed",
+    (slot) => slot.status !== "completed" && slot.status !== "substituted",
   )
 
   useEffect(() => {
@@ -38,10 +38,17 @@ export function RoutineSessionPicker({
       return
     }
 
+    const nextSuggestionSlot = progress.slots.find(
+      (slot) => slot.routineSession.id === nextSuggestion.id,
+    )
+    if (!nextSuggestionSlot) {
+      return
+    }
+
     didAutoSelectRef.current = true
-    setSelectedSessionId(nextSuggestion.id)
-    onSelectSlot(nextSuggestion.parts)
-  }, [nextSuggestion, onSelectSlot])
+    setSelectedSessionId(nextSuggestionSlot.routineSession.id)
+    onSelectSlot(nextSuggestionSlot.routineSession.parts)
+  }, [nextSuggestion, onSelectSlot, progress.slots])
 
   const handleSelectSlot = (routineSession: WeeklyRoutineSession) => {
     setSelectedSessionId(routineSession.id)
@@ -61,7 +68,8 @@ export function RoutineSessionPicker({
           contentContainerClassName="flex-row gap-[10px] pl-1"
         >
           {progress.slots.map((slot) => {
-            const disabled = slot.status === "completed"
+            const disabled =
+              slot.status === "completed" || slot.status === "substituted"
             const active =
               !disabled && selectedSessionId === slot.routineSession.id
 
