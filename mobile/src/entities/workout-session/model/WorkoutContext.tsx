@@ -27,6 +27,7 @@ import type {
   StoredWorkoutSession,
   WorkoutLiveStats,
   WorkoutLocation,
+  WorkoutRoutineSubstitution,
 } from "./types"
 import type { RoutinePart } from "./weeklyRoutine"
 import {
@@ -68,7 +69,9 @@ interface WorkoutContextValue {
   /** 일시정지된 운동을 다시 시작 */
   resumeWorkout: () => void
   /** 운동을 종료하고 완료 세션을 저장한 뒤 결과를 반환 */
-  completeWorkout: () => Promise<StoredWorkoutSession | null>
+  completeWorkout: (
+    routineSubstitution?: WorkoutRoutineSubstitution | null,
+  ) => Promise<StoredWorkoutSession | null>
   /** 운동 상태와 진행 중 스냅샷을 모두 초기화 */
   resetWorkout: () => Promise<void>
   /** 추천된 루틴 부위 목록으로 운동 부위를 일괄 교체 */
@@ -186,7 +189,9 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     })
   }, [])
 
-  const completeWorkout = useCallback(async () => {
+  const completeWorkout = useCallback(async (
+    routineSubstitution: WorkoutRoutineSubstitution | null = null,
+  ) => {
     if (!state.sessionId || !state.startedAt) {
       return null
     }
@@ -207,6 +212,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
         totalKcal: state.totalKcal,
       },
       completedAt,
+      routineSubstitution,
     )
     if (!session) {
       return null

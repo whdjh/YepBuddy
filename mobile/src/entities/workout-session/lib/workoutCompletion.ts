@@ -1,5 +1,8 @@
 import type { WorkoutState } from "../model/workoutState"
-import type { StoredWorkoutSession } from "../model/types"
+import type {
+  StoredWorkoutSession,
+  WorkoutRoutineSubstitution,
+} from "../model/types"
 import { normalizeOptionalMetricCount } from "../model/metricNormalization"
 
 type WorkoutCompletionState = Pick<WorkoutState, "pausedAt">
@@ -27,6 +30,7 @@ export function getWorkoutCompletedAt(
 export function buildCompletedWorkoutSession(
   state: CompletedWorkoutState,
   completedAt: string,
+  routineSubstitution: WorkoutRoutineSubstitution | null = null,
 ): StoredWorkoutSession | null {
   if (!state.sessionId || !state.startedAt) {
     return null
@@ -39,6 +43,7 @@ export function buildCompletedWorkoutSession(
     cardioStartedAt: state.cardioStartedAt ?? null,
     activeKcal: normalizeOptionalMetricCount(state.activeKcal),
     totalKcal: normalizeOptionalMetricCount(state.totalKcal),
+    routineSubstitution,
     bodyParts: state.bodyParts,
     memo: state.memo,
     location: state.location,

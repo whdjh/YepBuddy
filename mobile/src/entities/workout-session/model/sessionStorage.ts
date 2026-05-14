@@ -7,29 +7,40 @@ import {
   BODY_PART_DETAILS,
   type BodyPart,
   type BodyPartDetail,
+  type WorkoutRoutineSubstitution,
   type StoredWorkoutSession,
   type WorkoutBodyPartSet,
   type WorkoutLocation,
 } from "./types"
+import type { RoutinePart } from "./weeklyRoutine"
 
 // 현재 진행 중인 운동 세션 스냅샷을 저장하는 키
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
 // 다음 운동 리마인더 notification identifier를 저장하는 키
 export const WORKOUT_REMINDER_STORAGE_KEY = "yb:workout:reminder"
+// 운동 리마인더 사용 여부를 저장하는 키
 export const WORKOUT_REMINDER_ENABLED_STORAGE_KEY =
   "yb:workout:reminder:enabled"
+// 완료 세션이 존재하는 날짜 키 인덱스를 저장하는 키
 const WORKOUT_DATES_STORAGE_KEY = "yb:workout:dates"
+// 날짜별 대표 세션 ID를 가리키는 저장 키 prefix
 const WORKOUT_DATE_STORAGE_PREFIX = "yb:workout:date:"
+// 앱 실행 후 한 번이라도 날짜 키 인덱스를 실제 저장소와 검증했는지 플래그
 let hasVerifiedStoredWorkoutDateKeys = false
 
+// 과거 저장 포맷과의 호환을 위해 일부 필드를 옵셔널로 허용하는 디스크 표현 타입
 type PersistedWorkoutSession = Omit<
   StoredWorkoutSession,
-  "activeKcal" | "cardioStartedAt" | "totalKcal"
+  "activeKcal" | "cardioStartedAt" | "routineSubstitution" | "totalKcal"
 > &
   Partial<
-    Pick<StoredWorkoutSession, "activeKcal" | "cardioStartedAt" | "totalKcal">
+    Pick<
+      StoredWorkoutSession,
+      "activeKcal" | "cardioStartedAt" | "routineSubstitution" | "totalKcal"
+    >
   >
 
+// 지원하는 운동 부위 키 목록 (검증용 화이트리스트)
 const BODY_PART_KEYS = Object.keys(BODY_PART_DETAILS) as BodyPart[]
 
 /** 저장값이 현재 앱에서 지원하는 운동 부위 키인지 확인 */
@@ -101,6 +112,54 @@ function normalizeWorkoutLocation(value: unknown): WorkoutLocation | null {
   return {
     lat: location.lat,
     lng: location.lng,
+  }
+}
+
+/** 저장된 루틴 대체 정보를 검증하고 WorkoutRoutineSubstitution 형태로 정규화 */
+function normalizeRoutineSubstitution(
+  value: unknown,
+): WorkoutRoutineSubstitution | null {
+  if (!value || typeof value !== "object") {
+    return null
+  }
+
+  const substitution = value as Partial<WorkoutRoutineSubstitution>
+  const originalParts = Array.isArray(substitution.originalParts)
+    ? substitution.originalParts
+        .map((part): RoutinePart | null => {
+          if (!part || typeof part !== "object" || !isBodyPart(part.part)) {
+            return null
+          }
+
+          const details = Array.isArray(part.details)
+            ? part.details.filter((detail): detail is BodyPartDetail =>
+                isBodyPartDetail(part.part, detail),
+              )
+            : []
+
+          return {
+            part: part.part,
+            ...(details.length > 0 ? { details } : {}),
+          }
+        })
+        .filter((part): part is RoutinePart => part !== null)
+    : []
+
+  if (
+    typeof substitution.weekStartDateKey !== "string" ||
+    typeof substitution.routineSessionId !== "string" ||
+    typeof substitution.routineSessionIndex !== "number" ||
+    !Number.isInteger(substitution.routineSessionIndex) ||
+    originalParts.length === 0
+  ) {
+    return null
+  }
+
+  return {
+    weekStartDateKey: substitution.weekStartDateKey,
+    routineSessionId: substitution.routineSessionId,
+    routineSessionIndex: Math.max(0, substitution.routineSessionIndex),
+    originalParts,
   }
 }
 
@@ -252,6 +311,9 @@ function parseStoredWorkoutSession(value: string) {
     cardioStartedAt: session.cardioStartedAt ?? null,
     activeKcal: normalizeOptionalMetricCount(session.activeKcal),
     totalKcal: normalizeOptionalMetricCount(session.totalKcal),
+    routineSubstitution: normalizeRoutineSubstitution(
+      session.routineSubstitution,
+    ),
     location: normalizeWorkoutLocation(session.location),
   }
 }
