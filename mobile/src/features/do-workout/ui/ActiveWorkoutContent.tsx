@@ -2,7 +2,11 @@ import { useState } from "react"
 import { Alert, ScrollView } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
-import type { BodyPart, RoutinePart } from "@/entities/workout-session"
+import type {
+  BodyPart,
+  WorkoutState,
+  RoutinePart,
+} from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   registerWorkoutToCalendar,
@@ -22,6 +26,11 @@ import {
   BUTTONS_HEIGHT,
   DRAWER_VISIBLE_HEIGHT,
 } from "./WorkoutDrawer"
+
+type WorkoutLiveMetricsState = Pick<
+  WorkoutState,
+  "heartRate" | "activeKcal" | "totalKcal"
+>
 
 export function ActiveWorkoutContent() {
   const { t } = useTranslation()
@@ -49,6 +58,9 @@ export function ActiveWorkoutContent() {
   } = useHealthKitWorkout()
 
   const bottomPadding = Math.max(insets.bottom, 24)
+  const { heartRate, activeKcal, totalKcal }: WorkoutLiveMetricsState = state
+  const hasLiveMetrics =
+    heartRate != null || activeKcal > 0 || totalKcal > 0
 
   const handleSelectSlot = (parts: RoutinePart[]) => {
     applyBodyPartTemplate(parts)
@@ -83,8 +95,8 @@ export function ActiveWorkoutContent() {
     await endWorkout({
       startedAt: completedSession.startedAt,
       endedAt: completedSession.completedAt,
-      activeKcal: state.activeKcal,
-      totalKcal: state.totalKcal,
+      activeKcal,
+      totalKcal,
     }).catch(() => false)
     await syncWorkoutReminderAtNight({ allowPrompt: false }).catch(
       () => false,
@@ -174,14 +186,13 @@ export function ActiveWorkoutContent() {
         }}
         showsVerticalScrollIndicator={false}
       >
-        <StatsSection
-          heartRate={state.heartRate}
-          activeKcal={state.activeKcal}
-          totalKcal={state.totalKcal}
-          liveMetricSource={state.liveMetricSource}
-          liveMetricStatus={state.liveMetricStatus}
-          liveMetricErrorCode={state.liveMetricErrorCode}
-        />
+        {hasLiveMetrics && (
+          <StatsSection
+            heartRate={heartRate}
+            activeKcal={activeKcal}
+            totalKcal={totalKcal}
+          />
+        )}
         {!routineProgress.isLoading && routineProgress.isRoutineEnabled && (
           <RoutineSessionPicker
             progress={routineProgress.progress}

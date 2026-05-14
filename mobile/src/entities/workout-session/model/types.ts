@@ -1,3 +1,5 @@
+import type { RoutinePart } from "./weeklyRoutine"
+
 export type BodyPart =
   | "chest"
   | "back"
@@ -45,6 +47,13 @@ export interface WorkoutLocation {
   lng: number
 }
 
+export interface WorkoutRoutineSubstitution {
+  weekStartDateKey: string
+  routineSessionId: string
+  routineSessionIndex: number
+  originalParts: RoutinePart[]
+}
+
 export interface StoredWorkoutSession {
   sessionId: string
   startedAt: string
@@ -52,6 +61,7 @@ export interface StoredWorkoutSession {
   cardioStartedAt: string | null
   activeKcal: number | null
   totalKcal: number | null
+  routineSubstitution: WorkoutRoutineSubstitution | null
   bodyParts: WorkoutBodyPartSet[]
   memo: string
   location: WorkoutLocation | null

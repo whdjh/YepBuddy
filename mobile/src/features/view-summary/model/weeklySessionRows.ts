@@ -127,6 +127,16 @@ export function buildWeeklySessionRows(
 
   input.progress.slots.forEach((slot) => {
     if (
+      slot.status === "substituted" &&
+      slot.matchedSession &&
+      !emittedSessionIds.has(slot.matchedSession.sessionId)
+    ) {
+      emittedSessionIds.add(slot.matchedSession.sessionId)
+      rows.push(getActualSessionRow(slot.matchedSession, input))
+      return
+    }
+
+    if (
       slot.status === "completed" &&
       slot.matchedSession &&
       !emittedSessionIds.has(slot.matchedSession.sessionId)
@@ -136,7 +146,7 @@ export function buildWeeklySessionRows(
       return
     }
 
-    if (slot.status !== "completed") {
+    if (slot.status !== "completed" && slot.status !== "substituted") {
       rows.push(getPlannedRoutineRow(slot.routineSession, input))
     }
   })

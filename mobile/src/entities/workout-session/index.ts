@@ -74,6 +74,7 @@ export type {
   WorkoutLocation,
   WorkoutMetricSource,
   WorkoutMetricStatus,
+  WorkoutRoutineSubstitution,
 } from "./model/types"
 export type { WorkoutState } from "./model/workoutState"
 export { BODY_PART_DETAILS, EMPTY_WORKOUT_LIVE_STATS } from "./model/types"
@@ -116,6 +117,7 @@ export {
   saveWeeklyRoutineSettings,
 } from "./model/weeklyRoutineStorage"
 export {
+  areBodyPartsMatchingRoutineSession,
   buildWeeklyRoutineProgress,
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
