@@ -60,7 +60,7 @@
   │   ├─ foreground 위치 권한 확인/요청 가능
   │   ├─ background 위치 권한 확인/요청 가능
   │   ├─ 권한 허용 → 반복 운동 장소 geofence 등록 및 enabled true 저장
-  │   └─ 권한 거부 → enabled false 저장 및 geofence 중지
+  │   └─ 권한 거부 → enabled false 저장, geofence 중지, 동기화 상태 저장
   └─ 운동 장소 도착 알림 토글 OFF
       └─ enabled false 저장 및 geofence 중지
 
@@ -213,11 +213,11 @@ Android에서는 다음 notification channel을 사용한다.
 
 - 설정 화면에서 사용자가 `운동 장소 도착 알림`을 ON 하는 경우에만 알림 권한, foreground 위치 권한, background 위치 권한을 요청할 수 있다.
 - 앱 시작, 운동 종료, 운동 기록 삭제 후 재동기화에서는 현재 권한 상태만 확인한다.
-- 자동 동기화에서 권한이 꺼져 있으면 enabled 값을 false로 저장하고 geofence 등록을 중지한다.
+- 자동 동기화에서 권한이 꺼져 있으면 enabled 값은 유지하고 geofence 등록 중지와 동기화 상태 저장만 수행한다.
 
 알림 규칙:
 
-- OS geofence Enter 이벤트에서만 처리한다.
+- OS geofence Enter 이벤트에서만 알림을 보내고, Exit 이벤트는 마지막 이벤트 상태만 저장한다.
 - 같은 장소는 하루 1회만 알림을 보낸다.
 - 알림 data에는 `type: "workout-place-arrival"`과 `placeId`만 포함한다.
 - 알림 제목/본문에는 주소, 좌표, 운동 기록 상세를 포함하지 않는다.
@@ -255,6 +255,8 @@ Android에서는 다음 notification channel을 사용한다.
   - 값: 반복 운동 장소 후보 배열(JSON)
 - `yb:workout-place-reminder:pending-prompt`
   - 값: 알림 탭 후 운동일지에서 표시할 pending prompt(JSON)
+- `yb:workout-place-reminder:sync-status`
+  - 값: enabled, operational, 권한 상태, 등록 region, 마지막 geofence 이벤트 상태(JSON)
 
 ## 7. 현재 제약과 참고사항
 
