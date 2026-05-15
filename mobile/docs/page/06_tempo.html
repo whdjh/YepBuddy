@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>템포 페이지 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">06_tempo.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">템포 페이지 기능서</h1>
+        </div>
+        <a href="./06_tempo.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#entry" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">라우트 · 진입</a>
+          <a href="#defaults" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">기본 설정</a>
+          <a href="#controls" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">모드 · 설정 컨트롤</a>
+          <a href="#countdown" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">준비 카운트다운</a>
+          <a href="#phase-machine" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">템포 phase 머신</a>
+          <a href="#rest-completion" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">휴식 · 완료</a>
+          <a href="#feedback" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">사운드 · 햅틱 · 백그라운드</a>
+          <a href="#constraints" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">제약</a>
+          <a href="#code" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">관련 코드</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <!-- ======================== OVERVIEW ======================== -->
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            템포 페이지는 운동 중 수축/이완 리듬을 일정하게 유지하도록 돕는 단일 화면 타이머다. 사용자는 진행 순서와 시간, 횟수, 세트, 휴식 시간을 설정한 뒤 30초 준비 카운트다운을 거쳐 자동 진행되는 템포 안내를 받는다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">/tempo 진입 → 설정 → 30초 준비 → 수축/이완/count 반복 → 세트 간 휴식 → 완료 후 대기</code>
+          </p>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">라우트</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">/tempo</div>
+              <div class="mt-2 text-xs text-slate-500">src/app/(tabs)/tempo.tsx</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">기능 슬라이스</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">features/use-tempo</div>
+              <div class="mt-2 text-xs text-slate-500">UI, reducer, timer, calculator, sound</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">저장 정책</div>
+              <div class="mt-1 text-sm text-slate-200">저장 없음</div>
+              <div class="mt-2 text-xs text-slate-500">진행 상태, 완료 기록, 설정값 모두 미저장</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== ENTRY ======================== -->
+        <section id="entry">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">라우트 · 진입</h2>
+          <p class="mt-3 text-slate-300">
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">TempoPage</code>는 <code>TempoScreen</code>을 감싸는 엔트리다. 일반 탭 진입과 운동 중 복귀 진입을 <code>fromWorkout</code> 파라미터로 구분한다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div class="text-sm font-semibold text-emerald-200">일반 템포 탭</div>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-sm text-slate-300">
+                <li>하단 탭의 템포 화면으로 진입한다.</li>
+                <li>상단에는 템포 제목만 표시된다.</li>
+                <li>우하단 설정 FAB가 표시된다.</li>
+              </ul>
+              <div class="mt-3 font-mono text-[11px] text-slate-500">!isFromWorkout && &lt;SettingsFab /&gt;</div>
+            </div>
+            <div class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-amber-400"></span>
+                <div class="text-sm font-semibold text-amber-200">운동 중 템포 진입</div>
+              </div>
+              <ul class="mt-3 space-y-1.5 text-sm text-slate-300">
+                <li><code>fromWorkout=1</code>이면 뒤로가기 버튼을 표시한다.</li>
+                <li>뒤로가기는 <code>router.replace("/workout/active")</code>로 운동 화면을 복구한다.</li>
+                <li>설정 FAB는 숨겨 운동 복귀 동선을 우선한다.</li>
+              </ul>
+              <div class="mt-3 font-mono text-[11px] text-slate-500">showBackButton={isFromWorkout}</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== DEFAULTS ======================== -->
+        <section id="defaults">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">기본 설정</h2>
+          <p class="mt-3 text-slate-300">
+            화면 진입 시 <code>useReducer</code>는 <code>initialTempoState</code>를 사용한다. 이 값은 로컬 저장소에서 복원되지 않으며, 화면을 새로 열면 항상 같은 기본값으로 시작한다.
+          </p>
+
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">항목</th>
+                  <th class="px-4 py-2.5">기본값</th>
+                  <th class="px-4 py-2.5">코드 필드</th>
+                  <th class="px-4 py-2.5">의미</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr><td class="px-4 py-3 text-slate-300">진행 순서</td><td class="px-4 py-3">수축 먼저</td><td class="px-4 py-3 font-mono text-xs text-slate-400">modeIndex: 0</td><td class="px-4 py-3 text-xs text-slate-500">0 = contraction first, 1 = relaxation first</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">수축 시간</td><td class="px-4 py-3">3초</td><td class="px-4 py-3 font-mono text-xs text-slate-400">contraction: 3</td><td class="px-4 py-3 text-xs text-slate-500">초 단위</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">이완 시간</td><td class="px-4 py-3">3초</td><td class="px-4 py-3 font-mono text-xs text-slate-400">relaxation: 3</td><td class="px-4 py-3 text-xs text-slate-500">초 단위</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">횟수</td><td class="px-4 py-3">10회</td><td class="px-4 py-3 font-mono text-xs text-slate-400">reps: 10</td><td class="px-4 py-3 text-xs text-slate-500">세트당 반복 수</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">세트 수</td><td class="px-4 py-3">3세트</td><td class="px-4 py-3 font-mono text-xs text-slate-400">sets: 3</td><td class="px-4 py-3 text-xs text-slate-500">전체 세트 수</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">휴식</td><td class="px-4 py-3">60초</td><td class="px-4 py-3 font-mono text-xs text-slate-400">rest: 60</td><td class="px-4 py-3 text-xs text-slate-500">세트 사이 휴식</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== CONTROLS ======================== -->
+        <section id="controls">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">모드 · 설정 컨트롤</h2>
+          <p class="mt-3 text-slate-300">
+            모드 선택과 스테퍼 설정은 시작 전에는 조작 가능하고, 타이머가 실행 중이면 <code>pointerEvents="none"</code>와 <code>opacity-40</code>으로 잠긴다. 시작 버튼도 실행 중에는 렌더링되지 않는다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">진행 모드</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>수축 먼저: 수축 → 이완 → count</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>이완 먼저: 이완 → 수축 → count</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>선택 버튼은 <code>accent</code>/<code>glass</code> variant로 상태를 표시한다.</span></li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">스테퍼 규칙</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>수축/이완/횟수/세트는 <code>-1</code>, <code>+1</code> 단위.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>휴식은 <code>-10</code>, <code>-1</code>, <code>+1</code>, <code>+10</code> 조작을 지원한다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>직접 텍스트 입력은 없다.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">값</th>
+                  <th class="px-4 py-2.5">최소값</th>
+                  <th class="px-4 py-2.5">최대값</th>
+                  <th class="px-4 py-2.5">보정 위치</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr><td class="px-4 py-3">수축</td><td class="px-4 py-3">1초</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 font-mono text-xs text-slate-400">Math.max(1, payload)</td></tr>
+                <tr><td class="px-4 py-3">이완</td><td class="px-4 py-3">1초</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 font-mono text-xs text-slate-400">Math.max(1, payload)</td></tr>
+                <tr><td class="px-4 py-3">횟수</td><td class="px-4 py-3">1회</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 font-mono text-xs text-slate-400">Math.max(1, payload)</td></tr>
+                <tr><td class="px-4 py-3">세트</td><td class="px-4 py-3">1세트</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 font-mono text-xs text-slate-400">Math.max(1, payload)</td></tr>
+                <tr><td class="px-4 py-3">휴식</td><td class="px-4 py-3">0초</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 font-mono text-xs text-slate-400">Math.max(0, payload)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== COUNTDOWN ======================== -->
+        <section id="countdown">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">준비 카운트다운</h2>
+          <p class="mt-3 text-slate-300">
+            시작 버튼을 누르면 곧바로 본 템포가 시작되지 않고 고정 30초 준비 단계로 들어간다. 이 단계는 사용자 설정으로 변경할 수 없다.
+          </p>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">화면 표시</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>상태 라벨은 <code>tempo.preparing</code>으로 표시된다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>중앙 링은 <code>rawElapsed / 30_000</code> 진행률을 사용한다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>중앙 숫자는 <code>Math.ceil((30_000 - rawElapsed) / 1000)</code>로 계산한 남은 초다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>현재 세트/횟수는 0으로 유지되어 하단 요약에는 대시가 보인다.</span></li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">10초 경고</div>
+              <p class="mt-3 text-sm leading-relaxed text-slate-300">
+                남은 시간이 10초가 되는 프레임에서 <code>playRestWarning()</code>을 호출한다. 같은 초 안에서 반복 호출되지 않도록 <code>prevPositionRef.lastTickSecond</code>로 초 단위 게이트를 둔다.
+              </p>
+              <div class="mt-3 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                경고 피드백: <code>rest-warning.mp3</code> + <code>Haptics.ImpactFeedbackStyle.Heavy</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== PHASE MACHINE ======================== -->
+        <section id="phase-machine">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">템포 phase 머신</h2>
+          <p class="mt-3 text-slate-300">
+            카운트다운 이후 위치 계산은 누적 tick이 아니라 <code>Date.now() - startedAt</code>에서 카운트다운 30초를 뺀 경과 시간으로 매 프레임 다시 계산한다. 핵심 계산은 <code>calculateTempoPosition</code>에 모여 있다.
+          </p>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">State / phase flow</div>
+            <div class="mermaid text-xs">
+graph TD
+  I[idle] -->|start| CD[countdown<br/>30 sec fixed]
+  CD -->|rawElapsed >= 30s| P{modeIndex}
+  P -->|0 contraction first| C[contraction]
+  P -->|1 relaxation first| R[relaxation]
+  C --> R2[relaxation]
+  R2 --> CNT[count<br/>1 sec]
+  R --> C2[contraction]
+  C2 --> CNT
+  CNT --> REP{rep complete?}
+  REP -->|more reps| P
+  REP -->|set complete| SET{last set?}
+  SET -->|no| REST[rest]
+  REST --> P
+  SET -->|yes| DONE[finish]
+  DONE --> I
+            </div>
+          </div>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Rep duration</div>
+              <div class="mt-2 font-mono text-sm text-slate-200">contraction + relaxation + 1000ms</div>
+              <p class="mt-2 text-xs text-slate-500">count phase는 매 반복 끝에 고정 1초다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Set duration</div>
+              <div class="mt-2 font-mono text-sm text-slate-200">repMs * reps</div>
+              <p class="mt-2 text-xs text-slate-500">마지막 세트를 제외하면 여기에 휴식 시간이 붙는다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Progress</div>
+              <div class="mt-2 font-mono text-sm text-slate-200">phaseElapsed / phaseDuration</div>
+              <p class="mt-2 text-xs text-slate-500">링은 현재 phase 기준 진행률만 표시한다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== REST / COMPLETION ======================== -->
+        <section id="rest-completion">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">휴식 · 완료</h2>
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <h3 class="text-lg font-semibold text-slate-100">세트 간 휴식</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>마지막 세트가 아니고 현재 세트의 모든 rep가 끝나면 <code>rest</code> phase로 들어간다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>휴식 시작 phase 변경 시 <code>playRestStart()</code>가 실행된다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span><code>remainingRest === 10</code>이면 10초 경고음/햅틱이 실행된다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span><code>rest=0</code>이면 계산상 휴식 구간 길이가 0이므로 다음 세트로 즉시 넘어간다.</span></li>
+              </ul>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-slate-100">전체 완료</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span><code>elapsedMs >= totalMs</code>이면 <code>isFinished</code>로 판정한다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span><code>stop()</code>으로 상태, 진행률, 카운트다운, RAF 참조를 초기화한다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>초기화 후 <code>playComplete()</code>로 성공 햅틱을 1회 시도한다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>완료 기록 저장, 결과 화면 이동, 통계 반영은 없다.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-5 rounded-md border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400">
+            <strong class="text-slate-300">UI nuance:</strong>
+            <code>useTempoTimer</code>는 <code>remainingRest</code>를 반환하지만 <code>TempoScreen</code>과 <code>TempoRingDisplay</code>는 이 값을 전달하거나 표시하지 않는다. 사용자는 휴식 phase 여부는 보지만 남은 휴식 초 숫자는 별도로 보지 못한다.
+          </div>
+        </section>
+
+        <!-- ======================== FEEDBACK ======================== -->
+        <section id="feedback">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">사운드 · 햅틱 · 백그라운드 타이밍</h2>
+          <p class="mt-3 text-slate-300">
+            오디오와 햅틱은 템포 계산과 분리되어 있으며, phase와 초 단위 게이트를 기준으로 호출된다. 오디오 초기화 실패는 콘솔 경고만 남기고 타이머 진행을 막지 않는다.
+          </p>
+
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">타이밍</th>
+                  <th class="px-4 py-2.5">사운드</th>
+                  <th class="px-4 py-2.5">햅틱</th>
+                  <th class="px-4 py-2.5">비고</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr><td class="px-4 py-3">수축 phase</td><td class="px-4 py-3 font-mono text-xs text-slate-400">pip.wav</td><td class="px-4 py-3">Medium impact</td><td class="px-4 py-3 text-xs text-slate-500">초당 최대 1회</td></tr>
+                <tr><td class="px-4 py-3">이완 phase</td><td class="px-4 py-3 font-mono text-xs text-slate-400">pik.wav</td><td class="px-4 py-3">Light impact</td><td class="px-4 py-3 text-xs text-slate-500">초당 최대 1회</td></tr>
+                <tr><td class="px-4 py-3">count phase</td><td class="px-4 py-3 font-mono text-xs text-slate-400">count/1.mp3 ... count/20.mp3</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 text-xs text-slate-500">21회 이상은 숫자 음성 없음</td></tr>
+                <tr><td class="px-4 py-3">휴식 시작</td><td class="px-4 py-3 font-mono text-xs text-slate-400">rest-start.mp3</td><td class="px-4 py-3">Warning notification</td><td class="px-4 py-3 text-xs text-slate-500">phase 변경 시</td></tr>
+                <tr><td class="px-4 py-3">준비/휴식 10초 전</td><td class="px-4 py-3 font-mono text-xs text-slate-400">rest-warning.mp3</td><td class="px-4 py-3">Heavy impact</td><td class="px-4 py-3 text-xs text-slate-500">remaining = 10</td></tr>
+                <tr><td class="px-4 py-3">완료</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3">Success notification</td><td class="px-4 py-3 text-xs text-slate-500">stop 후 호출</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Audio mode</div>
+              <p class="mt-2 text-sm text-slate-300"><code>expo-audio</code>에서 백그라운드 재생과 무음 모드 재생을 허용하고, 다른 오디오와는 mix 방식으로 동작하도록 설정한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">AppState active</div>
+              <p class="mt-2 text-sm text-slate-300">앱이 다시 active가 되면 기존 RAF를 취소하고 다음 프레임에서 시작 시각 기준 위치를 재계산한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Unmount</div>
+              <p class="mt-2 text-sm text-slate-300">화면 언마운트 시 RAF와 오디오 플레이어를 정리한다. 세션 복원용 상태 저장은 없다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== CONSTRAINTS ======================== -->
+        <section id="constraints">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">제약</h2>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">세션 제어</div>
+              <p class="mt-2 text-sm text-slate-300">시작 후 일시정지, 재개, 수동 종료 버튼이 없다. 완료되거나 화면을 벗어나야 세션이 끝난다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">저장 · 복원</div>
+              <p class="mt-2 text-sm text-slate-300">진행 중 스냅샷, 완료 기록, 마지막 설정값을 저장하지 않는다. 화면 재진입 시 기본 상태로 돌아온다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">입력 범위</div>
+              <p class="mt-2 text-sm text-slate-300">최소값만 있고 최대값 제한이 없다. 매우 큰 값은 긴 세션으로 그대로 계산된다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">오디오 범위</div>
+              <p class="mt-2 text-sm text-slate-300">숫자 음성은 1부터 20까지다. 21회 이상부터는 count phase가 진행되어도 숫자 음성이 재생되지 않는다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">준비 시간</div>
+              <p class="mt-2 text-sm text-slate-300">준비 카운트다운은 30초 고정이다. 사용자가 변경할 수 있는 UI나 상태 필드가 없다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">권한</div>
+              <p class="mt-2 text-sm text-slate-300">템포 화면 진입에는 별도 OS 권한이 필요하지 않는다. 오디오/햅틱 실패는 사용자 메시지 없이 진행된다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== CODE ======================== -->
+        <section id="code">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">관련 코드</h2>
+          <div class="mt-4 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">파일</th>
+                  <th class="px-4 py-2.5">역할</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/app/(tabs)/tempo.tsx</td><td class="px-4 py-3 text-slate-300">라우트 엔트리, 운동 중 진입 여부, 설정 FAB 표시 조건</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/ui/TempoScreen.tsx</td><td class="px-4 py-3 text-slate-300">화면 조립, 실행 중 입력 잠금, 시작 버튼 표시</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/ui/TempoModeButtons.tsx</td><td class="px-4 py-3 text-slate-300">수축 먼저/이완 먼저 선택 UI</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/ui/TempoSettings.tsx</td><td class="px-4 py-3 text-slate-300">스테퍼 입력, 휴식 jumpStep 10 처리</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/ui/TempoRingDisplay.tsx</td><td class="px-4 py-3 text-slate-300">상태 라벨, 원형 진행률, 현재 세트/횟수/구간 표시</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/model/tempoReducer.ts</td><td class="px-4 py-3 text-slate-300">기본값, 모드 보정, 최소값 clamp</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/lib/useTempoTimer.ts</td><td class="px-4 py-3 text-slate-300">실행 상태, countdown, RAF 루프, AppState 재동기화, 피드백 호출</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/lib/tempoCalculator.ts</td><td class="px-4 py-3 text-slate-300">elapsed 기반 phase, 세트/횟수, 휴식, 완료 계산</td></tr>
+                <tr><td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/use-tempo/lib/tempoSound.ts</td><td class="px-4 py-3 text-slate-300">오디오 플레이어, 카운트 음성, 햅틱 매핑, 리소스 정리</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== GAPS ======================== -->
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4" open>
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] md의 핵심 흐름은 현재 코드와 일치</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                기본값, 30초 준비 카운트다운, 수축/이완/count 순서, 세트 간 휴식, 완료 후 idle 초기화, 실행 중 입력 잠금은 코드와 맞다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10">
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[주의] md의 "템포 화면 마운트 시 오디오 모드 초기화" 표현은 정확히는 시작 시점</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                실제 코드는 <code>useTempoTimer.start()</code>에서 <code>initAudio()</code>를 호출한다. 화면 마운트 시에는 언마운트 cleanup effect만 등록된다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] 휴식 잔여 초는 계산되지만 UI에는 미노출</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                <code>useTempoTimer</code>는 <code>remainingRest</code>를 반환하지만 <code>TempoScreen</code>은 이 값을 <code>TempoRingDisplay</code>에 전달하지 않는다. 따라서 휴식 라벨과 링 진행률만 보인다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] count 음성은 20회까지만 있지만 진행 계산은 제한 없음</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                <code>COUNT_SOURCES</code>는 1~20 파일만 포함하고 <code>playCount</code>는 범위 밖이면 return한다. reducer에는 reps 최대값이 없으므로 21회 이상도 화면/타이머는 계속 진행된다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] 완료 시 "화면 상태 초기화 후 성공 햅틱" 순서</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                <code>useTempoTimer</code>는 <code>position.isFinished</code>일 때 <code>stop()</code>을 먼저 호출하고, 그 다음 <code>playComplete()</code>를 호출한다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>템포 페이지 기능서 · 자동 생성 HTML · 원본 <code>06_tempo.md</code></p>
+    </footer>
+
+    <script>
+      // active TOC highlight
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

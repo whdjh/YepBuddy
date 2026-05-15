@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>메인 화면 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">01_main.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">메인 화면 기능서</h1>
+        </div>
+        <a href="./01_main.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#entry" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">진입/라우트</a>
+          <a href="#responsibilities" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">핵심 책임</a>
+          <a href="#flow" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">사용자 흐름</a>
+          <a href="#cards" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">카드/액션</a>
+          <a href="#data" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">데이터 소스</a>
+          <a href="#states" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">상태/예외</a>
+          <a href="#code" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">관련 코드</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            메인 화면은 사용자가 앱에 진입했을 때 오늘 운동 상태, 최근 세션, 이번 주 실제/예정 루틴,
+            새 운동 시작, 카드 구성 편집으로 이어지는 요약 허브다. 화면 본문은
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">SummaryScreen</code>이 담당하고,
+            탭 엔트리에서는 이 화면 위에 설정 플로팅 버튼을 얹는다.
+          </p>
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">화면 라우트</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">/(tabs)</div>
+              <div class="mt-2 text-xs text-slate-500">src/app/(tabs)/index.tsx</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">메인 UI</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">features/view-summary</div>
+              <div class="mt-2 text-xs text-slate-500">요약 카드, 주간 세션, 편집 모드</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">운동 연결</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">features/do-workout</div>
+              <div class="mt-2 text-xs text-slate-500">카운트다운, 운동 중 루틴 추천</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="entry">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">진입/라우트</h2>
+          <p class="mt-3 text-slate-300">
+            메인 탭 엔트리인 <code class="rounded bg-slate-900 px-1.5 py-0.5">src/app/(tabs)/index.tsx</code>는
+            전체 높이의 <code>View</code> 안에 <code>SummaryScreen</code>과 <code>SettingsFab</code>을 함께 렌더링한다.
+            설정 버튼은 <code>/settings</code>로 이어지고, 주간 루틴 최초 안내의 수락 액션은
+            <code>/settings?routineSetup=1</code>로 이동해 세부 설정 시트를 열도록 연결된다.
+          </p>
+          <div class="mt-5 grid gap-3 md:grid-cols-4">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="text-sm font-semibold text-emerald-200">메인 탭</div>
+              <div class="mt-2 font-mono text-xs text-slate-400">/(tabs)</div>
+              <div class="mt-2 text-xs text-slate-500">오늘 요약 허브</div>
+            </div>
+            <div class="rounded-lg border border-sky-500/30 bg-sky-500/5 p-4">
+              <div class="text-sm font-semibold text-sky-200">설정</div>
+              <div class="mt-2 font-mono text-xs text-slate-400">/settings</div>
+              <div class="mt-2 text-xs text-slate-500">루틴/알림 관리</div>
+            </div>
+            <div class="rounded-lg border border-violet-500/30 bg-violet-500/5 p-4">
+              <div class="text-sm font-semibold text-violet-200">운동 시작</div>
+              <div class="mt-2 font-mono text-xs text-slate-400">/workout/countdown</div>
+              <div class="mt-2 text-xs text-slate-500">완료 전만 이동</div>
+            </div>
+            <div class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+              <div class="text-sm font-semibold text-amber-200">결과/목록</div>
+              <div class="mt-2 font-mono text-xs text-slate-400">/workout/[id], /sessions</div>
+              <div class="mt-2 text-xs text-slate-500">최근/주간 세션 이동</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="responsibilities">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">핵심 책임</h2>
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-100">오늘 상태 요약</div>
+              <p class="mt-2 text-sm text-slate-400">오늘 대표 로컬 세션의 부위/세트와 HealthKit workout duration 합계를 조합한다. HealthKit duration이 없으면 로컬 세션 duration을 fallback으로 쓴다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-100">이동 허브</div>
+              <p class="mt-2 text-sm text-slate-400">오늘 카드는 캘린더, 최근 세션과 주간 실제 행은 결과 화면, 주간 헤더는 세션 목록, 운동 시작 카드는 카운트다운으로 이동한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-100">주간 루틴 반영</div>
+              <p class="mt-2 text-sm text-slate-400">루틴 ON일 때 실제 세션과 루틴 슬롯을 매칭해 완료/대체/예정 행을 만들고, 운동 중 화면에는 다음 추천 루틴 칩을 제공한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-100">요약 카드 편집</div>
+              <p class="mt-2 text-sm text-slate-400">카드 표시 여부, 순서, 같은 행 안 좌우 이동을 지원하며 <code>yb:summary:cards</code>에 저장한다. 세션 데이터 자체는 수정하지 않는다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="flow">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">사용자 흐름</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            메인 화면은 여러 저장원을 병렬에 가깝게 읽은 뒤 카드 레이아웃 순서에 맞춰 렌더링한다.
+            일부 조회가 실패하면 해당 훅은 기본값으로 복구하고, 전체 화면 로딩 대신 카드 단위 placeholder를 유지한다.
+          </p>
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <div class="mermaid text-xs">
+graph TD
+  A[메인 탭 진입] --> B[SummaryScreen 렌더]
+  B --> C[오늘 요약 조회<br/>로컬 세션 + HealthKit]
+  B --> D[최근 세션 조회]
+  B --> E[이번 주 세션 조회]
+  B --> F[주간 루틴 계획 조회]
+  B --> G[카드 레이아웃 조회]
+  C --> H[카드 순서대로 렌더]
+  D --> H
+  E --> H
+  F --> H
+  G --> H
+  H --> I{사용자 액션}
+  I --> J[설정 /settings]
+  I --> K[운동 시작 /workout/countdown]
+  I --> L[결과 /workout/id]
+  I --> M[카드 편집 저장]
+  K --> N[운동 중 루틴 칩<br/>RoutineSessionPicker]
+            </div>
+          </div>
+        </section>
+
+        <section id="cards">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">카드/액션</h2>
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">카드 ID</th>
+                  <th class="px-4 py-2.5">폭</th>
+                  <th class="px-4 py-2.5">표시/계산</th>
+                  <th class="px-4 py-2.5">액션</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">todayWorkout</td>
+                  <td class="px-4 py-3 text-xs text-emerald-300">full</td>
+                  <td class="px-4 py-3 text-slate-400">오늘 대표 로컬 세션의 부위, 대표 아이콘, 총 세트 수</td>
+                  <td class="px-4 py-3 text-slate-400">탭 시 <code>/calendar</code></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">workoutTime</td>
+                  <td class="px-4 py-3 text-xs text-sky-300">half</td>
+                  <td class="px-4 py-3 text-slate-400">HealthKit duration 합계, 없으면 로컬 duration fallback</td>
+                  <td class="px-4 py-3 text-slate-500">롱프레스 편집</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">sets</td>
+                  <td class="px-4 py-3 text-xs text-sky-300">half</td>
+                  <td class="px-4 py-3 text-slate-400">오늘 대표 로컬 세션의 bodyParts별 setCount 합계</td>
+                  <td class="px-4 py-3 text-slate-500">롱프레스 편집</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">latestSession</td>
+                  <td class="px-4 py-3 text-xs text-sky-300">half</td>
+                  <td class="px-4 py-3 text-slate-400">최근 완료 세션 1건, kcal은 현재 <code>--</code></td>
+                  <td class="px-4 py-3 text-slate-400">세션 있으면 <code>/workout/[id]</code></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">startWorkout</td>
+                  <td class="px-4 py-3 text-xs text-sky-300">half</td>
+                  <td class="px-4 py-3 text-slate-400">근력 운동 시작 CTA, 오늘 완료 시 opacity 40%</td>
+                  <td class="px-4 py-3 text-slate-400">완료 전만 <code>/workout/countdown</code></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">weeklySessions</td>
+                  <td class="px-4 py-3 text-xs text-emerald-300">full</td>
+                  <td class="px-4 py-3 text-slate-400">이번 주 실제 세션 + 루틴 ON 상태의 예정 행</td>
+                  <td class="px-4 py-3 text-slate-400">헤더 <code>/sessions</code>, 실제 행 <code>/workout/[id]</code></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+            <div class="text-sm font-semibold text-slate-100">편집 모드</div>
+            <p class="mt-2 text-sm text-slate-400">
+              카드 롱프레스는 편집 모드로 진입한다. 삭제는 현재 카드 배열에서 ID를 제거하고, 추가 모달은 숨겨진 카드만 후보로 보여준다.
+              전체 너비 카드는 단독 행, 반 너비 카드는 두 개씩 한 행으로 묶이며, 같은 행 안 좌우 이동과 전체 목록 기준 상하 이동이 별도 함수로 처리된다.
+            </p>
+          </div>
+        </section>
+
+        <section id="data">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">데이터 소스</h2>
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">로컬 운동 세션</div>
+              <p class="mt-2 text-sm text-slate-300">오늘 대표 세션 ID, 최근 세션, 이번 주 세션, bodyParts, setCount, startedAt/completedAt을 읽는다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">sessionStorage, useTodaySummary, useLatestSession, useThisWeekSessions</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">HealthKit</div>
+              <p class="mt-2 text-sm text-slate-300">오늘 날짜 workout 목록의 duration과 kcal을 조회한다. 현재 UI에 직접 노출되는 값은 운동시간이며 kcal은 후속 확장 기반이다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">getWorkoutSummariesForDate(dateKey)</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">주간 루틴</div>
+              <p class="mt-2 text-sm text-slate-300">루틴 기능 상태, 저장 설정, 이번 주 세션을 조합해 진행 슬롯과 다음 추천 세션을 만든다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">useWeeklyRoutinePlan, useRoutineProgress</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">카드 레이아웃</div>
+              <p class="mt-2 text-sm text-slate-300">카드 ID 배열을 <code>yb:summary:cards</code>에 저장하고 불러올 때 유효 ID와 중복을 정리한다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">summaryCardLayoutStorage.ts</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="states">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">상태/예외</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4" open>
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">로딩과 갱신</summary>
+              <p class="mt-2 text-sm text-slate-400">
+                <code>useSummaryRefresh</code>는 최초 마운트, 앱 active 복귀, 다음 자정에 재조회한다. 오래된 응답은 requestId로 무시하고,
+                실패 시 initialData로 복구한다. 오늘 요약 로딩 중 운동시간/세트수는 <code>--</code>로 표시된다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">운동 시작 차단</summary>
+              <p class="mt-2 text-sm text-slate-400">
+                오늘 날짜 키에 저장된 완료 세션 ID가 있으면 <code>todayCompleted</code>가 true가 되고,
+                운동 시작 카드는 비활성화된다. 롱프레스 편집은 유지되어 편집 모드 진입은 가능하다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">루틴 행 생성</summary>
+              <p class="mt-2 text-sm text-slate-400">
+                루틴 슬롯은 <code>pending</code>, <code>partial</code>, <code>completed</code>, <code>substituted</code> 상태를 가진다.
+                완료/대체 슬롯은 실제 세션 행으로, pending/partial 슬롯은 예정 행으로 렌더링되고, 이미 슬롯에 사용된 세션은 중복 표시하지 않는다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">운동 중 루틴 추천</summary>
+              <p class="mt-2 text-sm text-slate-400">
+                <code>/workout/active</code>는 루틴 로딩이 끝났고 루틴이 ON일 때만 <code>RoutineSessionPicker</code>를 표시한다.
+                첫 미완료 슬롯은 1회 자동 선택되며 선택된 루틴 부위 템플릿이 운동 부위 상태에 반영된다.
+              </p>
+            </details>
+          </div>
+        </section>
+
+        <section id="code">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">관련 코드</h2>
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
+              <div class="text-sm font-semibold text-slate-100">엔트리/화면</div>
+              <ul class="mt-3 space-y-1 font-mono text-xs text-slate-400">
+                <li>src/app/(tabs)/index.tsx</li>
+                <li>src/features/view-summary/ui/SummaryScreen.tsx</li>
+                <li>src/features/view-summary/ui/SummaryCardRenderer.tsx</li>
+                <li>src/features/view-summary/ui/WeeklySessionList.tsx</li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
+              <div class="text-sm font-semibold text-slate-100">요약 모델</div>
+              <ul class="mt-3 space-y-1 font-mono text-xs text-slate-400">
+                <li>src/features/view-summary/model/useSummaryCardData.ts</li>
+                <li>src/features/view-summary/model/todaySummary.ts</li>
+                <li>src/features/view-summary/model/weeklySessionRows.ts</li>
+                <li>src/features/view-summary/model/summaryCardLayoutStorage.ts</li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
+              <div class="text-sm font-semibold text-slate-100">루틴/세션 엔티티</div>
+              <ul class="mt-3 space-y-1 font-mono text-xs text-slate-400">
+                <li>src/entities/workout-session/model/useWeeklyRoutinePlan.ts</li>
+                <li>src/entities/workout-session/lib/weeklyRoutineProgress.ts</li>
+                <li>src/entities/workout-session/lib/weeklyRoutineProgressSnapshot.ts</li>
+                <li>src/entities/workout-session/model/weeklyRoutine.ts</li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-950/50 p-4">
+              <div class="text-sm font-semibold text-slate-100">운동 실행 연결</div>
+              <ul class="mt-3 space-y-1 font-mono text-xs text-slate-400">
+                <li>src/features/do-workout/ui/ActiveWorkoutContent.tsx</li>
+                <li>src/features/do-workout/ui/RoutineSessionPicker.tsx</li>
+                <li>src/features/do-workout/model/useRoutineProgress.ts</li>
+                <li>src/features/view-summary/model/useWeeklyRoutineFeaturePrompt.ts</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">기본 루틴 개수: md의 4분할 표현과 코드의 5분할 기본값</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                md 일부 문장은 기본 루틴을 가슴/등/어깨팔/하체 4분할처럼 설명하지만, 현재
+                <code>DEFAULT_WEEKLY_ROUTINE_SESSIONS</code>는 가슴, 등, 어깨, 팔, 하체 5개 슬롯이고
+                <code>DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT</code>도 5다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">카드 레이아웃 저장값 복구 규칙</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                의도적으로 저장된 빈 배열은 모든 카드를 숨긴 상태로 유지된다. 반면 저장 배열이 비어 있지 않은데 유효 카드 ID가 하나도 없으면
+                깨진 저장값으로 보고 기본 카드 배열로 복구한다. 이는 <code>normalizeSummaryCardIds</code>가 아니라
+                <code>loadSummaryCardIds</code>의 실제 로딩 규칙 기준이다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">운동시간 fallback</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                md는 운동시간을 HealthKit duration 합계로 설명하지만, 코드의 <code>mergeTodaySummary</code>는 HealthKit duration 합계가 0이면
+                오늘 대표 로컬 세션 duration을 초 단위로 환산해 사용한다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">substituted 슬롯 상태</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                md는 completed/partial/pending 중심으로 설명하지만, 실제 루틴 진행률에는 <code>substituted</code>가 추가로 있다.
+                대체 완료 세션은 completed와 같이 완료 행으로 표시되고 추천/칩에서는 비활성 처리된다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>메인 화면 기능서 · 자동 생성 HTML · 원본 <code>01_main.md</code></p>
+    </footer>
+
+    <script>
+      // active TOC highlight
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

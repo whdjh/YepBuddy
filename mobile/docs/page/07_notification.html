@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>알림 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">07_notification.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">알림 기능서</h1>
+        </div>
+        <a href="./07_notification.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#startup" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">앱 시작 동기화</a>
+          <a href="#types" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">알림 종류</a>
+          <a href="#workout-reminder" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">운동 리마인더</a>
+          <a href="#protein-sale" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">프로틴 세일</a>
+          <a href="#place-arrival" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">장소 도착</a>
+          <a href="#routing" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">탭 라우팅</a>
+          <a href="#storage" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">저장소 키</a>
+          <a href="#permissions" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">권한 원칙</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            YepBuddy의 알림은 앱 실행 시 권한 프롬프트 없이 저장 상태를 동기화하고, 사용자가 설정 화면에서 명시적으로 ON 한 경우에만 OS 권한 요청을 진행한다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">RootLayout 초기화 → 설정 토글 → 운동 시작/종료 재동기화 → 알림 탭 라우팅</code>
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">초기화 지점</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">src/app/_layout.tsx</div>
+              <div class="mt-2 text-xs text-slate-500">핸들러 등록 + 권한 프롬프트 없는 동기화</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">설정 진입</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">/settings</div>
+              <div class="mt-2 text-xs text-slate-500">3개 알림 토글의 명시적 ON/OFF</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">핵심 원칙</div>
+              <div class="mt-1 text-sm text-slate-200">자동 경로는 <code>allowPrompt:false</code></div>
+              <div class="mt-2 text-xs text-slate-500">권한 요청은 사용자 ON 액션에서만 허용</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="startup">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">앱 시작 동기화</h2>
+          <p class="mt-3 text-slate-300">
+            루트 레이아웃은 앱 번들 로드 후 알림 응답 핸들러를 등록하고, Android 채널을 보장한 뒤 저장된 활성 상태를 기준으로 각 알림을 재동기화한다.
+          </p>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">RootLayout 초기화 흐름</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[RootLayout mount] --> B[프로틴 세일 응답 핸들러 등록]
+  A --> C[장소 도착 응답 핸들러 등록]
+  A --> D[Android 알림 채널 보장]
+  D --> E[syncWorkoutPlaceArrivalReminder<br/>allowPrompt:false]
+  D --> F[syncWorkoutReminderAtNight<br/>allowPrompt:false]
+  D --> G[syncProteinSaleNotificationsIfEnabled]
+  E --> H[현재 권한과 저장 enabled만 확인]
+  F --> H
+  G --> H
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-md border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400">
+            관련 코드:
+            <code class="text-slate-300">src/app/_layout.tsx</code>,
+            <code class="text-slate-300">entities/workout-session/lib/notificationChannels.ts</code>,
+            <code class="text-slate-300">entities/protein/lib/protein-sale-notification/channels.ts</code>
+          </div>
+        </section>
+
+        <section id="types">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">알림 종류</h2>
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">종류</th>
+                  <th class="px-4 py-2.5">예약/등록 방식</th>
+                  <th class="px-4 py-2.5">탭 동작</th>
+                  <th class="px-4 py-2.5">Android 채널</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">운동 리마인더</td>
+                  <td class="px-4 py-3 text-xs">다음 22:00 단일 예약</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">명시 라우팅 없음</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">workout-reminders</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">프로틴 세일 알림</td>
+                  <td class="px-4 py-3 text-xs">향후 세일 일정 일괄 예약</td>
+                  <td class="px-4 py-3 text-xs">/protein</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">protein-sale</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">운동 장소 도착 알림</td>
+                  <td class="px-4 py-3 text-xs">반복 장소 geofence 등록 + Enter 이벤트</td>
+                  <td class="px-4 py-3 text-xs">/ → 운동 시작 Alert</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">workout-place-arrival</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="workout-reminder" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+          <div class="flex items-baseline justify-between">
+            <h2 class="anchor text-xl font-semibold text-slate-100">운동 리마인더</h2>
+            <span class="text-xs text-slate-500">매일 22:00 후보</span>
+          </div>
+
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200">동작</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>설정 토글 ON은 <code>syncWorkoutReminderAtNight({ allowPrompt:true })</code>를 호출해 알림 권한을 요청할 수 있다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>권한이 허용되면 기존 예약 1건을 취소하고 다음 22:00 알림을 새로 예약한다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>오늘 완료 세션이 있거나 현재가 22:00 이후면 다음 날 22:00으로 미룬다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>운동 시작 카운트다운 진입 시 기존 운동 리마인더를 취소한다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>운동 종료 후에는 프롬프트 없이 다시 동기화한다.</span></li>
+              </ul>
+              <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                <div class="font-semibold text-slate-300">관련 코드</div>
+                <ul class="mt-2 space-y-1 font-mono">
+                  <li>entities/workout-session/lib/reminder.ts</li>
+                  <li>entities/workout-session/lib/workoutReminderSchedule.ts</li>
+                  <li>features/start-workout/ui/CountdownScreen.tsx</li>
+                  <li>entities/workout-session/model/WorkoutContext.tsx</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">22:00 예약 분기</div>
+              <div class="mermaid text-xs">
+graph TD
+  A[syncWorkoutReminderAtNight] --> B{allowPrompt false<br/>enabled false?}
+  B -- "yes" --> C[기존 예약 취소 후 종료]
+  B -- "no" --> D{알림 권한}
+  D -- "거부" --> E[enabled=false<br/>예약 취소]
+  D -- "허용" --> F[기존 예약 취소]
+  F --> G{오늘 완료 세션 있음<br/>또는 22:00 지남?}
+  G -- "yes" --> H[내일 22:00 예약]
+  G -- "no" --> I[오늘 22:00 예약]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="protein-sale" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+          <div class="flex items-baseline justify-between">
+            <h2 class="anchor text-xl font-semibold text-slate-100">프로틴 세일 알림</h2>
+            <span class="text-xs text-slate-500">고정 세일 + 블랙프라이데이</span>
+          </div>
+
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200">동작</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>토글 ON은 <code>requestProteinSaleNotificationPermissions</code>로 권한을 요청할 수 있다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>권한 허용 시 기존 예약 ID를 취소하고, 현재 연도와 다음 연도의 아직 오지 않은 세일 알림을 예약한다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>예약 시각은 세일 시작일 전날 19:00이며, 블랙프라이데이는 11월 마지막 금요일 전날 19:00이다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>알림 예약/취소는 <code>runProteinSaleNotificationTask</code> 직렬 큐로 처리한다.</span></li>
+                <li class="flex gap-2"><span class="text-rose-400">●</span><span>권한 거부나 예약 실패 시 <code>enabled=false</code>로 돌리고 예약 목록을 정리한다.</span></li>
+              </ul>
+              <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                <div class="font-semibold text-slate-300">관련 코드</div>
+                <ul class="mt-2 space-y-1 font-mono">
+                  <li>entities/protein/lib/protein-sale-notification/scheduler.ts</li>
+                  <li>entities/protein/lib/protein-sale-notification/events.ts</li>
+                  <li>entities/protein/lib/protein-sale-notification/permissions.ts</li>
+                  <li>features/protein-sale-notification/lib/handler.ts</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">스케줄링 흐름</div>
+              <div class="mermaid text-xs">
+graph TD
+  A[토글 ON 또는 앱 시작 sync] --> B{allowPrompt?}
+  B -- "true" --> C[권한 요청 가능]
+  B -- "false" --> D[현재 권한만 확인]
+  C --> E{권한 허용?}
+  D --> E
+  E -- "no" --> F[enabled=false<br/>예약 전체 취소]
+  E -- "yes" --> G[채널 보장]
+  G --> H[기존 예약 취소]
+  H --> I[세일 계획 생성]
+  I --> J[미래 일정만 예약]
+  J --> K[ids 저장<br/>enabled=true]
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="place-arrival" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+          <div class="flex items-baseline justify-between">
+            <h2 class="anchor text-xl font-semibold text-slate-100">운동 장소 도착 알림</h2>
+            <span class="text-xs text-slate-500">geofence 150m</span>
+          </div>
+
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-200">동작</h3>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>설정 토글 ON에서만 알림, foreground 위치, background 위치 권한을 순서대로 요청할 수 있다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>2회 이상 반복된 장소만 geofence 후보가 되고 최대 20개까지 등록한다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>권한은 허용됐지만 후보 장소가 없으면 <code>enabled=true</code>, <code>operational=false</code>, reason <code>no-places</code>로 남긴다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>자동 동기화에서 권한이 없으면 사용자 enabled 값은 유지하고 operational만 false로 기록한다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>Enter 이벤트만 알림을 보내며, Exit 이벤트는 마지막 이벤트 상태로만 저장한다.</span></li>
+              </ul>
+              <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                <div class="font-semibold text-slate-300">관련 코드</div>
+                <ul class="mt-2 space-y-1 font-mono">
+                  <li>entities/workout-session/lib/workoutPlaceArrivalReminder.ts</li>
+                  <li>entities/workout-session/model/workoutPlaceReminderStorage.ts</li>
+                  <li>features/manage-settings/ui/WorkoutPlaceArrivalReminderToggle.tsx</li>
+                  <li>features/view-summary/ui/SummaryScreen.tsx</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">등록 상태 reason</div>
+              <table class="w-full text-left text-xs">
+                <thead class="text-slate-500">
+                  <tr>
+                    <th class="py-1.5 pr-3">reason</th>
+                    <th class="py-1.5 pr-3">enabled</th>
+                    <th class="py-1.5">operational</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 font-mono">
+                  <tr><td class="py-1.5 pr-3 text-emerald-300">registered</td><td>true</td><td>true</td></tr>
+                  <tr><td class="py-1.5 pr-3 text-amber-300">no-places</td><td>true</td><td>false</td></tr>
+                  <tr><td class="py-1.5 pr-3 text-rose-300">permission-denied</td><td>false*</td><td>false</td></tr>
+                  <tr><td class="py-1.5 pr-3 text-rose-300">registration-failed</td><td>false*</td><td>false</td></tr>
+                  <tr><td class="py-1.5 pr-3 text-slate-400">disabled</td><td>false</td><td>false</td></tr>
+                </tbody>
+              </table>
+              <p class="mt-2 text-[11px] text-slate-500">* 자동 경로에서는 <code>enabled: !allowPrompt</code>로 저장되어 true일 수 있다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="routing">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">탭 라우팅</h2>
+          <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">프로틴 세일 알림</div>
+              <p class="mt-2 text-sm text-slate-300">
+                payload의 <code>kind</code>가 <code>myproteinSale</code>이면 <code>/protein</code>으로 이동한다. 동일 notification identifier는 중복 처리하지 않는다.
+              </p>
+              <p class="mt-3 font-mono text-[11px] text-slate-500">features/protein-sale-notification/lib/handler.ts</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">운동 장소 도착 알림</div>
+              <p class="mt-2 text-sm text-slate-300">
+                payload의 <code>type</code>이 <code>workout-place-arrival</code>이면 pending prompt를 저장하고 운동일지 화면으로 이동한다. 운동일지 포커스 시 Alert가 뜬다.
+              </p>
+              <p class="mt-3 font-mono text-[11px] text-slate-500">workoutPlaceArrivalReminder.ts + SummaryScreen.tsx</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="storage">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">저장소 키</h2>
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">영역</th>
+                  <th class="px-4 py-2.5">키</th>
+                  <th class="px-4 py-2.5">값</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40 font-mono text-xs">
+                <tr><td class="px-4 py-3 text-slate-300">운동</td><td class="px-4 py-3">yb:workout:reminder</td><td class="px-4 py-3 text-slate-400">예약 id 1건</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">운동</td><td class="px-4 py-3">yb:workout:reminder:enabled</td><td class="px-4 py-3 text-slate-400">"true" / "false"</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">프로틴</td><td class="px-4 py-3">yb:protein-sale-notification:enabled</td><td class="px-4 py-3 text-slate-400">"true" / "false"</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">프로틴</td><td class="px-4 py-3">yb:protein-sale-notification:ids</td><td class="px-4 py-3 text-slate-400">예약 id 배열 JSON</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">장소</td><td class="px-4 py-3">yb:workout-place-reminder:enabled</td><td class="px-4 py-3 text-slate-400">"true" / "false"</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">장소</td><td class="px-4 py-3">yb:workout-place-reminder:places</td><td class="px-4 py-3 text-slate-400">반복 장소 후보 배열</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">장소</td><td class="px-4 py-3">yb:workout-place-reminder:pending-prompt</td><td class="px-4 py-3 text-slate-400">알림 탭 후 Alert 대기값</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">장소</td><td class="px-4 py-3">yb:workout-place-reminder:sync-status</td><td class="px-4 py-3 text-slate-400">enabled, operational, reason, 권한 상태</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="permissions">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">권한 원칙</h2>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">자동 경로</div>
+              <p class="mt-1 text-sm text-slate-300">앱 시작, 운동 종료, 운동 기록 삭제 후 재동기화에서는 현재 권한만 확인한다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">allowPrompt: false</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">명시적 ON</div>
+              <p class="mt-1 text-sm text-slate-300">설정 화면에서 사용자가 토글을 ON 할 때만 OS 권한 요청이 가능하다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">allowPrompt: true</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">iOS provisional</div>
+              <p class="mt-1 text-sm text-slate-300">알림 권한 판단은 <code>granted</code> 또는 iOS <code>PROVISIONAL</code>을 허용 상태로 본다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Android 위치</div>
+              <p class="mt-1 text-sm text-slate-300">장소 알림의 background 위치 권한 요청 전 별도 Alert로 이유를 설명한다.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[md] "2가지 축"이라고 쓰였지만 실제 목록은 3종 알림</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                <code>07_notification.md</code>는 "현재 앱 알림은 2가지 축"이라고 시작하지만 바로 아래에 운동 리마인더, 프로틴 세일, 운동 장소 도착 알림 3가지를 나열한다. 코드도 3종 알림을 초기화한다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[코드 근거] 운동 장소 알림은 권한 실패 자동 경로에서 enabled를 보존할 수 있음</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                <code>syncWorkoutPlaceArrivalReminder</code>는 <code>allowPrompt:false</code>에서 권한이 없으면 geofence를 중지하고 <code>operational=false</code>를 저장하지만, 사용자의 enabled 의도는 <code>enabled: !allowPrompt</code>로 보존한다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[제약] 운동 리마인더 알림 탭의 별도 라우팅은 현재 없음</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                프로틴 세일과 장소 도착 알림은 응답 핸들러가 있지만, 운동 리마인더의 <code>kind: workoutReminder</code>를 처리하는 전용 탭 라우팅은 현재 코드에서 확인되지 않는다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>알림 기능서 · 코드 근거형 HTML · 원본 <code>07_notification.md</code></p>
+    </footer>
+
+    <script>
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>
