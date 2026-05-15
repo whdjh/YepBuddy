@@ -28,10 +28,13 @@ jobs:
     name: Release PR 생성
     runs-on: ubuntu-latest
     steps:
-      - uses: googleapis/release-please-action@v4
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: expo
+          path: mobile
           skip-github-release: true
           target-branch: ${{ github.event.inputs.target_branch }}
 
@@ -44,6 +47,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: expo
+          path: mobile
           skip-github-pull-request: true
           skip-github-release: false
           target-branch: ${{ github.ref_name }}
