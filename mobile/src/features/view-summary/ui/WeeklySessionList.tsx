@@ -53,7 +53,7 @@ export function WeeklySessionList({
                     {session.representativeBodyPart ? (
                       <BodyPartIconHost bodyPart={session.representativeBodyPart} size="sm" />
                     ) : (
-                      <Card.Icon name="dumbbell.fill" size={18} bgSize={40} cornerRadius={8} />
+                      <Card.Icon name="dumbbell.fill" variant="sm" />
                     )}
                     <Card.Column alignment="leading" spacing={2}>
                       <Card.Title>{session.bodyPart}</Card.Title>
@@ -82,7 +82,7 @@ export function WeeklySessionList({
                     </Card.Column>
                     {sessionId && (
                       <Card.Chevron
-                        size={16}
+                        variant="sm"
                         onPress={
                           onSessionPress
                             ? () => onSessionPress(sessionId)

@@ -26,7 +26,7 @@ export function SessionHeader({
         {representativeBodyPart ? (
           <BodyPartIconHost bodyPart={representativeBodyPart} size="lg" />
         ) : (
-          <Card.Icon name="dumbbell.fill" size={28} bgSize={64} cornerRadius={16} />
+          <Card.Icon name="dumbbell.fill" variant="xl" />
         )}
         <Card.Column alignment="leading" spacing={2}>
           <Card.Caption>{t("workout.result.strengthTraining")}</Card.Caption>
