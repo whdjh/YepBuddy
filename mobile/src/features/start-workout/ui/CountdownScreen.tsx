@@ -2,7 +2,6 @@ import { useCallback, useEffect } from "react"
 import { Text, View } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { SymbolView } from "expo-symbols"
 import Animated, {
   useAnimatedProps,
 } from "react-native-reanimated"
@@ -14,6 +13,7 @@ import {
 } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import { IconBox } from "@/shared/ui/IconBox"
 import { Main } from "@/shared/ui/Main"
 import { useCountdown } from "../lib/useCountdown"

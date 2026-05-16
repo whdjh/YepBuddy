@@ -1,4 +1,3 @@
-import { SymbolView } from "expo-symbols"
 import { Image, View, type ImageSourcePropType } from "react-native"
 import { RNHostView } from "@expo/ui/swift-ui"
 import arms from "@/assets/images/bodyparts/arms.png"
@@ -8,6 +7,7 @@ import core from "@/assets/images/bodyparts/core.png"
 import legs from "@/assets/images/bodyparts/legs.png"
 import shoulders from "@/assets/images/bodyparts/shoulders.png"
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import type { BodyPart } from "../model/types"
 
 type BodyPartIconSize = "xs" | "drawer" | "sm" | "md" | "lg" | "xl"

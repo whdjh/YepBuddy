@@ -1,9 +1,9 @@
 import { Pressable, View } from "react-native"
-import { SymbolView } from "expo-symbols"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { SymbolView } from "./SymbolView"
 import { GlassSurface } from "./GlassSurface"
 
 export function SettingsFab() {

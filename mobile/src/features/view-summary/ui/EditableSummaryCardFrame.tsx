@@ -1,4 +1,3 @@
-import { SymbolView } from "expo-symbols"
 import type { ReactNode } from "react"
 import { useEffect, useMemo, useRef } from "react"
 import { View } from "react-native"
@@ -14,6 +13,7 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated"
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import { IconButton } from "@/shared/ui/IconButton"
 
 const DRAG_REORDER_THRESHOLD_Y = 72
