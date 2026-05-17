@@ -35,6 +35,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: expo
           path: mobile
+          include-component-in-tag: false
           skip-github-release: true
           target-branch: ${{ github.event.inputs.target_branch }}
 
@@ -48,6 +49,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: expo
           path: mobile
+          include-component-in-tag: false
           skip-github-pull-request: true
           skip-github-release: false
           target-branch: ${{ github.ref_name }}
