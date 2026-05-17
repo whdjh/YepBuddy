@@ -171,6 +171,37 @@ export function buildWeeklyRoutineProgress(
 }
 
 /**
+ * 슬롯 기반 루틴 진행률 계산.
+ * 실제 운동 부위 매칭이 아니라, 저장 시 채워진 루틴 슬롯 ID만 완료 기준으로 사용한다.
+ */
+export function buildWeeklyRoutineProgressFromFilledSlots(
+  routineSessions: WeeklyRoutineSession[],
+  filledSlotIds: string[],
+): WeeklyRoutineProgress {
+  const filledSlotIdSet = new Set(filledSlotIds)
+  const slots = routineSessions.map<WeeklyRoutineSlotProgress>(
+    (routineSession, index) => ({
+      index,
+      routineSession,
+      matchedSession: null,
+      status: filledSlotIdSet.has(routineSession.id)
+        ? "completed"
+        : "pending",
+    }),
+  )
+  const completedSessions = slots.filter(
+    (slot) => slot.status === "completed",
+  ).length
+
+  return {
+    totalSessions: routineSessions.length,
+    completedSessions,
+    remainingSessions: Math.max(0, routineSessions.length - completedSessions),
+    slots,
+  }
+}
+
+/**
  * 아직 완료되지 않은 첫 번째 루틴 세션을 추천으로 반환
  * - 모두 완료됐으면 null 반환
  */

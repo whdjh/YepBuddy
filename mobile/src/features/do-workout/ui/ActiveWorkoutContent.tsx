@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import type {
   BodyPart,
   WorkoutState,
-  RoutinePart,
+  WeeklyRoutineSession,
 } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
@@ -37,6 +37,9 @@ export function ActiveWorkoutContent() {
   const insets = useSafeAreaInsets()
   const routineProgress = useRoutineProgress()
   const [expandedBodyPart, setExpandedBodyPart] = useState<BodyPart | null>(null)
+  const [selectedRoutineSessionId, setSelectedRoutineSessionId] = useState<
+    string | null
+  >(null)
   const {
     state,
     toggleBodyPart,
@@ -62,9 +65,10 @@ export function ActiveWorkoutContent() {
   const hasLiveMetrics =
     heartRate != null || activeKcal > 0 || totalKcal > 0
 
-  const handleSelectSlot = (parts: RoutinePart[]) => {
-    applyBodyPartTemplate(parts)
-    setExpandedBodyPart(parts[0]?.part ?? null)
+  const handleSelectSlot = (routineSession: WeeklyRoutineSession) => {
+    setSelectedRoutineSessionId(routineSession.id)
+    applyBodyPartTemplate(routineSession.parts)
+    setExpandedBodyPart(routineSession.parts[0]?.part ?? null)
   }
 
   const handlePauseToggle = async () => {
@@ -90,6 +94,12 @@ export function ActiveWorkoutContent() {
     const completedSession = await completeWorkout()
     if (!completedSession) {
       return
+    }
+
+    if (selectedRoutineSessionId) {
+      await routineProgress
+        .markSlotFilled(selectedRoutineSessionId)
+        .catch(() => undefined)
     }
 
     await endWorkout({

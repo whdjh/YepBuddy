@@ -118,9 +118,13 @@ export type {
 } from "./model/weeklyRoutine"
 export {
   dismissWeeklyRoutineCycleRenewalPrompt,
+  loadWeeklyRoutineCycleProgress,
   loadWeeklyRoutineFeatureStatus,
   loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
+  markWeeklyRoutineSlotFilled,
+  resetWeeklyRoutineCycleProgress,
+  saveWeeklyRoutineCycleProgress,
   saveWeeklyRoutineFeatureStatus,
   saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
@@ -128,6 +132,7 @@ export {
 export {
   areBodyPartsMatchingRoutineSession,
   buildWeeklyRoutineProgress,
+  buildWeeklyRoutineProgressFromFilledSlots,
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
@@ -142,8 +147,12 @@ export {
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {
+  createWeeklyRoutineCycleProgress,
+  fillWeeklyRoutineSlotProgress,
   getWeeklyRoutineCyclePhase,
   getWeeklyRoutineCycleState,
+  getWeeklyRoutineCycleStateFromProgress,
+  normalizeWeeklyRoutineCycleProgress,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
 } from "./lib/weeklyRoutineCycle"
@@ -154,6 +163,7 @@ export type {
 } from "./lib/weeklyRoutineProgress"
 export type {
   WeeklyRoutineCyclePhase,
+  WeeklyRoutineCycleProgress,
   WeeklyRoutineCycleState,
   WeeklyRoutineSetupPromptKind,
 } from "./lib/weeklyRoutineCycle"

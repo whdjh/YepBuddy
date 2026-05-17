@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
   buildWeeklyRoutineProgressSnapshot,
+  createWeeklyRoutineCycleProgress,
   loadWeeklyRoutineProgressSnapshot,
+  markWeeklyRoutineSlotFilled,
   type WeeklyRoutineProgress,
   type WeeklyRoutineSession,
   type WeeklyRoutineProgressSnapshot,
@@ -15,6 +17,7 @@ export interface RoutineProgressResult {
   nextSuggestion: WeeklyRoutineSession | null
   isLoading: boolean
   reload: () => Promise<void>
+  markSlotFilled: (slotId: string) => Promise<void>
 }
 
 // 운동 중 화면에서 주간 루틴 진행률과 다음 추천 세션을 계산
@@ -22,6 +25,9 @@ export function useRoutineProgress(): RoutineProgressResult {
   const loadRequestIdRef = useRef(0)
   const [snapshot, setSnapshot] = useState<WeeklyRoutineProgressSnapshot>(() =>
     buildWeeklyRoutineProgressSnapshot({
+      cycleProgress: createWeeklyRoutineCycleProgress(
+        getThisWeekDateRange().startDateKey,
+      ),
       currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
       featureStatus: "unasked",
       sessions: [],
@@ -51,6 +57,9 @@ export function useRoutineProgress(): RoutineProgressResult {
       // 저장소/권한 오류가 나도 화면은 안전한 기본 상태로 유지
       setSnapshot(
         buildWeeklyRoutineProgressSnapshot({
+          cycleProgress: createWeeklyRoutineCycleProgress(
+            getThisWeekDateRange().startDateKey,
+          ),
           currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
           featureStatus: "unasked",
           sessions: [],
@@ -76,6 +85,14 @@ export function useRoutineProgress(): RoutineProgressResult {
     [],
   )
 
+  const markSlotFilled = useCallback(
+    async (slotId: string) => {
+      await markWeeklyRoutineSlotFilled(slotId)
+      await load()
+    },
+    [load],
+  )
+
   return {
     hasCustomSettings: snapshot.hasCustomSettings,
     isRoutineEnabled: snapshot.isRoutineEnabled,
@@ -83,5 +100,6 @@ export function useRoutineProgress(): RoutineProgressResult {
     nextSuggestion: snapshot.nextSuggestion,
     isLoading,
     reload: load,
+    markSlotFilled,
   }
 }
