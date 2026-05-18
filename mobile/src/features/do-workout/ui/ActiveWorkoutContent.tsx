@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Alert, ScrollView } from "react-native"
+import { Alert, Platform, ScrollView } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import type {
@@ -60,7 +60,8 @@ export function ActiveWorkoutContent() {
     resumeWorkout: resumeHealthKit,
   } = useHealthKitWorkout()
 
-  const bottomPadding = Math.max(insets.bottom, 24)
+  const minimumBottomPadding = Platform.OS === "android" ? 36 : 24
+  const bottomPadding = Math.max(insets.bottom, minimumBottomPadding)
   const { heartRate, activeKcal, totalKcal }: WorkoutLiveMetricsState = state
   const hasLiveMetrics =
     heartRate != null || activeKcal > 0 || totalKcal > 0
