@@ -21,10 +21,10 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     todayTotalSets,
     todayBodyParts,
     todayRepresentativeBodyPart,
-    latestSession,
-    latestSessionBodyParts,
-    latestSessionRepresentativeBodyPart,
-    latestSessionDay,
+    bodyPartCardSession,
+    bodyPartCardBodyParts,
+    bodyPartCardRepresentativeBodyPart,
+    bodyPartCardDay,
     todayCompleted,
     weeklySessions,
     routineProgress,
@@ -63,16 +63,16 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     case "latestSession":
       return (
         <SessionLinkCard
-          bodyPart={latestSessionBodyParts}
-          representativeBodyPart={latestSessionRepresentativeBodyPart}
+          bodyPart={bodyPartCardBodyParts}
+          representativeBodyPart={bodyPartCardRepresentativeBodyPart}
           kcal="--"
-          day={latestSessionDay}
+          day={bodyPartCardDay}
           onLongPress={onLongPress}
           onPress={
-            latestSession
+            bodyPartCardSession
               ? () =>
                   router.push(
-                    `/workout/${encodeURIComponent(latestSession.sessionId)}`,
+                    `/workout/${encodeURIComponent(bodyPartCardSession.sessionId)}`,
                   )
               : undefined
           }

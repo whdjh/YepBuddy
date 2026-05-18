@@ -2,7 +2,6 @@ import { useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
 import { useWeeklyRoutinePlan } from "@/entities/workout-session/model/useWeeklyRoutinePlan"
 import { formatDateWithDay, bodyPartLabel, bodyPartDetailLabel } from "@/shared/lib/format"
-import { useLatestSession } from "./useLatestSession"
 import { useThisWeekSessions } from "./useThisWeekSessions"
 import { useTodayCompleted } from "./useTodayCompleted"
 import { useTodaySummary } from "./useTodaySummary"
@@ -15,7 +14,6 @@ export function useSummaryCardData() {
   const { t } = useTranslation()
   const { data: todaySummary, isLoading: isTodaySummaryLoading } =
     useTodaySummary()
-  const { data: latestSession } = useLatestSession()
   const { data: weekSessions } = useThisWeekSessions()
   const todayCompleted = useTodayCompleted()
   const weeklyRoutinePlan = useWeeklyRoutinePlan()
@@ -30,15 +28,10 @@ export function useSummaryCardData() {
   const todayRepresentativeBodyPart = getRepresentativeBodyPart(
     todaySummaryStoredSession,
   )
-  const latestSessionBodyParts = getBodyPartsLabel(
-    latestSession,
-    fallbackBodyPartLabel,
-  )
-  const latestSessionRepresentativeBodyPart =
-    getRepresentativeBodyPart(latestSession)
-  const latestSessionDay = latestSession
-    ? formatDateWithDay(new Date(latestSession.startedAt))
-    : t("summary.today")
+  const bodyPartCardSession = todaySummaryStoredSession
+  const bodyPartCardBodyParts = todayBodyParts
+  const bodyPartCardRepresentativeBodyPart = todayRepresentativeBodyPart
+  const bodyPartCardDay = t("summary.today")
   const weeklySessions = buildWeeklySessionRows({
     weekSessions,
     progress: weeklyRoutinePlan.progress,
@@ -62,10 +55,10 @@ export function useSummaryCardData() {
     todayBodyParts,
     todayRepresentativeBodyPart,
     todaySummaryStoredSession,
-    latestSession,
-    latestSessionBodyParts,
-    latestSessionRepresentativeBodyPart,
-    latestSessionDay,
+    bodyPartCardSession,
+    bodyPartCardBodyParts,
+    bodyPartCardRepresentativeBodyPart,
+    bodyPartCardDay,
     todayCompleted,
     weeklySessions,
     weeklyRoutinePlan,
