@@ -9,7 +9,6 @@ import {
 } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { SymbolView } from "expo-symbols"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   deleteStoredWorkoutSession,
@@ -23,6 +22,7 @@ import {
   updateStoredWorkoutMemo,
 } from "@/entities/workout-session"
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/GlassTextarea"
 import { IconButton } from "@/shared/ui/IconButton"

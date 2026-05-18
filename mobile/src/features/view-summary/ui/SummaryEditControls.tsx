@@ -1,6 +1,5 @@
 import { useEffect } from "react"
 import { Pressable, useColorScheme } from "react-native"
-import { SymbolView } from "expo-symbols"
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -8,6 +7,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import { GlassCircleBackground } from "@/shared/ui/GlassCircleBackground"
 
 interface SummaryEditControlsProps {

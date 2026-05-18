@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>운동 장소 도착 알림 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">09_workout_place_reminder.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">운동 장소 도착 알림 기능서</h1>
+        </div>
+        <a href="./09_workout_place_reminder.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#place-rules" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">장소 판정</a>
+          <a href="#registration" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">Geofence 등록</a>
+          <a href="#permissions" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">권한 체인</a>
+          <a href="#notification" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">알림 규칙</a>
+          <a href="#tap-flow" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">탭 후 동작</a>
+          <a href="#states" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">상태와 저장소</a>
+          <a href="#code" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">관련 코드</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            운동 장소 도착 알림은 완료 운동의 위치 히스토리를 누적해 반복 장소를 찾고, 사용자가 해당 장소 근처에 다시 도착하면 운동 시작을 제안하는 로컬 알림 기능이다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">완료 세션 위치 누적 → 반복 장소 선택 → 권한 동의 → geofence 등록 → Enter 알림 → 운동 시작 Alert</code>
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-4">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">장소 병합</div>
+              <div class="mt-1 text-sm text-slate-200">120m 이내</div>
+              <div class="mt-2 text-xs text-slate-500">중심점은 누적 평균 보정</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">등록 후보</div>
+              <div class="mt-1 text-sm text-slate-200">2회 이상 운동</div>
+              <div class="mt-2 text-xs text-slate-500">최근 운동일, 횟수 순 정렬</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">Geofence</div>
+              <div class="mt-1 text-sm text-slate-200">150m 반경</div>
+              <div class="mt-2 text-xs text-slate-500">최대 20개 region</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">알림 쿨다운</div>
+              <div class="mt-1 text-sm text-slate-200">장소별 하루 1회</div>
+              <div class="mt-2 text-xs text-slate-500">lastNotifiedDateKey 저장</div>
+            </div>
+          </div>
+        </section>
+
+        <section id="place-rules">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">장소 판정</h2>
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <p class="text-slate-300">
+                위치가 있는 완료 세션만 장소 후보에 반영된다. 새 세션 위치가 기존 장소 중심점에서 120m 이내면 같은 장소로 보고 운동 횟수와 중심점을 갱신한다.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>새 장소의 id는 최초 세션의 <code>sessionId</code>를 사용한다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>기존 장소와 병합되면 <code>workoutCount</code>가 증가한다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>중심 좌표는 이전 중심점과 새 좌표의 누적 평균으로 이동한다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>운동 기록 삭제 후에는 남은 완료 세션 전체로 장소 히스토리를 다시 만든다.</span></li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">장소 히스토리 생성</div>
+              <div class="mermaid text-xs">
+graph TD
+  A[완료 세션 저장] --> B{location 있음?}
+  B -- "no" --> Z[장소 후보 반영 없음]
+  B -- "yes" --> C{기존 장소 120m 이내?}
+  C -- "no" --> D[새 장소 후보 생성<br/>workoutCount=1]
+  C -- "yes" --> E[기존 장소 병합<br/>count 증가 + 중심점 보정]
+  D --> F[최근 운동일 우선 정렬 저장]
+  E --> F
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="registration">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">Geofence 등록</h2>
+          <p class="mt-3 text-slate-300">
+            등록 후보는 <code>workoutCount >= 2</code>인 장소만 포함한다. 후보가 20개를 넘으면 최근 운동일, 같은 날이면 운동 횟수 기준으로 상위 20개만 OS geofence에 등록한다.
+          </p>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">등록 성공</div>
+              <p class="mt-2 text-sm text-slate-300">
+                <code>Location.startGeofencingAsync</code>에 장소 id, 위도, 경도, 반경 150m, enter/exit 감지 옵션을 전달한다. 성공하면 <code>enabled=true</code>, <code>operational=true</code>, reason <code>registered</code>로 저장한다.
+              </p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">등록 실패/중지</div>
+              <p class="mt-2 text-sm text-slate-300">
+                권한 부족, 후보 없음, 등록 실패, 사용자의 OFF 액션에서는 <code>Location.stopGeofencingAsync</code>로 기존 등록을 중지하고 sync status에 reason을 기록한다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="permissions">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">권한 체인</h2>
+          <p class="mt-3 text-slate-300">
+            권한 요청은 설정 화면에서 사용자가 운동 장소 도착 알림을 ON 하는 명시적 액션에서만 가능하다. 앱 시작, 운동 종료, 기록 삭제 후 재동기화는 현재 권한만 확인한다.
+          </p>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">토글 ON 권한 및 등록 흐름</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[설정 토글 ON] --> B[enabled=true 선저장]
+  B --> C[알림 권한 확인/요청]
+  C --> D{알림 허용?}
+  D -- "no" --> X[permission-denied<br/>enabled=false]
+  D -- "yes" --> E[FG 위치 권한 확인/요청]
+  E --> F{FG 허용?}
+  F -- "no" --> X
+  F -- "yes" --> G{Android?}
+  G -- "yes" --> H[BG 위치 권한 안내 Alert]
+  H --> I{사용자 동의?}
+  I -- "no" --> X
+  I -- "yes" --> J[BG 위치 권한 요청]
+  G -- "no" --> J
+  J --> K{BG 허용?}
+  K -- "no" --> X
+  K -- "yes" --> L{geofence 후보 있음?}
+  L -- "no" --> M[no-places<br/>enabled=true operational=false]
+  L -- "yes" --> N{등록 성공?}
+  N -- "yes" --> O[registered<br/>enabled=true operational=true]
+  N -- "no" --> P[registration-failed<br/>enabled=false]
+            </div>
+          </div>
+        </section>
+
+        <section id="notification">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">알림 규칙</h2>
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="text-sm font-semibold text-emerald-200">Enter 이벤트만 발송</div>
+              <p class="mt-2 text-sm text-slate-300">
+                geofence task는 Enter와 Exit 모두 상태에 저장하지만, 실제 로컬 알림은 Enter 이벤트에서만 예약한다.
+              </p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">하루 1회 제한</div>
+              <p class="mt-2 text-sm text-slate-300">
+                장소의 <code>lastNotifiedDateKey</code>가 오늘이면 알림을 보내지 않는다. 발송 직전 오늘 날짜 키로 갱신한다.
+              </p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">알림 내용</div>
+              <p class="mt-2 text-sm text-slate-300">
+                제목/본문은 번역 키 <code>workoutPlaceReminder.notification.*</code>를 사용한다. data에는 <code>type</code>과 <code>placeId</code>만 들어간다.
+              </p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">제공 보장 한계</div>
+              <p class="mt-2 text-sm text-slate-300">
+                OS geofence 이벤트에 의존하므로 알림이 지연되거나 누락될 수 있다. 앱은 마지막 이벤트 상태를 sync status에 남긴다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="tap-flow">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">탭 후 동작</h2>
+          <p class="mt-3 text-slate-300">
+            알림 탭 자체가 운동을 자동 시작하지 않는다. 응답 핸들러는 pending prompt를 저장하고 운동일지로 이동시킨다. 운동일지 화면이 포커스되면 확인 Alert를 띄운다.
+          </p>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">알림 탭 → 운동 시작 확인</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[장소 도착 알림 탭] --> B{data.type == workout-place-arrival<br/>placeId 있음?}
+  B -- "no" --> Z[무시]
+  B -- "yes" --> C[pending prompt 저장]
+  C --> D[router.push /]
+  D --> E[SummaryScreen focus]
+  E --> F[Alert 표시]
+  F --> G{사용자 선택}
+  G -- "나중에" --> H[pending prompt 삭제]
+  G -- "운동 시작" --> I[pending prompt 삭제]
+  I --> J{진행 중 운동 있음?}
+  J -- "yes" --> K[/workout/active]
+  J -- "no" --> L[/workout/countdown]
+            </div>
+          </div>
+        </section>
+
+        <section id="states">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">상태와 저장소</h2>
+          <div class="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div class="overflow-hidden rounded-lg border border-slate-800">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900 uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th class="px-4 py-2.5">reason</th>
+                    <th class="px-4 py-2.5">enabled</th>
+                    <th class="px-4 py-2.5">operational</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 bg-slate-950/40 font-mono">
+                  <tr><td class="px-4 py-3 text-emerald-300">registered</td><td class="px-4 py-3">true</td><td class="px-4 py-3">true</td></tr>
+                  <tr><td class="px-4 py-3 text-amber-300">no-places</td><td class="px-4 py-3">true</td><td class="px-4 py-3">false</td></tr>
+                  <tr><td class="px-4 py-3 text-rose-300">permission-denied</td><td class="px-4 py-3">false*</td><td class="px-4 py-3">false</td></tr>
+                  <tr><td class="px-4 py-3 text-rose-300">registration-failed</td><td class="px-4 py-3">false*</td><td class="px-4 py-3">false</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-400">disabled</td><td class="px-4 py-3">false</td><td class="px-4 py-3">false</td></tr>
+                </tbody>
+              </table>
+              <p class="p-3 text-[11px] text-slate-500">* 자동 동기화 경로에서는 사용자의 enabled 의도를 유지할 수 있다.</p>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">AsyncStorage 키</div>
+              <ul class="mt-3 space-y-2 font-mono text-xs text-slate-400">
+                <li>yb:workout-place-reminder:enabled</li>
+                <li>yb:workout-place-reminder:places</li>
+                <li>yb:workout-place-reminder:pending-prompt</li>
+                <li>yb:workout-place-reminder:sync-status</li>
+              </ul>
+              <p class="mt-4 text-xs leading-relaxed text-slate-500">
+                sync-status는 권한 상태, 등록 region id, 마지막 geofence 이벤트, 마지막 오류 메시지를 포함한다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="code">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">관련 코드</h2>
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">도메인 로직</div>
+              <ul class="mt-2 space-y-1 font-mono text-xs text-slate-400">
+                <li>entities/workout-session/lib/workoutPlaceArrivalReminder.ts</li>
+                <li>entities/workout-session/model/workoutPlaceReminderStorage.ts</li>
+                <li>entities/workout-session/lib/notificationChannels.ts</li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">화면 연결</div>
+              <ul class="mt-2 space-y-1 font-mono text-xs text-slate-400">
+                <li>features/manage-settings/ui/WorkoutPlaceArrivalReminderToggle.tsx</li>
+                <li>features/view-summary/ui/SummaryScreen.tsx</li>
+                <li>entities/workout-session/model/WorkoutContext.tsx</li>
+                <li>features/view-result/ui/ResultScreen.tsx</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4" open>
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[일치] md의 핵심 수치와 코드가 일치</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                장소 병합 120m, geofence 150m, 2회 이상 후보, 최대 20개 등록, 하루 1회 알림 제한은 코드 상수와 구현에서 확인된다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[보강] Exit 이벤트는 알림 발송 없이 상태만 저장</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                md는 Enter 이벤트 중심으로 설명한다. 코드에서는 Exit도 <code>saveWorkoutPlaceReminderSyncEvent</code>에 기록하지만, 알림 발송은 Enter에서만 수행한다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[보강] 기록 삭제 후 장소 히스토리 재생성</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                결과 화면의 삭제 흐름은 세션 삭제 후 남은 완료 세션으로 장소 히스토리를 다시 만들고, 권한 프롬프트 없이 geofence를 재동기화한다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>운동 장소 도착 알림 기능서 · 코드 근거형 HTML · 원본 <code>09_workout_place_reminder.md</code></p>
+    </footer>
+
+    <script>
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

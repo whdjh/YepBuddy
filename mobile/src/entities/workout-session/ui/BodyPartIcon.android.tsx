@@ -1,5 +1,4 @@
 import { Image, View, type ImageSourcePropType } from "react-native"
-import { RNHostView } from "@expo/ui/swift-ui"
 import arms from "@/assets/images/bodyparts/arms.png"
 import back from "@/assets/images/bodyparts/back.png"
 import chest from "@/assets/images/bodyparts/chest.png"
@@ -18,34 +17,33 @@ interface BodyPartIconProps {
   framed?: boolean
 }
 
-const frameSizeBySize: Record<BodyPartIconSize, number> = {
-  xs: 24,
-  drawer: 48,
-  sm: 40,
-  md: 56,
-  lg: 64,
-  xl: 72,
+const frameClassBySize: Record<BodyPartIconSize, string> = {
+  xs: "h-yb-6 w-yb-6",
+  drawer: "h-yb-icon-md w-yb-icon-md",
+  sm: "h-yb-10 w-yb-10",
+  md: "h-yb-icon-lg w-yb-icon-lg",
+  lg: "h-yb-icon-xl w-yb-icon-xl",
+  xl: "h-yb-icon-xl w-yb-icon-xl",
 }
 
-const iconSizeBySize: Record<BodyPartIconSize, number> = {
-  xs: 22,
-  drawer: 36,
-  sm: 28,
-  md: 38,
-  lg: 46,
-  xl: 54,
+const iconClassBySize: Record<BodyPartIconSize, string> = {
+  xs: "h-yb-5 w-yb-5",
+  drawer: "h-yb-9 w-yb-9",
+  sm: "h-yb-8 w-yb-8",
+  md: "h-yb-9 w-yb-9",
+  lg: "h-yb-12 w-yb-12",
+  xl: "h-yb-icon-lg w-yb-icon-lg",
 }
 
-const radiusBySize: Record<BodyPartIconSize, number> = {
-  xs: 0,
-  drawer: 12,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 18,
+const frameRadiusClassBySize: Record<BodyPartIconSize, string> = {
+  xs: "rounded-none",
+  drawer: "rounded-yb-icon",
+  sm: "rounded-yb-sm",
+  md: "rounded-yb-icon",
+  lg: "rounded-yb-xl",
+  xl: "rounded-yb-xl",
 }
 
-// 운동 부위 도메인 값을 화면 아이콘 asset으로 매핑
 const iconSourceByBodyPart: Record<BodyPart, ImageSourcePropType> = {
   arms,
   back,
@@ -60,45 +58,30 @@ export function BodyPartIcon({
   size = "md",
   framed = true,
 }: BodyPartIconProps) {
-  const { accent, fillPale } = useCardColors()
-  const frameSize = frameSizeBySize[size]
-  const iconSize = iconSizeBySize[size]
+  const { accent } = useCardColors()
   const iconSource = bodyPart ? iconSourceByBodyPart[bodyPart] : null
 
   return (
     <View
-      style={{
-        alignItems: "center",
-        backgroundColor: framed ? fillPale : "transparent",
-        borderRadius: framed ? radiusBySize[size] : 0,
-        height: frameSize,
-        justifyContent: "center",
-        overflow: "hidden",
-        width: frameSize,
-      }}
+      className={`items-center justify-center overflow-hidden ${frameClassBySize[size]}${
+        framed
+          ? ` bg-yb-fill-pale ${frameRadiusClassBySize[size]}`
+          : " bg-transparent rounded-none"
+      }`}
     >
       {iconSource ? (
         <Image
           source={iconSource}
           resizeMode="contain"
-          style={{ height: iconSize, width: iconSize }}
+          className={iconClassBySize[size]}
         />
       ) : (
-        <SymbolView
-          name="dumbbell.fill"
-          size={Math.round(iconSize * 0.58)}
-          tintColor={accent}
-        />
+        <SymbolView name="dumbbell.fill" tintColor={accent} />
       )}
     </View>
   )
 }
 
-// SwiftUI 카드 내부에 RN 아이콘을 넣기 위한 bridge
 export function BodyPartIconHost(props: BodyPartIconProps) {
-  return (
-    <RNHostView matchContents>
-      <BodyPartIcon {...props} />
-    </RNHostView>
-  )
+  return <BodyPartIcon {...props} />
 }

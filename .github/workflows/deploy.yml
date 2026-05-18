@@ -1,0 +1,85 @@
+name: Deploy to Stores
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "배포할 태그 (예: v1.0.1)"
+        type: string
+        required: true
+      platform:
+        description: "배포할 플랫폼"
+        type: choice
+        required: true
+        default: both
+        options:
+          - ios
+          - android
+          - both
+      submit:
+        description: "스토어 자동 제출 (해제 시 빌드만 실행)"
+        type: boolean
+        required: true
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: EAS Build & Submit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: github.actor == 'whdjh'
+
+    defaults:
+      run:
+        working-directory: mobile
+
+    steps:
+      - name: Checkout (tag)
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Verify EAS auth
+        run: eas whoami
+
+      - name: Trigger iOS build
+        if: ${{ inputs.platform == 'ios' || inputs.platform == 'both' }}
+        run: |
+          if [ "${{ inputs.submit }}" = "true" ]; then
+            eas build --platform ios --profile production --non-interactive --no-wait --auto-submit
+          else
+            eas build --platform ios --profile production --non-interactive --no-wait
+          fi
+
+      - name: Trigger Android build
+        if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
+        run: |
+          if [ "${{ inputs.submit }}" = "true" ]; then
+            eas build --platform android --profile production --non-interactive --no-wait --auto-submit
+          else
+            eas build --platform android --profile production --non-interactive --no-wait
+          fi
+
+      - name: Summary
+        run: |
+          echo "### 빌드 트리거 완료" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- 태그: \`${{ inputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 플랫폼: \`${{ inputs.platform }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- 자동 제출: \`${{ inputs.submit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "진행 상황은 [EAS 대시보드](https://expo.dev/accounts) 에서 확인하세요." >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>운동 화면 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">05_workout.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">운동 화면 기능서</h1>
+        </div>
+        <a href="./05_workout.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#routes" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">라우트</a>
+          <a href="#flow" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">시작-완료 흐름</a>
+          <a href="#countdown" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">카운트다운</a>
+          <a href="#active-ui" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">운동 중 UI</a>
+          <a href="#live-metrics" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">HealthKit live metrics</a>
+          <a href="#inputs" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">부위/세트/메모</a>
+          <a href="#drawer" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">드로어 플로우</a>
+          <a href="#completion" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">완료 연동</a>
+          <a href="#persistence" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">저장/복원</a>
+          <a href="#code" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">관련 코드</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <!-- ======================== OVERVIEW ======================== -->
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            운동 화면은 사용자가 운동을 시작한 뒤 카운트다운, 운동 중 기록, 일시정지/재개, 저장 없는 취소, 완료 저장과 외부 연동까지 이어지는 실행 플로우입니다.
+            본 문서는 <code class="rounded bg-slate-900 px-1.5 py-0.5">05_workout.md</code>를 기준으로 하되, 현재 구현 코드에서 확인한 동작만 스펙으로 정리합니다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">/workout/countdown → /workout/active → /workout/[id]</code>
+          </p>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">주요 상태</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">idle · countdown · recording · paused · completed</div>
+              <div class="mt-2 text-xs text-slate-500">WorkoutState.phase</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">진행 스냅샷</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">yb:workout:current</div>
+              <div class="mt-2 text-xs text-slate-500">1초 디바운스 저장</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">완료 세션 ID</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">startedAt ISO</div>
+              <div class="mt-2 text-xs text-slate-500">startRecording에서 생성</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== ROUTES ======================== -->
+        <section id="routes">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">라우트</h2>
+          <p class="mt-3 text-slate-300">
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">src/app/workout/_layout.tsx</code>는 운동 스택의 헤더를 숨기고,
+            <code>countdown</code>과 <code>active</code> 화면의 제스처 뒤로가기를 비활성화하며 fade 애니메이션을 사용합니다.
+          </p>
+
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">경로</th>
+                  <th class="px-4 py-2.5">화면 컴포넌트</th>
+                  <th class="px-4 py-2.5">역할</th>
+                  <th class="px-4 py-2.5">보호/리다이렉트</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">/workout/countdown</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">CountdownScreen</td>
+                  <td class="px-4 py-3">운동 시작 직전 3초 전환과 위치/리마인더 사전 처리</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">gesture disabled</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">/workout/active</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">ActiveWorkoutScreen</td>
+                  <td class="px-4 py-3">실제 운동 기록, 입력, 드로어 액션, 완료 저장</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">idle이면 홈, countdown이면 countdown으로 replace</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-300">/workout/[id]</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">결과 화면</td>
+                  <td class="px-4 py-3">완료 후 저장된 세션 상세 확인</td>
+                  <td class="px-4 py-3 text-xs text-slate-500">완료 시 <code>fromWorkout=1</code> 전달</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4 rounded-md border border-sky-500/30 bg-sky-500/5 p-3 text-xs text-sky-100/90">
+            <code>WorkoutNavigationGuard</code>는 진행 중 세션이 <code>recording</code> 또는 <code>paused</code>이면 허용 경로
+            <code>/workout/active</code>, <code>/tempo</code> 외의 화면에서 자동으로 <code>/workout/active</code>로 복귀시킵니다.
+          </div>
+        </section>
+
+        <!-- ======================== FLOW ======================== -->
+        <section id="flow">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">시작-완료 흐름</h2>
+          <p class="mt-3 text-slate-300">
+            구현상 운동 완료는 먼저 로컬 세션을 저장하고 장소/알림 동기화를 수행한 뒤, HealthKit 종료와 운동 리마인더 재동기화를 시도합니다.
+            캘린더 등록은 완료 후 Alert에서 사용자가 선택했을 때 실행됩니다.
+          </p>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">운동 시작부터 결과 화면까지</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[메인 운동 시작] --> B[/workout/countdown]
+  B --> C[startCountdown<br/>phase=countdown]
+  B --> D[운동 리마인더 취소]
+  B --> E[FG 위치 1회 요청]
+  C --> F{3초 완료}
+  F --> G[startRecording<br/>sessionId=startedAt]
+  G --> H[/workout/active]
+  H --> I[HealthKit live sync 시작]
+  H --> J[부위/세트/메모/유산소/템포 입력]
+  J --> K{사용자 액션}
+  K -- 일시정지 --> L[phase=paused<br/>pausedAt 저장]
+  L -- 재개 --> M[pausedDuration 누적<br/>phase=recording]
+  K -- 저장 없이 종료 --> N[확인 Alert]
+  N -- 확인 --> O[HealthKit discard<br/>스냅샷 제거<br/>홈 이동]
+  K -- 운동 종료 --> P[completeWorkout]
+  P --> Q[완료 세션 저장<br/>장소 후보 반영<br/>장소 알림 sync]
+  Q --> R[HealthKit end/save 시도]
+  R --> S[운동 리마인더 22:00 sync]
+  S --> T{캘린더 등록?}
+  T -- 나중에 --> U[/workout/id 결과]
+  T -- 추가 --> V[YepBuddy 캘린더 이벤트 생성]
+  V --> U
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== COUNTDOWN ======================== -->
+        <section id="countdown">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">카운트다운</h2>
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <p class="leading-relaxed text-slate-300">
+                <code>CountdownScreen</code>은 3초 동안 숫자와 240px 원형 링을 표시합니다. 카운트가 끝나면
+                <code>startRecording()</code>으로 세션 ID와 시작 시각을 만들고 <code>/workout/active</code>로 replace합니다.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span><code>startCountdown()</code>은 이전 진행 흔적을 초기화하고 <code>phase=countdown</code>으로 진입.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span><code>cancelScheduledWorkoutReminder()</code>로 기존 운동 리마인더 ID를 취소하고 저장 키를 비움.</span></li>
+                <li class="flex gap-2"><span class="text-violet-400">●</span><span><code>getWorkoutLocationOnce()</code>는 foreground 위치 권한을 요청하고 현재 좌표를 1회 저장. 실패/거부 시 <code>null</code>.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>카운트다운 중 저장 스냅샷은 가능하지만, <code>active</code> 화면은 countdown 상태면 다시 countdown으로 돌려보냅니다.</span></li>
+              </ul>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">구현값</div>
+              <dl class="mt-3 grid grid-cols-[120px_minmax(0,1fr)] gap-x-3 gap-y-2 text-sm">
+                <dt class="text-slate-500">카운트</dt><dd class="font-mono text-slate-200">COUNTDOWN_FROM = 3</dd>
+                <dt class="text-slate-500">링 크기</dt><dd class="font-mono text-slate-200">240 / stroke 14</dd>
+                <dt class="text-slate-500">애니메이션</dt><dd class="font-mono text-slate-200">withTiming(0, from * 1000)</dd>
+                <dt class="text-slate-500">완료 이동</dt><dd class="font-mono text-slate-200">router.replace("/workout/active")</dd>
+              </dl>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== ACTIVE UI ======================== -->
+        <section id="active-ui" class="space-y-12">
+          <div>
+            <h2 class="anchor text-2xl font-semibold text-slate-100">운동 중 UI</h2>
+            <p class="mt-3 text-slate-300">
+              <code>ActiveWorkoutContent</code>는 상단 스크롤 영역과 하단 고정 드로어로 구성됩니다.
+              스크롤 영역에는 live metrics, 주간 루틴 추천, 운동 부위 선택, 세트 수, 메모가 순서대로 배치됩니다.
+            </p>
+          </div>
+
+          <article id="live-metrics" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">HealthKit live metrics</h3>
+              <span class="text-xs text-slate-500">iOS HealthKit 중심</span>
+            </div>
+            <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <ul class="space-y-2 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span><code>state.phase === "recording"</code>일 때 <code>startHealthKitWorkoutSync</code>가 시작됩니다.</span></li>
+                  <li class="flex gap-2"><span class="text-sky-400">●</span><span>네이티브 <code>WorkoutSession</code> 이벤트를 구독하고, 이벤트가 없거나 센서 대기/오류면 10초 뒤 5초 간격 polling fallback을 시작합니다.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span><code>heartRate != null || activeKcal &gt; 0 || totalKcal &gt; 0</code>일 때만 생체 지표 영역을 렌더링합니다.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span>심박수만 없고 칼로리가 있으면 심박수는 <code>--</code>로 표시합니다.</span></li>
+                  <li class="flex gap-2"><span class="text-amber-400">●</span><span>상태 문구(<code>starting</code>, <code>waitingSensor</code>, <code>error</code>)는 운동 중 화면에 노출하지 않습니다.</span></li>
+                </ul>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">provider와 fallback</div>
+                <div class="mermaid text-xs">
+graph TD
+  A[recording 진입] --> B{iphoneLiveWorkoutProvider available?}
+  B -- yes --> C[네이티브 live workout start]
+  B -- no --> D[HealthKit 권한 prompt 후<br/>sample fallback read]
+  C --> E{live/paused 이벤트?}
+  E -- yes --> F[setLiveStats]
+  E -- no --> G[10초 후 polling fallback]
+  G --> H[readLiveWorkoutStats<br/>5초 간격]
+  H --> F
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article id="inputs" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">부위/세트/메모 입력</h3>
+              <span class="text-xs text-slate-500">WorkoutState.bodyParts · memo</span>
+            </div>
+            <div class="mt-4 grid gap-4 md:grid-cols-3">
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+                <div class="text-sm font-semibold text-slate-200">운동 부위</div>
+                <p class="mt-2 text-xs leading-relaxed text-slate-400">
+                  가슴, 등, 하체, 어깨, 팔, 코어를 가로 칩으로 표시합니다. 탭하면 기본 <code>setCount:10</code>으로 추가하고, 다시 탭하면 해당 상위 부위의 모든 항목을 제거합니다.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+                <div class="text-sm font-semibold text-slate-200">세부 부위</div>
+                <p class="mt-2 text-xs leading-relaxed text-slate-400">
+                  세부 옵션이 있는 상위 부위는 400ms long press로 세부 칩 줄을 엽니다. 세부 항목은 <code>part + detail</code> 조합의 별도 세트 항목으로 저장됩니다.
+                </p>
+              </div>
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+                <div class="text-sm font-semibold text-slate-200">세트와 메모</div>
+                <p class="mt-2 text-xs leading-relaxed text-slate-400">
+                  선택된 각 항목은 <code>Stepper</code>로 최소 1세트까지 조절합니다. 메모는 <code>GlassTextarea</code> 입력값을 상태에 반영하고 스냅샷 저장 대상에 포함됩니다.
+                </p>
+              </div>
+            </div>
+
+            <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900 uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th class="px-4 py-2.5">상위 부위</th>
+                    <th class="px-4 py-2.5">세부 부위 구현 키</th>
+                    <th class="px-4 py-2.5">비고</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 bg-slate-950/40 font-mono">
+                  <tr><td class="px-4 py-3 text-slate-300">chest</td><td class="px-4 py-3 text-slate-400">upper_chest, middle_chest, lower_chest, chest_fly</td><td class="px-4 py-3 text-slate-500">long press 가능</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-300">back</td><td class="px-4 py-3 text-slate-400">upper_back, lower_back, traps</td><td class="px-4 py-3 text-slate-500">long press 가능</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-300">legs</td><td class="px-4 py-3 text-slate-400">hamstrings, quads, calves, glutes</td><td class="px-4 py-3 text-slate-500">long press 가능</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-300">shoulders</td><td class="px-4 py-3 text-slate-400">front_delts, side_delts, rear_delts</td><td class="px-4 py-3 text-slate-500">long press 가능</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-300">arms</td><td class="px-4 py-3 text-slate-400">biceps, triceps</td><td class="px-4 py-3 text-slate-500">long press 가능</td></tr>
+                  <tr><td class="px-4 py-3 text-slate-300">core</td><td class="px-4 py-3 text-slate-500">없음</td><td class="px-4 py-3 text-slate-500">상위 칩만 토글</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mt-4 rounded-md border border-sky-500/30 bg-sky-500/5 p-3 text-xs text-sky-100/90">
+              주간 루틴이 활성화되어 있으면 <code>RoutineSessionPicker</code>가 먼저 표시됩니다. 다음 추천 세션은 최초 렌더에서 자동 선택되어 기존 선택 부위를 추천 루틴 부위로 대체합니다.
+            </div>
+          </article>
+        </section>
+
+        <!-- ======================== DRAWER ======================== -->
+        <section id="drawer">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">드로어 플로우</h2>
+          <p class="mt-3 text-slate-300">
+            하단 드로어는 96px 높이만 남기고 접히며, 드래그로 열고 닫습니다. 타이머는 <code>formatElapsedMs</code> 형식인
+            <code>MM:SS.CC</code>로 표시되고, 기록 중일 때 50ms 간격으로 갱신됩니다.
+          </p>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">접힌 상태의 핵심 컨트롤</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>왼쪽 원형 버튼은 유산소 시작(<code>figure.run</code>)이며 기록 중이고 아직 시작하지 않았을 때만 활성화.</span></li>
+                <li class="flex gap-2"><span class="text-rose-400">●</span><span>오른쪽 원형 버튼은 기록 중 <code>stop.fill</code>, 일시정지 중 <code>arrow.clockwise</code>.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>기록 중 원형 중지 버튼을 누르면 앱 상태와 HealthKit 세션 pause를 시도하고 드로어를 엽니다.</span></li>
+              </ul>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">열린 상태 버튼</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span><code>템포</code>: <code>/(tabs)/tempo?fromWorkout=1</code>로 이동. 진행 중 복원 허용 경로입니다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span><code>운동 중지/재개</code>: 원형 버튼과 같은 pause/resume 액션.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span><code>운동 종료</code>: <code>canEndWorkoutFromDrawer</code>가 항상 true라 기록 중/중지 상태 모두 사용 가능.</span></li>
+                <li class="flex gap-2"><span class="text-rose-400">●</span><span><code>저장하지 않고 종료하기</code>: destructive 확인 Alert 후 HealthKit discard, 스냅샷 제거, 홈 이동.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-5 rounded-lg border border-slate-800 bg-slate-950/40 p-4">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">pause/resume와 완료 시각</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[recording] --> B[중지 버튼]
+  B --> C[phase=paused<br/>pausedAt 저장]
+  C --> D{다음 액션}
+  D -- 재개 --> E[pausedDuration += now - pausedAt<br/>phase=recording]
+  D -- 운동 종료 --> F[completedAt = pausedAt]
+  A -- 운동 종료 --> G[completedAt = now]
+  E --> A
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== COMPLETION ======================== -->
+        <section id="completion">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">완료 연동</h2>
+          <p class="mt-3 text-slate-300">
+            <code>completeWorkout()</code>는 완료 세션을 만든 뒤 저장소와 장소 알림을 먼저 갱신합니다. 이후 화면 레이어에서 HealthKit 종료/저장, 운동 리마인더 재동기화,
+            캘린더 등록 프롬프트, 결과 화면 이동을 처리합니다.
+          </p>
+
+          <div class="mt-5 grid gap-4 md:grid-cols-2">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="text-sm font-semibold text-emerald-200">로컬 완료 저장</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li>완료 세션 본문: <code>yb:workout:session:{sessionId}</code></li>
+                <li>완료 세션 ID 인덱스: <code>yb:workout:sessions</code></li>
+                <li>날짜 키 인덱스: <code>yb:workout:dates</code></li>
+                <li>날짜별 대표 세션: <code>yb:workout:date:{YYYY-MM-DD}</code></li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-sky-500/30 bg-sky-500/5 p-4">
+              <div class="text-sm font-semibold text-sky-200">외부 연동</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li>HealthKit live session 종료가 성공하면 true. 실패하면 저장된 접근 상태가 enabled일 때 <code>saveWorkout</code> fallback.</li>
+                <li>운동 리마인더는 <code>syncWorkoutReminderAtNight({ allowPrompt:false })</code>로 22:00 예약을 맞춥니다.</li>
+                <li>운동 장소 알림은 위치가 있는 완료 세션을 120m 기준으로 장소 후보에 반영하고, geofence는 2회 이상 장소 최대 20개를 150m 반경으로 등록합니다.</li>
+                <li>캘린더는 Alert에서 사용자가 추가를 선택할 때 <code>YepBuddy</code> 캘린더를 찾거나 생성해 이벤트를 만듭니다.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-md border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-100/90">
+            캘린더 등록 실패, HealthKit 저장 실패, 리마인더/장소 알림 동기화 실패는 운동 완료 저장을 되돌리지 않습니다. 결과 화면 이동은 캘린더 Alert 선택 이후 실행됩니다.
+          </div>
+        </section>
+
+        <!-- ======================== PERSISTENCE ======================== -->
+        <section id="persistence">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">저장/복원</h2>
+          <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <p class="leading-relaxed text-slate-300">
+                <code>WorkoutProvider</code>는 앱 시작 시 <code>yb:workout:current</code>를 읽어 상태를 hydrate합니다.
+                hydration 이후 상태가 바뀌면 1초 디바운스로 마지막 상태를 저장하고, <code>idle</code> 또는 <code>completed</code> 상태에서는 진행 스냅샷을 삭제합니다.
+              </p>
+              <ul class="mt-4 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>복원 대상: <code>recording</code>, <code>paused</code> 상태의 진행 중 세션.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>타이머는 <code>startedAt</code>, <code>pausedDuration</code>, 현재 pause 구간을 이용해 다시 계산합니다.</span></li>
+                <li class="flex gap-2"><span class="text-violet-400">●</span><span>복원된 진행 중 운동이 허용 경로 밖에서 감지되면 <code>/workout/active</code>로 replace합니다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>저장하지 않고 종료하면 <code>resetWorkout()</code>으로 상태를 초기화하고 진행 스냅샷을 제거합니다.</span></li>
+              </ul>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">저장 대상 필드</div>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">phase</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">sessionId</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">startedAt / completedAt</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">cardioStartedAt</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">pausedAt / pausedDuration</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">bodyParts</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">memo</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">location</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">heartRate</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">activeKcal / totalKcal</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">liveMetricSource</span>
+                <span class="rounded bg-slate-900 px-2 py-1 text-slate-300">liveMetricStatus / error</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== CODE ======================== -->
+        <section id="code">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">관련 코드</h2>
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">영역</th>
+                  <th class="px-4 py-2.5">파일</th>
+                  <th class="px-4 py-2.5">확인한 내용</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr><td class="px-4 py-3 text-slate-300">라우트</td><td class="px-4 py-3 font-mono text-xs text-slate-400">src/app/workout/_layout.tsx</td><td class="px-4 py-3">운동 스택, gesture disabled, navigation guard</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">카운트다운</td><td class="px-4 py-3 font-mono text-xs text-slate-400">features/start-workout/ui/CountdownScreen.tsx</td><td class="px-4 py-3">3초 링, 위치 조회, 리마인더 취소, active 이동</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">운동 중 화면</td><td class="px-4 py-3 font-mono text-xs text-slate-400">features/do-workout/ui/ActiveWorkoutContent.tsx</td><td class="px-4 py-3">metrics, 루틴 추천, 부위/세트/메모, 드로어 핸들러</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">드로어</td><td class="px-4 py-3 font-mono text-xs text-slate-400">features/do-workout/ui/WorkoutDrawer.tsx</td><td class="px-4 py-3">timer, cardio, tempo, pause/resume, end/discard 버튼</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">상태/저장</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/model/WorkoutContext.tsx</td><td class="px-4 py-3">hydration, 디바운스 스냅샷, complete/reset 액션</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">reducer</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/model/workoutState.ts</td><td class="px-4 py-3">phase 전환, 부위/세부 부위, pauseDuration 계산</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">HealthKit</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/api/healthKit.ts</td><td class="px-4 py-3">live provider, fallback read, workout 저장</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">완료 연동</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/lib/workoutCompletion.ts</td><td class="px-4 py-3">pausedAt 완료 시각, 완료 세션 payload</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">캘린더</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/lib/calendar.ts</td><td class="px-4 py-3">권한 요청, YepBuddy 캘린더, 이벤트 제목/장소/메모</td></tr>
+                <tr><td class="px-4 py-3 text-slate-300">장소 알림</td><td class="px-4 py-3 font-mono text-xs text-slate-400">entities/workout-session/model/workoutPlaceReminderStorage.ts</td><td class="px-4 py-3">120m 병합, 2회 이상 geofence 후보, 최대 20개</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== GAPS ======================== -->
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[차이] 캘린더 등록은 종료 시 무조건 자동 등록이 아니라 사용자 선택 Alert 뒤 실행</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                md에는 운동 종료 시 자동 등록을 시도한다고 적혀 있지만, 현재 <code>ActiveWorkoutContent</code>는 완료 저장과 HealthKit/리마인더 동기화 뒤
+                <code>addPrompt</code> Alert를 띄우고, 사용자가 추가를 선택한 경우에만 <code>registerWorkoutToCalendar</code>를 호출합니다. 나중에 선택하면 바로 결과 화면으로 이동합니다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-sky-500/30 bg-sky-500/5 p-4 open:bg-sky-500/10">
+              <summary class="cursor-pointer text-sm font-semibold text-sky-200">[보강] 드로어에는 md보다 많은 실행 컨트롤이 있음</summary>
+              <p class="mt-2 text-xs text-sky-100/80">
+                현재 구현의 드로어는 운동 중지/재개, 운동 종료, 저장 없는 종료 외에도 <code>템포</code> 이동과 <code>유산소 시작</code> 원형 버튼을 제공합니다.
+                유산소 시작 시각은 <code>cardioStartedAt</code>으로 저장되어 캘린더 제목의 유산소 시간 계산에도 사용됩니다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[보강] HealthKit pause/resume API는 현재 호출됨</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                md에는 앱 상태 기준 관리로 설명되어 있지만, 현재 <code>useHealthKitWorkout</code>는 앱 pause/resume과 함께
+                <code>pauseWorkoutSession</code>, <code>resumeWorkoutSession</code>을 호출합니다. 단, 호출 실패는 무시하고 앱 내부 상태가 우선합니다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[제약] Apple Watch provider는 타입/스텁만 있고 실제 사용 가능 상태가 아님</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                <code>watchMirroredWorkoutProvider</code>는 <code>isAvailable: false</code>이며 <code>watch_provider_unavailable</code> 오류를 반환합니다.
+                현재 live metrics의 실제 경로는 iPhone native live workout provider와 HealthKit 샘플 fallback입니다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] 하루 1세션 제한은 운동 실행 화면에서 강제하지 않음</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                완료 세션 저장은 날짜별 대표 세션 ID를 갱신하지만, 새 운동 시작을 날짜 기준으로 차단하지 않습니다. 같은 날짜에 여러 완료 세션이 있을 수 있고 날짜 조회용 대표 세션만 별도로 관리합니다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>운동 화면 기능서 · 자동 생성 HTML · 원본 <code>05_workout.md</code></p>
+    </footer>
+
+    <script>
+      // active TOC highlight
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

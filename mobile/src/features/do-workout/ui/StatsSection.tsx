@@ -1,8 +1,8 @@
 import { Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { SymbolView } from "expo-symbols"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { SymbolView } from "@/shared/ui/SymbolView"
 
 interface StatsSectionProps {
   heartRate: number | null

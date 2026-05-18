@@ -11,7 +11,7 @@ import { bodyPartLabel } from "@/shared/lib/format"
 interface RoutineSessionPickerProps {
   progress: WeeklyRoutineProgress
   nextSuggestion: WeeklyRoutineSession | null
-  onSelectSlot: (parts: RoutinePart[]) => void
+  onSelectSlot: (routineSession: WeeklyRoutineSession) => void
 }
 
 function getRoutineLabel(parts: RoutinePart[]) {
@@ -47,12 +47,12 @@ export function RoutineSessionPicker({
 
     didAutoSelectRef.current = true
     setSelectedSessionId(nextSuggestionSlot.routineSession.id)
-    onSelectSlot(nextSuggestionSlot.routineSession.parts)
+    onSelectSlot(nextSuggestionSlot.routineSession)
   }, [nextSuggestion, onSelectSlot, progress.slots])
 
   const handleSelectSlot = (routineSession: WeeklyRoutineSession) => {
     setSelectedSessionId(routineSession.id)
-    onSelectSlot(routineSession.parts)
+    onSelectSlot(routineSession)
   }
 
   return (

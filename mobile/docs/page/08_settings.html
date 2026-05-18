@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>설정 화면 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">08_settings.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">설정 화면 기능서</h1>
+        </div>
+        <a href="./08_settings.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#entry" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">진입 위치</a>
+          <a href="#items" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">설정 항목</a>
+          <a href="#weekly-routine" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">3.1 주간 루틴</a>
+          <a href="#workout-reminder" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">3.2 운동 리마인더</a>
+          <a href="#place-reminder" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">3.3 운동 장소 도착 알림</a>
+          <a href="#protein-sale" class="block rounded border-l-2 border-transparent px-6 py-1 text-xs text-slate-500 hover:text-slate-200">3.4 프로틴 세일 알림</a>
+          <a href="#permissions" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">권한 원칙</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <!-- ======================== OVERVIEW ======================== -->
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            사용자가 직접 제어하는 설정이 어떤 화면으로 모였는지, 각 설정이 어떤 사용자 액션과 권한 요청에 연결되는지를 정리합니다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">메인 탭 설정 버튼 → /settings → 주간 루틴 · 운동 리마인더 · 운동 장소 도착 알림 · 프로틴 세일 알림</code>
+          </p>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">화면 라우트</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">/settings</div>
+              <div class="mt-2 text-xs text-slate-500">src/app/settings.tsx → <code>SettingsScreen</code></div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">기능 슬라이스</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">features/manage-settings</div>
+              <div class="mt-2 text-xs text-slate-500">SettingsScreen + 4개 Toggle 컴포넌트</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== ENTRY ======================== -->
+        <section id="entry">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">진입 위치</h2>
+          <p class="mt-3 text-slate-300">설정 화면은 <code class="rounded bg-slate-900 px-1.5 py-0.5">/settings</code> 라우트로 제공된다. 메인 탭의 설정 버튼(<code>SettingsFab</code>)이 보이는 위치는 아래와 같다.</p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div class="text-sm font-semibold text-emerald-200">운동일지 탭</div>
+              </div>
+              <div class="mt-2 text-xs text-slate-400">항상 표시</div>
+              <div class="mt-3 font-mono text-[11px] text-slate-500">src/app/(tabs)/index.tsx</div>
+            </div>
+            <div class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-amber-400"></span>
+                <div class="text-sm font-semibold text-amber-200">일반 템포 탭</div>
+              </div>
+              <div class="mt-2 text-xs text-slate-400"><code>fromWorkout=1</code>일 때는 숨김</div>
+              <div class="mt-3 font-mono text-[11px] text-slate-500">src/app/(tabs)/tempo.tsx</div>
+            </div>
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+                <div class="text-sm font-semibold text-emerald-200">프로틴 탭</div>
+              </div>
+              <div class="mt-2 text-xs text-slate-400">항상 표시</div>
+              <div class="mt-3 font-mono text-[11px] text-slate-500">src/app/(tabs)/protein.tsx</div>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-md border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400">
+            운동 중 화면에서 <code class="text-slate-300">fromWorkout=1</code>로 들어온 템포 화면에는 설정 버튼을 표시하지 않는다.
+            <code class="ml-2 text-slate-500">tempo.tsx:16</code>
+          </div>
+        </section>
+
+        <!-- ======================== ITEMS ======================== -->
+        <section id="items" class="space-y-12">
+          <div>
+            <h2 class="anchor text-2xl font-semibold text-slate-100">설정 항목</h2>
+            <p class="mt-2 text-slate-400">
+              <code class="rounded bg-slate-900 px-1.5 py-0.5">SettingsScreen</code>은 운동 섹션과 프로틴 섹션으로 나뉘며 총 4개의 토글을 노출한다.
+            </p>
+
+            <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th class="px-4 py-2.5">섹션</th>
+                    <th class="px-4 py-2.5">항목</th>
+                    <th class="px-4 py-2.5">컴포넌트</th>
+                    <th class="px-4 py-2.5">권한</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                  <tr>
+                    <td class="px-4 py-3 text-slate-300">운동</td>
+                    <td class="px-4 py-3">주간 루틴</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-400">WeeklyRoutineToggle</td>
+                    <td class="px-4 py-3 text-xs text-slate-500">—</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 text-slate-300">운동</td>
+                    <td class="px-4 py-3">운동 리마인더</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-400">WorkoutReminderToggle</td>
+                    <td class="px-4 py-3 text-xs"><span class="rounded bg-sky-500/15 px-1.5 py-0.5 text-sky-300">알림</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 text-slate-300">운동</td>
+                    <td class="px-4 py-3">운동 장소 도착 알림</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-400">WorkoutPlaceArrivalReminderToggle</td>
+                    <td class="px-4 py-3 text-xs">
+                      <span class="rounded bg-sky-500/15 px-1.5 py-0.5 text-sky-300">알림</span>
+                      <span class="ml-1 rounded bg-violet-500/15 px-1.5 py-0.5 text-violet-300">FG 위치</span>
+                      <span class="ml-1 rounded bg-fuchsia-500/15 px-1.5 py-0.5 text-fuchsia-300">BG 위치</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-3 text-slate-300">프로틴</td>
+                    <td class="px-4 py-3">프로틴 세일 알림</td>
+                    <td class="px-4 py-3 font-mono text-xs text-slate-400">ProteinSaleNotificationToggle</td>
+                    <td class="px-4 py-3 text-xs"><span class="rounded bg-sky-500/15 px-1.5 py-0.5 text-sky-300">알림</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ============ 3.1 Weekly Routine ============ -->
+          <article id="weekly-routine" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">3.1 주간 루틴</h3>
+              <span class="text-xs text-slate-500">운동 섹션</span>
+            </div>
+
+            <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <h4 class="text-sm font-semibold text-slate-200">동작</h4>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>토글 <strong>ON</strong> → 진행률과 추천 세션을 켠다.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span>토글 <strong>OFF</strong> → 세부 설정은 유지하고 진행률·추천 세션만 숨긴다.</span></li>
+                  <li class="flex gap-2"><span class="text-amber-400">●</span><span>ON 시 세부 설정이 없으면 <em>설정 시트</em>를 연다.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span><code>세부 설정</code> 버튼은 ON 상태에서만 노출되며 기존 시트를 다시 연다.</span></li>
+                  <li class="flex gap-2"><span class="text-sky-400">●</span><span>최초 안내에서 <code>예</code>를 선택하면 <code>/settings?routineSetup=1</code>로 이동해 시트를 자동 오픈.</span></li>
+                </ul>
+                <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                  <div class="font-semibold text-slate-300">관련 코드</div>
+                  <ul class="mt-2 space-y-1 font-mono">
+                    <li>features/manage-settings/ui/WeeklyRoutineToggle.tsx</li>
+                    <li>entities/workout-session/model/useWeeklyRoutinePlan.ts</li>
+                    <li>features/view-summary/model/useWeeklyRoutineFeaturePrompt.ts <span class="text-slate-600">// routineSetup=1</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">토글 ON 분기</div>
+                <div class="mermaid text-xs">
+graph TD
+  A[토글 ON 탭] --> B{이미 enabled?}
+  B -- "no" --> C[enableRoutine 호출<br/>featureStatus = 'enabled']
+  B -- "yes" --> Z[disableRoutine 호출<br/>featureStatus = 'disabled']
+  C --> D{hasCustomSettings?}
+  D -- "no" --> E[설정 시트 오픈<br/>닫을 때 자동 disable]
+  D -- "yes" --> F[완료]
+  E -- "저장" --> F
+  E -- "그냥 닫음" --> G[disableRoutine 호출]
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ============ 3.2 Workout Reminder ============ -->
+          <article id="workout-reminder" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">3.2 운동 리마인더</h3>
+              <span class="text-xs text-slate-500">운동 섹션 · 매일 22:00</span>
+            </div>
+
+            <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <h4 class="text-sm font-semibold text-slate-200">동작</h4>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>사용자가 토글 ON을 누른 경우에만 OS 알림 권한을 요청 (<code>allowPrompt:true</code>).</span></li>
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>권한 허용 → 오늘 운동 기록을 반영해 다음 <strong>22:00</strong> 리마인더를 예약, <code>enabled=true</code>.</span></li>
+                  <li class="flex gap-2"><span class="text-rose-400">●</span><span>권한 거부 → <code>enabled=false</code>로 저장하고 토글 OFF로 되돌림.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span>토글 OFF → <code>enabled=false</code> 저장 + 기존 예약 취소.</span></li>
+                </ul>
+                <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                  <div class="font-semibold text-slate-300">22:00 결정 규칙</div>
+                  <p class="mt-1 leading-relaxed">
+                    <code>getNextWorkoutReminderDate</code>: 오늘 22:00이 이미 지났거나 오늘 운동 기록이 있으면 <strong>내일 22:00</strong>으로 미룬다.
+                  </p>
+                </div>
+                <div class="mt-3 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                  <div class="font-semibold text-slate-300">관련 코드</div>
+                  <ul class="mt-2 space-y-1 font-mono">
+                    <li>features/manage-settings/ui/WorkoutReminderToggle.tsx</li>
+                    <li>entities/workout-session/lib/reminder.ts <span class="text-slate-600">// syncWorkoutReminderAtNight</span></li>
+                    <li>entities/workout-session/lib/workoutReminderSchedule.ts</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">권한 · 동기화 흐름</div>
+                <div class="mermaid text-xs">
+graph TD
+  A[토글 ON 탭] --> B[setEnabled true]
+  B --> C[syncWorkoutReminderAtNight<br/>allowPrompt:true]
+  C --> D{알림 권한}
+  D -- "허용 또는 provisional" --> E[기존 예약 취소<br/>22:00 신규 예약]
+  D -- "거부" --> F[setEnabled false<br/>토글 OFF로 복귀]
+  E --> G[saveReminderId<br/>enabled=true]
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ============ 3.3 Workout Place ============ -->
+          <article id="place-reminder" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">3.3 운동 장소 도착 알림</h3>
+              <span class="text-xs text-slate-500">운동 섹션 · geofence 150m</span>
+            </div>
+            <div class="mt-2 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-200">
+              ⚠️ md 원본에서 이 항목의 헤더가 실수로 “프로틴 세일 알림”으로 표기돼 있음 (3.4와 중복). 본문/코드는 운동 장소 도착 알림으로 정확함.
+            </div>
+
+            <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <h4 class="text-sm font-semibold text-slate-200">동작</h4>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>토글 ON 시 <strong>알림 → FG 위치 → BG 위치</strong> 순서로 권한 요청. Android는 BG 권한 요청 전 안내 Alert.</span></li>
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>모두 허용 + 2회 이상 운동한 장소 존재 → geofence 등록, <code>enabled=true</code>, <code>operational=true</code>.</span></li>
+                  <li class="flex gap-2"><span class="text-amber-400">●</span><span>권한 OK · 등록할 장소 없음 → <code>enabled=true</code>, <code>operational=false</code>, reason <code>no-places</code>.</span></li>
+                  <li class="flex gap-2"><span class="text-rose-400">●</span><span>권한 거부 → <code>enabled=false</code>, 토글 OFF로 복귀.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span>토글 OFF → <code>disableWorkoutPlaceArrivalReminder</code>: geofencing 중지 + reason <code>disabled</code>.</span></li>
+                  <li class="flex gap-2"><span class="text-sky-400">●</span><span>자동 동기화에서 권한이 꺼져있으면 <code>enabled</code>는 유지하고 <code>operational=false</code>만 저장.</span></li>
+                  <li class="flex gap-2"><span class="text-sky-400">●</span><span><code>enabled</code>이지만 operational 아닐 때 설정 화면 본문에 권한/등록 상태 메시지 표시.</span></li>
+                </ul>
+                <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                  <div class="font-semibold text-slate-300">관련 코드</div>
+                  <ul class="mt-2 space-y-1 font-mono">
+                    <li>features/manage-settings/ui/WorkoutPlaceArrivalReminderToggle.tsx</li>
+                    <li>entities/workout-session/lib/workoutPlaceArrivalReminder.ts</li>
+                    <li>entities/workout-session/model/workoutPlaceReminderStorage.ts</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                  <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">권한 체인 (allowPrompt:true)</div>
+                  <div class="mermaid text-xs">
+graph TD
+  A[토글 ON] --> N{알림 권한?}
+  N -- "거부" --> X[denied]
+  N -- "허용" --> F{FG 위치 권한?}
+  F -- "거부" --> X
+  F -- "허용" --> AND{Android?}
+  AND -- "yes" --> AL{안내 Alert 동의?}
+  AL -- "no" --> X
+  AL -- "yes" --> BG{BG 위치 권한?}
+  AND -- "no" --> BG
+  BG -- "거부" --> X
+  BG -- "허용" --> P{운동 장소 ≥ 1?}
+  P -- "no" --> NP[reason=no-places<br/>enabled=true]
+  P -- "yes" --> REG{geofence 등록 성공?}
+  REG -- "no" --> RF[reason=registration-failed<br/>enabled=false]
+  REG -- "yes" --> OK[reason=registered<br/>operational=true]
+  X[reason=permission-denied<br/>enabled=false]
+                  </div>
+                </div>
+
+                <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                  <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">SyncStatus reason</div>
+                  <table class="w-full text-left text-xs">
+                    <thead class="text-slate-500">
+                      <tr>
+                        <th class="py-1.5 pr-3">reason</th>
+                        <th class="py-1.5 pr-3">enabled</th>
+                        <th class="py-1.5">operational</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 font-mono">
+                      <tr><td class="py-1.5 pr-3 text-emerald-300">registered</td><td class="text-slate-300">true</td><td class="text-slate-300">true</td></tr>
+                      <tr><td class="py-1.5 pr-3 text-amber-300">no-places</td><td class="text-slate-300">true</td><td class="text-slate-400">false</td></tr>
+                      <tr><td class="py-1.5 pr-3 text-rose-300">permission-denied</td><td class="text-slate-400">false*</td><td class="text-slate-400">false</td></tr>
+                      <tr><td class="py-1.5 pr-3 text-rose-300">registration-failed</td><td class="text-slate-400">false*</td><td class="text-slate-400">false</td></tr>
+                      <tr><td class="py-1.5 pr-3 text-slate-400">disabled</td><td class="text-slate-400">false</td><td class="text-slate-400">false</td></tr>
+                    </tbody>
+                  </table>
+                  <p class="mt-2 text-[11px] text-slate-500">* 자동 동기화 경로(<code>allowPrompt:false</code>)에서는 <code>enabled</code> 값을 유지하므로 true일 수 있음.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- ============ 3.4 Protein Sale ============ -->
+          <article id="protein-sale" class="rounded-xl border border-slate-800 bg-slate-900/30 p-6">
+            <div class="flex items-baseline justify-between">
+              <h3 class="anchor text-xl font-semibold text-slate-100">3.4 프로틴 세일 알림</h3>
+              <span class="text-xs text-slate-500">프로틴 섹션</span>
+            </div>
+
+            <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div>
+                <h4 class="text-sm font-semibold text-slate-200">동작</h4>
+                <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>토글 ON 시에만 OS 알림 권한 요청 (<code>requestProteinSaleNotificationPermissions</code>).</span></li>
+                  <li class="flex gap-2"><span class="text-emerald-400">●</span><span>허용 → 채널 보장 + 기존 예약 취소 + <code>buildProteinSaleNotificationPlans</code>로 향후 세일 알림 일괄 예약, <code>enabled=true</code>.</span></li>
+                  <li class="flex gap-2"><span class="text-rose-400">●</span><span>권한 거부 → <code>enabled=false</code>로 저장, 토글 OFF.</span></li>
+                  <li class="flex gap-2"><span class="text-slate-500">●</span><span>토글 OFF → <code>disableProteinSaleNotifications</code>: <code>enabled=false</code> + 저장된 예약 id 전체 취소.</span></li>
+                  <li class="flex gap-2"><span class="text-sky-400">●</span><span>알림 작업은 직렬 큐(<code>runProteinSaleNotificationTask</code>)로 처리해 동시 호출 충돌을 방지.</span></li>
+                </ul>
+                <div class="mt-4 rounded-md border border-slate-800 bg-slate-950/60 p-3 text-xs text-slate-400">
+                  <div class="font-semibold text-slate-300">관련 코드</div>
+                  <ul class="mt-2 space-y-1 font-mono">
+                    <li>features/manage-settings/ui/ProteinSaleNotificationToggle.tsx</li>
+                    <li>entities/protein/lib/protein-sale-notification/scheduler.ts</li>
+                    <li>entities/protein/lib/protein-sale-notification/permissions.ts</li>
+                    <li>entities/protein/lib/protein-sale-notification/events.ts</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+                <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">토글 동작</div>
+                <div class="mermaid text-xs">
+graph TD
+  A[토글 ON] --> P[scheduleProteinSaleNotifications<br/>allowPrompt:true]
+  P --> Q{알림 권한}
+  Q -- "거부" --> X[setEnabled false<br/>예약 전체 취소]
+  Q -- "허용" --> R[기존 예약 취소]
+  R --> S[plans 순회·예약]
+  S --> T[saveIds + setEnabled true]
+  B[토글 OFF] --> D[disableProteinSaleNotifications]
+  D --> E[setEnabled false<br/>cancelAll]
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ======================== PERMISSIONS ======================== -->
+        <section id="permissions">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">권한 원칙</h2>
+          <div class="mt-4 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">자동 경로</div>
+              <p class="mt-1 text-sm text-slate-300">앱 시작 · 운동 종료 · 자동 재동기화에서는 <strong>OS 권한 프롬프트를 띄우지 않는다</strong>. 저장된 <code>enabled</code>와 현재 권한 상태만 확인한다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">allowPrompt: false</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">사용자 명시 ON</div>
+              <p class="mt-1 text-sm text-slate-300">사용자가 토글 ON을 누른 경우에만 권한을 요청한다. 거부 시 모든 항목은 <code>enabled=false</code>로 복구된다.</p>
+              <p class="mt-2 font-mono text-[11px] text-slate-500">allowPrompt: true</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">OS Settings에서 권한 끔</div>
+              <p class="mt-1 text-sm text-slate-300">자동 동기화가 이를 감지하면 <code>enabled</code>를 false로 맞추고 남은 예약·등록을 취소한다 (운동 장소 알림은 enabled를 유지하고 operational만 false 처리).</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">선택 사항</div>
+              <p class="mt-1 text-sm text-slate-300">알림은 앱 기능 사용의 필수 조건이 아니다. 사용자는 설정 화면에서 언제든 수신 동의를 철회할 수 있다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== GAPS ======================== -->
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[md] 3.3 헤더 오타: “프로틴 세일 알림” → 실제로는 “운동 장소 도착 알림”</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                <code>08_settings.md</code> 60번 줄 헤더가 3.4와 중복돼 있다. 본문 동작 설명은 운동 장소 도착 알림 그대로이므로 헤더만 수정하면 됨.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[추가 설명] 운동 장소 알림 — 자동 경로에서 enabled 처리</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                코드(<code>syncWorkoutPlaceArrivalReminder</code>)는 <code>allowPrompt:false</code> 자동 경로에서 권한이 부족해도 <code>enabled</code>를 강제로 false로 바꾸지 않고 <code>operational=false</code>만 기록한다 — 그래서 사용자가 OS에서 권한을 다시 켜면 enabled가 유지된 채 자동 복구 가능. 스펙 4번 마지막 줄과 합치.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[보강 필요] 주간 루틴 토글 OFF 동작</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                스펙은 “세부 설정은 유지하고 진행률만 숨긴다”고 적혀있고, 코드는 <code>featureStatus</code>만 <code>'disabled'</code>로 바꾸므로 일치. 다만 설정 시트를 빈 상태로 닫으면 <code>shouldDisableOnSheetCloseRef</code>로 자동 OFF 되는 시나리오는 스펙에 명시되지 않음.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>설정 화면 기능서 · 자동 생성 HTML · 원본 <code>08_settings.md</code></p>
+    </footer>
+
+    <script>
+      // active TOC highlight
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

@@ -1,8 +1,10 @@
 import { cssInterop } from "nativewind"
-import { Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { Pressable as GesturePressable } from "react-native-gesture-handler"
 import {
   BODY_PART_DETAILS,
+  BodyPartDetailSelectionChip,
+  BodyPartSelectionChip,
   type BodyPart,
   type BodyPartDetail,
   type WeeklyRoutineSession,
@@ -153,45 +155,26 @@ export function RoutineSessionPartEditor({
       fallbackClassName="bg-yb-glass-bg"
     >
       <View className="px-yb-3.5 py-yb-3.5">
-        <View className="flex-row items-center gap-yb-1.5">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerClassName="flex-row gap-[10px] pl-1 pr-yb-1"
+        >
           {ALL_BODY_PARTS.map((part) => {
             const active = session.parts.some((item) => item.part === part)
+            const label = bodyPartLabel(part)
 
             return (
-              <GlassSurface
+              <BodyPartSelectionChip
                 key={part}
-                className={
-                  active ? "border border-yb-accent shadow-yb-sm" : undefined
-                }
-                cornerRadius={999}
-                fallbackClassName={
-                  active ? "bg-yb-accent/15" : "bg-yb-glass-bg"
-                }
-              >
-                <Pressable
-                  onPress={() => onTogglePart(index, part)}
-                  accessibilityRole="checkbox"
-                  accessibilityState={{ checked: active }}
-                  accessibilityLabel={bodyPartLabel(part)}
-                  className={`h-[38px] items-center justify-center px-yb-2.5 ${
-                    active ? "active:opacity-90" : "active:opacity-80"
-                  }`}
-                >
-                  {active && (
-                    <View className="absolute inset-0 bg-yb-accent/15" />
-                  )}
-                  <Text
-                    className={`text-yb-caption font-semibold ${
-                      active ? "text-yb-accent" : "text-yb-fg-secondary"
-                    }`}
-                  >
-                    {bodyPartLabel(part)}
-                  </Text>
-                </Pressable>
-              </GlassSurface>
+                label={label}
+                selected={active}
+                accessibilityRole="checkbox"
+                onPress={() => onTogglePart(index, part)}
+              />
             )
           })}
-        </View>
+        </ScrollView>
         {session.parts.map((routinePart) => {
           const details = BODY_PART_DETAILS[routinePart.part]
           if (details.length === 0) return null
@@ -204,37 +187,18 @@ export function RoutineSessionPartEditor({
               <View className="flex-row flex-wrap gap-yb-2">
                 {details.map((detail) => {
                   const active = routinePart.details?.includes(detail) ?? false
+                  const label = bodyPartDetailLabel(detail)
 
                   return (
-                    <GlassSurface
+                    <BodyPartDetailSelectionChip
                       key={detail}
-                      className={active ? "border border-yb-accent" : undefined}
-                      cornerRadius={999}
-                      fallbackClassName={
-                        active ? "bg-yb-accent/15" : "bg-yb-glass-bg"
+                      label={label}
+                      selected={active}
+                      accessibilityRole="checkbox"
+                      onPress={() =>
+                        onToggleDetail(index, routinePart.part, detail)
                       }
-                    >
-                      <Pressable
-                        onPress={() =>
-                          onToggleDetail(index, routinePart.part, detail)
-                        }
-                        accessibilityRole="checkbox"
-                        accessibilityState={{ checked: active }}
-                        accessibilityLabel={bodyPartDetailLabel(detail)}
-                        className="min-h-[34px] items-center justify-center px-yb-3 active:opacity-80"
-                      >
-                        {active && (
-                          <View className="absolute inset-0 bg-yb-accent/15" />
-                        )}
-                        <Text
-                          className={`text-yb-caption font-semibold ${
-                            active ? "text-yb-accent" : "text-yb-fg-secondary"
-                          }`}
-                        >
-                          {bodyPartDetailLabel(detail)}
-                        </Text>
-                      </Pressable>
-                    </GlassSurface>
+                    />
                   )
                 })}
               </View>

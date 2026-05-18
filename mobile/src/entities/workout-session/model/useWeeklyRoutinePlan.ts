@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { getThisWeekDateRange } from "@/shared/lib/date"
 import {
+  createWeeklyRoutineCycleProgress,
   getWeeklyRoutineCyclePhase,
-  getWeeklyRoutineCycleState,
+  getWeeklyRoutineCycleStateFromProgress,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
   type WeeklyRoutineCyclePhase,
+  type WeeklyRoutineCycleProgress,
   type WeeklyRoutineCycleState,
   type WeeklyRoutineSetupPromptKind,
 } from "../lib/weeklyRoutineCycle"
@@ -26,6 +28,7 @@ import {
 import {
   dismissWeeklyRoutineCycleRenewalPrompt,
   loadWeeklyRoutinePromptState,
+  resetWeeklyRoutineCycleProgress,
   saveWeeklyRoutineFeatureStatus,
   saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
@@ -52,7 +55,7 @@ export interface WeeklyRoutinePlanResult {
   isDeloadWeek: boolean
 }
 
-// 주간 루틴 설정 로드 + 이번 주 진행률 계산을 한 번에 제공
+// 주간 루틴 설정 로드 + 세션 단위 루틴 진행률 계산을 한 번에 제공
 export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
   const loadRequestIdRef = useRef(0)
   const [settings, setSettings] = useState<WeeklyRoutineSettings | null>(null)
@@ -65,6 +68,10 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
   const [currentWeekStartDateKey, setCurrentWeekStartDateKey] = useState(
     () => getThisWeekDateRange().startDateKey,
   )
+  const [cycleProgress, setCycleProgress] =
+    useState<WeeklyRoutineCycleProgress>(() =>
+      createWeeklyRoutineCycleProgress(getThisWeekDateRange().startDateKey),
+    )
   const [isLoading, setIsLoading] = useState(true)
 
   const load = useCallback(async () => {
@@ -87,6 +94,7 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
       setFeatureStatus(snapshot.featureStatus)
       setPromptState(loadedPromptState)
       setSessions(snapshot.sessions)
+      setCycleProgress(snapshot.cycleProgress)
     } catch {
       // 저장소/권한 오류가 있어도 화면 로딩 상태는 종료한다.
     } finally {
@@ -115,6 +123,9 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
 
       try {
         await saveWeeklyRoutineSettings(normalized)
+        const nextCycleProgress = await resetWeeklyRoutineCycleProgress(
+          normalized.cycleStartDateKey,
+        )
         await saveWeeklyRoutineFeatureStatus("enabled")
         await saveWeeklyRoutinePromptState(DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE)
 
@@ -125,6 +136,7 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
         setSettings(normalized)
         setFeatureStatus("enabled")
         setPromptState(DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE)
+        setCycleProgress(nextCycleProgress)
       } finally {
         if (loadRequestIdRef.current === requestId) {
           setIsLoading(false)
@@ -206,26 +218,33 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
   const progressSnapshot = useMemo(
     () =>
       buildWeeklyRoutineProgressSnapshot({
+        cycleProgress,
         currentWeekStartDateKey,
         featureStatus,
         sessions,
         settings,
       }),
-    [currentWeekStartDateKey, featureStatus, sessions, settings],
+    [currentWeekStartDateKey, cycleProgress, featureStatus, sessions, settings],
   )
   const normalizedSettings = progressSnapshot.settings
+  const effectiveSettings = useMemo(
+    () =>
+      normalizedSettings ??
+      createDefaultWeeklyRoutineSettings(currentWeekStartDateKey),
+    [currentWeekStartDateKey, normalizedSettings],
+  )
   const isRoutineEnabled = progressSnapshot.isRoutineEnabled
   const progress = progressSnapshot.progress
 
   const cycleState = useMemo(
     () =>
-      isRoutineEnabled && normalizedSettings
-        ? getWeeklyRoutineCycleState(
-            normalizedSettings,
-            currentWeekStartDateKey,
+      isRoutineEnabled
+        ? getWeeklyRoutineCycleStateFromProgress(
+            effectiveSettings,
+            progressSnapshot.cycleProgress,
           )
         : null,
-    [currentWeekStartDateKey, isRoutineEnabled, normalizedSettings],
+    [effectiveSettings, isRoutineEnabled, progressSnapshot.cycleProgress],
   )
   const cyclePhase = cycleState
     ? getWeeklyRoutineCyclePhase(cycleState)
@@ -235,12 +254,19 @@ export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
     () =>
       isRoutineEnabled
         ? shouldShowWeeklyRoutineSetupPrompt({
-            settings: normalizedSettings,
+            settings: effectiveSettings,
             promptState,
             currentWeekStartDateKey,
+            cycleState,
           })
         : null,
-    [currentWeekStartDateKey, isRoutineEnabled, normalizedSettings, promptState],
+    [
+      currentWeekStartDateKey,
+      cycleState,
+      effectiveSettings,
+      isRoutineEnabled,
+      promptState,
+    ],
   )
 
   return {

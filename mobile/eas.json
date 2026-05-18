@@ -1,16 +1,23 @@
 {
   "cli": {
-    "appVersionSource": "local",
+    "appVersionSource": "remote",
     "promptToConfigurePushNotifications": false
   },
   "build": {
     "production": {
       "corepack": true,
-      "pnpm": "10.0.0"
+      "pnpm": "10.0.0",
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      }
     }
   },
   "submit": {
     "production": {
+      "android": {
+        "track": "internal"
+      },
       "ios": {
         "ascAppId": "6768154123",
         "appleTeamId": "U9H4YARLH8"

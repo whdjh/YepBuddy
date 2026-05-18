@@ -1,7 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { getThisWeekDateRange } from "@/shared/lib/date"
 import { parseJsonOrNull } from "@/shared/lib/json"
 import {
+  createWeeklyRoutineCycleProgress,
+  fillWeeklyRoutineSlotProgress,
+  normalizeWeeklyRoutineCycleProgress,
+  type WeeklyRoutineCycleProgress,
+} from "../lib/weeklyRoutineCycle"
+import {
+  createDefaultWeeklyRoutineSettings,
   DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
+  normalizeWeeklyRoutineSettings,
   resolveWeeklyRoutineFeatureStatus,
   type WeeklyRoutineFeatureStatus,
   type WeeklyRoutinePromptState,
@@ -11,6 +20,7 @@ import {
 const KEY = "yb:workout:weekly-routine"
 const FEATURE_STATUS_KEY = "yb:workout:weekly-routine-feature-status"
 const PROMPT_KEY = "yb:workout:weekly-routine-prompt"
+const CYCLE_PROGRESS_KEY = "yb:workout:weekly-routine-cycle-progress"
 
 // 주간 루틴 설정을 AsyncStorage에 저장
 export async function saveWeeklyRoutineSettings(
@@ -23,6 +33,65 @@ export async function saveWeeklyRoutineSettings(
 export async function loadWeeklyRoutineSettings(): Promise<WeeklyRoutineSettings | null> {
   const raw = await AsyncStorage.getItem(KEY)
   return raw ? parseJsonOrNull<WeeklyRoutineSettings>(raw) : null
+}
+
+// 슬롯 기반 루틴 사이클 진행 상태를 AsyncStorage에 저장
+export async function saveWeeklyRoutineCycleProgress(
+  progress: WeeklyRoutineCycleProgress,
+): Promise<void> {
+  await AsyncStorage.setItem(CYCLE_PROGRESS_KEY, JSON.stringify(progress))
+}
+
+// 저장된 슬롯 기반 루틴 사이클 진행 상태를 불러오고 없거나 깨지면 기본값을 반환
+export async function loadWeeklyRoutineCycleProgress(
+  fallbackCycleStartDateKey: string,
+): Promise<WeeklyRoutineCycleProgress> {
+  const raw = await AsyncStorage.getItem(CYCLE_PROGRESS_KEY)
+  const parsed = raw
+    ? parseJsonOrNull<Partial<WeeklyRoutineCycleProgress>>(raw)
+    : null
+
+  return normalizeWeeklyRoutineCycleProgress(parsed, fallbackCycleStartDateKey)
+}
+
+// 현재 루틴 사이클 진행 상태를 초기화
+export async function resetWeeklyRoutineCycleProgress(
+  cycleStartDateKey: string,
+): Promise<WeeklyRoutineCycleProgress> {
+  const progress = createWeeklyRoutineCycleProgress(cycleStartDateKey)
+  await saveWeeklyRoutineCycleProgress(progress)
+  return progress
+}
+
+// 저장 완료된 운동이 선택한 루틴 슬롯을 채웠음을 기록
+export async function markWeeklyRoutineSlotFilled(
+  slotId: string,
+): Promise<WeeklyRoutineCycleProgress | null> {
+  const { startDateKey } = getThisWeekDateRange()
+  const [settings, featureStatus] = await Promise.all([
+    loadWeeklyRoutineSettings(),
+    loadWeeklyRoutineFeatureStatus(),
+  ])
+
+  if (featureStatus !== "enabled") {
+    return null
+  }
+
+  const normalizedSettings = normalizeWeeklyRoutineSettings(
+    settings ?? createDefaultWeeklyRoutineSettings(startDateKey),
+    startDateKey,
+  )
+  const currentProgress = await loadWeeklyRoutineCycleProgress(
+    normalizedSettings.cycleStartDateKey,
+  )
+  const nextProgress = fillWeeklyRoutineSlotProgress(
+    normalizedSettings,
+    currentProgress,
+    slotId,
+  )
+
+  await saveWeeklyRoutineCycleProgress(nextProgress)
+  return nextProgress
 }
 
 // 저장소 값이 깨졌거나 예전 형식이면 마이그레이션 로직에서 보정하도록 null 반환

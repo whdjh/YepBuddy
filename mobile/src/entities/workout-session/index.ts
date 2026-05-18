@@ -1,5 +1,9 @@
 export { WorkoutProvider, useWorkout } from "./model/WorkoutContext"
 export { BodyPartIcon, BodyPartIconHost } from "./ui/BodyPartIcon"
+export {
+  BodyPartDetailSelectionChip,
+  BodyPartSelectionChip,
+} from "./ui/BodyPartSelectionChip"
 export { getWorkoutDetail } from "./api/healthKit"
 export { getWorkoutSummariesForDate } from "./api/healthKit"
 export { getWorkoutSummariesForMonth } from "./api/healthKit"
@@ -114,9 +118,13 @@ export type {
 } from "./model/weeklyRoutine"
 export {
   dismissWeeklyRoutineCycleRenewalPrompt,
+  loadWeeklyRoutineCycleProgress,
   loadWeeklyRoutineFeatureStatus,
   loadWeeklyRoutinePromptState,
   loadWeeklyRoutineSettings,
+  markWeeklyRoutineSlotFilled,
+  resetWeeklyRoutineCycleProgress,
+  saveWeeklyRoutineCycleProgress,
   saveWeeklyRoutineFeatureStatus,
   saveWeeklyRoutinePromptState,
   saveWeeklyRoutineSettings,
@@ -124,6 +132,7 @@ export {
 export {
   areBodyPartsMatchingRoutineSession,
   buildWeeklyRoutineProgress,
+  buildWeeklyRoutineProgressFromFilledSlots,
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
 } from "./lib/weeklyRoutineProgress"
@@ -138,8 +147,12 @@ export {
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {
+  createWeeklyRoutineCycleProgress,
+  fillWeeklyRoutineSlotProgress,
   getWeeklyRoutineCyclePhase,
   getWeeklyRoutineCycleState,
+  getWeeklyRoutineCycleStateFromProgress,
+  normalizeWeeklyRoutineCycleProgress,
   restartWeeklyRoutineCycle,
   shouldShowWeeklyRoutineSetupPrompt,
 } from "./lib/weeklyRoutineCycle"
@@ -150,6 +163,7 @@ export type {
 } from "./lib/weeklyRoutineProgress"
 export type {
   WeeklyRoutineCyclePhase,
+  WeeklyRoutineCycleProgress,
   WeeklyRoutineCycleState,
   WeeklyRoutineSetupPromptKind,
 } from "./lib/weeklyRoutineCycle"

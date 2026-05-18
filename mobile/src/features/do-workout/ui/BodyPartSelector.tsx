@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react"
-import { Pressable, ScrollView, Text, View } from "react-native"
+import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
+  BodyPartDetailSelectionChip,
+  BodyPartSelectionChip,
   getWorkoutBodyPartDetails,
   BODY_PART_DETAILS,
   type BodyPart,
@@ -9,8 +11,6 @@ import {
   type WorkoutBodyPartSet,
 } from "@/entities/workout-session"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
-import { Chip } from "@/shared/ui/Chip"
-import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 const BODY_PART_KEYS: BodyPart[] = [
   "chest",
@@ -65,13 +65,11 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
           const label = bodyPartLabel(key)
 
           return (
-            <Chip
+            <BodyPartSelectionChip
               key={key}
-              variant={active ? "active" : "glass"}
               label={label}
+              selected={active}
               accessibilityRole="button"
-              accessibilityLabel={label}
-              accessibilityState={{ selected: active }}
               onPress={() => {
                 if (suppressNextPressRef.current === key) {
                   suppressNextPressRef.current = null
@@ -96,42 +94,16 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
         >
           {BODY_PART_DETAILS[detailPart].map((detail) => {
             const active = selectedDetailPartDetails.includes(detail)
-
-            if (active) {
-              return (
-                <Pressable
-                  key={detail}
-                  onPress={() => onToggleDetail?.(detailPart, detail)}
-                  accessibilityRole="button"
-                  accessibilityLabel={bodyPartDetailLabel(detail)}
-                  accessibilityState={{ selected: true }}
-                  className="rounded-full border border-yb-accent bg-yb-accent px-3 py-1.5"
-                >
-                  <Text className="text-yb-body-sm font-medium text-yb-on-accent">
-                    {bodyPartDetailLabel(detail)}
-                  </Text>
-                </Pressable>
-              )
-            }
+            const label = bodyPartDetailLabel(detail)
 
             return (
-              <GlassSurface
+              <BodyPartDetailSelectionChip
                 key={detail}
-                cornerRadius={999}
-                fallbackClassName="bg-yb-surface/70"
-              >
-                <Pressable
-                  onPress={() => onToggleDetail?.(detailPart, detail)}
-                  accessibilityRole="button"
-                  accessibilityLabel={bodyPartDetailLabel(detail)}
-                  accessibilityState={{ selected: false }}
-                  className="rounded-full px-3 py-1.5 active:opacity-80"
-                >
-                  <Text className="text-yb-body-sm text-yb-fg-secondary">
-                    {bodyPartDetailLabel(detail)}
-                  </Text>
-                </Pressable>
-              </GlassSurface>
+                label={label}
+                selected={active}
+                accessibilityRole="button"
+                onPress={() => onToggleDetail?.(detailPart, detail)}
+              />
             )
           })}
         </ScrollView>

@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import type { SFSymbol } from "sf-symbols-typescript"
 import { StyleSheet, View, type ViewProps } from "react-native"
 import { Host, VStack, HStack, Text as SwiftText, Image, Spacer, Divider } from "@expo/ui/swift-ui"
 import {
@@ -13,9 +12,13 @@ import {
 } from "@expo/ui/swift-ui/modifiers"
 import { useCardColors } from "@/shared/hooks/useCardColors"
 import { GlassSurface } from "./GlassSurface"
+import type { SymbolViewName } from "./SymbolView"
 
 /* Card */
 type CardVariant = "default" | "subtle" | "glass"
+type CardIconVariant = "sm" | "md" | "lg" | "xl"
+type CardDotVariant = "sm" | "lg"
+type CardChevronVariant = "sm" | "md"
 
 interface CardBaseProps extends ViewProps {
   variant?: Exclude<CardVariant, "glass">
@@ -36,6 +39,37 @@ const containerStyles: Record<Exclude<CardVariant, "glass">, string> = {
     "rounded-yb-xl p-yb-6 bg-yb-surface border border-yb-border shadow-sm",
   subtle:
     "rounded-yb-md p-yb-4 bg-yb-surface-subtle border border-yb-border",
+}
+
+const iconFrameSizeByVariant: Record<CardIconVariant, number> = {
+  sm: 40,
+  md: 44,
+  lg: 56,
+  xl: 64,
+}
+
+const iconSymbolSizeByVariant: Record<CardIconVariant, number> = {
+  sm: 18,
+  md: 22,
+  lg: 28,
+  xl: 28,
+}
+
+const iconCornerRadiusByVariant: Record<CardIconVariant, number> = {
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 16,
+}
+
+const dotSymbolSizeByVariant: Record<CardDotVariant, number> = {
+  sm: 4,
+  lg: 8,
+}
+
+const chevronSymbolSizeByVariant: Record<CardChevronVariant, number> = {
+  sm: 16,
+  md: 18,
 }
 
 function CardComponent(props: CardProps) {
@@ -117,12 +151,7 @@ function Header({ label, chevron, more, onMorePress, badge }: {
         </SwiftText>
       )}
       {(chevron || onMorePress) && (
-        <Image
-          systemName="chevron.right"
-          size={chevron ? 14 : 12}
-          color={chevron ? fgSecondary : accent}
-          onPress={onMorePress}
-        />
+        <Chevron variant={chevron ? "md" : "sm"} onPress={onMorePress} />
       )}
     </HStack>
   )
@@ -193,17 +222,17 @@ function Metric({ value, unit, valueSize = 36, unitSize = 14 }: {
 }
 
 /** SF Symbol 아이콘 + 배경 */
-function Icon({ name, size = 22, bgSize = 44, cornerRadius = 10 }: {
-  name: SFSymbol
-  size?: number
-  bgSize?: number
-  cornerRadius?: number
+function Icon({ name, variant = "md" }: {
+  name: SymbolViewName
+  variant?: CardIconVariant
 }) {
   const { accent, fillPale } = useCardColors()
+  const bgSize = iconFrameSizeByVariant[variant]
+  const cornerRadius = iconCornerRadiusByVariant[variant]
   return (
     <Image
       systemName={name}
-      size={size}
+      size={iconSymbolSizeByVariant[variant]}
       color={accent}
       modifiers={[
         frame({ width: bgSize, height: bgSize }),
@@ -215,18 +244,18 @@ function Icon({ name, size = 22, bgSize = 44, cornerRadius = 10 }: {
 }
 
 /** 구분점 */
-function Dot({ size = 4 }: { size?: number }) {
+function Dot({ variant = "sm" }: { variant?: CardDotVariant }) {
   const { accent } = useCardColors()
-  return <Image systemName="circle.fill" size={size} color={accent} />
+  return <Image systemName="circle.fill" size={dotSymbolSizeByVariant[variant]} color={accent} />
 }
 
 /** 셰브론 아이콘 */
-function Chevron({ size = 18, onPress }: { size?: number; onPress?: () => void }) {
+function Chevron({ variant = "md", onPress }: { variant?: CardChevronVariant; onPress?: () => void }) {
   const { fgSecondary } = useCardColors()
   return (
     <Image
       systemName="chevron.right"
-      size={size}
+      size={chevronSymbolSizeByVariant[variant]}
       color={fgSecondary}
       onPress={onPress}
     />

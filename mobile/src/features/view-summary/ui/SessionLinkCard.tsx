@@ -44,7 +44,7 @@ export function SessionLinkCard({
           <Card.Spacer size={8} />
           <Card.Row spacing={6} alignment="center">
             <Card.Caption>{`${kcal}${t("summary.kcalUnit")}`}</Card.Caption>
-            <Card.Dot size={4} />
+            <Card.Dot />
             <Card.Caption>{day}</Card.Caption>
           </Card.Row>
         </Card.Column>

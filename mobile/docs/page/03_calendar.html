@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>캘린더 화면 기능서 · yepbuddy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: "dark",
+        themeVariables: {
+          primaryColor: "#1f2937",
+          primaryTextColor: "#f3f4f6",
+          primaryBorderColor: "#4b5563",
+          lineColor: "#9ca3af",
+          tertiaryColor: "#111827",
+        },
+        flowchart: { curve: "basis", padding: 12 },
+      })
+    </script>
+    <style>
+      :root { color-scheme: dark; }
+      html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+      body { font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif; }
+      .anchor::before { content: "#"; opacity: 0; margin-right: 0.25rem; color: #60a5fa; transition: opacity 120ms; }
+      .anchor:hover::before { opacity: 1; }
+      code { font-family: "SF Mono", ui-monospace, Menlo, monospace; font-size: 0.85em; }
+      .mermaid { background: transparent !important; }
+      .toc a.active { color: #f3f4f6; border-color: #60a5fa; background: rgba(96,165,250,0.08); }
+    </style>
+  </head>
+  <body class="bg-slate-950 text-slate-200 antialiased">
+    <header class="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/85 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center gap-4 px-6 py-3">
+        <div class="grow">
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>mobile/docs/page</span>
+            <span class="text-slate-700">/</span>
+            <span class="text-slate-300">03_calendar.html</span>
+            <span class="ml-2 rounded border border-amber-500/40 bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">SPEC ↔ CODE</span>
+          </div>
+          <h1 class="mt-0.5 text-lg font-semibold text-slate-100">캘린더 화면 기능서</h1>
+        </div>
+        <a href="./03_calendar.md" class="hidden text-xs text-slate-400 hover:text-slate-200 sm:block">← md 원본</a>
+      </div>
+    </header>
+
+    <div class="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-6 py-10 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <aside class="hidden lg:block">
+        <nav class="toc sticky top-24 space-y-1 text-sm">
+          <a href="#overview" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">개요</a>
+          <a href="#entry" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">라우트와 진입</a>
+          <a href="#months" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">월 목록 렌더링</a>
+          <a href="#date-map" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">운동 날짜 맵</a>
+          <a href="#day-states" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">날짜 셀 상태</a>
+          <a href="#tap" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">탭 동작</a>
+          <a href="#refresh" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">날짜 갱신</a>
+          <a href="#os-calendar" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">OS 캘린더 등록</a>
+          <a href="#code" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">관련 코드</a>
+          <a href="#gaps" class="block rounded border-l-2 border-transparent px-3 py-1.5 text-slate-400 hover:text-slate-200">스펙 ↔ 코드 갭</a>
+        </nav>
+      </aside>
+
+      <main class="space-y-16">
+        <!-- ======================== OVERVIEW ======================== -->
+        <section id="overview">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">개요</h2>
+          <p class="mt-3 max-w-3xl leading-relaxed text-slate-300">
+            캘린더 화면은 저장된 완료 운동 세션을 날짜 단위로 훑고, 운동이 있는 날짜에서 해당 결과 화면으로 이동하는 조회 중심 화면이다.
+            이 문서는 <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">03_calendar.md</code>의 내용을 현재 코드 기준으로 보강한 HTML 기능서다.
+          </p>
+          <p class="mt-2 max-w-3xl text-sm text-slate-500">
+            범위:
+            <code class="rounded bg-slate-900 px-1.5 py-0.5 text-slate-300">/calendar → CalendarScreen → MonthGrid → DayCell → /workout/[sessionId]</code>
+          </p>
+
+          <div class="mt-5 grid gap-3 sm:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">화면 라우트</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">/calendar</div>
+              <div class="mt-2 text-xs text-slate-500">src/app/calendar.tsx</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">데이터 기준</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">StoredWorkoutSession</div>
+              <div class="mt-2 text-xs text-slate-500">AsyncStorage 완료 세션</div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">지원 기간</div>
+              <div class="mt-1 font-mono text-sm text-slate-200">현재 월 포함 6개월</div>
+              <div class="mt-2 text-xs text-slate-500">동적 추가 로딩 없음</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== ENTRY ======================== -->
+        <section id="entry">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">라우트와 진입</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            라우트 엔트리인 <code class="rounded bg-slate-900 px-1.5 py-0.5">src/app/calendar.tsx</code>는 운동 중 이탈을 막는
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">WorkoutNavigationGuard</code>와 실제 화면인
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">CalendarScreen</code>을 함께 렌더링한다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-4">
+              <div class="text-sm font-semibold text-emerald-200">주요 진입점</div>
+              <p class="mt-2 text-sm text-slate-300">
+                오늘의 운동 카드가 <code>router.push("/calendar")</code>를 호출한다.
+              </p>
+              <p class="mt-3 font-mono text-[11px] text-slate-500">features/view-summary/ui/TodayWorkoutCard.tsx</p>
+            </div>
+            <div class="rounded-lg border border-sky-500/30 bg-sky-500/5 p-4">
+              <div class="text-sm font-semibold text-sky-200">화면 헤더</div>
+              <p class="mt-2 text-sm text-slate-300">
+                뒤로가기 버튼, 중앙 제목 <code>calendar.title</code>, 우측 여백용 빈 뷰로 좌우 균형을 맞춘다.
+              </p>
+              <p class="mt-3 font-mono text-[11px] text-slate-500">features/view-calendar/ui/CalendarScreen.tsx</p>
+            </div>
+          </div>
+
+          <div class="mt-6 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+            <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">로드와 탭 흐름</div>
+            <div class="mermaid text-xs">
+graph TD
+  A[/calendar 진입] --> B[WorkoutNavigationGuard 렌더]
+  B --> C[CalendarScreen 렌더]
+  C --> D[useCalendarRefreshSignal<br/>anchorDate + refreshKey]
+  D --> E[useInfiniteMonths<br/>현재 월부터 6개월]
+  E --> F[MonthGrid 반복]
+  F --> G[useMonthWorkoutDates<br/>월 범위 완료 세션 조회]
+  G --> H[DayCell 렌더]
+  H --> I{sessionId 있음?}
+  I -- "yes" --> J[/workout/sessionId 이동]
+  I -- "no 또는 미래" --> K[disabled]
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== MONTHS ======================== -->
+        <section id="months">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">월 목록 렌더링</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">useInfiniteMonths(anchorDate, count = 6)</code>는 이름과 달리 실제 무한 스크롤이 아니라
+            현재 월부터 과거 방향으로 고정 개수의 월 목록을 만든다.
+          </p>
+
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">항목</th>
+                  <th class="px-4 py-2.5">구현 기준</th>
+                  <th class="px-4 py-2.5">사용자 의미</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">월 순서</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">anchorDate.getFullYear(), getMonth() + 1</td>
+                  <td class="px-4 py-3 text-sm">현재 월이 맨 위에 오고 한 달씩 과거로 내려간다.</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">기본 개수</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">count = 6</td>
+                  <td class="px-4 py-3 text-sm">현재 월 포함 최근 6개월만 표시한다.</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">월 경계</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">month === 0 → 12, year -= 1</td>
+                  <td class="px-4 py-3 text-sm">1월 이전은 전년도 12월로 자연스럽게 넘어간다.</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 text-slate-300">월 제목</td>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">t("sessions.monthHeader", { year, month })</td>
+                  <td class="px-4 py-3 text-sm">번역 리소스 기준의 월 라벨을 오른쪽 정렬로 표시한다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== DATE MAP ======================== -->
+        <section id="date-map">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">운동 날짜 맵</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            각 <code class="rounded bg-slate-900 px-1.5 py-0.5">MonthGrid</code>는 자기 월의 시작일과 마지막 일을
+            <code>YYYY-MM-DD</code> 키로 만들고, <code>getStoredWorkoutSessionsInRange</code>로 완료 세션을 조회한다.
+            결과는 날짜 키를 기준으로 <code>sessionId</code>, 상위 운동 부위, 유산소 여부를 담는 맵으로 변환된다.
+          </p>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.85fr)]">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">맵 생성 규칙</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>월 범위는 로컬 날짜 키 기준으로 <code>YYYY-MM-01</code>부터 월 마지막 날까지다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>세션의 <code>startedAt</code>을 로컬 날짜 키로 변환해 날짜 셀에 배치한다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span><code>getUniqueWorkoutBodyParts(session.bodyParts)</code>로 상위 운동 부위만 중복 제거한다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span><code>cardioStartedAt</code>이 있으면 <code>hasCardio=true</code>로 표시 후보에 포함한다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>같은 날짜의 세션이 이미 맵에 있으면 뒤 세션은 건너뛴다. 조회 결과가 최신순이므로 최신 대표 세션 하나가 남는다.</span></li>
+                <li class="flex gap-2"><span class="text-rose-400">●</span><span>조회 실패 시 해당 월의 <code>workoutDates</code>는 빈 객체로 대체된다.</span></li>
+              </ul>
+            </div>
+
+            <div class="rounded-lg border border-slate-800 bg-slate-950/60 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">DayWorkout 예시</div>
+              <pre class="mt-3 overflow-x-auto rounded bg-slate-950 p-3 text-xs text-slate-300"><code>{
+  "2026-04-03": {
+    "sessionId": "2026-04-03T10:00:00.000Z",
+    "bodyParts": ["chest", "back"],
+    "hasCardio": true
+  }
+}</code></pre>
+              <p class="mt-3 text-xs leading-relaxed text-slate-500">
+                캘린더 화면은 HealthKit 월별 workout을 직접 읽지 않는다. 현재 표시는 앱에 저장된 완료 세션 인덱스와 세션 본문에 의존한다.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== DAY STATES ======================== -->
+        <section id="day-states">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">날짜 셀 상태</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            날짜 셀은 <code class="rounded bg-slate-900 px-1.5 py-0.5">DayCell</code>이 담당한다. 현재 구현은 원형 링이 아니라
+            날짜 숫자와 운동 부위 아이콘 배지 중심의 간결한 그리드다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">기본 셀</div>
+              <p class="mt-2 text-sm text-slate-300">각 셀은 너비 <code>14.285%</code>, 최소 높이 <code>68</code>로 7열 그리드를 만든다. 월 1일 앞에는 <code>getFirstDayOfWeek</code> 결과만큼 빈 칸을 둔다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">오늘</div>
+              <p class="mt-2 text-sm text-slate-300">오늘이면 날짜 숫자를 <code>bg-yb-accent</code> 원형 배경 안에 넣고, 텍스트는 <code>text-yb-on-accent</code>로 표시한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">운동 있음</div>
+              <p class="mt-2 text-sm text-slate-300">운동 날짜는 첫 번째 운동 부위 배지만 바로 보인다. 추가 부위나 유산소가 있으면 <code>+N</code> 숫자를 표시한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">롱프레스 툴팁</div>
+              <p class="mt-2 text-sm text-slate-300">표시할 배지가 2개 이상이면 롱프레스에서 모달 툴팁을 띄워 전체 운동 부위와 유산소 아이콘을 보여준다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">미래 또는 기록 없음</div>
+              <p class="mt-2 text-sm text-slate-300"><code>disabled = isFuture || !dayWorkout</code>다. 미래 날짜와 운동 없는 날짜는 버튼 역할은 유지하지만 눌러도 이동하지 않는다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">접근성</div>
+              <p class="mt-2 text-sm text-slate-300">접근성 라벨은 영어 문자열 <code>Day N</code>과 운동 가능 여부를 포함한다. 비활성 상태는 <code>accessibilityState</code>에 반영된다.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== TAP ======================== -->
+        <section id="tap">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">탭 동작</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            운동이 있는 날짜만 결과 화면으로 이동한다. <code>CalendarScreen</code>의 <code>handleDayPress</code>는
+            <code>router.push(`/workout/${encodeURIComponent(sessionId)}`)</code>를 호출한다.
+          </p>
+
+          <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)]">
+            <div class="rounded-lg border border-slate-800 bg-slate-950/40 p-3">
+              <div class="mb-2 text-xs uppercase tracking-wide text-slate-500">탭 분기</div>
+              <div class="mermaid text-xs">
+graph TD
+  A[날짜 셀 탭] --> B{disabled?}
+  B -- "true" --> C[동작 없음]
+  B -- "false" --> D{dayWorkout 있음?}
+  D -- "no" --> C
+  D -- "yes" --> E[dayWorkout.sessionId 전달]
+  E --> F[encodeURIComponent]
+  F --> G[/workout/sessionId push]
+              </div>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">제약</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>하루 여러 세션을 선택하는 목록 UI는 없다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>동일 날짜에 여러 세션이 있으면 최신 대표 세션 하나로 이동한다.</span></li>
+                <li class="flex gap-2"><span class="text-slate-500">●</span><span>결과 화면에서의 삭제, 메모 수정, 상세 표시 정책은 이 문서 범위 밖이다.</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== REFRESH ======================== -->
+        <section id="refresh">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">날짜 갱신 동작</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            <code class="rounded bg-slate-900 px-1.5 py-0.5">useCalendarRefreshSignal</code>은 화면의 현재 날짜 기준과 월별 데이터 재조회 트리거를 함께 관리한다.
+            앱 복귀와 자정 경계에서 <code>anchorDate</code>를 새로 만들고 <code>refreshKey</code>를 1 증가시킨다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">초기 진입</div>
+              <p class="mt-1 text-sm text-slate-300"><code>useState(() => new Date())</code>로 현재 월, 오늘 강조, 미래 날짜 판정 기준을 만든다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">앱 복귀</div>
+              <p class="mt-1 text-sm text-slate-300"><code>AppState</code>가 <code>active</code>가 되면 즉시 갱신한다.</p>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-xs uppercase tracking-wide text-slate-500">자정</div>
+              <p class="mt-1 text-sm text-slate-300">다음 자정까지 <code>setTimeout</code>을 예약하고 실행 후 다시 다음 자정을 예약한다.</p>
+            </div>
+          </div>
+
+          <div class="mt-4 rounded-md border border-slate-800 bg-slate-900/40 p-3 text-xs text-slate-400">
+            <strong class="text-slate-300">효과:</strong>
+            앱을 오래 열어 두거나 백그라운드에서 돌아온 경우에도 오늘 강조, 미래 날짜 비활성, 월별 저장 데이터 조회가 새 기준으로 다시 계산된다.
+          </div>
+        </section>
+
+        <!-- ======================== OS CALENDAR ======================== -->
+        <section id="os-calendar">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">OS 캘린더 등록 메모</h2>
+          <p class="mt-3 max-w-3xl text-slate-300">
+            OS 캘린더 일정 등록은 이 화면의 탭 동작이 아니라 운동 완료 흐름에서 수행된다. 운동을 완료하면 결과 화면으로 가기 전에
+            캘린더 등록 여부를 묻고, 사용자가 추가를 선택하면 <code class="rounded bg-slate-900 px-1.5 py-0.5">registerWorkoutToCalendar</code>를 호출한다.
+          </p>
+
+          <div class="mt-5 grid gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">권한과 캘린더 선택</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>캘린더 권한이 없으면 요청하고, 거부 시 설정 앱으로 이동하는 알림을 띄운다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>수정 가능한 YepBuddy 전용 캘린더를 먼저 찾는다.</span></li>
+                <li class="flex gap-2"><span class="text-sky-400">●</span><span>없으면 <code>YepBuddy</code> 제목, <code>yepbuddy</code> 이름, 앱 강조색으로 새 캘린더 생성을 시도한다.</span></li>
+                <li class="flex gap-2"><span class="text-amber-400">●</span><span>Android에서 생성이 실패하면 수정 가능한 기존 캘린더를 fallback으로 사용한다.</span></li>
+              </ul>
+            </div>
+            <div class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <div class="text-sm font-semibold text-slate-200">이벤트 내용</div>
+              <ul class="mt-3 space-y-2 text-sm text-slate-300">
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>제목은 운동 부위 라벨과 세트 수를 조합하고, 유산소 시간이 있으면 함께 붙인다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>시작과 종료는 완료 세션의 <code>startedAt</code>, <code>completedAt</code>을 사용한다.</span></li>
+                <li class="flex gap-2"><span class="text-emerald-400">●</span><span>메모는 <code>notes</code>, 위치가 있으면 변환된 위치 라벨은 <code>location</code>에 저장한다.</span></li>
+                <li class="flex gap-2"><span class="text-rose-400">●</span><span>캘린더 ID 확보나 이벤트 생성 실패 시 실패 알림을 표시하고 <code>false</code>를 반환한다.</span></li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================== CODE ======================== -->
+        <section id="code">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">관련 코드</h2>
+          <div class="mt-5 overflow-hidden rounded-lg border border-slate-800">
+            <table class="w-full text-left text-sm">
+              <thead class="bg-slate-900 text-xs uppercase tracking-wide text-slate-400">
+                <tr>
+                  <th class="px-4 py-2.5">파일</th>
+                  <th class="px-4 py-2.5">역할</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 bg-slate-950/40">
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/app/calendar.tsx</td>
+                  <td class="px-4 py-3">라우트 엔트리, 운동 중 이탈 가드와 캘린더 화면 조합</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/ui/CalendarScreen.tsx</td>
+                  <td class="px-4 py-3">헤더, 요일 행, 월 목록 스크롤, 날짜 탭 라우팅</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/ui/MonthGrid.tsx</td>
+                  <td class="px-4 py-3">월 제목, 빈 칸, 날짜 셀 생성, 오늘과 미래 날짜 계산</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/ui/DayCell.tsx</td>
+                  <td class="px-4 py-3">날짜 숫자, 오늘 강조, 운동 배지, 추가 배지 개수, 롱프레스 툴팁</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/model/useInfiniteMonths.ts</td>
+                  <td class="px-4 py-3">현재 월부터 과거 6개월 목록 계산</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/model/useCalendarRefreshSignal.ts</td>
+                  <td class="px-4 py-3">앱 복귀와 자정 기준 날짜 갱신, 월별 데이터 재조회 트리거</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/features/view-calendar/model/useMonthWorkoutDates.ts</td>
+                  <td class="px-4 py-3">월 범위 완료 세션 조회와 날짜 맵 생성</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/entities/workout-session/model/sessionStorage.ts</td>
+                  <td class="px-4 py-3">완료 세션 저장, 날짜별 대표 세션, 범위 조회, 최신순 정렬</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/entities/workout-session/lib/calendar.ts</td>
+                  <td class="px-4 py-3">운동 완료 후 OS 캘린더 이벤트 등록</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-mono text-xs text-slate-400">src/entities/workout-session/lib/calendarRegistration.ts</td>
+                  <td class="px-4 py-3">YepBuddy 전용 캘린더 식별자, 이름, 색상, 검색 규칙</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ======================== GAPS ======================== -->
+        <section id="gaps">
+          <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
+          <div class="mt-4 space-y-3">
+            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
+              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[md 표현 보정] 운동 날짜의 “링”과 “작은 점” 표시는 현재 코드와 다르다</summary>
+              <p class="mt-2 text-xs text-amber-100/80">
+                <code>03_calendar.md</code>는 날짜 셀을 원형 링과 작은 점으로 설명하지만, 현재 <code>DayCell.tsx</code>는 운동 부위 아이콘 배지와 <code>+N</code> 카운트로 표시한다.
+                오늘 날짜만 원형 배경으로 강조된다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4" open>
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인된 제약] “무한” 월 목록은 고정 6개월 렌더링이다</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                훅 이름은 <code>useInfiniteMonths</code>지만 기본 <code>count=6</code>으로 현재 월 포함 6개월만 반환한다.
+                스크롤 끝에서 과거 월을 추가 로드하는 트리거는 없다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인된 제약] 같은 날짜의 여러 운동은 최신 대표 세션 하나만 노출된다</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                저장 계층은 날짜별 대표 세션 ID를 관리하고, 월 날짜 맵 생성도 같은 날짜가 이미 있으면 다음 세션을 건너뛴다.
+                캘린더 UI에는 하루 여러 세션 목록이나 선택 모달이 없다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[범위 분리] OS 캘린더 등록은 캘린더 조회 화면의 책임이 아니다</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                등록 코드는 존재하지만 <code>/calendar</code>에서 호출되지 않는다.
+                실제 호출 지점은 운동 완료 흐름의 <code>ActiveWorkoutContent.tsx</code>이며, 이 화면은 저장된 완료 세션 조회와 결과 화면 이동만 담당한다.
+              </p>
+            </details>
+            <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
+              <summary class="cursor-pointer text-sm font-semibold text-slate-200">[접근성 뉘앙스] 날짜 셀 accessibilityLabel은 번역 리소스를 쓰지 않는다</summary>
+              <p class="mt-2 text-xs text-slate-400">
+                화면 제목과 요일은 번역 리소스를 사용하지만 날짜 셀 라벨은 <code>Day ${day}</code> 형식의 하드코딩 영어 문자열이다.
+                제품 언어 일관성 관점에서는 추후 개선 후보다.
+              </p>
+            </details>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-800 py-8 text-center text-xs text-slate-600">
+      <p>캘린더 화면 기능서 · 자동 생성 HTML · 원본 <code>03_calendar.md</code></p>
+    </footer>
+
+    <script>
+      // active TOC highlight
+      const links = document.querySelectorAll('.toc a')
+      const sections = [...links].map(a => document.querySelector(a.getAttribute('href')))
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + entry.target.id))
+          }
+        })
+      }, { rootMargin: '-40% 0px -55% 0px' })
+      sections.forEach(s => s && observer.observe(s))
+    </script>
+  </body>
+</html>

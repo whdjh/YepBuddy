@@ -1,6 +1,5 @@
 import { Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import { SymbolView } from "expo-symbols"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import type { WorkoutState } from "@/entities/workout-session"
 import Animated, {
@@ -10,6 +9,7 @@ import Animated, {
 } from "react-native-reanimated"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { SymbolView } from "@/shared/ui/SymbolView"
 import { useWorkoutTimer } from "../lib/useWorkoutTimer"
 import {
   canEndWorkoutFromDrawer,
