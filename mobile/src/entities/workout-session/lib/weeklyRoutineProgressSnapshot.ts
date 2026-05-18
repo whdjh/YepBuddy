@@ -13,7 +13,7 @@ import {
   type WeeklyRoutineSettings,
 } from "../model/weeklyRoutine"
 import {
-  getStoredWorkoutSessionsInRange,
+  getAllStoredWorkoutSessions,
 } from "../model/sessionStorage"
 import {
   loadWeeklyRoutineCycleProgress,
@@ -22,6 +22,7 @@ import {
 } from "../model/weeklyRoutineStorage"
 import type { StoredWorkoutSession } from "../model/types"
 import {
+  buildWeeklyRoutineCycleProgressFromSessions,
   buildWeeklyRoutineProgressFromFilledSlots,
   getNextRoutineSuggestion,
   type WeeklyRoutineProgress,
@@ -41,7 +42,7 @@ interface WeeklyRoutineProgressSnapshotInput {
 }
 
 interface LoadWeeklyRoutineProgressSnapshotOptions {
-  getStoredWorkoutSessionsInRange?: typeof getStoredWorkoutSessionsInRange
+  getAllStoredWorkoutSessions?: typeof getAllStoredWorkoutSessions
   getWeekDateRange?: () => WeekDateRange
   loadWeeklyRoutineCycleProgress?: typeof loadWeeklyRoutineCycleProgress
   loadWeeklyRoutineFeatureStatus?: typeof loadWeeklyRoutineFeatureStatus
@@ -60,7 +61,7 @@ export interface WeeklyRoutineProgressSnapshot {
   settings: WeeklyRoutineSettings | null
 }
 
-// 전달받은 설정과 세션 목록으로 이번 주 루틴 진행 상태 스냅샷을 만든다.
+// 전달받은 설정과 세션 목록으로 현재 루틴 사이클의 진행 상태 스냅샷을 만든다.
 export function buildWeeklyRoutineProgressSnapshot({
   cycleProgress,
   currentWeekStartDateKey,
@@ -82,25 +83,32 @@ export function buildWeeklyRoutineProgressSnapshot({
   const normalizedCycleProgress =
     cycleProgress ??
     createWeeklyRoutineCycleProgress(normalizedSettings.cycleStartDateKey)
-  const cycleState = getWeeklyRoutineCycleStateFromProgress(
+  const sessionCycleProgress = isRoutineEnabled
+    ? buildWeeklyRoutineCycleProgressFromSessions(normalizedSettings, sessions)
+    : normalizedCycleProgress
+  const resolvedCycleProgress = isRoutineEnabled
+    ? sessionCycleProgress
+    : normalizedCycleProgress
+  const resolvedCycleState = getWeeklyRoutineCycleStateFromProgress(
     normalizedSettings,
-    normalizedCycleProgress,
+    resolvedCycleProgress,
   )
-  const filledSlotIds = cycleState.isCycleComplete
+  const filledSlotIds = resolvedCycleState.isCycleComplete
     ? routineSessions.map((session) => session.id)
-    : normalizedCycleProgress.filledSlotIds
+    : resolvedCycleProgress.filledSlotIds
   const progress = buildWeeklyRoutineProgressFromFilledSlots(
     routineSessions,
     filledSlotIds,
+    sessions,
   )
 
   return {
-    cycleProgress: normalizedCycleProgress,
+    cycleProgress: resolvedCycleProgress,
     currentWeekStartDateKey,
     featureStatus,
     hasCustomSettings: settings !== null,
     isRoutineEnabled,
-    nextSuggestion: isRoutineEnabled && !cycleState.isCycleComplete
+    nextSuggestion: isRoutineEnabled && !resolvedCycleState.isCycleComplete
       ? getNextRoutineSuggestion(progress)
       : null,
     progress,
@@ -109,27 +117,27 @@ export function buildWeeklyRoutineProgressSnapshot({
   }
 }
 
-// 저장된 루틴 설정과 이번 주 운동 기록을 불러와 진행 상태 스냅샷을 만든다.
+// 저장된 루틴 설정과 전체 운동 세션을 불러와 세션 단위 진행 상태 스냅샷을 만든다.
 export async function loadWeeklyRoutineProgressSnapshot({
-  getStoredWorkoutSessionsInRange: loadWeekSessions = getStoredWorkoutSessionsInRange,
+  getAllStoredWorkoutSessions: loadSessions = getAllStoredWorkoutSessions,
   getWeekDateRange = getThisWeekDateRange,
   loadWeeklyRoutineCycleProgress: loadCycleProgress = loadWeeklyRoutineCycleProgress,
   loadWeeklyRoutineFeatureStatus: loadFeatureStatus = loadWeeklyRoutineFeatureStatus,
   loadWeeklyRoutineSettings: loadSettings = loadWeeklyRoutineSettings,
 }: LoadWeeklyRoutineProgressSnapshotOptions = {}) {
-  const { startDateKey, endDateKey } = getWeekDateRange()
-  const [settings, featureStatus, sessions] = await Promise.all([
+  const { startDateKey } = getWeekDateRange()
+  const [settings, featureStatus] = await Promise.all([
     loadSettings(),
     loadFeatureStatus(),
-    loadWeekSessions(startDateKey, endDateKey),
   ])
   const normalizedSettings = normalizeWeeklyRoutineSettings(
     settings ?? createDefaultWeeklyRoutineSettings(startDateKey),
     startDateKey,
   )
-  const cycleProgress = await loadCycleProgress(
-    normalizedSettings.cycleStartDateKey,
-  )
+  const [cycleProgress, sessions] = await Promise.all([
+    loadCycleProgress(normalizedSettings.cycleStartDateKey),
+    loadSessions(),
+  ])
 
   return buildWeeklyRoutineProgressSnapshot({
     cycleProgress,

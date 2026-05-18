@@ -55,7 +55,7 @@ export interface WeeklyRoutinePlanResult {
   isDeloadWeek: boolean
 }
 
-// 주간 루틴 설정 로드 + 이번 주 진행률 계산을 한 번에 제공
+// 주간 루틴 설정 로드 + 세션 단위 루틴 진행률 계산을 한 번에 제공
 export function useWeeklyRoutinePlan(): WeeklyRoutinePlanResult {
   const loadRequestIdRef = useRef(0)
   const [settings, setSettings] = useState<WeeklyRoutineSettings | null>(null)
