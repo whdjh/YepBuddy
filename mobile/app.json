@@ -2,7 +2,7 @@
   "expo": {
     "name": "옙버디",
     "slug": "yepbuddy",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "yepbuddy",
@@ -10,7 +10,7 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.juhun.yepbuddy.app",
-      "buildNumber": "9",
+      "buildNumber": "11",
       "infoPlist": {
         "CFBundleDisplayName": "옙버디",
         "ITSAppUsesNonExemptEncryption": false,
@@ -36,15 +36,15 @@
       ],
       "icon": "./assets/images/icon.png",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/icon.png"
+        "backgroundColor": "#3F2513",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
@@ -54,8 +54,9 @@
         {
           "backgroundColor": "#208AEF",
           "android": {
-            "image": "./assets/images/splash-icon.png",
-            "imageWidth": 76
+            "backgroundColor": "#3F2513",
+            "image": "./assets/images/icon.png",
+            "imageWidth": 200
           }
         }
       ],
