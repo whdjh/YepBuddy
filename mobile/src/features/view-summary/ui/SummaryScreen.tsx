@@ -20,11 +20,11 @@ import { Main } from "@/shared/ui/Main"
 import { useSummaryCardLayout } from "../model/useSummaryCardLayout"
 import { useSummaryEditing } from "../model/useSummaryEditing"
 import { useSummaryCardData } from "../model/useSummaryCardData"
-import { useWeeklyRoutineFeaturePrompt } from "../model/useWeeklyRoutineFeaturePrompt"
+import { useRoutineCycleFeaturePrompt } from "../model/useRoutineCycleFeaturePrompt"
 import { SummaryCardRows } from "./SummaryCardRows"
 import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
-import { WeeklyRoutineSetupPromptModal } from "./WeeklyRoutineSetupPromptModal"
+import { RoutineCycleSetupPromptModal } from "./RoutineCycleSetupPromptModal"
 
 export function SummaryScreen() {
   const cardData = useSummaryCardData()
@@ -54,10 +54,10 @@ export function SummaryScreen() {
 
   const todayDate = new Date()
   const dateString = formatDateWithDay(todayDate)
-  const weeklyRoutinePlan = cardData.weeklyRoutinePlan
-  const { isFeatureAlertOpen } = useWeeklyRoutineFeaturePrompt({
+  const routineCyclePlan = cardData.routineCyclePlan
+  const { isFeatureAlertOpen } = useRoutineCycleFeaturePrompt({
     notificationPermissionRequestDone,
-    weeklyRoutinePlan,
+    routineCyclePlan,
     t,
   })
   const hiddenCardIds = availableCards
@@ -176,12 +176,12 @@ export function SummaryScreen() {
         onAddCard={addPickedCard}
         onClose={closeCardPicker}
       />
-      <WeeklyRoutineSetupPromptModal
-        plan={weeklyRoutinePlan}
+      <RoutineCycleSetupPromptModal
+        plan={routineCyclePlan}
         visible={
-          weeklyRoutinePlan.isRoutineEnabled &&
-          Boolean(weeklyRoutinePlan.setupPromptKind) &&
-          !weeklyRoutinePlan.isLoading &&
+          routineCyclePlan.isRoutineEnabled &&
+          Boolean(routineCyclePlan.setupPromptKind) &&
+          !routineCyclePlan.isLoading &&
           !isFeatureAlertOpen
         }
       />

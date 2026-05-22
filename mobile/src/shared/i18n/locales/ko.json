@@ -231,7 +231,7 @@
     "workout": "운동",
     "strengthTraining": "근력 강화 운동",
     "startWorkout": "운동 시작",
-    "thisWeekSessions": "분할 루틴",
+    "routineCycleSessions": "분할 루틴",
     "moreLink": "더보기",
     "routineSettings": "루틴 설정",
     "routineOn": "루틴 ON",
@@ -248,7 +248,7 @@
       "sets": "세트수",
       "latestSession": "최근 세션",
       "startWorkout": "운동 시작",
-      "weeklySessions": "분할 루틴"
+      "routineCycleSessions": "분할 루틴"
     },
     "minuteUnit": "분",
     "setsUnit": "세트",

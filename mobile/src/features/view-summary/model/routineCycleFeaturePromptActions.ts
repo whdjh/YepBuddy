@@ -1,14 +1,14 @@
-interface AcceptWeeklyRoutineFeaturePromptParams {
+interface AcceptRoutineCycleFeaturePromptParams {
   enableRoutine: () => Promise<void>
   closeFeatureAlert: () => void
   openRoutineSettings: () => void
 }
 
-export async function acceptWeeklyRoutineFeaturePrompt({
+export async function acceptRoutineCycleFeaturePrompt({
   enableRoutine,
   closeFeatureAlert,
   openRoutineSettings,
-}: AcceptWeeklyRoutineFeaturePromptParams) {
+}: AcceptRoutineCycleFeaturePromptParams) {
   await enableRoutine()
   closeFeatureAlert()
   openRoutineSettings()

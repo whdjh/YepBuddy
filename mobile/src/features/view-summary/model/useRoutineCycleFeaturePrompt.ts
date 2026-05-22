@@ -2,20 +2,20 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { TFunction } from "i18next"
 import { router } from "expo-router"
 import { Alert } from "react-native"
-import type { WeeklyRoutinePlanResult } from "@/entities/workout-session"
-import { acceptWeeklyRoutineFeaturePrompt } from "./weeklyRoutineFeaturePromptActions"
+import type { WeeklyRoutinePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
+import { acceptRoutineCycleFeaturePrompt } from "./routineCycleFeaturePromptActions"
 
-interface UseWeeklyRoutineFeaturePromptParams {
+interface UseRoutineCycleFeaturePromptParams {
   notificationPermissionRequestDone: boolean
-  weeklyRoutinePlan: WeeklyRoutinePlanResult
+  routineCyclePlan: RoutineCyclePlanResult
   t: TFunction
 }
 
-export function useWeeklyRoutineFeaturePrompt({
+export function useRoutineCycleFeaturePrompt({
   notificationPermissionRequestDone,
-  weeklyRoutinePlan,
+  routineCyclePlan,
   t,
-}: UseWeeklyRoutineFeaturePromptParams) {
+}: UseRoutineCycleFeaturePromptParams) {
   const [isFeatureAlertOpen, setIsFeatureAlertOpen] = useState(false)
   const isFeatureAlertOpenRef = useRef(false)
 
@@ -39,14 +39,14 @@ export function useWeeklyRoutineFeaturePrompt({
           text: t("workout.weeklyRoutine.featurePrompt.decline"),
           style: "cancel",
           onPress: () => {
-            void weeklyRoutinePlan.disableRoutine().finally(closeFeatureAlert)
+            void routineCyclePlan.disableRoutine().finally(closeFeatureAlert)
           },
         },
         {
           text: t("workout.weeklyRoutine.featurePrompt.accept"),
           onPress: () => {
-            void acceptWeeklyRoutineFeaturePrompt({
-              enableRoutine: weeklyRoutinePlan.enableRoutine,
+            void acceptRoutineCycleFeaturePrompt({
+              enableRoutine: routineCyclePlan.enableRoutine,
               closeFeatureAlert,
               openRoutineSettings: () => {
                 router.push("/settings?routineSetup=1")
@@ -57,12 +57,12 @@ export function useWeeklyRoutineFeaturePrompt({
       ],
       { cancelable: false },
     )
-  }, [closeFeatureAlert, t, weeklyRoutinePlan])
+  }, [closeFeatureAlert, routineCyclePlan, t])
 
   const shouldShowFeatureAlert =
     notificationPermissionRequestDone &&
-    weeklyRoutinePlan.featureStatus === "unasked" &&
-    !weeklyRoutinePlan.isLoading
+    routineCyclePlan.featureStatus === "unasked" &&
+    !routineCyclePlan.isLoading
 
   useEffect(() => {
     if (shouldShowFeatureAlert) {

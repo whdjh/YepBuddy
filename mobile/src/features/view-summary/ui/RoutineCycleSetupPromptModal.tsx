@@ -1,16 +1,16 @@
 import { Modal, Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import type { WeeklyRoutinePlanResult } from "@/entities/workout-session"
+import type { WeeklyRoutinePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
 
-interface WeeklyRoutineSetupPromptModalProps {
-  plan: WeeklyRoutinePlanResult
+interface RoutineCycleSetupPromptModalProps {
+  plan: RoutineCyclePlanResult
   visible: boolean
 }
 
-export function WeeklyRoutineSetupPromptModal({
+export function RoutineCycleSetupPromptModal({
   plan,
   visible,
-}: WeeklyRoutineSetupPromptModalProps) {
+}: RoutineCycleSetupPromptModalProps) {
   const { t } = useTranslation()
   const kind = plan.setupPromptKind
 

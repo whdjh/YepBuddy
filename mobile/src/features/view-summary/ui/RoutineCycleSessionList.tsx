@@ -3,23 +3,23 @@ import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
 import { BodyPartIconHost } from "@/entities/workout-session/ui/BodyPartIcon"
 import { Card } from "@/shared/ui/Card"
-import type { WeeklySessionRow } from "../model/weeklySessionRows"
+import type { RoutineCycleSessionRow } from "../model/routineCycleSessionRows"
 
-interface WeeklySessionListProps {
-  sessions: WeeklySessionRow[]
+interface RoutineCycleSessionListProps {
+  sessions: RoutineCycleSessionRow[]
   progress?: { current: number; total: number }
   onMorePress?: () => void
   onSessionPress?: (sessionId: string) => void
   onLongPress?: () => void
 }
 
-export function WeeklySessionList({
+export function RoutineCycleSessionList({
   sessions,
   progress,
   onMorePress,
   onSessionPress,
   onLongPress,
-}: WeeklySessionListProps) {
+}: RoutineCycleSessionListProps) {
   const { t } = useTranslation()
   const badgeText = progress ? `${progress.current}/${progress.total}` : undefined
 
@@ -27,7 +27,7 @@ export function WeeklySessionList({
     <Pressable onLongPress={onLongPress} delayLongPress={450}>
       <Card variant="glass">
         <Card.Header
-          label={t("summary.thisWeekSessions")}
+          label={t("summary.routineCycleSessions")}
           badge={badgeText}
           chevron
           onMorePress={onMorePress}
