@@ -564,7 +564,7 @@ HealthKit에서 사용하는 정보:
 - `sets`: 세트수, 반 너비
 - `latestSession`: 최근 세션, 반 너비
 - `startWorkout`: 운동 시작, 반 너비
-- `weeklySessions`: 분할 루틴, 전체 너비
+- `routineCycleSessions`: 분할 루틴, 전체 너비
 
 구성 방식:
 

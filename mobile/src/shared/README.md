@@ -216,7 +216,7 @@ View(border/radius)
 - `TodayWorkoutCard`
 - `WorkoutLinkCard`
 - `SessionLinkCard`
-- `WeeklySessionList`
+- `RoutineCycleSessionList`
 - `SessionCard`
 - `StatsGrid`
 - `SummaryCardRenderer`

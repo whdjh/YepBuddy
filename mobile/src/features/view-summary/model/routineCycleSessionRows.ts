@@ -7,20 +7,20 @@ import type {
   StoredWorkoutSession,
 } from "@/entities/workout-session/model/types"
 import type {
-  WeeklyRoutineProgress,
+  WeeklyRoutineProgress as RoutineCycleProgress,
 } from "@/entities/workout-session/lib/weeklyRoutineProgress"
-import type { WeeklyRoutineSession } from "@/entities/workout-session/model/weeklyRoutine"
+import type { WeeklyRoutineSession as RoutineCycleSession } from "@/entities/workout-session/model/weeklyRoutine"
 import {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
 } from "@/entities/workout-session/lib/sessionMetrics"
 
-export type WeeklySessionRowStatus = "completed" | "planned"
+export type RoutineCycleSessionRowStatus = "completed" | "planned"
 
-export interface WeeklySessionRow {
+export interface RoutineCycleSessionRow {
   id: string
   sessionId: string | null
-  status: WeeklySessionRowStatus
+  status: RoutineCycleSessionRowStatus
   bodyPart: string
   representativeBodyPart: BodyPart | null
   day: string
@@ -29,20 +29,20 @@ export interface WeeklySessionRow {
   kcal: number | string | null
 }
 
-interface WeeklySessionRowsFormatters {
+interface RoutineCycleSessionRowsFormatters {
   bodyPartLabel: (part: BodyPart) => string
   bodyPartDetailLabel: (detail: BodyPartDetail) => string
   formatDate: (date: Date) => string
 }
 
-interface BuildWeeklySessionRowsInput extends WeeklySessionRowsFormatters {
-  weekSessions: StoredWorkoutSession[]
-  progress: WeeklyRoutineProgress
+interface BuildRoutineCycleSessionRowsInput
+  extends RoutineCycleSessionRowsFormatters {
+  progress: RoutineCycleProgress
   fallbackBodyPartLabel: string
   plannedLabel: string
 }
 
-// 완료된 운동 기록을 이번 주 세션 행으로 변환
+// 루틴 슬롯에 매칭된 완료 운동 기록을 카드 행으로 변환
 function getActualSessionRow(
   session: StoredWorkoutSession,
   {
@@ -51,13 +51,13 @@ function getActualSessionRow(
     bodyPartDetailLabel,
     formatDate,
   }: Pick<
-    BuildWeeklySessionRowsInput,
+    BuildRoutineCycleSessionRowsInput,
     | "fallbackBodyPartLabel"
     | "bodyPartLabel"
     | "bodyPartDetailLabel"
     | "formatDate"
   >,
-): WeeklySessionRow {
+): RoutineCycleSessionRow {
   return {
     id: `session:${session.sessionId}`,
     sessionId: session.sessionId,
@@ -83,8 +83,8 @@ function getActualSessionRow(
 
 // 루틴 세션의 부위 조합을 화면 표시용 라벨로 변환
 function getRoutineSessionLabel(
-  routineSession: WeeklyRoutineSession,
-  { bodyPartLabel, bodyPartDetailLabel }: WeeklySessionRowsFormatters,
+  routineSession: RoutineCycleSession,
+  { bodyPartLabel, bodyPartDetailLabel }: RoutineCycleSessionRowsFormatters,
 ) {
   return routineSession.parts
     .map((part) => {
@@ -102,9 +102,9 @@ function getRoutineSessionLabel(
 
 // 아직 완료되지 않은 루틴 슬롯을 예정 행으로 변환
 function getPlannedRoutineRow(
-  routineSession: WeeklyRoutineSession,
-  input: BuildWeeklySessionRowsInput,
-): WeeklySessionRow {
+  routineSession: RoutineCycleSession,
+  input: BuildRoutineCycleSessionRowsInput,
+): RoutineCycleSessionRow {
   return {
     id: `routine:${routineSession.id}`,
     sessionId: null,
@@ -118,12 +118,12 @@ function getPlannedRoutineRow(
   }
 }
 
-// 루틴 진행 상태 기준으로 실제 세션이 있으면 완료 행, 없으면 예정 행을 생성
-export function buildWeeklySessionRows(
-  input: BuildWeeklySessionRowsInput,
-): WeeklySessionRow[] {
+// 현재 루틴 사이클의 슬롯만 카드 행으로 생성
+export function buildRoutineCycleSessionRows(
+  input: BuildRoutineCycleSessionRowsInput,
+): RoutineCycleSessionRow[] {
   const emittedSessionIds = new Set<string>()
-  const rows: WeeklySessionRow[] = []
+  const rows: RoutineCycleSessionRow[] = []
 
   input.progress.slots.forEach((slot) => {
     if (
@@ -148,13 +148,6 @@ export function buildWeeklySessionRows(
 
     if (slot.status !== "completed" && slot.status !== "substituted") {
       rows.push(getPlannedRoutineRow(slot.routineSession, input))
-    }
-  })
-
-  input.weekSessions.forEach((session) => {
-    if (!emittedSessionIds.has(session.sessionId)) {
-      emittedSessionIds.add(session.sessionId)
-      rows.push(getActualSessionRow(session, input))
     }
   })
 

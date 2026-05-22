@@ -4,7 +4,7 @@ export const SUMMARY_CARD_DEFINITIONS = [
   { id: "sets", width: "half" },
   { id: "latestSession", width: "half" },
   { id: "startWorkout", width: "half" },
-  { id: "weeklySessions", width: "full" },
+  { id: "routineCycleSessions", width: "full" },
 ] as const
 
 export type SummaryCardId = (typeof SUMMARY_CARD_DEFINITIONS)[number]["id"]
@@ -20,6 +20,21 @@ export const DEFAULT_SUMMARY_CARD_IDS: SummaryCardId[] =
   SUMMARY_CARD_DEFINITIONS.map((card) => card.id)
 
 const validSummaryCardIds = new Set<string>(DEFAULT_SUMMARY_CARD_IDS)
+const LEGACY_SUMMARY_CARD_ID_MAP: Record<string, SummaryCardId> = {
+  weeklySessions: "routineCycleSessions",
+}
+
+function normalizeSummaryCardId(value: unknown): SummaryCardId | null {
+  if (typeof value !== "string") {
+    return null
+  }
+
+  if (validSummaryCardIds.has(value)) {
+    return value as SummaryCardId
+  }
+
+  return LEGACY_SUMMARY_CARD_ID_MAP[value] ?? null
+}
 
 // 값이 유효한 SummaryCardId인지 타입 가드로 검사
 export function isSummaryCardId(value: unknown): value is SummaryCardId {
@@ -39,8 +54,12 @@ export function normalizeSummaryCardIds(values: unknown): SummaryCardId[] {
 
 // 배열에서 유효하지 않은 항목과 중복을 제거
 export function sanitizeSummaryCardIds(values: readonly unknown[]) {
-  return values.filter(isSummaryCardId).filter((id, index, ids) =>
-    ids.indexOf(id) === index,
+  const normalizedCardIds = values
+    .map(normalizeSummaryCardId)
+    .filter((id): id is SummaryCardId => id !== null)
+
+  return normalizedCardIds.filter(
+    (id, index, ids) => ids.indexOf(id) === index,
   )
 }
 

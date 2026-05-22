@@ -4,7 +4,7 @@ import { StatCard } from "@/shared/ui/StatCard"
 import { TodayWorkoutCard } from "./TodayWorkoutCard"
 import { SessionLinkCard } from "./SessionLinkCard"
 import { WorkoutLinkCard } from "./WorkoutLinkCard"
-import { WeeklySessionList } from "./WeeklySessionList"
+import { RoutineCycleSessionList } from "./RoutineCycleSessionList"
 
 interface Props {
   cardId: SummaryCardId
@@ -26,7 +26,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     bodyPartCardRepresentativeBodyPart,
     bodyPartCardDay,
     todayCompleted,
-    weeklySessions,
+    routineCycleSessions,
     routineProgress,
   } = data
 
@@ -85,10 +85,10 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
           onLongPress={onLongPress}
         />
       )
-    case "weeklySessions":
+    case "routineCycleSessions":
       return (
-        <WeeklySessionList
-          sessions={weeklySessions}
+        <RoutineCycleSessionList
+          sessions={routineCycleSessions}
           progress={routineProgress}
           onLongPress={onLongPress}
           onMorePress={() => router.push("/sessions")}
