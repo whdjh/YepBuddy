@@ -424,12 +424,6 @@ graph TD
                 기본값, 30초 준비 카운트다운, 수축/이완/count 순서, 세트 간 휴식, 완료 후 idle 초기화, 실행 중 입력 잠금은 코드와 맞다.
               </p>
             </details>
-            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10">
-              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[주의] md의 "템포 화면 마운트 시 오디오 모드 초기화" 표현은 정확히는 시작 시점</summary>
-              <p class="mt-2 text-xs text-amber-100/80">
-                실제 코드는 <code>useTempoTimer.start()</code>에서 <code>initAudio()</code>를 호출한다. 화면 마운트 시에는 언마운트 cleanup effect만 등록된다.
-              </p>
-            </details>
             <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
               <summary class="cursor-pointer text-sm font-semibold text-slate-200">[확인] 휴식 잔여 초는 계산되지만 UI에는 미노출</summary>
               <p class="mt-2 text-xs text-slate-400">

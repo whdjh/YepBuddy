@@ -274,10 +274,6 @@ graph TD
               <h3 class="anchor text-xl font-semibold text-slate-100">3.3 운동 장소 도착 알림</h3>
               <span class="text-xs text-slate-500">운동 섹션 · geofence 150m</span>
             </div>
-            <div class="mt-2 rounded border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-200">
-              ⚠️ md 원본에서 이 항목의 헤더가 실수로 “프로틴 세일 알림”으로 표기돼 있음 (3.4와 중복). 본문/코드는 운동 장소 도착 알림으로 정확함.
-            </div>
-
             <div class="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div>
                 <h4 class="text-sm font-semibold text-slate-200">동작</h4>
@@ -423,12 +419,6 @@ graph TD
         <section id="gaps">
           <h2 class="anchor text-2xl font-semibold text-slate-100">스펙 ↔ 코드 갭</h2>
           <div class="mt-4 space-y-3">
-            <details class="rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 open:bg-amber-500/10" open>
-              <summary class="cursor-pointer text-sm font-semibold text-amber-200">[md] 3.3 헤더 오타: “프로틴 세일 알림” → 실제로는 “운동 장소 도착 알림”</summary>
-              <p class="mt-2 text-xs text-amber-100/80">
-                <code>08_settings.md</code> 60번 줄 헤더가 3.4와 중복돼 있다. 본문 동작 설명은 운동 장소 도착 알림 그대로이므로 헤더만 수정하면 됨.
-              </p>
-            </details>
             <details class="rounded-lg border border-slate-800 bg-slate-900/40 p-4">
               <summary class="cursor-pointer text-sm font-semibold text-slate-200">[추가 설명] 운동 장소 알림 — 자동 경로에서 enabled 처리</summary>
               <p class="mt-2 text-xs text-slate-400">
