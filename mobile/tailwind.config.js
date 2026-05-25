@@ -151,6 +151,7 @@ module.exports = {
         'yb-icon-lg':    '56px',
         'yb-input':      '48px',
         'yb-num-input':  '56px',
+        'yb-stepper':    '76px',
         'yb-drawer-btn': '56px',
         'yb-drawer-lg':  '64px',
         'yb-icon-xl':    '64px',

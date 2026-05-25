@@ -14,7 +14,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
   return (
     <>
       <View className="flex-row gap-yb-3 mb-yb-3">
-        <View className="grow">
+        <View className="basis-0 grow min-w-0">
           <Stepper
             variant="glass"
             label={t("tempo.contraction")}
@@ -27,9 +27,10 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             onIncrement={() =>
               dispatch({ type: "SET_CONTRACTION", payload: state.contraction + 1 })
             }
+            className="h-yb-stepper"
           />
         </View>
-        <View className="grow">
+        <View className="basis-0 grow min-w-0">
           <Stepper
             variant="glass"
             label={t("tempo.relaxation")}
@@ -42,11 +43,12 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             onIncrement={() =>
               dispatch({ type: "SET_RELAXATION", payload: state.relaxation + 1 })
             }
+            className="h-yb-stepper"
           />
         </View>
       </View>
       <View className="flex-row gap-yb-3 mb-yb-3">
-        <View className="grow">
+        <View className="basis-0 grow min-w-0">
           <Stepper
             variant="glass"
             label={t("tempo.reps")}
@@ -59,9 +61,10 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             onIncrement={() =>
               dispatch({ type: "SET_REPS", payload: state.reps + 1 })
             }
+            className="h-yb-stepper"
           />
         </View>
-        <View className="grow">
+        <View className="basis-0 grow min-w-0">
           <Stepper
             variant="glass"
             label={t("tempo.setsUnit")}
@@ -74,6 +77,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
             onIncrement={() =>
               dispatch({ type: "SET_SETS", payload: state.sets + 1 })
             }
+            className="h-yb-stepper"
           />
         </View>
       </View>
@@ -97,7 +101,7 @@ export function TempoSettings({ state, dispatch }: TempoSettingsProps) {
         onJumpUp={() =>
           dispatch({ type: "SET_REST", payload: state.rest + 10 })
         }
-        className="mb-yb-4"
+        className="h-yb-stepper mb-yb-4"
       />
     </>
   )

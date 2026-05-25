@@ -147,6 +147,7 @@
     "chip":          44,
     "input":         48,
     "num-input":     56,
+    "stepper":       76,
     "icon-btn":      44,
     "icon-box-sm":   44,
     "icon-box-md":   48,

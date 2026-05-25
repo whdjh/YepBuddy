@@ -127,6 +127,7 @@
     "bg": "{surface}",
     "borderColor": "{border}",
     "borderWidth": "{borderWidth.default}",
+    "height": "{size.stepper}",
     "radius": "{radius-rule.input}",
     "padding": "{spacing.3.5}",
     "gap": "{spacing.2}",
