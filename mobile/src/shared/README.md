@@ -164,6 +164,7 @@ View(border/radius)
 가이드:
 
 - plus/minus 버튼은 `h-yb-icon-btn w-yb-icon-btn`을 기준으로 맞춥니다.
+- 고정 높이가 필요한 화면은 `h-yb-stepper` 토큰 클래스를 사용합니다.
 - 큰 점프 조절이 필요한 경우 `jumpStep`을 넘깁니다.
 
 ### Badge
