@@ -1,5 +1,6 @@
 import { useRef, useState } from "react"
 import { Dimensions, Modal, Pressable, Text, View } from "react-native"
+import { useTranslation } from "react-i18next"
 import type { BodyPart } from "@/entities/workout-session"
 import { useCardColors } from "@/shared/hooks/useCardColors"
 import { BodyPartBadge } from "./BodyPartBadge"
@@ -10,6 +11,7 @@ interface DayCellProps {
   day: number
   isToday: boolean
   hasWorkout: boolean
+  isDeload: boolean
   bodyParts: BodyPart[]
   hasCardio: boolean
   disabled: boolean
@@ -20,11 +22,13 @@ export function DayCell({
   day,
   isToday,
   hasWorkout,
+  isDeload,
   bodyParts,
   hasCardio,
   disabled,
   onPress,
 }: DayCellProps) {
+  const { t } = useTranslation()
   const { accent, fg } = useCardColors()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
@@ -58,7 +62,7 @@ export function DayCell({
         onLongPress={handleLongPress}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityLabel={`Day ${day}${hasWorkout ? ", workout available" : ""}`}
+        accessibilityLabel={`Day ${day}${hasWorkout ? ", workout available" : ""}${isDeload ? ", deload" : ""}`}
         accessibilityState={{ disabled }}
       >
         <View style={{ height: 24, alignItems: "center", justifyContent: "center" }}>
@@ -94,6 +98,20 @@ export function DayCell({
               </Text>
             )}
           </View>
+        )}
+
+        {isDeload && (
+          <Text
+            numberOfLines={1}
+            style={{
+              color: accent,
+              fontSize: 9,
+              fontWeight: "700",
+              lineHeight: 12,
+            }}
+          >
+            {t("workout.routineCycle.status.deload")}
+          </Text>
         )}
       </Pressable>
 
