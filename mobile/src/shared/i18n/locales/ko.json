@@ -31,8 +31,8 @@
       "workout": "운동",
       "protein": "프로틴"
     },
-    "weeklyRoutine": {
-      "title": "주간 루틴",
+    "routineCycle": {
+      "title": "루틴 사이클",
       "body": "운동일지와 운동 중 화면에서 루틴 진행률과 추천 세션을 보여줍니다.",
       "detail": "세부 설정"
     },
@@ -103,7 +103,7 @@
     "reminder": {
       "title": "운동 리마인더",
       "body": "다음 운동을 기록할 시간이에요.",
-      "bodyRemaining": "이번 주 세션에 남은 운동: {{remaining}}회."
+      "bodyRemaining": "이번 사이클에 남은 운동: {{remaining}}회."
     },
     "active": {
       "title": "운동중",
@@ -161,21 +161,21 @@
       "arms": "팔",
       "core": "코어"
     },
-    "weeklyRoutine": {
-      "title": "주간 루틴",
-      "summary": "이번 주 루틴 {{total}}개 중 {{completed}}개 완료",
+    "routineCycle": {
+      "title": "루틴 사이클",
+      "summary": "루틴 사이클 {{total}}개 중 {{completed}}개 완료",
       "remaining": "아직 {{remaining}}개 루틴이 남았어요",
       "cycle": {
-        "regular": "{{total}}주 루틴 중 {{current}}주차",
-        "deload": "디로드 주차 · {{total}}주 루틴 중 {{current}}주차",
+        "regular": "{{total}}사이클 중 {{current}}사이클",
+        "deload": "디로드 사이클 · {{total}}사이클 중 {{current}}사이클",
         "notConfigured": "기본 루틴 사용 중"
       },
       "settings": {
-        "title": "주간 루틴 설정",
+        "title": "루틴 사이클 설정",
         "save": "저장",
-        "placeholder": "이번 주 루틴을 설정하세요",
-        "trainingWeeks": "훈련 주차",
-        "deloadWeeks": "디로드 주차",
+        "placeholder": "루틴 사이클을 설정하세요",
+        "trainingCycles": "훈련 사이클",
+        "deloadCycles": "디로드 사이클",
         "splitCount": "훈련 분할"
       },
       "status": {
@@ -198,8 +198,8 @@
         "decline": "아니오"
       },
       "suggestion": {
-        "reason": "이번 주 루틴에서 아직 완료하지 않은 세션이에요",
-        "complete": "이번 주 루틴을 모두 완료했어요"
+        "reason": "현재 루틴 사이클에서 아직 완료하지 않은 세션이에요",
+        "complete": "현재 루틴 사이클을 모두 완료했어요"
       }
     },
     "bodyPartDetails": {
