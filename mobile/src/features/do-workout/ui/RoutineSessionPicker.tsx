@@ -3,15 +3,15 @@ import { Pressable, ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
   type RoutinePart,
-  type WeeklyRoutineProgress,
-  type WeeklyRoutineSession,
+  type RoutineCycleProgress,
+  type RoutineCycleSession,
 } from "@/entities/workout-session"
 import { bodyPartLabel } from "@/shared/lib/format"
 
 interface RoutineSessionPickerProps {
-  progress: WeeklyRoutineProgress
-  nextSuggestion: WeeklyRoutineSession | null
-  onSelectSlot: (routineSession: WeeklyRoutineSession) => void
+  progress: RoutineCycleProgress
+  nextSuggestion: RoutineCycleSession | null
+  onSelectSlot: (routineSession: RoutineCycleSession) => void
 }
 
 function getRoutineLabel(parts: RoutinePart[]) {
@@ -50,7 +50,7 @@ export function RoutineSessionPicker({
     onSelectSlot(nextSuggestionSlot.routineSession)
   }, [nextSuggestion, onSelectSlot, progress.slots])
 
-  const handleSelectSlot = (routineSession: WeeklyRoutineSession) => {
+  const handleSelectSlot = (routineSession: RoutineCycleSession) => {
     setSelectedSessionId(routineSession.id)
     onSelectSlot(routineSession)
   }
@@ -102,7 +102,7 @@ export function RoutineSessionPicker({
         </ScrollView>
       ) : (
         <Text className="text-yb-body-md font-semibold text-yb-fg-secondary">
-          {t("workout.weeklyRoutine.suggestion.complete")}
+          {t("workout.routineCycle.suggestion.complete")}
         </Text>
       )}
     </View>

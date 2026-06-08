@@ -1,36 +1,36 @@
 import type { StoredWorkoutSession, WorkoutBodyPartSet } from "../model/types"
 import type {
   RoutinePart,
-  WeeklyRoutineSession,
-  WeeklyRoutineSettings,
-} from "../model/weeklyRoutine"
-import type { WeeklyRoutineCycleProgress } from "./weeklyRoutineCycle"
+  RoutineCycleSession,
+  RoutineCycleSettings,
+} from "../model/routineCycle"
+import type { RoutineCycleProgressState } from "./routineCycleState"
 
 /** 루틴 슬롯의 진행 상태: 미시작 / 일부 완료 / 완전 완료 / 대체 완료 */
-export type WeeklyRoutineSlotStatus =
+export type RoutineCycleSlotStatus =
   | "pending"
   | "partial"
   | "completed"
   | "substituted"
 
 /** 하나의 루틴 슬롯에 대한 진행 정보 */
-export interface WeeklyRoutineSlotProgress {
+export interface RoutineCycleSlotProgress {
   index: number
-  routineSession: WeeklyRoutineSession
+  routineSession: RoutineCycleSession
   matchedSession: StoredWorkoutSession | null
-  status: WeeklyRoutineSlotStatus
+  status: RoutineCycleSlotStatus
 }
 
 /** 루틴 사이클 전체 진행 요약 */
-export interface WeeklyRoutineProgress {
+export interface RoutineCycleProgress {
   totalSessions: number
   completedSessions: number
   remainingSessions: number
-  slots: WeeklyRoutineSlotProgress[]
+  slots: RoutineCycleSlotProgress[]
 }
 
-function getTotalRoutineCycleCount(settings: WeeklyRoutineSettings) {
-  return Math.max(1, settings.trainingWeeks) + Math.max(0, settings.deloadWeeks)
+function getTotalRoutineCycleCount(settings: RoutineCycleSettings) {
+  return Math.max(1, settings.trainingCycles) + Math.max(0, settings.deloadCycles)
 }
 
 /** 루틴 파트에 required details가 있을 때, 완료된 세트가 모두 포함하는지 확인 */
@@ -56,7 +56,7 @@ function partOverlaps(required: RoutinePart, completed: WorkoutBodyPartSet) {
 /** 실제 운동 부위가 루틴 세션의 모든 파트를 충족하는지 판단 */
 export function areBodyPartsMatchingRoutineSession(
   bodyParts: WorkoutBodyPartSet[],
-  routineSession: WeeklyRoutineSession,
+  routineSession: RoutineCycleSession,
 ) {
   return routineSession.parts.every((required) =>
     bodyParts.some((completed) => partMatches(required, completed)),
@@ -66,7 +66,7 @@ export function areBodyPartsMatchingRoutineSession(
 /** 하나의 완료 세션이 루틴 세션의 모든 파트를 충족하는지 판단 */
 export function isSessionMatchingRoutineSession(
   session: StoredWorkoutSession,
-  routineSession: WeeklyRoutineSession,
+  routineSession: RoutineCycleSession,
 ) {
   return areBodyPartsMatchingRoutineSession(
     session.bodyParts,
@@ -77,7 +77,7 @@ export function isSessionMatchingRoutineSession(
 /** 대체 완료 메타데이터가 특정 루틴 슬롯을 가리키는지 판단 */
 function isSessionSubstitutingRoutineSession(
   session: StoredWorkoutSession,
-  routineSession: WeeklyRoutineSession,
+  routineSession: RoutineCycleSession,
   index: number,
 ) {
   const substitution = session.routineSubstitution
@@ -91,12 +91,10 @@ function isSessionSubstitutingRoutineSession(
   )
 }
 
-/**
- * 완전 일치하지는 않지만, 루틴 파트 중 일부만 포함하는 세션인지 판단 (partial용)
- */
+/** 완전 일치하지는 않지만, 루틴 파트 중 일부만 포함하는 세션인지 판단 */
 function isSessionPartiallyMatchingRoutineSession(
   session: StoredWorkoutSession,
-  routineSession: WeeklyRoutineSession,
+  routineSession: RoutineCycleSession,
 ) {
   if (isSessionMatchingRoutineSession(session, routineSession)) {
     return false
@@ -107,11 +105,13 @@ function isSessionPartiallyMatchingRoutineSession(
   )
 }
 
+/** 완료 세션 하나가 채울 수 있는 아직 비어 있는 루틴 슬롯 ID를 찾는다. */
 function getMatchingUnfilledRoutineSessionId(
   session: StoredWorkoutSession,
-  routineSessions: WeeklyRoutineSession[],
+  routineSessions: RoutineCycleSession[],
   filledSlotIds: Set<string>,
 ) {
+  // 사용자가 특정 루틴 슬롯의 대체 운동으로 저장한 경우 실제 부위 일치보다 우선한다.
   const substitutedSlot = routineSessions.find((routineSession, index) => {
     return (
       !filledSlotIds.has(routineSession.id) &&
@@ -123,6 +123,7 @@ function getMatchingUnfilledRoutineSessionId(
     return substitutedSlot.id
   }
 
+  // 대체 메타데이터가 없으면 실제 운동 부위가 완전히 일치하는 빈 슬롯을 찾는다.
   return (
     routineSessions.find(
       (routineSession) =>
@@ -132,6 +133,7 @@ function getMatchingUnfilledRoutineSessionId(
   )
 }
 
+/** 저장된 세션을 오래된 순서로 재생하기 위한 정렬 */
 function sortSessionsOldestFirst(sessions: StoredWorkoutSession[]) {
   return [...sessions].sort((a, b) => {
     const startedAtComparison = a.startedAt.localeCompare(b.startedAt)
@@ -144,6 +146,7 @@ function sortSessionsOldestFirst(sessions: StoredWorkoutSession[]) {
   })
 }
 
+/** 최근 완료 세션을 먼저 보여주거나 매칭하기 위한 정렬 */
 function sortSessionsNewestFirst(sessions: StoredWorkoutSession[]) {
   return [...sessions].sort((a, b) => {
     const startedAtComparison = b.startedAt.localeCompare(a.startedAt)
@@ -156,10 +159,14 @@ function sortSessionsNewestFirst(sessions: StoredWorkoutSession[]) {
   })
 }
 
-export function buildWeeklyRoutineCycleProgressFromSessions(
-  settings: WeeklyRoutineSettings,
+/**
+ * 완료된 운동 세션 목록을 시간순으로 재생해 저장소에 둘 루틴 사이클 진행 상태를 재구성한다.
+ * 각 루틴 슬롯이 한 번씩 채워지면 하나의 사이클이 완료된 것으로 보고 다음 사이클로 넘어간다.
+ */
+export function buildRoutineCycleProgressStateFromSessions(
+  settings: RoutineCycleSettings,
   sessions: StoredWorkoutSession[],
-): WeeklyRoutineCycleProgress {
+): RoutineCycleProgressState {
   const routineSessions = settings.sessions
   const totalCycleCount = getTotalRoutineCycleCount(settings)
   const routineSlotCount = routineSessions.length
@@ -179,6 +186,7 @@ export function buildWeeklyRoutineCycleProgressFromSessions(
       return
     }
 
+    // 현재 사이클에서 아직 채우지 않은 슬롯만 매칭해 같은 슬롯 중복 채움을 방지한다.
     const matchingSlotId = getMatchingUnfilledRoutineSessionId(
       session,
       routineSessions,
@@ -190,6 +198,7 @@ export function buildWeeklyRoutineCycleProgressFromSessions(
 
     filledSlotIds.add(matchingSlotId)
 
+    // 모든 루틴 슬롯을 채우면 사이클 완료 횟수를 올리고 다음 사이클 슬롯 채움을 새로 시작한다.
     if (filledSlotIds.size === routineSlotCount) {
       completedCycleCount += 1
       filledSlotIds = new Set<string>()
@@ -209,14 +218,14 @@ export function buildWeeklyRoutineCycleProgressFromSessions(
  * - partial: 루틴 슬롯을 일부만 충족하는 세션 있음
  * - pending: 해당 루틴 슬롯을 충족하는 세션 없음
  */
-export function buildWeeklyRoutineProgress(
-  routineSessions: WeeklyRoutineSession[],
+export function buildRoutineCycleProgress(
+  routineSessions: RoutineCycleSession[],
   sessions: StoredWorkoutSession[],
-): WeeklyRoutineProgress {
+): RoutineCycleProgress {
   // 이미 completed로 매칭된 세션 ID를 추적해 중복 매칭 방지
   const usedCompletedSessionIds = new Set<string>()
 
-  const slots = routineSessions.map<WeeklyRoutineSlotProgress>(
+  const slots = routineSessions.map<RoutineCycleSlotProgress>(
     (routineSession, index) => {
       const substitutedSession = sessions.find(
         (session) =>
@@ -275,23 +284,20 @@ export function buildWeeklyRoutineProgress(
   }
 }
 
-/**
- * 슬롯 기반 루틴 진행률 계산.
- * 실제 세션 목록이 있으면 저장된 슬롯 ID가 아직 유효한 완료 세션을 가리키는지 검증한다.
- */
-export function buildWeeklyRoutineProgressFromFilledSlots(
-  routineSessions: WeeklyRoutineSession[],
+/** 슬롯 기반 루틴 진행률 계산하고, 실제 세션 목록이 있으면 저장된 슬롯 ID가 아직 유효한 완료 세션을 가리키는지 검증 */
+export function buildRoutineCycleProgressFromFilledSlots(
+  routineSessions: RoutineCycleSession[],
   filledSlotIds: string[],
   sessions?: StoredWorkoutSession[],
-): WeeklyRoutineProgress {
+): RoutineCycleProgress {
   const filledSlotIdSet = new Set(filledSlotIds)
   const sessionProgress = sessions
-    ? buildWeeklyRoutineProgress(
+    ? buildRoutineCycleProgress(
         routineSessions,
         sortSessionsNewestFirst(sessions),
       )
     : null
-  const slots = routineSessions.map<WeeklyRoutineSlotProgress>(
+  const slots = routineSessions.map<RoutineCycleSlotProgress>(
     (routineSession, index) => {
       const sessionSlot = sessionProgress?.slots[index] ?? null
       if (
@@ -341,13 +347,10 @@ export function buildWeeklyRoutineProgressFromFilledSlots(
   }
 }
 
-/**
- * 아직 완료되지 않은 첫 번째 루틴 세션을 추천으로 반환
- * - 모두 완료됐으면 null 반환
- */
+/** 아직 완료되지 않은 첫 번째 루틴 세션을 추천으로 반환(모두 완료시 null) */
 export function getNextRoutineSuggestion(
-  progress: WeeklyRoutineProgress,
-): WeeklyRoutineSession | null {
+  progress: RoutineCycleProgress,
+): RoutineCycleSession | null {
   return (
     progress.slots.find(
       (slot) => slot.status !== "completed" && slot.status !== "substituted",
