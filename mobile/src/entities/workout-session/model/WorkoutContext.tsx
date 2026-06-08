@@ -29,7 +29,7 @@ import type {
   WorkoutLocation,
   WorkoutRoutineSubstitution,
 } from "./types"
-import type { RoutinePart } from "./weeklyRoutine"
+import type { RoutinePart } from "./routineCycle"
 import {
   initialWorkoutState,
   workoutReducer,

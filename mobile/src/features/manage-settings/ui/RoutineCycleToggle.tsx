@@ -2,16 +2,16 @@ import { useEffect, useRef, useState } from "react"
 import { ActivityIndicator, Pressable, Switch, Text, View } from "react-native"
 import { useLocalSearchParams } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useWeeklyRoutinePlan } from "@/entities/workout-session"
+import { useRoutineCyclePlan } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { SettingsRow } from "./SettingsRow"
-import { WeeklyRoutineSettingsSheet } from "./WeeklyRoutineSettingsSheet"
+import { RoutineCycleSettingsSheet } from "./RoutineCycleSettingsSheet"
 
-export function WeeklyRoutineToggle() {
+export function RoutineCycleToggle() {
   const { t } = useTranslation()
   const { routineSetup } = useLocalSearchParams<{ routineSetup?: string }>()
-  const plan = useWeeklyRoutinePlan()
+  const plan = useRoutineCyclePlan()
   const accent = useResolvedColorToken(semanticColorTokens.accent)
   const muted = useResolvedColorToken(semanticColorTokens.surfaceMuted)
   const surface = useResolvedColorToken(semanticColorTokens.surface)
@@ -75,8 +75,8 @@ export function WeeklyRoutineToggle() {
   return (
     <>
       <SettingsRow
-        title={t("settings.weeklyRoutine.title")}
-        body={t("settings.weeklyRoutine.body")}
+        title={t("settings.routineCycle.title")}
+        body={t("settings.routineCycle.body")}
         control={
           <View className="items-end gap-yb-2">
             {plan.isLoading ? (
@@ -86,8 +86,8 @@ export function WeeklyRoutineToggle() {
                 value={plan.isRoutineEnabled}
                 disabled={updating || plan.isLoading}
                 accessibilityRole="switch"
-                accessibilityLabel={t("settings.weeklyRoutine.title")}
-                accessibilityHint={t("settings.weeklyRoutine.body")}
+                accessibilityLabel={t("settings.routineCycle.title")}
+                accessibilityHint={t("settings.routineCycle.body")}
                 accessibilityState={{
                   checked: plan.isRoutineEnabled,
                   disabled: updating || plan.isLoading,
@@ -104,17 +104,17 @@ export function WeeklyRoutineToggle() {
                 className="min-h-[32px] justify-center rounded-yb-md bg-yb-fill-pale px-yb-3 active:opacity-80"
                 onPress={handleOpenDetail}
                 accessibilityRole="button"
-                accessibilityLabel={t("settings.weeklyRoutine.detail")}
+                accessibilityLabel={t("settings.routineCycle.detail")}
               >
                 <Text className="text-yb-caption font-semibold text-yb-fg-secondary">
-                  {t("settings.weeklyRoutine.detail")}
+                  {t("settings.routineCycle.detail")}
                 </Text>
               </Pressable>
             )}
           </View>
         }
       />
-      <WeeklyRoutineSettingsSheet
+      <RoutineCycleSettingsSheet
         plan={plan}
         visible={isSheetOpen}
         onClose={handleCloseSheet}

@@ -8,7 +8,7 @@ import { SymbolView } from "@/shared/ui/SymbolView"
 import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
 import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
-import { WeeklyRoutineToggle } from "./WeeklyRoutineToggle"
+import { RoutineCycleToggle } from "./RoutineCycleToggle"
 import { WorkoutPlaceArrivalReminderToggle } from "./WorkoutPlaceArrivalReminderToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 import { SettingsLegalFooter } from "./SettingsLegalFooter"
@@ -52,7 +52,7 @@ export function SettingsScreen() {
           <Text className="text-yb-label font-semibold text-yb-fg-secondary">
             {t("settings.sections.workout")}
           </Text>
-          <WeeklyRoutineToggle />
+          <RoutineCycleToggle />
           <WorkoutReminderToggle />
           <WorkoutPlaceArrivalReminderToggle />
         </View>

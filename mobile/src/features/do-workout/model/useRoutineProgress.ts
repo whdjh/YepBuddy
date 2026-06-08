@@ -1,34 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import {
-  buildWeeklyRoutineProgressSnapshot,
-  createWeeklyRoutineCycleProgress,
-  loadWeeklyRoutineProgressSnapshot,
-  markWeeklyRoutineSlotFilled,
-  type WeeklyRoutineProgress,
-  type WeeklyRoutineSession,
-  type WeeklyRoutineProgressSnapshot,
+  buildRoutineCycleProgressSnapshot,
+  createRoutineCycleProgressState,
+  loadRoutineCycleProgressSnapshot,
+  markRoutineCycleSlotFilled,
+  type RoutineCycleProgress,
+  type RoutineCycleSession,
+  type RoutineCycleProgressSnapshot,
 } from "@/entities/workout-session"
 import { getThisWeekDateRange } from "@/shared/lib/date"
 
 export interface RoutineProgressResult {
   hasCustomSettings: boolean
   isRoutineEnabled: boolean
-  progress: WeeklyRoutineProgress
-  nextSuggestion: WeeklyRoutineSession | null
+  progress: RoutineCycleProgress
+  nextSuggestion: RoutineCycleSession | null
   isLoading: boolean
   reload: () => Promise<void>
   markSlotFilled: (slotId: string) => Promise<void>
 }
 
-// 운동 중 화면에서 주간 루틴 진행률과 다음 추천 세션을 계산
+// 운동 중 화면에서 루틴 사이클 진행률과 다음 추천 세션을 계산
 export function useRoutineProgress(): RoutineProgressResult {
   const loadRequestIdRef = useRef(0)
-  const [snapshot, setSnapshot] = useState<WeeklyRoutineProgressSnapshot>(() =>
-    buildWeeklyRoutineProgressSnapshot({
-      cycleProgress: createWeeklyRoutineCycleProgress(
+  const [snapshot, setSnapshot] = useState<RoutineCycleProgressSnapshot>(() =>
+    buildRoutineCycleProgressSnapshot({
+      cycleProgress: createRoutineCycleProgressState(
         getThisWeekDateRange().startDateKey,
       ),
-      currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
+      currentCycleAnchorDateKey: getThisWeekDateRange().startDateKey,
       featureStatus: "unasked",
       sessions: [],
       settings: null,
@@ -42,7 +42,7 @@ export function useRoutineProgress(): RoutineProgressResult {
     loadRequestIdRef.current = requestId
     setIsLoading(true)
     try {
-      const loadedSnapshot = await loadWeeklyRoutineProgressSnapshot()
+      const loadedSnapshot = await loadRoutineCycleProgressSnapshot()
 
       if (loadRequestIdRef.current !== requestId) {
         return
@@ -56,11 +56,11 @@ export function useRoutineProgress(): RoutineProgressResult {
 
       // 저장소/권한 오류가 나도 화면은 안전한 기본 상태로 유지
       setSnapshot(
-        buildWeeklyRoutineProgressSnapshot({
-          cycleProgress: createWeeklyRoutineCycleProgress(
+        buildRoutineCycleProgressSnapshot({
+          cycleProgress: createRoutineCycleProgressState(
             getThisWeekDateRange().startDateKey,
           ),
-          currentWeekStartDateKey: getThisWeekDateRange().startDateKey,
+          currentCycleAnchorDateKey: getThisWeekDateRange().startDateKey,
           featureStatus: "unasked",
           sessions: [],
           settings: null,
@@ -87,7 +87,7 @@ export function useRoutineProgress(): RoutineProgressResult {
 
   const markSlotFilled = useCallback(
     async (slotId: string) => {
-      await markWeeklyRoutineSlotFilled(slotId)
+      await markRoutineCycleSlotFilled(slotId)
       await load()
     },
     [load],

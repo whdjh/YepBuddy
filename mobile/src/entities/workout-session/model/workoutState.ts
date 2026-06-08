@@ -8,7 +8,7 @@ import type {
 } from "./types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "./types"
 import { normalizeMetricCount } from "./metricNormalization"
-import type { RoutinePart } from "./weeklyRoutine"
+import type { RoutinePart } from "./routineCycle"
 
 // 운동 세션이 화면에서 어떤 단계에 있는지
 export type WorkoutPhase =

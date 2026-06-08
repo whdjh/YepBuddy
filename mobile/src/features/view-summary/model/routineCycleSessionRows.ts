@@ -7,15 +7,15 @@ import type {
   StoredWorkoutSession,
 } from "@/entities/workout-session/model/types"
 import type {
-  WeeklyRoutineProgress as RoutineCycleProgress,
-} from "@/entities/workout-session/lib/weeklyRoutineProgress"
-import type { WeeklyRoutineSession as RoutineCycleSession } from "@/entities/workout-session/model/weeklyRoutine"
+  RoutineCycleProgress as RoutineCycleProgress,
+} from "@/entities/workout-session/lib/routineCycleProgress"
+import type { RoutineCycleSession as RoutineCycleSession } from "@/entities/workout-session/model/routineCycle"
 import {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
 } from "@/entities/workout-session/lib/sessionMetrics"
 
-export type RoutineCycleSessionRowStatus = "completed" | "planned"
+export type RoutineCycleSessionRowStatus = "completed" | "planned" | "deload"
 
 export interface RoutineCycleSessionRow {
   id: string
@@ -38,7 +38,9 @@ interface RoutineCycleSessionRowsFormatters {
 interface BuildRoutineCycleSessionRowsInput
   extends RoutineCycleSessionRowsFormatters {
   progress: RoutineCycleProgress
+  deloadLabel?: string
   fallbackBodyPartLabel: string
+  isDeloadCycle?: boolean
   plannedLabel: string
 }
 
@@ -105,13 +107,17 @@ function getPlannedRoutineRow(
   routineSession: RoutineCycleSession,
   input: BuildRoutineCycleSessionRowsInput,
 ): RoutineCycleSessionRow {
+  const isDeloadCycle = input.isDeloadCycle === true
+
   return {
     id: `routine:${routineSession.id}`,
     sessionId: null,
-    status: "planned",
+    status: isDeloadCycle ? "deload" : "planned",
     bodyPart: getRoutineSessionLabel(routineSession, input),
     representativeBodyPart: routineSession.parts[0]?.part ?? null,
-    day: input.plannedLabel,
+    day: isDeloadCycle
+      ? input.deloadLabel ?? input.plannedLabel
+      : input.plannedLabel,
     durationMin: null,
     sets: null,
     kcal: null,

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import type {
   BodyPart,
   WorkoutState,
-  WeeklyRoutineSession,
+  RoutineCycleSession,
 } from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
@@ -66,7 +66,7 @@ export function ActiveWorkoutContent() {
   const hasLiveMetrics =
     heartRate != null || activeKcal > 0 || totalKcal > 0
 
-  const handleSelectSlot = (routineSession: WeeklyRoutineSession) => {
+  const handleSelectSlot = (routineSession: RoutineCycleSession) => {
     setSelectedRoutineSessionId(routineSession.id)
     applyBodyPartTemplate(routineSession.parts)
     setExpandedBodyPart(routineSession.parts[0]?.part ?? null)

@@ -1,9 +1,10 @@
 import type { BodyPart } from "@/entities/workout-session"
 
 export interface DayWorkout {
-  sessionId: string
+  sessionId: string | null
   bodyParts: BodyPart[]
   hasCardio: boolean
+  isDeload: boolean
 }
 
 export interface MonthWorkoutDates {

@@ -7,7 +7,7 @@ import {
   BodyPartSelectionChip,
   type BodyPart,
   type BodyPartDetail,
-  type WeeklyRoutineSession,
+  type RoutineCycleSession,
 } from "@/entities/workout-session"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
 import { GlassSurface } from "@/shared/ui/GlassSurface"
@@ -28,18 +28,20 @@ interface CycleStepperProps {
   value: number
   min: number
   max?: number
+  disabled?: boolean
   onChange: (value: number) => void
 }
 
 interface RoutineSessionPartEditorProps {
   index: number
-  session: WeeklyRoutineSession
+  session: RoutineCycleSession
   onTogglePart: (index: number, part: BodyPart) => void
   onToggleDetail: (
     index: number,
     part: BodyPart,
     detail: BodyPartDetail,
   ) => void
+  disabled?: boolean
 }
 
 interface RoutineSettingsSaveButtonProps {
@@ -53,14 +55,15 @@ export function CycleStepper({
   value,
   min,
   max,
+  disabled = false,
   onChange,
 }: CycleStepperProps) {
-  const decrementDisabled = value <= min
-  const incrementDisabled = max != null && value >= max
+  const decrementDisabled = disabled || value <= min
+  const incrementDisabled = disabled || (max != null && value >= max)
 
   return (
     <GlassSurface
-      className="shadow-yb-sm"
+      className={`shadow-yb-sm${disabled ? " opacity-60" : ""}`}
       cornerRadius={16}
       fallbackClassName="bg-yb-glass-bg"
     >
@@ -147,10 +150,11 @@ export function RoutineSessionPartEditor({
   session,
   onTogglePart,
   onToggleDetail,
+  disabled = false,
 }: RoutineSessionPartEditorProps) {
   return (
     <GlassSurface
-      className="shadow-yb-sm"
+      className={`shadow-yb-sm${disabled ? " opacity-60" : ""}`}
       cornerRadius={16}
       fallbackClassName="bg-yb-glass-bg"
     >
@@ -169,8 +173,14 @@ export function RoutineSessionPartEditor({
                 key={part}
                 label={label}
                 selected={active}
+                disabled={disabled}
                 accessibilityRole="checkbox"
-                onPress={() => onTogglePart(index, part)}
+                accessibilityState={{ checked: active, disabled }}
+                onPress={() => {
+                  if (!disabled) {
+                    onTogglePart(index, part)
+                  }
+                }}
               />
             )
           })}
@@ -194,8 +204,11 @@ export function RoutineSessionPartEditor({
                       key={detail}
                       label={label}
                       selected={active}
+                      disabled={disabled}
                       accessibilityRole="checkbox"
+                      accessibilityState={{ checked: active, disabled }}
                       onPress={() =>
+                        !disabled &&
                         onToggleDetail(index, routinePart.part, detail)
                       }
                     />

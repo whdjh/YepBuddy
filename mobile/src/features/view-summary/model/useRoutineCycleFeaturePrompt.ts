@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import type { TFunction } from "i18next"
 import { router } from "expo-router"
 import { Alert } from "react-native"
-import type { WeeklyRoutinePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
+import type { RoutineCyclePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
 import { acceptRoutineCycleFeaturePrompt } from "./routineCycleFeaturePromptActions"
 
 interface UseRoutineCycleFeaturePromptParams {
@@ -32,18 +32,18 @@ export function useRoutineCycleFeaturePrompt({
     isFeatureAlertOpenRef.current = true
     setIsFeatureAlertOpen(true)
     Alert.alert(
-      t("workout.weeklyRoutine.featurePrompt.title"),
+      t("workout.routineCycle.featurePrompt.title"),
       undefined,
       [
         {
-          text: t("workout.weeklyRoutine.featurePrompt.decline"),
+          text: t("workout.routineCycle.featurePrompt.decline"),
           style: "cancel",
           onPress: () => {
             void routineCyclePlan.disableRoutine().finally(closeFeatureAlert)
           },
         },
         {
-          text: t("workout.weeklyRoutine.featurePrompt.accept"),
+          text: t("workout.routineCycle.featurePrompt.accept"),
           onPress: () => {
             void acceptRoutineCycleFeaturePrompt({
               enableRoutine: routineCyclePlan.enableRoutine,

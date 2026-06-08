@@ -5,6 +5,7 @@ import {
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
 import { getLocalDateKeyFromIso } from "@/shared/lib/date"
+import { mergeWorkoutDatesWithDeloadLabels } from "./calendarDeloadLabels"
 import type { DayWorkout, MonthWorkoutDates } from "./types"
 
 function pad2(value: number) {
@@ -22,14 +23,21 @@ function getMonthRange(year: number, month: number) {
   }
 }
 
+const EMPTY_DELOAD_DATE_LABELS: Record<string, true> = {}
+
 export function useMonthWorkoutDates(
   year: number,
   month: number,
   refreshKey = 0,
+  deloadDateLabels: Record<string, true> = EMPTY_DELOAD_DATE_LABELS,
 ): MonthWorkoutDates {
   const [workoutDates, setWorkoutDates] = useState<Record<string, DayWorkout>>({})
 
   const range = useMemo(() => getMonthRange(year, month), [year, month])
+  const deloadDateLabelKey = useMemo(
+    () => Object.keys(deloadDateLabels).sort().join("|"),
+    [deloadDateLabels],
+  )
 
   useEffect(() => {
     let mounted = true
@@ -59,13 +67,19 @@ export function useMonthWorkoutDates(
               sessionId: session.sessionId,
               bodyParts: getUniqueWorkoutBodyParts(session.bodyParts),
               hasCardio: Boolean(session.cardioStartedAt),
+              isDeload: false,
             }
             return accumulator
           },
           {},
         )
 
-        setWorkoutDates(nextWorkoutDates)
+        setWorkoutDates(
+          mergeWorkoutDatesWithDeloadLabels(
+            nextWorkoutDates,
+            deloadDateLabels,
+          ),
+        )
       } catch {
         if (mounted && currentRequestId === requestId) {
           setWorkoutDates({})
@@ -78,7 +92,13 @@ export function useMonthWorkoutDates(
     return () => {
       mounted = false
     }
-  }, [range.endDateKey, range.startDateKey, refreshKey])
+  }, [
+    deloadDateLabelKey,
+    deloadDateLabels,
+    range.endDateKey,
+    range.startDateKey,
+    refreshKey,
+  ])
 
   return { workoutDates }
 }

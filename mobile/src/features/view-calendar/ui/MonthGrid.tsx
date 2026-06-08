@@ -9,6 +9,7 @@ interface MonthGridProps {
   month: number
   today: { year: number; month: number; day: number }
   refreshKey: number
+  deloadDateLabels?: Record<string, true>
   onDayPress: (sessionId: string) => void
 }
 
@@ -17,10 +18,16 @@ export function MonthGrid({
   month,
   today,
   refreshKey,
+  deloadDateLabels,
   onDayPress,
 }: MonthGridProps) {
   const { t } = useTranslation()
-  const { workoutDates } = useMonthWorkoutDates(year, month, refreshKey)
+  const { workoutDates } = useMonthWorkoutDates(
+    year,
+    month,
+    refreshKey,
+    deloadDateLabels,
+  )
 
   const firstDay = getFirstDayOfWeek(year, month)
   const daysCount = getDaysInMonth(year, month)
@@ -45,6 +52,8 @@ export function MonthGrid({
           const dayWorkout = workoutDates[dateKey] ?? null
           const bodyParts = dayWorkout?.bodyParts ?? []
           const hasCardio = dayWorkout?.hasCardio ?? false
+          const isDeload = dayWorkout?.isDeload ?? false
+          const sessionId = dayWorkout?.sessionId ?? null
           const isToday = year === today.year && month === today.month && day === today.day
           const isFuture =
             year > today.year ||
@@ -56,13 +65,14 @@ export function MonthGrid({
               key={day}
               day={day}
               isToday={isToday}
-              hasWorkout={dayWorkout != null}
+              hasWorkout={sessionId != null}
+              isDeload={isDeload}
               bodyParts={bodyParts}
               hasCardio={hasCardio}
-              disabled={isFuture || !dayWorkout}
+              disabled={isFuture || sessionId == null}
               onPress={() => {
-                if (dayWorkout) {
-                  onDayPress(dayWorkout.sessionId)
+                if (sessionId) {
+                  onDayPress(sessionId)
                 }
               }}
             />

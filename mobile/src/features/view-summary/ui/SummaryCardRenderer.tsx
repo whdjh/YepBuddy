@@ -28,6 +28,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     todayCompleted,
     routineCycleSessions,
     routineProgress,
+    isRoutineDeloadCycle,
   } = data
 
   switch (cardId) {
@@ -90,6 +91,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
         <RoutineCycleSessionList
           sessions={routineCycleSessions}
           progress={routineProgress}
+          isDeloadCycle={isRoutineDeloadCycle}
           onLongPress={onLongPress}
           onMorePress={() => router.push("/sessions")}
           onSessionPress={(sessionId) =>

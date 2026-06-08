@@ -31,8 +31,8 @@
       "workout": "Workout",
       "protein": "Protein"
     },
-    "weeklyRoutine": {
-      "title": "Weekly Routine",
+    "routineCycle": {
+      "title": "Routine Cycle",
       "body": "Shows routine progress and suggested sessions in your journal and active workout screens.",
       "detail": "Details"
     },
@@ -103,7 +103,7 @@
     "reminder": {
       "title": "Workout Reminder",
       "body": "Time to log your next workout.",
-      "bodyRemaining": "Remaining workouts this week: {{remaining}}."
+      "bodyRemaining": "Remaining workouts this cycle: {{remaining}}."
     },
     "active": {
       "title": "Working Out",
@@ -161,21 +161,21 @@
       "arms": "Arms",
       "core": "Core"
     },
-    "weeklyRoutine": {
-      "title": "Weekly Routine",
-      "summary": "{{completed}} of {{total}} routine sessions completed this week",
+    "routineCycle": {
+      "title": "Routine Cycle",
+      "summary": "{{completed}} of {{total}} routine sessions completed in this cycle",
       "remaining": "{{remaining}} routine sessions remaining",
       "cycle": {
-        "regular": "Week {{current}} of {{total}}",
-        "deload": "Deload week · week {{current}} of {{total}}",
+        "regular": "Cycle {{current}} of {{total}}",
+        "deload": "Deload cycle · cycle {{current}} of {{total}}",
         "notConfigured": "Using the default routine"
       },
       "settings": {
-        "title": "Weekly Routine Settings",
+        "title": "Routine Cycle Settings",
         "save": "Save",
-        "placeholder": "Set this week's routine",
-        "trainingWeeks": "Training weeks",
-        "deloadWeeks": "Deload weeks",
+        "placeholder": "Set your routine cycle",
+        "trainingCycles": "Training cycles",
+        "deloadCycles": "Deload cycles",
         "splitCount": "Training split"
       },
       "status": {
@@ -198,8 +198,8 @@
         "decline": "No"
       },
       "suggestion": {
-        "reason": "This is an unfinished session from your weekly routine",
-        "complete": "You completed this week's routine"
+        "reason": "This is an unfinished session from your current routine cycle",
+        "complete": "You completed the current routine cycle"
       }
     },
     "bodyPartDetails": {

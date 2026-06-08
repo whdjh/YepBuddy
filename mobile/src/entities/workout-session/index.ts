@@ -94,76 +94,78 @@ export {
   getWorkoutBodyPartSetLabel,
 } from "./model/bodyPartSet"
 export {
-  createDefaultWeeklyRoutineSettings,
-  DEFAULT_WEEKLY_ROUTINE_DELOAD_WEEKS,
-  DEFAULT_WEEKLY_ROUTINE_PROMPT_STATE,
-  DEFAULT_WEEKLY_ROUTINE_SPLIT_COUNT,
-  DEFAULT_WEEKLY_ROUTINE_SESSIONS,
-  DEFAULT_WEEKLY_ROUTINE_TRAINING_WEEKS,
-  MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
-  MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
-  normalizeWeeklyRoutineSettings,
-  resizeWeeklyRoutineSessions,
-} from "./model/weeklyRoutine"
+  createDefaultRoutineCycleSettings,
+  DEFAULT_ROUTINE_CYCLE_DELOAD_CYCLES,
+  DEFAULT_ROUTINE_CYCLE_PROMPT_STATE,
+  DEFAULT_ROUTINE_CYCLE_SPLIT_COUNT,
+  DEFAULT_ROUTINE_CYCLE_SESSIONS,
+  DEFAULT_ROUTINE_CYCLE_TRAINING_CYCLES,
+  MAX_ROUTINE_CYCLE_SPLIT_COUNT,
+  MIN_ROUTINE_CYCLE_SPLIT_COUNT,
+  normalizeRoutineCycleSettings,
+  resizeRoutineCycleSessions,
+} from "./model/routineCycle"
 export {
-  useWeeklyRoutinePlan,
-  type WeeklyRoutinePlanResult,
-} from "./model/useWeeklyRoutinePlan"
+  useRoutineCyclePlan,
+  type RoutineCyclePlanResult,
+} from "./model/useRoutineCyclePlan"
 export type {
   RoutinePart,
-  WeeklyRoutineFeatureStatus,
-  WeeklyRoutinePromptState,
-  WeeklyRoutineSession,
-  WeeklyRoutineSettings,
-} from "./model/weeklyRoutine"
+  RoutineCycleFeatureStatus,
+  RoutineCyclePromptState,
+  RoutineCycleSession,
+  RoutineCycleSettings,
+} from "./model/routineCycle"
 export {
-  dismissWeeklyRoutineCycleRenewalPrompt,
-  loadWeeklyRoutineCycleProgress,
-  loadWeeklyRoutineFeatureStatus,
-  loadWeeklyRoutinePromptState,
-  loadWeeklyRoutineSettings,
-  markWeeklyRoutineSlotFilled,
-  resetWeeklyRoutineCycleProgress,
-  saveWeeklyRoutineCycleProgress,
-  saveWeeklyRoutineFeatureStatus,
-  saveWeeklyRoutinePromptState,
-  saveWeeklyRoutineSettings,
-} from "./model/weeklyRoutineStorage"
+  dismissRoutineCycleRenewalPrompt,
+  loadRoutineCycleProgressState,
+  loadRoutineCycleFeatureStatus,
+  loadRoutineCyclePromptState,
+  loadRoutineCycleSettings,
+  markRoutineCycleSlotFilled,
+  resetRoutineCycleProgressState,
+  saveRoutineCycleProgressState,
+  saveRoutineCycleFeatureStatus,
+  saveRoutineCyclePromptState,
+  saveRoutineCycleSettings,
+} from "./model/routineCycleStorage"
 export {
   areBodyPartsMatchingRoutineSession,
-  buildWeeklyRoutineProgress,
-  buildWeeklyRoutineProgressFromFilledSlots,
+  buildRoutineCycleProgress,
+  buildRoutineCycleProgressFromFilledSlots,
   getNextRoutineSuggestion,
   isSessionMatchingRoutineSession,
-} from "./lib/weeklyRoutineProgress"
+} from "./lib/routineCycleProgress"
 export {
-  buildWeeklyRoutineProgressSnapshot,
-  loadWeeklyRoutineProgressSnapshot,
-} from "./lib/weeklyRoutineProgressSnapshot"
-export type { WeeklyRoutineProgressSnapshot } from "./lib/weeklyRoutineProgressSnapshot"
+  buildRoutineCycleProgressSnapshot,
+  loadRoutineCycleProgressSnapshot,
+} from "./lib/routineCycleProgressSnapshot"
+export type { RoutineCycleProgressSnapshot } from "./lib/routineCycleProgressSnapshot"
 export {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,
   getStoredWorkoutSessionSetCount,
 } from "./lib/sessionMetrics"
 export {
-  createWeeklyRoutineCycleProgress,
-  fillWeeklyRoutineSlotProgress,
-  getWeeklyRoutineCyclePhase,
-  getWeeklyRoutineCycleState,
-  getWeeklyRoutineCycleStateFromProgress,
-  normalizeWeeklyRoutineCycleProgress,
-  restartWeeklyRoutineCycle,
-  shouldShowWeeklyRoutineSetupPrompt,
-} from "./lib/weeklyRoutineCycle"
+  createRoutineCycleProgressState,
+  fillRoutineCycleSlotProgress,
+  getRoutineCycleEditPolicy,
+  getRoutineCyclePhase,
+  getRoutineCycleState,
+  getRoutineCycleStateFromProgress,
+  normalizeRoutineCycleProgressState,
+  restartRoutineCycle,
+  shouldShowRoutineCycleSetupPrompt,
+} from "./lib/routineCycleState"
 export type {
-  WeeklyRoutineProgress,
-  WeeklyRoutineSlotProgress,
-  WeeklyRoutineSlotStatus,
-} from "./lib/weeklyRoutineProgress"
+  RoutineCycleProgress,
+  RoutineCycleSlotProgress,
+  RoutineCycleSlotStatus,
+} from "./lib/routineCycleProgress"
 export type {
-  WeeklyRoutineCyclePhase,
-  WeeklyRoutineCycleProgress,
-  WeeklyRoutineCycleState,
-  WeeklyRoutineSetupPromptKind,
-} from "./lib/weeklyRoutineCycle"
+  RoutineCyclePhase,
+  RoutineCycleEditPolicy,
+  RoutineCycleProgressState,
+  RoutineCycleState,
+  RoutineCycleSetupPromptKind,
+} from "./lib/routineCycleState"

@@ -1,6 +1,6 @@
 import { Modal, Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
-import type { WeeklyRoutinePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
+import type { RoutineCyclePlanResult as RoutineCyclePlanResult } from "@/entities/workout-session"
 
 interface RoutineCycleSetupPromptModalProps {
   plan: RoutineCyclePlanResult
@@ -37,10 +37,10 @@ export function RoutineCycleSetupPromptModal({
         <Pressable className="absolute inset-0" onPress={handleDismiss} />
         <View className="rounded-yb-xl border border-yb-border bg-yb-surface p-yb-6">
           <Text className="text-yb-title font-semibold text-yb-fg">
-            {t(`workout.weeklyRoutine.prompt.${kind}.title`)}
+            {t(`workout.routineCycle.prompt.${kind}.title`)}
           </Text>
           <Text className="mt-yb-2 text-yb-body-sm text-yb-fg-secondary">
-            {t(`workout.weeklyRoutine.prompt.${kind}.body`)}
+            {t(`workout.routineCycle.prompt.${kind}.body`)}
           </Text>
           <View className="mt-yb-5 flex-row gap-yb-2">
             <Pressable
@@ -48,7 +48,7 @@ export function RoutineCycleSetupPromptModal({
               onPress={handlePrimaryPress}
             >
               <Text className="text-yb-body-sm font-semibold text-yb-on-accent">
-                {t(`workout.weeklyRoutine.prompt.${kind}.action`)}
+                {t(`workout.routineCycle.prompt.${kind}.action`)}
               </Text>
             </Pressable>
             <Pressable
@@ -56,7 +56,7 @@ export function RoutineCycleSetupPromptModal({
               onPress={handleDismiss}
             >
               <Text className="text-yb-body-sm font-semibold text-yb-fg-secondary">
-                {t("workout.weeklyRoutine.prompt.dismiss")}
+                {t("workout.routineCycle.prompt.dismiss")}
               </Text>
             </Pressable>
           </View>

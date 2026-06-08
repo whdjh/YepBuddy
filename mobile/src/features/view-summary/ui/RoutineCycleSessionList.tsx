@@ -8,6 +8,7 @@ import type { RoutineCycleSessionRow } from "../model/routineCycleSessionRows"
 interface RoutineCycleSessionListProps {
   sessions: RoutineCycleSessionRow[]
   progress?: { current: number; total: number }
+  isDeloadCycle?: boolean
   onMorePress?: () => void
   onSessionPress?: (sessionId: string) => void
   onLongPress?: () => void
@@ -16,12 +17,17 @@ interface RoutineCycleSessionListProps {
 export function RoutineCycleSessionList({
   sessions,
   progress,
+  isDeloadCycle = false,
   onMorePress,
   onSessionPress,
   onLongPress,
 }: RoutineCycleSessionListProps) {
   const { t } = useTranslation()
-  const badgeText = progress ? `${progress.current}/${progress.total}` : undefined
+  const badgeText = progress
+    ? isDeloadCycle
+      ? `${progress.current}/${progress.total} · ${t("workout.routineCycle.status.deload")}`
+      : `${progress.current}/${progress.total}`
+    : undefined
 
   return (
     <Pressable onLongPress={onLongPress} delayLongPress={450}>
@@ -59,7 +65,7 @@ export function RoutineCycleSessionList({
                       <Card.Title>{session.bodyPart}</Card.Title>
                       <Card.Row spacing={4}>
                         <Card.Caption>{session.day}</Card.Caption>
-                        {session.status !== "planned" && (
+                        {session.status === "completed" && (
                           <>
                             <Card.Dot />
                             <Card.Caption>{`${session.durationMin}${t("summary.minuteUnit")}`}</Card.Caption>
@@ -72,11 +78,13 @@ export function RoutineCycleSessionList({
                     <Card.Spacer />
                     <Card.Column alignment="trailing" spacing={2}>
                       <Card.Accent size={15}>
-                        {session.status === "planned"
-                          ? t("workout.weeklyRoutine.status.pending")
-                          : String(session.kcal)}
+                        {session.status === "completed"
+                          ? String(session.kcal)
+                          : session.status === "deload"
+                            ? t("workout.routineCycle.status.deload")
+                            : t("workout.routineCycle.status.pending")}
                       </Card.Accent>
-                      {session.status !== "planned" && (
+                      {session.status === "completed" && (
                         <Card.Caption size={11}>{t("summary.kcalUnit")}</Card.Caption>
                       )}
                     </Card.Column>

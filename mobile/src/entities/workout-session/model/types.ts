@@ -1,4 +1,4 @@
-import type { RoutinePart } from "./weeklyRoutine"
+import type { RoutinePart } from "./routineCycle"
 
 export type BodyPart =
   | "chest"
@@ -48,7 +48,7 @@ export interface WorkoutLocation {
 }
 
 export interface WorkoutRoutineSubstitution {
-  weekStartDateKey: string
+  cycleAnchorDateKey: string
   routineSessionId: string
   routineSessionIndex: number
   originalParts: RoutinePart[]
