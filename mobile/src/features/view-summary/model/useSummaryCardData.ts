@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
-import { useWeeklyRoutinePlan as useRoutineCyclePlan } from "@/entities/workout-session/model/useWeeklyRoutinePlan"
+import { useRoutineCyclePlan as useRoutineCyclePlan } from "@/entities/workout-session/model/useRoutineCyclePlan"
 import { formatDateWithDay, bodyPartLabel, bodyPartDetailLabel } from "@/shared/lib/format"
 import { useTodayCompleted } from "./useTodayCompleted"
 import { useTodaySummary } from "./useTodaySummary"
@@ -32,8 +32,10 @@ export function useSummaryCardData() {
   const bodyPartCardDay = t("summary.today")
   const routineCycleSessions = buildRoutineCycleSessionRows({
     progress: routineCyclePlan.progress,
+    deloadLabel: t("workout.routineCycle.status.deload"),
     fallbackBodyPartLabel,
-    plannedLabel: t("workout.weeklyRoutine.status.pending"),
+    isDeloadCycle: routineCyclePlan.isDeloadCycle,
+    plannedLabel: t("workout.routineCycle.status.pending"),
     formatDate: formatDateWithDay,
     bodyPartLabel,
     bodyPartDetailLabel,
@@ -60,5 +62,6 @@ export function useSummaryCardData() {
     routineCycleSessions,
     routineCyclePlan,
     routineProgress,
+    isRoutineDeloadCycle: routineCyclePlan.isDeloadCycle,
   }
 }
