@@ -29,6 +29,11 @@ export {
   formatWorkoutLocationLabel,
 } from "./lib/locationLabel"
 export {
+  buildRoutinePartHistoryPrefill,
+  buildWorkoutHistoryPrefill,
+  type WorkoutHistoryPrefill,
+} from "./lib/workoutHistoryPrefill"
+export {
   disableWorkoutPlaceArrivalReminder,
   registerWorkoutPlaceArrivalNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
