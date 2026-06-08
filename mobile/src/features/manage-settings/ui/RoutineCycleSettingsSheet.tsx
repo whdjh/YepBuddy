@@ -6,51 +6,63 @@ import {
 } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
 import {
-  createDefaultWeeklyRoutineSettings,
-  MAX_WEEKLY_ROUTINE_SPLIT_COUNT,
-  MIN_WEEKLY_ROUTINE_SPLIT_COUNT,
-  resizeWeeklyRoutineSessions,
+  createDefaultRoutineCycleSettings,
+  MAX_ROUTINE_CYCLE_SPLIT_COUNT,
+  MIN_ROUTINE_CYCLE_SPLIT_COUNT,
+  resizeRoutineCycleSessions,
   type BodyPart,
   type BodyPartDetail,
   type RoutinePart,
-  type WeeklyRoutinePlanResult,
-  type WeeklyRoutineSettings,
+  type RoutineCyclePlanResult,
+  type RoutineCycleSettings,
 } from "@/entities/workout-session"
 import {
   CycleStepper,
   RoutineSettingsSaveButton,
   RoutineSessionPartEditor,
-} from "./weekly-routine-settings/RoutineSettingsEditors"
-import { toggleRoutinePartDetail } from "./weekly-routine-settings/routinePartDetail"
+} from "./routine-cycle-settings/RoutineSettingsEditors"
+import { toggleRoutinePartDetail } from "./routine-cycle-settings/routinePartDetail"
 
-interface WeeklyRoutineSettingsSheetProps {
-  plan: WeeklyRoutinePlanResult
+interface RoutineCycleSettingsSheetProps {
+  plan: RoutineCyclePlanResult
   visible: boolean
   onClose: () => void
   onSaved?: () => void
 }
 
-// 주간 루틴 세션 편집 바텀시트
-export function WeeklyRoutineSettingsSheet({
+// 루틴 사이클 세션 편집 바텀시트
+export function RoutineCycleSettingsSheet({
   plan,
   visible,
   onClose,
   onSaved,
-}: WeeklyRoutineSettingsSheetProps) {
+}: RoutineCycleSettingsSheetProps) {
   const { t } = useTranslation()
-  const { currentWeekStartDateKey, settings, updateSettings } = plan
+  const {
+    canEditRoutineStructure,
+    currentCycleAnchorDateKey,
+    minimumTrainingCycles,
+    settings,
+    updateSettings,
+  } = plan
   const [isSaving, setIsSaving] = useState(false)
-  const [draft, setDraft] = useState<WeeklyRoutineSettings>(() =>
-    createDefaultWeeklyRoutineSettings(currentWeekStartDateKey),
+  const [draft, setDraft] = useState<RoutineCycleSettings>(() =>
+    createDefaultRoutineCycleSettings(currentCycleAnchorDateKey),
   )
 
   useEffect(() => {
     if (visible) {
-      setDraft(
-        settings ?? createDefaultWeeklyRoutineSettings(currentWeekStartDateKey),
-      )
+      const nextDraft =
+        settings ?? createDefaultRoutineCycleSettings(currentCycleAnchorDateKey)
+      setDraft({
+        ...nextDraft,
+        trainingCycles: Math.max(
+          nextDraft.trainingCycles,
+          minimumTrainingCycles,
+        ),
+      })
     }
-  }, [currentWeekStartDateKey, settings, visible])
+  }, [currentCycleAnchorDateKey, minimumTrainingCycles, settings, visible])
 
   const handleSave = async () => {
     if (isSaving) {
@@ -87,20 +99,31 @@ export function WeeklyRoutineSettingsSheet({
   }
 
   const updateRoutineNumber = (
-    field: "trainingWeeks" | "deloadWeeks" | "splitCount",
+    field: "trainingCycles" | "deloadCycles" | "splitCount",
     value: number,
   ) => {
+    if (field === "splitCount" && !canEditRoutineStructure) {
+      return
+    }
+
     setDraft((current) => ({
       ...current,
-      [field]: value,
+      [field]:
+        field === "trainingCycles"
+          ? Math.max(minimumTrainingCycles, value)
+          : value,
       sessions:
         field === "splitCount"
-          ? resizeWeeklyRoutineSessions(current.sessions, value)
+          ? resizeRoutineCycleSessions(current.sessions, value)
           : current.sessions,
     }))
   }
 
   const handleTogglePart = (index: number, part: BodyPart) => {
+    if (!canEditRoutineStructure) {
+      return
+    }
+
     const currentParts = draft.sessions[index]?.parts ?? []
     const exists = currentParts.some((item) => item.part === part)
     updateSessionParts(
@@ -116,6 +139,10 @@ export function WeeklyRoutineSettingsSheet({
     part: BodyPart,
     detail: BodyPartDetail,
   ) => {
+    if (!canEditRoutineStructure) {
+      return
+    }
+
     const currentParts = draft.sessions[index]?.parts ?? []
     if (!currentParts.some((item) => item.part === part)) {
       return
@@ -149,27 +176,28 @@ export function WeeklyRoutineSettingsSheet({
               contentContainerClassName="pb-yb-5"
             >
               <Text className="mb-yb-5 text-yb-heading-sm text-yb-fg">
-                {t("workout.weeklyRoutine.settings.title")}
+                {t("workout.routineCycle.settings.title")}
               </Text>
               <View className="mb-yb-5 gap-yb-2">
                 <CycleStepper
-                  label={t("workout.weeklyRoutine.settings.trainingWeeks")}
-                  min={1}
-                  value={draft.trainingWeeks}
+                  label={t("workout.routineCycle.settings.trainingCycles")}
+                  min={minimumTrainingCycles}
+                  value={draft.trainingCycles}
                   onChange={(value) =>
-                    updateRoutineNumber("trainingWeeks", value)
+                    updateRoutineNumber("trainingCycles", value)
                   }
                 />
                 <CycleStepper
-                  label={t("workout.weeklyRoutine.settings.deloadWeeks")}
+                  label={t("workout.routineCycle.settings.deloadCycles")}
                   min={0}
-                  value={draft.deloadWeeks}
-                  onChange={(value) => updateRoutineNumber("deloadWeeks", value)}
+                  value={draft.deloadCycles}
+                  onChange={(value) => updateRoutineNumber("deloadCycles", value)}
                 />
                 <CycleStepper
-                  label={t("workout.weeklyRoutine.settings.splitCount")}
-                  min={MIN_WEEKLY_ROUTINE_SPLIT_COUNT}
-                  max={MAX_WEEKLY_ROUTINE_SPLIT_COUNT}
+                  label={t("workout.routineCycle.settings.splitCount")}
+                  min={MIN_ROUTINE_CYCLE_SPLIT_COUNT}
+                  max={MAX_ROUTINE_CYCLE_SPLIT_COUNT}
+                  disabled={!canEditRoutineStructure}
                   value={draft.splitCount}
                   onChange={(value) =>
                     updateRoutineNumber("splitCount", value)
@@ -184,12 +212,13 @@ export function WeeklyRoutineSettingsSheet({
                     session={session}
                     onTogglePart={handleTogglePart}
                     onToggleDetail={handleToggleDetail}
+                    disabled={!canEditRoutineStructure}
                   />
                 ))}
               </View>
             </ScrollView>
             <RoutineSettingsSaveButton
-              label={t("workout.weeklyRoutine.settings.save")}
+              label={t("workout.routineCycle.settings.save")}
               disabled={isSaving}
               onPress={handleSave}
             />
