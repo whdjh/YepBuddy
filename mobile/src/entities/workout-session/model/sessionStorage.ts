@@ -12,7 +12,7 @@ import {
   type WorkoutBodyPartSet,
   type WorkoutLocation,
 } from "./types"
-import type { RoutinePart } from "./weeklyRoutine"
+import type { RoutinePart } from "./routineCycle"
 
 // 현재 진행 중인 운동 세션 스냅샷을 저장하는 키
 export const CURRENT_WORKOUT_STORAGE_KEY = "yb:workout:current"
@@ -129,7 +129,13 @@ function normalizeRoutineSubstitution(
     return null
   }
 
-  const substitution = value as Partial<WorkoutRoutineSubstitution>
+  const substitution = value as Partial<WorkoutRoutineSubstitution> & {
+    weekStartDateKey?: unknown
+  }
+  const cycleAnchorDateKey =
+    typeof substitution.cycleAnchorDateKey === "string"
+      ? substitution.cycleAnchorDateKey
+      : substitution.weekStartDateKey
   const originalParts = Array.isArray(substitution.originalParts)
     ? substitution.originalParts
         .map((part): RoutinePart | null => {
@@ -152,7 +158,7 @@ function normalizeRoutineSubstitution(
     : []
 
   if (
-    typeof substitution.weekStartDateKey !== "string" ||
+    typeof cycleAnchorDateKey !== "string" ||
     typeof substitution.routineSessionId !== "string" ||
     typeof substitution.routineSessionIndex !== "number" ||
     !Number.isInteger(substitution.routineSessionIndex) ||
@@ -162,7 +168,7 @@ function normalizeRoutineSubstitution(
   }
 
   return {
-    weekStartDateKey: substitution.weekStartDateKey,
+    cycleAnchorDateKey,
     routineSessionId: substitution.routineSessionId,
     routineSessionIndex: Math.max(0, substitution.routineSessionIndex),
     originalParts,
