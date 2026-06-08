@@ -125,6 +125,8 @@ features/
 - `useWorkoutTimer`가 기록 중일 때만 timer를 갱신하고, pause 상태에서는 표시를 고정한다.
 - `useHealthKitWorkout`이 recording 상태에서 HealthKit 세션 시작과 live stats polling을 맡는다.
 - `BodyPartSelector`, `RoutineSessionPicker`, `SetCountList`, `MemoSection`이 운동 입력 UI를 구성한다.
+- `useWorkoutHistoryPrefill`이 완료된 운동 기록을 읽고, 현재 선택한 운동 구성이 과거 세션과 완전히 같을 때만 이전 세트 수를 자동 적용한다.
+- 이전 메모는 실제 입력값으로 저장하지 않고 `MemoSection` placeholder로만 보여준다.
 - `WorkoutDrawer`가 cardio 시작, tempo 진입, pause/resume, 완료, 폐기 액션을 제공한다.
 - 완료 시 `completeWorkout()` 후 HealthKit 종료, 운동 리마인더 sync, 캘린더 등록 확인 Alert, 결과 화면 이동을 처리한다.
 
@@ -137,9 +139,12 @@ features/
 - `BodyPartSelector`
 - `SetCountList`
 - `MemoSection`
+- `useWorkoutHistoryPrefill`
 
 사용하는 `entities/workout-session` API:
 - `useWorkout`
+- `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
+- `getAllStoredWorkoutSessions`
 - `startWorkoutSession`, `pauseWorkoutSession`, `resumeWorkoutSession`, `endWorkoutSession`
 - `readLiveWorkoutStats`
 - `registerWorkoutToCalendar`
