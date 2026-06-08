@@ -94,6 +94,7 @@ export type WorkoutAction =
       payload: { part: BodyPart; detail: BodyPartDetail }
     }
   | { type: "APPLY_BODY_PART_TEMPLATE"; payload: RoutinePart[] }
+  | { type: "APPLY_BODY_PART_SETS"; payload: WorkoutBodyPartSet[] }
   | { type: "RESET" }
   | { type: "HYDRATE"; payload: WorkoutState }
 
@@ -291,6 +292,17 @@ export function workoutReducer(
           part: item.part,
           details: item.details,
           setCount: 10,
+        })),
+      }
+    // 이전 운동 기록에서 계산한 운동 부위 세트 정규화 적용 액션 처리
+    case "APPLY_BODY_PART_SETS":
+      return {
+        ...state,
+        bodyParts: action.payload.map((item) => ({
+          ...item,
+          setCount: Number.isFinite(item.setCount)
+            ? Math.max(1, Math.round(item.setCount))
+            : 10,
         })),
       }
     // 저장 상태 복구 액션 처리

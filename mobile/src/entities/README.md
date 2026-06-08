@@ -83,6 +83,7 @@ mobile/src/entities
 - `model/workoutState.ts`: reducer와 상태 전이
 - `model/sessionStorage.ts`: 진행 중/완료 세션 저장소
 - `api/healthKit.ts`: HealthKit 권한, 운동 저장, 심박/운동 요약 조회
+- `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
 - `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 도착 알림
 - `model/weeklyRoutine.ts`, `model/weeklyRoutineStorage.ts`, `lib/weeklyRoutineProgress.ts`, `lib/weeklyRoutineCycle.ts`: 주간 루틴 설정/진행/사이클
@@ -96,6 +97,7 @@ mobile/src/entities
 - 장소 도착 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceArrivalNotificationHandler`, pending prompt API
 - 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `deleteStoredWorkoutSession`
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
+- 이전 기록 프리필: `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
 - 세션 표시 UI: `BodyPartIcon`, `BodyPartIconHost`
 - 주간 루틴: 기본 설정, normalize/resize, 저장소 load/save, progress/cycle 계산
 - 타입: `BodyPart`, `WorkoutBodyPartSet`, `StoredWorkoutSession`, `WorkoutState`, weekly routine 타입들
@@ -103,7 +105,7 @@ mobile/src/entities
 Feature 사용처:
 
 - `app/_layout.tsx`: `WorkoutProvider`, 앱 시작 시 운동 리마인더/장소 리마인더 sync, 장소 알림 handler 등록
-- `features/do-workout`: `useWorkout`, HealthKit 세션 제어, timer 타입, body part selector/list, 루틴 추천, 캘린더 등록, 완료 후 리마인더 sync
+- `features/do-workout`: `useWorkout`, 이전 운동 기록 기반 세트 수/메모 placeholder 프리필, HealthKit 세션 제어, timer 타입, body part selector/list, 루틴 추천, 캘린더 등록, 완료 후 리마인더 sync
 - `features/start-workout`: 운동 시작 countdown에서 현재 위치를 한 번 가져오고 기존 운동 리마인더를 취소
 - `features/view-result`: 저장 세션/HealthKit 상세 조회, 메모 수정, 세션 삭제, 삭제 후 장소 리마인더 재빌드
 - `features/view-sessions`: 월별 저장 세션과 HealthKit 요약 조회

@@ -25,6 +25,7 @@ import type {
   BodyPart,
   BodyPartDetail,
   StoredWorkoutSession,
+  WorkoutBodyPartSet,
   WorkoutLiveStats,
   WorkoutLocation,
   WorkoutRoutineSubstitution,
@@ -76,6 +77,8 @@ interface WorkoutContextValue {
   resetWorkout: () => Promise<void>
   /** 추천된 루틴 부위 목록으로 운동 부위를 일괄 교체 */
   applyBodyPartTemplate: (parts: RoutinePart[]) => void
+  /** 이전 기록에서 계산한 운동 부위 + 세트수 목록을 적용 */
+  applyBodyPartSets: (bodyParts: WorkoutBodyPartSet[]) => void
 }
 
 // Provider 밖에서 잘못 사용할 경우를 잡기 위해 초기값은 null
@@ -248,6 +251,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     dispatch({ type: "APPLY_BODY_PART_TEMPLATE", payload: parts })
   }, [])
 
+  const applyBodyPartSets = useCallback((bodyParts: WorkoutBodyPartSet[]) => {
+    dispatch({ type: "APPLY_BODY_PART_SETS", payload: bodyParts })
+  }, [])
+
   // Context로 넘길 값을 한 객체로 묶어 하위 화면에서 재사용
   const value = useMemo<WorkoutContextValue>(
     () => ({
@@ -267,8 +274,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       completeWorkout,
       resetWorkout,
       applyBodyPartTemplate,
+      applyBodyPartSets,
     }),
     [
+      applyBodyPartSets,
       applyBodyPartTemplate,
       completeWorkout,
       isHydrated,
