@@ -2,18 +2,20 @@ import { useState } from "react"
 import { Alert, Platform, ScrollView } from "react-native"
 import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
-import type {
-  BodyPart,
-  WorkoutState,
-  RoutineCycleSession,
-} from "@/entities/workout-session"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
+  getWorkoutBodyPartSetKey,
   registerWorkoutToCalendar,
   syncWorkoutReminderAtNight,
   useWorkout,
+  type BodyPart,
+  type BodyPartDetail,
+  type RoutineCycleSession,
+  type WorkoutBodyPartSet,
+  type WorkoutState,
 } from "@/entities/workout-session"
 import { useHealthKitWorkout } from "@/features/do-workout/lib/useHealthKitWorkout"
+import { useWorkoutHistoryPrefill } from "@/features/do-workout/model/useWorkoutHistoryPrefill"
 import { useRoutineProgress } from "@/features/do-workout/model/useRoutineProgress"
 import { Main } from "@/shared/ui/Main"
 import { StatsSection } from "./StatsSection"
@@ -32,19 +34,43 @@ type WorkoutLiveMetricsState = Pick<
   "heartRate" | "activeKcal" | "totalKcal"
 >
 
+// 상위 운동 부위 토글 후의 다음 선택 목록 계산
+function getNextBodyPartsAfterPartToggle(
+  current: WorkoutBodyPartSet[],
+  part: BodyPart,
+): WorkoutBodyPartSet[] {
+  const exists = current.some((item) => item.part === part)
+  return exists
+    ? current.filter((item) => item.part !== part)
+    : [...current, { part, setCount: 10 }]
+}
+
+// 세부 운동 부위 토글 후의 다음 선택 목록 계산
+function getNextBodyPartsAfterDetailToggle(
+  current: WorkoutBodyPartSet[],
+  part: BodyPart,
+  detail: BodyPartDetail,
+): WorkoutBodyPartSet[] {
+  const key = getWorkoutBodyPartSetKey({ part, detail, setCount: 10 })
+  const exists = current.some((item) => getWorkoutBodyPartSetKey(item) === key)
+  return exists
+    ? current.filter((item) => getWorkoutBodyPartSetKey(item) !== key)
+    : [...current, { part, detail, setCount: 10 }]
+}
+
 export function ActiveWorkoutContent() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const routineProgress = useRoutineProgress()
+  const historyPrefill = useWorkoutHistoryPrefill()
   const [expandedBodyPart, setExpandedBodyPart] = useState<BodyPart | null>(null)
   const [selectedRoutineSessionId, setSelectedRoutineSessionId] = useState<
     string | null
   >(null)
+  const [memoPlaceholder, setMemoPlaceholder] = useState<string | null>(null)
   const {
     state,
-    toggleBodyPart,
-    toggleBodyPartDetail,
-    applyBodyPartTemplate,
+    applyBodyPartSets,
     updateSetCount,
     updateMemo,
     startCardio,
@@ -66,9 +92,40 @@ export function ActiveWorkoutContent() {
   const hasLiveMetrics =
     heartRate != null || activeKcal > 0 || totalKcal > 0
 
+  // 이전 기록 프리필 결과 중 세트 수는 상태에 적용하고 메모는 placeholder로만 보관
+  const applyPrefill = (
+    bodyParts: WorkoutBodyPartSet[],
+    nextMemoPlaceholder: string | null,
+  ) => {
+    applyBodyPartSets(bodyParts)
+    setMemoPlaceholder(nextMemoPlaceholder)
+  }
+
+  // 수동 상위 부위 선택 변경 시 동일 구성의 이전 기록 프리필 적용
+  const handleToggleBodyPart = (part: BodyPart) => {
+    const nextBodyParts = getNextBodyPartsAfterPartToggle(state.bodyParts, part)
+    const prefill = historyPrefill.getPrefill(nextBodyParts)
+    applyPrefill(prefill.bodyParts, prefill.memoPlaceholder)
+    setExpandedBodyPart(null)
+  }
+
+  // 수동 세부 부위 선택 변경 시 동일 구성의 이전 기록 프리필 적용
+  const handleToggleBodyPartDetail = (part: BodyPart, detail: BodyPartDetail) => {
+    const nextBodyParts = getNextBodyPartsAfterDetailToggle(
+      state.bodyParts,
+      part,
+      detail,
+    )
+    const prefill = historyPrefill.getPrefill(nextBodyParts)
+    applyPrefill(prefill.bodyParts, prefill.memoPlaceholder)
+  }
+
+  // 루틴 슬롯 선택 시 해당 슬롯 구성과 같은 이전 기록 프리필 적용
   const handleSelectSlot = (routineSession: RoutineCycleSession) => {
     setSelectedRoutineSessionId(routineSession.id)
-    applyBodyPartTemplate(routineSession.parts)
+
+    const prefill = historyPrefill.getRoutinePrefill(routineSession.parts)
+    applyPrefill(prefill.bodyParts, prefill.memoPlaceholder)
     setExpandedBodyPart(routineSession.parts[0]?.part ?? null)
   }
 
@@ -213,8 +270,8 @@ export function ActiveWorkoutContent() {
         )}
         <BodyPartSelector
           selectedParts={state.bodyParts}
-          onToggle={toggleBodyPart}
-          onToggleDetail={toggleBodyPartDetail}
+          onToggle={handleToggleBodyPart}
+          onToggleDetail={handleToggleBodyPartDetail}
           expandedPart={expandedBodyPart}
         />
         <SetCountList
@@ -223,6 +280,7 @@ export function ActiveWorkoutContent() {
         />
         <MemoSection
           value={state.memo}
+          placeholder={memoPlaceholder}
           onChangeText={updateMemo}
         />
       </ScrollView>

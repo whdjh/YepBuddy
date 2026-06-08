@@ -4,10 +4,15 @@ import { GlassTextarea } from "@/shared/ui/GlassTextarea"
 
 interface MemoSectionProps {
   value: string
+  placeholder?: string | null
   onChangeText: (text: string) => void
 }
 
-export function MemoSection({ value, onChangeText }: MemoSectionProps) {
+export function MemoSection({
+  value,
+  placeholder,
+  onChangeText,
+}: MemoSectionProps) {
   const { t } = useTranslation()
 
   return (
@@ -16,7 +21,7 @@ export function MemoSection({ value, onChangeText }: MemoSectionProps) {
         {t("workout.active.memo")}
       </Text>
       <GlassTextarea
-        placeholder={t("workout.active.memoPlaceholder")}
+        placeholder={placeholder ?? t("workout.active.memoPlaceholder")}
         value={value}
         onChangeText={onChangeText}
       />
