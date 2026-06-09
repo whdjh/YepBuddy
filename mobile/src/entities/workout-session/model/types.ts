@@ -60,7 +60,9 @@ export interface StoredWorkoutSession {
   completedAt: string
   cardioStartedAt: string | null
   activeKcal: number | null
+  averageHeartRate: number | null
   totalKcal: number | null
+  healthKitWorkoutUUID: string | null
   routineSubstitution: WorkoutRoutineSubstitution | null
   bodyParts: WorkoutBodyPartSet[]
   memo: string
@@ -91,6 +93,12 @@ export interface WorkoutLiveStats {
   errorCode?: string | null
 }
 
+export interface WorkoutSessionEndResult {
+  averageHeartRate: number | null
+  ended: boolean
+  healthKitWorkoutUUID: string | null
+}
+
 export const EMPTY_WORKOUT_LIVE_STATS: WorkoutLiveStats = {
   heartRate: null,
   activeKcal: 0,
@@ -109,6 +117,7 @@ export interface WorkoutHeartRateSample {
 
 export interface WorkoutHealthKitDetail {
   activeKcal: number | null
+  averageHeartRate: number | null
   duration: number | null
   heartRateSamples: WorkoutHeartRateSample[]
   totalKcal: number | null

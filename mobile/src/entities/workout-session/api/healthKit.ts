@@ -1,4 +1,4 @@
-import { Platform } from "react-native"
+import { NativeModules, Platform } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import AppleHealthKit, {
   type HealthValue,
@@ -10,10 +10,12 @@ import type {
   WorkoutHeartRateSample,
   WorkoutHealthKitWorkout,
   WorkoutLiveStats,
+  WorkoutSessionEndResult,
 } from "../model/types"
 import { healthKitFallbackProvider } from "./healthKitFallbackProvider"
 import {
   discardIphoneLiveWorkout,
+  endIphoneLiveWorkout,
   iphoneLiveWorkoutProvider,
 } from "./iphoneLiveWorkoutProvider"
 
@@ -30,6 +32,23 @@ type HealthKitAccessState = "enabled" | "denied"
 
 let healthKitInitialized = false
 let healthKitAccessState: HealthKitAccessState | null | undefined
+
+interface NativeWorkoutDetail {
+  activeKcal?: number | null
+  averageHeartRate?: number | null
+  duration?: number | null
+  totalKcal?: number | null
+  workoutUUID?: string | null
+}
+
+interface NativeWorkoutSessionModule {
+  readWorkoutDetail?: (sessionId: string) => Promise<NativeWorkoutDetail | null>
+}
+
+const nativeWorkoutSession =
+  Platform.OS === "ios"
+    ? (NativeModules.WorkoutSession as NativeWorkoutSessionModule | undefined)
+    : undefined
 
 /** 현재 런타임에서 HealthKit 사용 가능 여부를 판단 */
 function isHealthKitAvailable() {
@@ -195,6 +214,15 @@ async function getHeartRateSamples(params: {
   })
 }
 
+/** 네이티브 WorkoutSession 상세 조회 */
+async function getNativeWorkoutDetail(sessionId: string) {
+  if (typeof nativeWorkoutSession?.readWorkoutDetail !== "function") {
+    return null
+  }
+
+  return nativeWorkoutSession.readWorkoutDetail(sessionId).catch(() => null)
+}
+
 /** HealthKit 네이티브 초기화/권한 요청을 실제로 실행하고 결과를 캐시 */
 async function authorizeHealthKit() {
   if (!isHealthKitAvailable() || healthKitInitialized) {
@@ -281,16 +309,20 @@ export async function endWorkoutSession(params: {
   endedAt: string
   activeKcal: number
   totalKcal: number
-}) {
-  const endedStats = await iphoneLiveWorkoutProvider.end()
+}): Promise<WorkoutSessionEndResult> {
+  const endedStats = await endIphoneLiveWorkout()
 
-  if (endedStats.status === "ended") {
-    return true
+  if (endedStats.ended) {
+    return endedStats
   }
 
   const ready = await ensureHealthKitReady()
   if (!ready || !hasHealthKitMethod("saveWorkout")) {
-    return false
+    return {
+      averageHeartRate: null,
+      ended: false,
+      healthKitWorkoutUUID: null,
+    }
   }
 
   return new Promise<boolean>((resolve) => {
@@ -303,7 +335,11 @@ export async function endWorkoutSession(params: {
       } as never,
       (error: unknown) => resolve(!error),
     )
-  })
+  }).then((ended) => ({
+    averageHeartRate: null,
+    ended,
+    healthKitWorkoutUUID: null,
+  }))
 }
 
 /** 최근 심박 샘플을 읽어 라이브 운동 수치 형태로 정리 */
@@ -353,6 +389,7 @@ export async function getWorkoutDetail(
     endDate: getIsoAfterHours(sessionId, 24),
     startDate: sessionId,
   })
+  const nativeDetail = await getNativeWorkoutDetail(sessionId)
 
   const workout = workoutSamples
     .filter((sample) => Boolean(sample.start))
@@ -362,23 +399,48 @@ export async function getWorkoutDetail(
         getTimeDistanceMs(right.start, sessionId),
     )[0]
 
-  if (!workout) {
+  if (!workout && !nativeDetail) {
     return null
   }
 
-  const heartRateSamples = await getHeartRateSamples({
-    endDate: workout.end,
-    startDate: workout.start,
-  })
+  const heartRateSamples = workout
+    ? await getHeartRateSamples({
+        endDate: workout.end,
+        startDate: workout.start,
+      })
+    : []
+  const sampleAverageHeartRate =
+    heartRateSamples.length > 0
+      ? Math.round(
+          heartRateSamples.reduce((sum, item) => sum + item.bpm, 0) /
+            heartRateSamples.length,
+        )
+      : null
 
   return {
     activeKcal:
-      typeof workout.calories === "number" ? Math.round(workout.calories) : null,
+      typeof nativeDetail?.activeKcal === "number"
+        ? Math.round(nativeDetail.activeKcal)
+        : typeof workout?.calories === "number"
+          ? Math.round(workout.calories)
+          : null,
+    averageHeartRate:
+      typeof nativeDetail?.averageHeartRate === "number"
+        ? Math.round(nativeDetail.averageHeartRate)
+        : sampleAverageHeartRate,
     duration:
-      typeof workout.duration === "number" ? Math.round(workout.duration) : null,
+      typeof nativeDetail?.duration === "number"
+        ? Math.round(nativeDetail.duration)
+        : typeof workout?.duration === "number"
+          ? Math.round(workout.duration)
+          : null,
     heartRateSamples,
     totalKcal:
-      typeof workout.calories === "number" ? Math.round(workout.calories) : null,
+      typeof nativeDetail?.totalKcal === "number"
+        ? Math.round(nativeDetail.totalKcal)
+        : typeof workout?.calories === "number"
+          ? Math.round(workout.calories)
+          : null,
   }
 }
 

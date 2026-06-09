@@ -72,12 +72,16 @@ enum WorkoutSessionPayload {
   }
 
   /// end promise 결과 payload 생성
-  static func makeEndResult(workoutUUID: String?) -> [String: Any] {
+  static func makeEndResult(
+    workoutUUID: String?,
+    averageHeartRate: Int? = nil
+  ) -> [String: Any] {
     [
       "ended": true,
       "source": source,
       "status": "ended",
       "workoutUUID": workoutUUID as Any? ?? NSNull(),
+      "averageHeartRate": averageHeartRate as Any? ?? NSNull(),
     ]
   }
 

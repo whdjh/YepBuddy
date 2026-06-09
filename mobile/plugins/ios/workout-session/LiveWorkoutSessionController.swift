@@ -109,6 +109,67 @@ final class LiveWorkoutSessionController: NSObject {
     )
   }
 
+  /// 저장된 HealthKit workout 상세 조회
+  func readWorkoutDetail(
+    sessionId: String,
+    resolve: @escaping Resolve,
+    reject: @escaping Reject
+  ) {
+    guard HKHealthStore.isHealthDataAvailable() else {
+      resolve(NSNull())
+      return
+    }
+
+    guard let startedAt = ISO8601DateFormatter().date(from: sessionId),
+      let endDate = Calendar.current.date(byAdding: .hour, value: 24, to: startedAt)
+    else {
+      resolve(NSNull())
+      return
+    }
+
+    let predicate = HKQuery.predicateForSamples(
+      withStart: startedAt,
+      end: endDate,
+      options: [.strictStartDate]
+    )
+    let sortDescriptor = NSSortDescriptor(
+      key: HKSampleSortIdentifierStartDate,
+      ascending: true
+    )
+    let query = HKSampleQuery(
+      sampleType: HKObjectType.workoutType(),
+      predicate: predicate,
+      limit: HKObjectQueryNoLimit,
+      sortDescriptors: [sortDescriptor]
+    ) { [weak self] _, samples, error in
+      if let error {
+        reject("workout_detail_query_failed", error.localizedDescription, error)
+        return
+      }
+
+      guard let self else {
+        resolve(NSNull())
+        return
+      }
+
+      let workout = (samples as? [HKWorkout])?
+        .filter { $0.startDate >= startedAt }
+        .min {
+          abs($0.startDate.timeIntervalSince(startedAt)) <
+            abs($1.startDate.timeIntervalSince(startedAt))
+        }
+
+      guard let workout else {
+        resolve(NSNull())
+        return
+      }
+
+      resolve(self.makeWorkoutDetailPayload(from: workout))
+    }
+
+    healthStore.execute(query)
+  }
+
   /// 앱 종료 시 라이브 운동 폐기
   func discardLiveWorkoutForShutdown() {
     if #available(iOS 26.0, *) {
@@ -149,6 +210,73 @@ final class LiveWorkoutSessionController: NSObject {
 
   private func emitSessionState(_ state: String, errorCode: String? = nil) {
     onSessionState?(WorkoutSessionPayload.makeSessionState(state, errorCode: errorCode))
+  }
+
+  private func averageHeartRate(from statisticsProvider: (HKQuantityType) -> HKStatistics?) -> Int? {
+    guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate),
+      let averageQuantity = statisticsProvider(heartRateType)?.averageQuantity()
+    else {
+      return nil
+    }
+
+    let bpmUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
+    return Int(round(averageQuantity.doubleValue(for: bpmUnit)))
+  }
+
+  @available(iOS 26.0, *)
+  private func averageHeartRate(from builder: HKLiveWorkoutBuilder) -> Int? {
+    averageHeartRate { quantityType in builder.statistics(for: quantityType) }
+  }
+
+  private func averageHeartRate(from workout: HKWorkout) -> Int? {
+    guard #available(iOS 16.0, *) else {
+      return nil
+    }
+
+    return averageHeartRate { quantityType in workout.statistics(for: quantityType) }
+  }
+
+  private func quantityKcal(
+    from statisticsProvider: (HKQuantityType) -> HKStatistics?,
+    identifier: HKQuantityTypeIdentifier
+  ) -> Int? {
+    guard let quantityType = HKQuantityType.quantityType(forIdentifier: identifier),
+      let sumQuantity = statisticsProvider(quantityType)?.sumQuantity()
+    else {
+      return nil
+    }
+
+    return Int(round(sumQuantity.doubleValue(for: HKUnit.kilocalorie())))
+  }
+
+  private func makeWorkoutDetailPayload(from workout: HKWorkout) -> [String: Any] {
+    let activeKcal: Int?
+    let basalKcal: Int?
+
+    if #available(iOS 16.0, *) {
+      activeKcal = quantityKcal(
+        from: { quantityType in workout.statistics(for: quantityType) },
+        identifier: .activeEnergyBurned
+      )
+      basalKcal = quantityKcal(
+        from: { quantityType in workout.statistics(for: quantityType) },
+        identifier: .basalEnergyBurned
+      )
+    } else {
+      activeKcal = nil
+      basalKcal = nil
+    }
+
+    let totalKcal = activeKcal.map { $0 + (basalKcal ?? 0) }
+    let resolvedTotalKcal = totalKcal ?? activeKcal
+
+    return [
+      "activeKcal": activeKcal as Any? ?? NSNull(),
+      "averageHeartRate": averageHeartRate(from: workout) as Any? ?? NSNull(),
+      "duration": Int(round(workout.duration)),
+      "totalKcal": resolvedTotalKcal as Any? ?? NSNull(),
+      "workoutUUID": workout.uuid.uuidString,
+    ]
   }
 
   @available(iOS 26.0, *)
@@ -412,6 +540,8 @@ final class LiveWorkoutSessionController: NSObject {
         return
       }
 
+      let averageHeartRate = self.averageHeartRate(from: builder)
+
       builder.finishWorkout { workout, finishError in
         if let finishError {
           self.emitSessionState("error", errorCode: "finish_workout_failed")
@@ -429,7 +559,10 @@ final class LiveWorkoutSessionController: NSObject {
 
         self.emitSessionState("ended")
         self.pendingEndResolve?(
-          WorkoutSessionPayload.makeEndResult(workoutUUID: workout?.uuid.uuidString)
+          WorkoutSessionPayload.makeEndResult(
+            workoutUUID: workout?.uuid.uuidString,
+            averageHeartRate: averageHeartRate
+          )
         )
         self.pendingEndResolve = nil
         self.pendingEndReject = nil

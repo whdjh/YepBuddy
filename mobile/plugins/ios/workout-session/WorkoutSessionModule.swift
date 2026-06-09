@@ -123,6 +123,20 @@ final class WorkoutSessionModule: RCTEventEmitter {
     resolve(controller.readLiveStats())
   }
 
+  /// 저장된 HealthKit workout 상세 조회
+  @objc(readWorkoutDetail:resolver:rejecter:)
+  func readWorkoutDetail(
+    _ sessionId: String,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    controller.readWorkoutDetail(
+      sessionId: sessionId,
+      resolve: { resolve($0) },
+      reject: { code, message, error in reject(code, message, error) }
+    )
+  }
+
   private func emitEvent(_ name: String, body: [String: Any]) {
     guard hasListeners else {
       return
