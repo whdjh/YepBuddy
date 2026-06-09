@@ -21,4 +21,8 @@ RCT_EXTERN_METHOD(discard:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(readLiveStats:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(readWorkoutDetail:(NSString *)sessionId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 @end
