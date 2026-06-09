@@ -11,10 +11,12 @@ import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
+  appendCardioDurationToTitle,
   deleteStoredWorkoutSession,
   formatWorkoutLocationCoordinates,
   formatWorkoutLocationLabel,
   getAllStoredWorkoutSessions,
+  getCardioDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,
   getWorkoutBodyPartSetLabel,
   rebuildWorkoutPlaceReminderPlacesFromSessions,
@@ -107,7 +109,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const dateLabel = stored?.startedAt
     ? formatDateWithDay(new Date(stored.startedAt))
     : t("workout.result.noData")
-  const bodyPartTitle =
+  const bodyPartTitleBase =
     stored?.bodyParts && stored.bodyParts.length > 0
       ? stored.bodyParts
           .map((item) =>
@@ -123,6 +125,17 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   const endTime = stored?.completedAt ? formatTime(stored.completedAt) : "--"
   const totalSets =
     stored?.bodyParts.reduce((sum, item) => sum + item.setCount, 0) ?? 0
+  const cardioDurationMinutes = stored?.completedAt
+    ? getCardioDurationMinutes({
+        cardioStartedAt: stored.cardioStartedAt,
+        completedAt: stored.completedAt,
+      })
+    : null
+  const bodyPartTitle = appendCardioDurationToTitle({
+    title: bodyPartTitleBase,
+    cardioLabel: t("workout.calendar.cardio"),
+    cardioMinutes: cardioDurationMinutes,
+  })
   const avgHeartRate =
     hk?.heartRateSamples && hk.heartRateSamples.length > 0
       ? Math.round(

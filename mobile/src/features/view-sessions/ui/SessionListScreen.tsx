@@ -97,6 +97,7 @@ export function SessionListScreen() {
                 key={session.sessionId}
                 sessionId={session.sessionId}
                 bodyParts={session.bodyParts}
+                cardioDurationMinutes={session.cardioDurationMinutes}
                 kcal={session.kcal}
                 date={session.date}
                 onPress={handleSessionPress}

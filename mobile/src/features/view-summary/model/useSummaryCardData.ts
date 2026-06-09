@@ -22,6 +22,7 @@ export function useSummaryCardData() {
   const todayBodyParts = getBodyPartsLabel(
     todaySummaryStoredSession,
     fallbackBodyPartLabel,
+    t("workout.calendar.cardio"),
   )
   const todayRepresentativeBodyPart = getRepresentativeBodyPart(
     todaySummaryStoredSession,

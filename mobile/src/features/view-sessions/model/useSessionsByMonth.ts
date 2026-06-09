@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import {
+  getCardioDurationMinutes,
   getStoredWorkoutSessionsForMonth,
   getUniqueWorkoutBodyParts,
   getWorkoutSummariesForMonth,
@@ -36,6 +37,12 @@ export async function loadSessionsByMonth(year: number, month: number) {
       startedAt: session.startedAt,
       completedAt: session.completedAt,
       bodyParts: getSessionBodyParts(session),
+      cardioDurationMinutes: session.completedAt
+        ? getCardioDurationMinutes({
+            cardioStartedAt: session.cardioStartedAt,
+            completedAt: session.completedAt,
+          })
+        : null,
       totalSets: getSessionTotalSets(session),
       kcal: workout?.kcal ?? null,
       date: new Date(session.startedAt),

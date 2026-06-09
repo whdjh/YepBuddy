@@ -29,6 +29,10 @@ export {
   formatWorkoutLocationLabel,
 } from "./lib/locationLabel"
 export {
+  appendCardioDurationToTitle,
+  getCardioDurationMinutes,
+} from "./lib/cardioSession"
+export {
   buildRoutinePartHistoryPrefill,
   buildWorkoutHistoryPrefill,
   type WorkoutHistoryPrefill,

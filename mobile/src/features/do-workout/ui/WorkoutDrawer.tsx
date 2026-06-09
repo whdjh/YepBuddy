@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
@@ -5,7 +6,10 @@ import type { WorkoutState } from "@/entities/workout-session"
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
+  cancelAnimation,
   withSpring,
+  withRepeat,
+  withTiming,
 } from "react-native-reanimated"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
@@ -72,9 +76,18 @@ export function WorkoutDrawer({
   const collapseHeight = BUTTONS_HEIGHT + bottomPadding
   const isDrawerOpen = useSharedValue(false)
   const translateY = useSharedValue(collapseHeight)
+  const cardioPulseProgress = useSharedValue(0)
   const timerControl = getWorkoutDrawerTimerControl(isPaused)
   const canEndWorkout = canEndWorkoutFromDrawer(isPaused)
   const canStartCardio = !isPaused && !hasCardioStarted
+  const cardioButtonBorderColor = hasCardioStarted
+    ? cardioColor
+    : "rgba(34,197,94,0.45)"
+  const cardioButtonBackgroundColor = hasCardioStarted
+    ? cardioColor
+    : "rgba(255,255,255,0.08)"
+  const cardioButtonOpacity = isPaused && !hasCardioStarted ? 0.55 : 1
+  const cardioIconColor = hasCardioStarted ? onDangerColor : cardioColor
 
   const openDrawer = () => {
     translateY.value = withSpring(0, SPRING_CONFIG)
@@ -111,6 +124,29 @@ export function WorkoutDrawer({
     transform: [{ translateY: translateY.value }],
   }))
 
+  const cardioPulseAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: 0.48 * (1 - cardioPulseProgress.value),
+    transform: [{ scale: 0.9 + cardioPulseProgress.value * 0.26 }],
+  }))
+
+  useEffect(() => {
+    if (hasCardioStarted) {
+      cardioPulseProgress.value = 0
+      cardioPulseProgress.value = withRepeat(
+        withTiming(1, { duration: 1200 }),
+        -1,
+        false,
+      )
+    } else {
+      cancelAnimation(cardioPulseProgress)
+      cardioPulseProgress.value = 0
+    }
+
+    return () => {
+      cancelAnimation(cardioPulseProgress)
+    }
+  }, [cardioPulseProgress, hasCardioStarted])
+
   return (
     <GestureDetector gesture={panGesture}>
       <Animated.View
@@ -129,26 +165,65 @@ export function WorkoutDrawer({
             disabled={!canStartCardio}
             accessibilityRole="button"
             accessibilityLabel={t("workout.calendar.cardio")}
-            accessibilityState={{ disabled: !canStartCardio }}
+            accessibilityState={{
+              disabled: !canStartCardio,
+              selected: hasCardioStarted,
+            }}
             className="items-center justify-center rounded-yb-icon"
             style={{
-              backgroundColor: hasCardioStarted
-                ? cardioColor
-                : "rgba(255,255,255,0.08)",
-              borderColor: hasCardioStarted
-                ? cardioColor
-                : "rgba(255,255,255,0.18)",
+              backgroundColor: cardioButtonBackgroundColor,
+              borderColor: cardioButtonBorderColor,
               borderWidth: 1,
               height: 48,
-              opacity: isPaused && !hasCardioStarted ? 0.55 : 1,
+              opacity: cardioButtonOpacity,
+              position: "relative",
               width: 48,
             }}
           >
+            {hasCardioStarted ? (
+              <Animated.View
+                pointerEvents="none"
+                className="absolute"
+                style={[
+                  {
+                    borderColor: "rgba(255,255,255,0.44)",
+                    borderRadius: 18,
+                    borderWidth: 2,
+                    height: 56,
+                    left: -4,
+                    top: -4,
+                    width: 56,
+                  },
+                  cardioPulseAnimatedStyle,
+                ]}
+              />
+            ) : null}
             <SymbolView
               name="figure.run"
               size={22}
-              tintColor={hasCardioStarted ? onDangerColor : cardioColor}
+              tintColor={cardioIconColor}
             />
+            {hasCardioStarted ? (
+              <View
+                pointerEvents="none"
+                className="absolute items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: onDangerColor,
+                  borderColor: "#161b22",
+                  borderWidth: 2,
+                  height: 16,
+                  right: -5,
+                  top: -5,
+                  width: 16,
+                }}
+              >
+                <SymbolView
+                  name="checkmark"
+                  size={9}
+                  tintColor={cardioColor}
+                />
+              </View>
+            ) : null}
           </Pressable>
 
           <WorkoutTimerText state={workoutState} />

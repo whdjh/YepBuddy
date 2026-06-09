@@ -1,3 +1,7 @@
+import {
+  appendCardioDurationToTitle,
+  getCardioDurationMinutes,
+} from "@/entities/workout-session/lib/cardioSession"
 import { getWorkoutBodyPartSetLabel } from "@/entities/workout-session/model/bodyPartSet"
 import type { StoredWorkoutSession } from "@/entities/workout-session/model/types"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
@@ -5,11 +9,29 @@ import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
 export function getBodyPartsLabel(
   session: StoredWorkoutSession | null,
   fallback: string,
+  cardioLabel: string,
 ): string {
-  if (!session || session.bodyParts.length === 0) return fallback
-  return session.bodyParts
+  if (!session) return fallback
+  const cardioMinutes = getCardioDurationMinutes({
+    cardioStartedAt: session.cardioStartedAt,
+    completedAt: session.completedAt,
+  })
+
+  if (session.bodyParts.length === 0) {
+    return cardioMinutes === null
+      ? fallback
+      : `${cardioLabel}(${cardioMinutes})`
+  }
+
+  const bodyPartTitle = session.bodyParts
     .map((item) => getWorkoutBodyPartSetLabel(item, { bodyPartLabel, bodyPartDetailLabel }))
     .join(", ")
+
+  return appendCardioDurationToTitle({
+    title: bodyPartTitle,
+    cardioLabel,
+    cardioMinutes,
+  })
 }
 
 export function getRepresentativeBodyPart(session: StoredWorkoutSession | null) {
