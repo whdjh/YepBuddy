@@ -7,6 +7,7 @@ export interface SessionListItem {
   startedAt: string
   completedAt: string | null
   bodyParts: BodyPart[]
+  cardioDurationMinutes: number | null
   totalSets: number
   kcal: number | null
   date: Date

@@ -2,24 +2,40 @@ import { memo, useCallback } from "react"
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Card } from "@/shared/ui/Card"
-import { BodyPartIconHost } from "@/entities/workout-session"
+import {
+  appendCardioDurationToTitle,
+  BodyPartIconHost,
+} from "@/entities/workout-session"
 import { formatDateWithDay, bodyPartLabel } from "@/shared/lib/format"
 import type { BodyPart } from "@/entities/workout-session"
 
 interface SessionCardProps {
   sessionId: string
   bodyParts: BodyPart[]
+  cardioDurationMinutes: number | null
   kcal: number | null
   date: Date
   onPress: (sessionId: string) => void
 }
 
-function SessionCardComponent({ sessionId, bodyParts, kcal, date, onPress }: SessionCardProps) {
+function SessionCardComponent({
+  sessionId,
+  bodyParts,
+  cardioDurationMinutes,
+  kcal,
+  date,
+  onPress,
+}: SessionCardProps) {
   const { t } = useTranslation()
-  const bodyPartLabelText =
+  const bodyPartLabelTextBase =
     bodyParts.length > 0
       ? bodyParts.map(bodyPartLabel).join(" + ")
       : t("workout.result.unspecified")
+  const bodyPartLabelText = appendCardioDurationToTitle({
+    title: bodyPartLabelTextBase,
+    cardioLabel: t("workout.calendar.cardio"),
+    cardioMinutes: cardioDurationMinutes,
+  })
   const representativeBodyPart = bodyParts[0] ?? null
 
   const handlePress = useCallback(() => onPress(sessionId), [onPress, sessionId])
