@@ -32,6 +32,7 @@ import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
+import { resolveResultAverageHeartRate } from "../model/averageHeartRate"
 import {
   bodyPartLabel,
   bodyPartDetailLabel,
@@ -136,13 +137,11 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
     cardioLabel: t("workout.calendar.cardio"),
     cardioMinutes: cardioDurationMinutes,
   })
-  const avgHeartRate =
-    hk?.heartRateSamples && hk.heartRateSamples.length > 0
-      ? Math.round(
-          hk.heartRateSamples.reduce((sum, item) => sum + item.bpm, 0) /
-            hk.heartRateSamples.length,
-        )
-      : null
+  const avgHeartRate = resolveResultAverageHeartRate({
+    storedAverageHeartRate: stored?.averageHeartRate ?? null,
+    healthKitAverageHeartRate: hk?.averageHeartRate ?? null,
+    heartRateSamples: hk?.heartRateSamples ?? [],
+  })
   const chartData =
     hk?.heartRateSamples.map((item, index) => ({
       bpm: item.bpm,
