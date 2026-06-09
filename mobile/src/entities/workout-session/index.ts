@@ -59,6 +59,7 @@ export {
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
   setWorkoutReminderEnabled,
+  updateStoredWorkoutHealthKitMetrics,
   updateStoredWorkoutMemo,
 } from "./model/sessionStorage"
 export {

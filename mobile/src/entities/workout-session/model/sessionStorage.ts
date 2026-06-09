@@ -37,12 +37,22 @@ let hasVerifiedStoredWorkoutDateKeys = false
 // 과거 저장 포맷과의 호환을 위해 일부 필드를 옵셔널로 허용하는 디스크 표현 타입
 type PersistedWorkoutSession = Omit<
   StoredWorkoutSession,
-  "activeKcal" | "cardioStartedAt" | "routineSubstitution" | "totalKcal"
+  | "activeKcal"
+  | "averageHeartRate"
+  | "cardioStartedAt"
+  | "healthKitWorkoutUUID"
+  | "routineSubstitution"
+  | "totalKcal"
 > &
   Partial<
     Pick<
       StoredWorkoutSession,
-      "activeKcal" | "cardioStartedAt" | "routineSubstitution" | "totalKcal"
+      | "activeKcal"
+      | "averageHeartRate"
+      | "cardioStartedAt"
+      | "healthKitWorkoutUUID"
+      | "routineSubstitution"
+      | "totalKcal"
     >
   >
 
@@ -436,7 +446,13 @@ function parseStoredWorkoutSession(value: string) {
     bodyParts,
     cardioStartedAt: session.cardioStartedAt ?? null,
     activeKcal: normalizeOptionalMetricCount(session.activeKcal),
+    averageHeartRate: normalizeOptionalMetricCount(session.averageHeartRate),
     totalKcal: normalizeOptionalMetricCount(session.totalKcal),
+    healthKitWorkoutUUID:
+      typeof session.healthKitWorkoutUUID === "string" &&
+      session.healthKitWorkoutUUID.length > 0
+        ? session.healthKitWorkoutUUID
+        : null,
     routineSubstitution: normalizeRoutineSubstitution(
       session.routineSubstitution,
     ),
@@ -495,6 +511,38 @@ export async function updateStoredWorkoutMemo(sessionId: string, memo: string) {
   }
 
   const nextSession = { ...session, memo }
+  await saveCompletedWorkoutSession(nextSession)
+  return nextSession
+}
+
+/** 완료 세션에 HealthKit 종료 후 확정된 지표를 병합 */
+export async function updateStoredWorkoutHealthKitMetrics(
+  sessionId: string,
+  metrics: {
+    averageHeartRate?: number | null
+    healthKitWorkoutUUID?: string | null
+  },
+) {
+  const session = await getStoredWorkoutSession(sessionId)
+  if (!session) {
+    return null
+  }
+
+  const nextAverageHeartRate = normalizeOptionalMetricCount(
+    metrics.averageHeartRate,
+  )
+  const nextHealthKitWorkoutUUID =
+    typeof metrics.healthKitWorkoutUUID === "string" &&
+    metrics.healthKitWorkoutUUID.length > 0
+      ? metrics.healthKitWorkoutUUID
+      : null
+
+  const nextSession = {
+    ...session,
+    averageHeartRate: nextAverageHeartRate ?? session.averageHeartRate,
+    healthKitWorkoutUUID:
+      nextHealthKitWorkoutUUID ?? session.healthKitWorkoutUUID,
+  }
   await saveCompletedWorkoutSession(nextSession)
   return nextSession
 }

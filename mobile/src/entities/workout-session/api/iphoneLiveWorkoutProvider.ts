@@ -4,7 +4,10 @@ import {
   Platform,
   type EmitterSubscription,
 } from "react-native"
-import type { WorkoutLiveStats } from "../model/types"
+import type {
+  WorkoutLiveStats,
+  WorkoutSessionEndResult,
+} from "../model/types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
 import {
   normalizeWorkoutLiveStats,
@@ -20,6 +23,7 @@ interface NativeWorkoutStartResult {
 
 // 네이티브 end 응답 payload
 interface NativeWorkoutEndResult {
+  averageHeartRate?: number | null
   ended: boolean
   source: "iphoneLiveWorkout"
   status: "ended" | "error"
@@ -62,6 +66,31 @@ function fromStatus(
   }
 }
 
+// 네이티브 end 응답 표준 payload 정규화
+function normalizeWorkoutEndResult(
+  result: NativeWorkoutEndResult | boolean,
+): WorkoutSessionEndResult {
+  if (typeof result === "boolean") {
+    // legacy boolean end 응답 호환
+    return {
+      averageHeartRate: null,
+      ended: result,
+      healthKitWorkoutUUID: null,
+    }
+  }
+
+  // 네이티브 end 결과 표준 payload 변환
+  return {
+    averageHeartRate:
+      typeof result.averageHeartRate === "number" &&
+      Number.isFinite(result.averageHeartRate)
+        ? Math.max(0, Math.round(result.averageHeartRate))
+        : null,
+    ended: result.ended,
+    healthKitWorkoutUUID: result.workoutUUID ?? null,
+  }
+}
+
 // 네이티브 readLiveStats 안전 래퍼
 async function safeRead(): Promise<WorkoutLiveStats> {
   if (!nativeModule) {
@@ -87,6 +116,20 @@ async function safeRead(): Promise<WorkoutLiveStats> {
       errorCode: "read_failed",
     })
   }
+}
+
+// 진행 중인 iPhone live workout 세션을 저장 종료하고 완료 지표를 반환
+export async function endIphoneLiveWorkout(): Promise<WorkoutSessionEndResult> {
+  if (!nativeModule) {
+    return {
+      averageHeartRate: null,
+      ended: false,
+      healthKitWorkoutUUID: null,
+    }
+  }
+
+  const ended = await nativeModule.end().catch(() => false)
+  return normalizeWorkoutEndResult(ended)
 }
 
 // 진행 중인 iPhone live workout 세션을 저장 없이 폐기
@@ -172,17 +215,11 @@ export const iphoneLiveWorkoutProvider: WorkoutMetricProvider = {
   },
 
   async end() {
-    if (!nativeModule) {
-      return fromStatus("error", "native_module_unavailable")
-    }
-
-    const ended = await nativeModule.end().catch(() => false)
-    if (typeof ended === "boolean") {
-      // legacy boolean end 응답 호환
-      return fromStatus(ended ? "ended" : "error", ended ? null : "end_failed")
-    }
-
-    return fromStatus(ended.ended ? "ended" : "error")
+    const result = await endIphoneLiveWorkout()
+    return fromStatus(
+      result.ended ? "ended" : "error",
+      result.ended ? null : "end_failed",
+    )
   },
 
   read: safeRead,

@@ -7,6 +7,7 @@ import {
   getWorkoutBodyPartSetKey,
   registerWorkoutToCalendar,
   syncWorkoutReminderAtNight,
+  updateStoredWorkoutHealthKitMetrics,
   useWorkout,
   type BodyPart,
   type BodyPartDetail,
@@ -160,12 +161,18 @@ export function ActiveWorkoutContent() {
         .catch(() => undefined)
     }
 
-    await endWorkout({
+    const endedWorkout = await endWorkout({
       startedAt: completedSession.startedAt,
       endedAt: completedSession.completedAt,
       activeKcal,
       totalKcal,
     }).catch(() => false)
+    if (endedWorkout && typeof endedWorkout !== "boolean") {
+      await updateStoredWorkoutHealthKitMetrics(completedSession.sessionId, {
+        averageHeartRate: endedWorkout.averageHeartRate,
+        healthKitWorkoutUUID: endedWorkout.healthKitWorkoutUUID,
+      }).catch(() => undefined)
+    }
     await syncWorkoutReminderAtNight({ allowPrompt: false }).catch(
       () => false,
     )
