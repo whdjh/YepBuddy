@@ -6,15 +6,20 @@ import {
   ensureWorkoutReminderNotificationChannel,
   WORKOUT_REMINDER_NOTIFICATION_CHANNEL_ID,
 } from "./notificationChannels"
-import { getNextWorkoutReminderDate } from "./workoutReminderSchedule"
+import {
+  getNextWorkoutReminderDate,
+  hasActiveWorkoutReminderBlock,
+} from "./workoutReminderSchedule"
 import {
   clearWorkoutReminderId,
   getStoredWorkoutSessionIdByDate,
   getWorkoutReminderEnabled,
   getWorkoutReminderId,
+  loadCurrentWorkoutSnapshot,
   saveWorkoutReminderId,
   setWorkoutReminderEnabled,
 } from "../model/sessionStorage"
+import type { WorkoutState } from "../model/workoutState"
 
 export const WORKOUT_REMINDER_NOTIFICATION_KIND = "workoutReminder"
 
@@ -92,6 +97,16 @@ async function getHasCompletedWorkoutToday(now: Date) {
   return typeof sessionId === "string"
 }
 
+/** 진행 중 운동 스냅샷이 있으면 22:00 리마인더를 건너뜀 */
+async function getHasActiveWorkout() {
+  const snapshot = await loadCurrentWorkoutSnapshot<Pick<
+    WorkoutState,
+    "phase"
+  > | null>().catch(() => null)
+
+  return hasActiveWorkoutReminderBlock(snapshot)
+}
+
 /** 기존 버전에서 예약됐을 수 있는 운동 리마인더 하나만 찾아 취소 */
 export async function cancelScheduledWorkoutReminder() {
   const identifier = await getWorkoutReminderId()
@@ -129,6 +144,13 @@ export async function syncWorkoutReminderAtNight(
 
   const now = new Date()
   const hasCompletedWorkoutToday = await getHasCompletedWorkoutToday(now)
+  const hasActiveWorkout = await getHasActiveWorkout()
+
+  if (hasActiveWorkout) {
+    await setWorkoutReminderEnabled(true)
+    return true
+  }
+
   const identifier = await Notifications.scheduleNotificationAsync({
     content: {
       title: i18n.t("workout.reminder.title"),

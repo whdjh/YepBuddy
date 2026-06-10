@@ -3,6 +3,10 @@ type GetNextWorkoutReminderDateOptions = {
   now?: Date
 }
 
+type WorkoutReminderBlockingSnapshot = {
+  phase?: unknown
+} | null | undefined
+
 /** 다음 운동 리마인더가 울릴 22:00 시각을 계산 */
 export function getNextWorkoutReminderDate({
   hasCompletedWorkoutToday = false,
@@ -16,4 +20,15 @@ export function getNextWorkoutReminderDate({
   }
 
   return reminderDate
+}
+
+/** 진행 중 운동이 있으면 22:00 운동 리마인더 예약 방지 */
+export function hasActiveWorkoutReminderBlock(
+  snapshot: WorkoutReminderBlockingSnapshot,
+) {
+  return (
+    snapshot?.phase === "countdown" ||
+    snapshot?.phase === "recording" ||
+    snapshot?.phase === "paused"
+  )
 }
