@@ -1,4 +1,5 @@
 import { useDebouncedEffect } from "@/shared/hooks/useDebouncedEffect"
+import { AppState } from "react-native"
 import {
   createContext,
   useCallback,
@@ -18,6 +19,7 @@ import {
 import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
 import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
 import {
+  consumeWorkoutLiveActivityCommands,
   endWorkoutLiveActivity,
   startWorkoutLiveActivity,
 } from "../api/liveActivity"
@@ -142,7 +144,12 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       (state.phase === "recording" || state.phase === "paused") &&
       state.sessionId
     ) {
-      const timing = getWorkoutLiveActivityTiming(state)
+      const timing = getWorkoutLiveActivityTiming({
+        pausedAt: state.pausedAt,
+        pausedDuration: state.pausedDuration,
+        phase: state.phase,
+        startedAt: state.startedAt,
+      })
 
       if (!timing) {
         return
@@ -166,6 +173,62 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     state.phase,
     state.sessionId,
     state.startedAt,
+  ])
+
+  const consumeLiveActivityCommands = useCallback(async () => {
+    if (
+      !isHydrated ||
+      !state.sessionId ||
+      (state.phase !== "recording" && state.phase !== "paused")
+    ) {
+      return
+    }
+
+    const commands = await consumeWorkoutLiveActivityCommands()
+    for (const command of commands) {
+      if (command.sessionId !== state.sessionId) {
+        continue
+      }
+
+      if (command.command === "pause") {
+        dispatch({ type: "PAUSE", payload: { pausedAt: command.createdAt } })
+      } else {
+        dispatch({ type: "RESUME", payload: { resumedAt: command.createdAt } })
+      }
+    }
+  }, [isHydrated, state.phase, state.sessionId])
+
+  useEffect(() => {
+    void consumeLiveActivityCommands()
+
+    const subscription = AppState.addEventListener("change", (status) => {
+      if (status === "active") {
+        void consumeLiveActivityCommands()
+      }
+    })
+
+    return () => subscription.remove()
+  }, [consumeLiveActivityCommands])
+
+  useEffect(() => {
+    if (
+      !isHydrated ||
+      !state.sessionId ||
+      (state.phase !== "recording" && state.phase !== "paused")
+    ) {
+      return
+    }
+
+    const timer = setInterval(() => {
+      void consumeLiveActivityCommands()
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [
+    consumeLiveActivityCommands,
+    isHydrated,
+    state.phase,
+    state.sessionId,
   ])
 
   // 아래 함수들은 화면이 직접 dispatch를 다루지 않게 감싼 액션 API

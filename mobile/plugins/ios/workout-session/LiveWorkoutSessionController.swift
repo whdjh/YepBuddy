@@ -10,6 +10,8 @@ final class LiveWorkoutSessionController: NSObject {
   typealias Resolve = (Any) -> Void
   typealias Reject = (String, String, Error?) -> Void
 
+  static let shared = LiveWorkoutSessionController()
+
   var onStats: (([String: Any]) -> Void)?
   var onSessionState: (([String: Any]) -> Void)?
 
@@ -21,7 +23,7 @@ final class LiveWorkoutSessionController: NSObject {
   private var pendingEndResolve: Resolve?
   private var pendingEndReject: Reject?
 
-  override init() {
+  private override init() {
     let healthStore = HKHealthStore()
     self.healthStore = healthStore
     self.authorization = HealthKitWorkoutAuthorization(healthStore: healthStore)

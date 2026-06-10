@@ -7,6 +7,8 @@ private extension Color {
   static let workoutBackground = Color(red: 0.137, green: 0.118, blue: 0.091)
   static let workoutPanel = Color(red: 0.235, green: 0.216, blue: 0.176).opacity(0.92)
   static let workoutAccent = Color(red: 0.769, green: 0.659, blue: 0.494)
+  static let workoutDanger = Color(red: 0.91, green: 0.345, blue: 0.329)
+  static let workoutDangerPanel = Color(red: 0.91, green: 0.345, blue: 0.329).opacity(0.16)
 }
 
 // 운동 경과 시간
@@ -28,20 +30,71 @@ private struct WorkoutLiveActivityTimerText: View {
   }
 }
 
+// 운동 액션 이미지 버튼
+private struct WorkoutLiveActivityIconAction: View {
+  let accessibilityLabel: String
+  let background: Color
+  let foreground: Color
+  let systemName: String
+
+  var body: some View {
+    Image(systemName: systemName)
+      .font(.system(size: 17, weight: .semibold))
+      .foregroundStyle(foreground)
+      .frame(width: 42, height: 42)
+      .background(background, in: Circle())
+      .accessibilityLabel(accessibilityLabel)
+  }
+}
+
 // 잠금화면 Live Activity 레이아웃
 private struct WorkoutLiveActivityLockScreenView: View {
   let context: ActivityViewContext<WorkoutLiveActivityAttributes>
 
-  var body: some View {
-    VStack(alignment: .leading, spacing: 14) {
-      Text("옙버디")
-        .font(.caption.weight(.semibold))
-        .foregroundStyle(.white.opacity(0.72))
+  private var primaryActionSystemName: String {
+    context.state.timerPausedAt == nil ? "pause.fill" : "play.fill"
+  }
 
-      HStack(alignment: .center, spacing: 12) {
-        VStack(alignment: .leading, spacing: 5) {
+  private var primaryActionAccessibilityLabel: String {
+    context.state.timerPausedAt == nil ? "운동중지" : "재개"
+  }
+
+  @ViewBuilder
+  private var primaryAction: some View {
+    let icon = WorkoutLiveActivityIconAction(
+      accessibilityLabel: primaryActionAccessibilityLabel,
+      background: Color.workoutPanel,
+      foreground: Color.workoutAccent,
+      systemName: primaryActionSystemName
+    )
+
+    if #available(iOSApplicationExtension 17.0, *) {
+      if context.state.timerPausedAt == nil {
+        Button(intent: PauseWorkoutLiveActivityIntent(sessionId: context.attributes.sessionId)) {
+          icon
+        }
+        .buttonStyle(.plain)
+      } else {
+        Button(intent: ResumeWorkoutLiveActivityIntent(sessionId: context.attributes.sessionId)) {
+          icon
+        }
+        .buttonStyle(.plain)
+      }
+    } else {
+      icon
+    }
+  }
+
+  var body: some View {
+    HStack(alignment: .bottom, spacing: 16) {
+      VStack(alignment: .leading, spacing: 5) {
+        Text("옙버디")
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(.white.opacity(0.62))
+
+        VStack(alignment: .leading, spacing: 2) {
           Text(context.state.statusText)
-            .font(.headline.weight(.semibold))
+            .font(.subheadline.weight(.semibold))
             .foregroundStyle(.white)
 
           WorkoutLiveActivityTimerText(
@@ -52,17 +105,32 @@ private struct WorkoutLiveActivityLockScreenView: View {
             .monospacedDigit()
             .foregroundStyle(Color.workoutAccent)
         }
+      }
 
-        Spacer(minLength: 12)
+      Spacer(minLength: 12)
 
+      VStack(alignment: .trailing, spacing: 14) {
         Image(systemName: "figure.strengthtraining.traditional")
-          .font(.title2.weight(.semibold))
+          .font(.system(size: 20, weight: .semibold))
           .foregroundStyle(Color.workoutAccent)
-          .frame(width: 44, height: 44)
-          .background(Color.workoutPanel, in: RoundedRectangle(cornerRadius: 8))
+          .frame(width: 38, height: 38)
+          .background(Color.workoutPanel, in: RoundedRectangle(cornerRadius: 10))
+
+        HStack(spacing: 10) {
+          primaryAction
+
+          WorkoutLiveActivityIconAction(
+            accessibilityLabel: "운동종료",
+            background: Color.workoutDangerPanel,
+            foreground: Color.workoutDanger,
+            systemName: "stop.fill"
+          )
+          .opacity(0.72)
+        }
       }
     }
-    .padding(18)
+    .padding(.horizontal, 20)
+    .padding(.vertical, 17)
     .activityBackgroundTint(Color.workoutBackground)
     .activitySystemActionForegroundColor(Color.workoutAccent)
   }

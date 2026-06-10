@@ -18,6 +18,7 @@ export {
   subscribeLiveWorkoutStats,
 } from "./api/healthKit"
 export {
+  consumeWorkoutLiveActivityCommands,
   endWorkoutLiveActivity,
   startWorkoutLiveActivity,
 } from "./api/liveActivity"

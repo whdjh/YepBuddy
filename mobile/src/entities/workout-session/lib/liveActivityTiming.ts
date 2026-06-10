@@ -1,5 +1,10 @@
 import type { WorkoutState } from "../model/workoutState"
 
+type WorkoutLiveActivityTimingState = Pick<
+  WorkoutState,
+  "pausedAt" | "pausedDuration" | "phase" | "startedAt"
+>
+
 export interface WorkoutLiveActivityTiming {
   elapsedMs: number
   isPaused: boolean
@@ -18,7 +23,7 @@ function getTimestampMs(iso: string | null) {
 
 /** 운동 화면 타이머와 같은 Live Activity 기준 시각 */
 export function getWorkoutLiveActivityTiming(
-  state: WorkoutState,
+  state: WorkoutLiveActivityTimingState,
   nowMs = Date.now(),
 ): WorkoutLiveActivityTiming | null {
   const startedAtMs = getTimestampMs(state.startedAt)

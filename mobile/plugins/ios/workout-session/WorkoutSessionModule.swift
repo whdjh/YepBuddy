@@ -4,7 +4,7 @@ import UIKit
 
 @objc(WorkoutSession)
 final class WorkoutSessionModule: RCTEventEmitter {
-  private let controller = LiveWorkoutSessionController()
+  private let controller = LiveWorkoutSessionController.shared
   private var hasListeners = false
 
   override init() {
@@ -145,6 +145,15 @@ final class WorkoutSessionModule: RCTEventEmitter {
       await WorkoutLiveActivityController.endAll()
       resolve(true)
     }
+  }
+
+  /// Live Activity 액션 command 소비
+  @objc(consumeLiveActivityCommands:rejecter:)
+  func consumeLiveActivityCommands(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    resolve(WorkoutLiveActivityCommandQueue.consume())
   }
 
   /// 라이브 stats 조회

@@ -28,6 +28,9 @@ RCT_EXTERN_METHOD(startLiveActivity:(NSString *)sessionId
 RCT_EXTERN_METHOD(endLiveActivity:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(consumeLiveActivityCommands:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 RCT_EXTERN_METHOD(readLiveStats:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
