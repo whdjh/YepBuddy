@@ -19,6 +19,9 @@ RCT_EXTERN_METHOD(discard:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
 RCT_EXTERN_METHOD(startLiveActivity:(NSString *)sessionId
+                  statusText:(NSString *)statusText
+                  timerStartAt:(NSString *)timerStartAt
+                  timerPausedAt:(NSString *)timerPausedAt
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

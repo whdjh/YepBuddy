@@ -9,6 +9,25 @@ private extension Color {
   static let workoutAccent = Color(red: 0.769, green: 0.659, blue: 0.494)
 }
 
+// 운동 경과 시간
+private struct WorkoutLiveActivityTimerText: View {
+  let timerStartAt: Date
+  let timerPausedAt: Date?
+
+  var body: some View {
+    if let timerPausedAt {
+      Text(
+        timerInterval: timerStartAt...Date.distantFuture,
+        pauseTime: timerPausedAt,
+        countsDown: false,
+        showsHours: true
+      )
+    } else {
+      Text(timerStartAt, style: .timer)
+    }
+  }
+}
+
 // 잠금화면 Live Activity 레이아웃
 private struct WorkoutLiveActivityLockScreenView: View {
   let context: ActivityViewContext<WorkoutLiveActivityAttributes>
@@ -25,10 +44,13 @@ private struct WorkoutLiveActivityLockScreenView: View {
             .font(.headline.weight(.semibold))
             .foregroundStyle(.white)
 
-          Text("진행 중인 운동이 잠금화면에 표시됩니다.")
-            .font(.subheadline)
-            .foregroundStyle(.white.opacity(0.72))
-            .lineLimit(2)
+          WorkoutLiveActivityTimerText(
+            timerStartAt: context.state.timerStartAt,
+            timerPausedAt: context.state.timerPausedAt
+          )
+            .font(.system(size: 34, weight: .semibold, design: .rounded))
+            .monospacedDigit()
+            .foregroundStyle(Color.workoutAccent)
         }
 
         Spacer(minLength: 12)
@@ -64,8 +86,15 @@ struct WorkoutLiveActivityWidget: Widget {
         }
 
         DynamicIslandExpandedRegion(.bottom) {
-          Text(context.state.statusText)
-            .font(.subheadline.weight(.medium))
+          HStack {
+            Text(context.state.statusText)
+            WorkoutLiveActivityTimerText(
+              timerStartAt: context.state.timerStartAt,
+              timerPausedAt: context.state.timerPausedAt
+            )
+              .monospacedDigit()
+          }
+          .font(.subheadline.weight(.medium))
         }
       } compactLeading: {
         Image(systemName: "figure.strengthtraining.traditional")

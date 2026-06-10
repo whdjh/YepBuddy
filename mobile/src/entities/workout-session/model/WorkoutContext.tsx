@@ -21,6 +21,7 @@ import {
   endWorkoutLiveActivity,
   startWorkoutLiveActivity,
 } from "../api/liveActivity"
+import { getWorkoutLiveActivityTiming } from "../lib/liveActivityTiming"
 import {
   buildCompletedWorkoutSession,
   getWorkoutCompletedAt,
@@ -141,12 +142,31 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       (state.phase === "recording" || state.phase === "paused") &&
       state.sessionId
     ) {
-      void startWorkoutLiveActivity(state.sessionId)
+      const timing = getWorkoutLiveActivityTiming(state)
+
+      if (!timing) {
+        return
+      }
+
+      void startWorkoutLiveActivity({
+        sessionId: state.sessionId,
+        statusText:
+          state.phase === "paused" ? "운동 일시정지" : "운동 기록 중",
+        timerPausedAt: timing.timerPausedAt,
+        timerStartAt: timing.timerStartAt,
+      })
       return
     }
 
     void endWorkoutLiveActivity()
-  }, [isHydrated, state.phase, state.sessionId])
+  }, [
+    isHydrated,
+    state.pausedAt,
+    state.pausedDuration,
+    state.phase,
+    state.sessionId,
+    state.startedAt,
+  ])
 
   // 아래 함수들은 화면이 직접 dispatch를 다루지 않게 감싼 액션 API
   const startCountdown = useCallback(() => {
