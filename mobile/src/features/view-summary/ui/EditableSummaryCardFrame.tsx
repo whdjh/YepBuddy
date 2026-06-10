@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { useEffect, useMemo, useRef } from "react"
+import { useEffect, useMemo } from "react"
 import { View } from "react-native"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
@@ -15,33 +15,29 @@ import Animated, {
 import { useCardColors } from "@/shared/hooks/useCardColors"
 import { SymbolView } from "@/shared/ui/SymbolView"
 import { IconButton } from "@/shared/ui/IconButton"
+import type { SummaryCardVisualDirection } from "../model/summaryCardLayout"
 
 const DRAG_REORDER_THRESHOLD_Y = 72
 const DRAG_REORDER_THRESHOLD_X = 48
-
-type DragStep = "none" | "x:-1" | "x:1" | "y:-1" | "y:1"
 
 interface EditableSummaryCardFrameProps {
   children: ReactNode
   isEditing: boolean
   onRemove: () => void
-  onDrag: (direction: -1 | 1) => void
-  onMoveWithinRow: (direction: -1 | 1) => void
+  onMove: (direction: SummaryCardVisualDirection, steps: number) => void
 }
 
 export function EditableSummaryCardFrame({
   children,
   isEditing,
   onRemove,
-  onDrag,
-  onMoveWithinRow,
+  onMove,
 }: EditableSummaryCardFrameProps) {
   const { t } = useTranslation()
   const { fg: symbolTintColor } = useCardColors()
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
   const wiggle = useSharedValue(0)
-  const dragStepRef = useRef<DragStep>("none")
 
   useEffect(() => {
     if (!isEditing) {
@@ -71,43 +67,32 @@ export function EditableSummaryCardFrame({
       Gesture.Pan()
         .enabled(isEditing)
         .runOnJS(true)
-        .onBegin(() => {
-          dragStepRef.current = "none"
-        })
         .onUpdate((event) => {
           translateX.value = event.translationX
           translateY.value = event.translationY
-
+        })
+        .onFinalize((event) => {
           const absX = Math.abs(event.translationX)
           const absY = Math.abs(event.translationY)
-          const nextStep: DragStep =
-            absX > DRAG_REORDER_THRESHOLD_X && absX > absY
-              ? event.translationX > 0
-                ? "x:1"
-                : "x:-1"
-              : absY > DRAG_REORDER_THRESHOLD_Y
-                ? event.translationY > 0
-                  ? "y:1"
-                  : "y:-1"
-                : "none"
 
-          if (nextStep !== "none" && nextStep !== dragStepRef.current) {
-            dragStepRef.current = nextStep
-
-            if (nextStep.startsWith("x:")) {
-              onMoveWithinRow(nextStep === "x:1" ? 1 : -1)
-              return
-            }
-
-            onDrag(nextStep === "y:1" ? 1 : -1)
+          if (absX > absY && absX >= DRAG_REORDER_THRESHOLD_X) {
+            onMove(
+              event.translationX > 0 ? "right" : "left",
+              Math.floor(absX / DRAG_REORDER_THRESHOLD_X),
+            )
           }
-        })
-        .onFinalize(() => {
-          dragStepRef.current = "none"
+
+          if (absY >= absX && absY >= DRAG_REORDER_THRESHOLD_Y) {
+            onMove(
+              event.translationY > 0 ? "down" : "up",
+              Math.floor(absY / DRAG_REORDER_THRESHOLD_Y),
+            )
+          }
+
           translateX.value = withSpring(0)
           translateY.value = withSpring(0)
         }),
-    [isEditing, onDrag, onMoveWithinRow, translateX, translateY],
+    [isEditing, onMove, translateX, translateY],
   )
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [

@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import {
   Alert,
   Pressable,
@@ -12,8 +12,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   clearPendingWorkoutPlaceReminderPrompt,
   getPendingWorkoutPlaceReminderPrompt,
-} from "@/entities/workout-session/model/workoutPlaceReminderStorage"
-import { useWorkout } from "@/entities/workout-session/model/WorkoutContext"
+  useWorkout,
+} from "@/entities/workout-session"
 import { formatDateWithDay } from "@/shared/lib/format"
 import { useNotificationPermissionRequestDone } from "@/shared/lib/notificationPermissionRequest"
 import { Main } from "@/shared/ui/Main"
@@ -26,7 +26,11 @@ import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
 import { RoutineCycleSetupPromptModal } from "./RoutineCycleSetupPromptModal"
 
-export function SummaryScreen() {
+interface SummaryScreenProps {
+  onEditingChange?: (isEditing: boolean) => void
+}
+
+export function SummaryScreen({ onEditingChange }: SummaryScreenProps = {}) {
   const cardData = useSummaryCardData()
   const { t } = cardData
   const { state } = useWorkout()
@@ -39,8 +43,7 @@ export function SummaryScreen() {
     availableCards,
     addCard,
     removeCard,
-    moveCard,
-    moveCardWithinRow,
+    moveCardByVisualDirection,
   } = useSummaryCardLayout()
   const {
     isEditing,
@@ -63,6 +66,10 @@ export function SummaryScreen() {
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
+
+  useEffect(() => {
+    onEditingChange?.(isEditing)
+  }, [isEditing, onEditingChange])
 
   useFocusEffect(
     useCallback(() => {
@@ -153,8 +160,7 @@ export function SummaryScreen() {
           cardData={cardData}
           isEditing={isEditing}
           onCardLongPress={enterEditMode}
-          onDragCard={moveCard}
-          onMoveCardWithinRow={moveCardWithinRow}
+          onMoveCard={moveCardByVisualDirection}
           onRemoveCard={removeCard}
         />
       </ScrollView>

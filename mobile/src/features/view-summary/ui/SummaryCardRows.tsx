@@ -3,11 +3,11 @@ import type { useSummaryCardData } from "../model/useSummaryCardData"
 import {
   getSummaryCardWidth,
   type SummaryCardId,
+  type SummaryCardVisualDirection,
 } from "../model/summaryCardLayout"
 import { EditableSummaryCardFrame } from "./EditableSummaryCardFrame"
 import { SummaryCardRenderer } from "./SummaryCardRenderer"
 
-type CardMoveDirection = -1 | 1
 type SummaryCardData = ReturnType<typeof useSummaryCardData>
 
 interface SummaryCardRowsProps {
@@ -15,10 +15,10 @@ interface SummaryCardRowsProps {
   cardData: SummaryCardData
   isEditing: boolean
   onCardLongPress: () => void
-  onDragCard: (cardId: SummaryCardId, direction: CardMoveDirection) => void
-  onMoveCardWithinRow: (
+  onMoveCard: (
     cardId: SummaryCardId,
-    direction: CardMoveDirection,
+    direction: SummaryCardVisualDirection,
+    steps?: number,
   ) => void
   onRemoveCard: (cardId: SummaryCardId) => void
 }
@@ -28,8 +28,7 @@ export function SummaryCardRows({
   cardData,
   isEditing,
   onCardLongPress,
-  onDragCard,
-  onMoveCardWithinRow,
+  onMoveCard,
   onRemoveCard,
 }: SummaryCardRowsProps) {
   return (
@@ -41,8 +40,7 @@ export function SummaryCardRows({
           cardData={cardData}
           isEditing={isEditing}
           onCardLongPress={onCardLongPress}
-          onDragCard={onDragCard}
-          onMoveCardWithinRow={onMoveCardWithinRow}
+          onMoveCard={onMoveCard}
           onRemoveCard={onRemoveCard}
         />
       ))}
@@ -60,8 +58,7 @@ function SummaryCardRow({
   cardData,
   isEditing,
   onCardLongPress,
-  onDragCard,
-  onMoveCardWithinRow,
+  onMoveCard,
   onRemoveCard,
 }: SummaryCardRowProps) {
   const isHalfRow =
@@ -79,8 +76,7 @@ function SummaryCardRow({
             cardData={cardData}
             isEditing={isEditing}
             onCardLongPress={onCardLongPress}
-            onDragCard={onDragCard}
-            onMoveCardWithinRow={onMoveCardWithinRow}
+            onMoveCard={onMoveCard}
             onRemoveCard={onRemoveCard}
           />
         </View>
@@ -100,15 +96,13 @@ function EditableSummaryCard({
   cardData,
   isEditing,
   onCardLongPress,
-  onDragCard,
-  onMoveCardWithinRow,
+  onMoveCard,
   onRemoveCard,
 }: EditableSummaryCardProps) {
   return (
     <EditableSummaryCardFrame
       isEditing={isEditing}
-      onDrag={(direction) => onDragCard(cardId, direction)}
-      onMoveWithinRow={(direction) => onMoveCardWithinRow(cardId, direction)}
+      onMove={(direction, steps) => onMoveCard(cardId, direction, steps)}
       onRemove={() => onRemoveCard(cardId)}
     >
       <SummaryCardRenderer
