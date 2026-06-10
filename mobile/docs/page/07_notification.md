@@ -1,7 +1,7 @@
 # 알림 기능서
 
 > 현재 구현 기준으로 정리한 문서.  
-> 범위: `앱 실행 시 권한 프롬프트 없는 동기화 → 설정 화면 알림 토글 ON/OFF → 운동 시작/종료 시 리마인더 갱신 → 프로틴 알림 탭 라우팅`
+> 범위: `앱 실행 시 권한 프롬프트 없는 동기화 → 설정 화면 알림 토글 ON/OFF → 운동 시작/종료 시 리마인더 갱신 → iOS Live Activity 운동 제어 → 프로틴 알림 탭 라우팅`
 
 ## 1. 문서 목적
 
@@ -11,13 +11,14 @@
 
 ## 2. 기능 한눈에 보기
 
-현재 앱 알림은 3가지 축으로 동작한다.
+현재 앱 알림은 4가지 축으로 동작한다.
 
 1. 운동 리마인더 알림
 2. 프로틴 세일 알림
 3. 운동 장소 도착 알림
+4. iOS 운동 Live Activity
 
-핵심 역할은 7가지다.
+핵심 역할은 8가지다.
 
 1. 앱 시작 시 저장된 enabled 상태와 현재 OS 권한 상태만 확인한다.
 2. 자동 동기화 경로에서는 `requestPermissionsAsync()`를 호출하지 않는다.
@@ -26,6 +27,7 @@
 5. 운동 시작 직전 기존 운동 리마인더를 취소하고, 운동 종료 후 프롬프트 없이 다시 동기화한다.
 6. 프로틴 세일 알림을 탭하면 프로틴 탭으로 이동시킨다.
 7. 반복 운동 장소 근처 도착 알림을 탭하면 운동일지에서 운동 시작 확인 Alert를 띄운다.
+8. 운동 중에는 iOS 잠금화면 Live Activity로 일시정지/재개, 유산소 시작, 운동 종료를 제어할 수 있다.
 
 ## 3. 사용자 흐름
 
@@ -67,9 +69,11 @@
 운동 시작 카드 탭
   └─ 카운트다운 화면 진입
       └─ 기존 운동 리마인더 취소
+      └─ iOS 운동 Live Activity 시작 또는 갱신
 
 운동 종료
   └─ 로컬 세션/헬스킷/캘린더 저장 흐름
+      └─ iOS 운동 Live Activity 종료
       └─ 운동 리마인더 권한 프롬프트 없이 재동기화
       └─ 장소 히스토리 반영 후 장소 도착 알림 권한 프롬프트 없이 재동기화
 
@@ -91,7 +95,7 @@
 | 설정 화면 | `/settings` | 운동 리마인더와 프로틴 세일 알림 수신 동의 ON/OFF 제어 |
 | 설정 화면 | `/settings` | 운동 장소 도착 알림 권한 동의와 geofence ON/OFF 제어 |
 | 카운트다운 화면 | `/workout/countdown` | 운동 시작 직전 기존 운동 리마인더 취소 |
-| 운동 중 화면 | `/workout/active` | 운동 종료 시 운동 리마인더를 권한 프롬프트 없이 재동기화 |
+| 운동 중 화면 | `/workout/active` | iOS Live Activity 시작/갱신/종료, Live Activity action 처리, 운동 종료 시 운동 리마인더를 권한 프롬프트 없이 재동기화 |
 | 프로틴 목록 화면 | `/protein` | 프로틴 세일 알림 탭 라우팅 대상 |
 | 운동일지 화면 | `/` | 장소 도착 알림 탭 후 운동 시작 확인 Alert 표시 |
 
@@ -144,10 +148,58 @@
 
 - 운동 중 화면에서 완료 세션 저장과 HealthKit 종료 처리 이후 `syncWorkoutReminderAtNight({ allowPrompt: false })`를 호출한다.
 - 완료 세션이 오늘 기록으로 저장되어 있으면 같은 날 22:00 리마인더를 다시 예약하지 않는다.
-- 캘린더 등록 안내 Alert를 띄우기 전에 호출해, 사용자가 Alert를 닫아도 리마인더 상태가 최신 상태로 맞춰진다.
+- 캘린더 자동 저장 선호 상태를 처리하기 전에 호출해, 사용자가 1회성 Alert를 닫아도 리마인더 상태가 최신 상태로 맞춰진다.
 - 이 경로에서는 OS 알림 권한 요청 프롬프트를 띄우지 않는다.
 
-### 5.4 프로틴 세일 알림
+### 5.4 iOS 운동 Live Activity
+
+iOS 운동 Live Activity는 현재 진행 중인 운동 세션에 대해서만 사용한다. 일반 `expo-notifications` notification action이 아니라 ActivityKit Widget Extension으로 렌더링한다.
+
+표시 조건:
+
+- 운동 상태가 `recording` 또는 `paused`이고 `sessionId`가 있을 때 시작 또는 갱신한다.
+- 운동이 `idle` 또는 `completed`가 되면 Live Activity를 종료한다.
+- iOS ActivityKit을 사용할 수 없거나 Live Activity가 비활성화된 환경에서는 운동 자체를 막지 않는다.
+
+잠금화면 표시:
+
+- 앱 이름 `옙버디`
+- 상태 문구: `운동 기록 중`, `운동 일시정지`, `유산소 기록 중`, `유산소 일시정지`
+- 운동 중 화면과 같은 기준의 경과 시간
+- 유산소 시작 이미지 버튼 `figure.run`
+- 일시정지/재개 이미지 버튼 `pause.fill` / `play.fill`
+- 운동 종료 이미지 버튼 `stop.fill`
+
+현재 Dynamic Island 표시:
+
+- Expanded leading: `옙버디`
+- Expanded trailing: 근력 운동 아이콘
+- Expanded bottom: 상태 문구와 경과 시간
+- Compact leading/minimal: 근력 운동 아이콘
+- Compact trailing: `운동`
+- Dynamic Island 제어 버튼은 다음 브랜치에서 확장한다.
+
+Live Activity action:
+
+- `pause`: 기록 중인 운동을 일시정지하고 HealthKit live workout session pause를 시도한다.
+- `resume`: 일시정지된 운동을 재개하고 HealthKit live workout session resume을 시도한다.
+- `startCardio`: 기록 중이고 아직 유산소가 시작되지 않았을 때 `cardioStartedAt`을 기록한다.
+- `finish`: Live Activity를 즉시 닫고, 앱 쪽 command 소비 경로에서 완료 세션 저장을 처리한다.
+
+action 처리 원칙:
+
+- 하단 드로어와 Live Activity는 같은 운동 command 의미를 사용한다.
+- HealthKit 호출 실패는 로컬 운동 상태 전환을 되돌리지 않는다.
+- `finish` 경로에서는 Alert, 화면 이동, 캘린더 권한 요청을 실행하지 않는다.
+- `finish` 이후 사용자가 앱을 열면 운동 중 화면에 남지 않고 메인 화면으로 돌아간다.
+
+지원하지 않는 action:
+
+- 템포 화면 이동
+- 저장하지 않고 종료하기
+- 광고, 프로모션, 구독 유도, 외부 이동
+
+### 5.5 프로틴 세일 알림
 
 프로틴 세일 알림은 `entities/protein/lib/protein-sale-notification` 모듈에서 관리한다.
 
@@ -177,7 +229,7 @@
 - 블랙프라이데이: 해당 연도 11월 마지막 금요일 전날 19:00
 - 현재 연도 + 다음 연도 일정 중 “지금 이후” 일정만 예약
 
-### 5.4.1 Android 알림 채널
+### 5.5.1 Android 알림 채널
 
 Android에서는 다음 notification channel을 사용한다.
 
@@ -187,7 +239,7 @@ Android에서는 다음 notification channel을 사용한다.
 | `workout-place-arrival` | `entities/workout-session` | 반복 운동 장소 도착 알림 |
 | `protein-sale` | `entities/protein` | 마이프로틴 세일 알림 |
 
-### 5.5 프로틴 알림 탭 라우팅
+### 5.6 프로틴 알림 탭 라우팅
 
 프로틴 세일 알림 응답 핸들러는 payload의 `kind`를 확인해서 라우팅한다.
 
@@ -197,7 +249,7 @@ Android에서는 다음 notification channel을 사용한다.
 - 동일 notification identifier는 중복 처리하지 않도록 캐시한다.
 - 처리 후 `clearLastNotificationResponseAsync()`로 마지막 응답을 정리한다.
 
-### 5.6 운동 장소 도착 알림
+### 5.7 운동 장소 도착 알림
 
 운동 장소 도착 알림은 `entities/workout-session/lib/workoutPlaceArrivalReminder.ts`에서 관리한다.
 
@@ -258,6 +310,13 @@ Android에서는 다음 notification channel을 사용한다.
 - `yb:workout-place-reminder:sync-status`
   - 값: enabled, operational, 권한 상태, 등록 region, 마지막 geofence 이벤트 상태(JSON)
 
+### 6.4 iOS 운동 Live Activity
+
+- `yb:workout-live-activity:commands`
+  - 값: Live Activity AppIntent가 생성한 운동 command 배열(JSON)
+  - command 값: `pause`, `resume`, `startCardio`, `finish`
+  - 앱은 command를 소비한 뒤 이 키를 비운다.
+
 ## 7. 현재 제약과 참고사항
 
 1. 운동 리마인더는 “22:00 고정 시각 + 오늘 운동 완료 시 다음 날로 이월” 정책으로 동작한다.
@@ -266,3 +325,5 @@ Android에서는 다음 notification channel을 사용한다.
 4. 장소 도착 알림은 OS geofence 정책에 따라 지연되거나 전달되지 않을 수 있다.
 5. `syncWorkoutPlaceArrivalReminder`는 `allowPrompt: false`에서 권한이 없으면 geofence를 중지하고 `operational=false`를 저장하지만, 사용자의 enabled 의도는 보존한다.
 6. 프로틴 세일과 장소 도착 알림은 응답 핸들러가 있지만, 운동 리마인더의 `kind: workoutReminder`를 처리하는 별도 탭 라우팅은 현재 없다.
+7. iOS 운동 Live Activity는 ActivityKit 기능이며 Android 알림 채널을 사용하지 않는다.
+8. 현재 Dynamic Island는 기본 표시만 있고, 잠금화면과 같은 운동 제어 UX는 다음 단계에서 별도 확장한다.
