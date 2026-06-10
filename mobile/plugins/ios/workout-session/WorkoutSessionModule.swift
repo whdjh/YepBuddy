@@ -114,6 +114,31 @@ final class WorkoutSessionModule: RCTEventEmitter {
     )
   }
 
+  /// 운동 Live Activity 표시 시작
+  @objc(startLiveActivity:resolver:rejecter:)
+  func startLiveActivity(
+    _ sessionId: String,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      let started = await WorkoutLiveActivityController.start(sessionId: sessionId)
+      resolve(started)
+    }
+  }
+
+  /// 운동 Live Activity 표시 종료
+  @objc(endLiveActivity:rejecter:)
+  func endLiveActivity(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      await WorkoutLiveActivityController.endAll()
+      resolve(true)
+    }
+  }
+
   /// 라이브 stats 조회
   @objc(readLiveStats:rejecter:)
   func readLiveStats(

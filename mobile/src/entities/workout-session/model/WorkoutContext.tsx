@@ -18,6 +18,10 @@ import {
 import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
 import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
 import {
+  endWorkoutLiveActivity,
+  startWorkoutLiveActivity,
+} from "../api/liveActivity"
+import {
   buildCompletedWorkoutSession,
   getWorkoutCompletedAt,
 } from "../lib/workoutCompletion"
@@ -127,6 +131,22 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     1000,
     [isHydrated, state],
   )
+
+  useEffect(() => {
+    if (!isHydrated) {
+      return
+    }
+
+    if (
+      (state.phase === "recording" || state.phase === "paused") &&
+      state.sessionId
+    ) {
+      void startWorkoutLiveActivity(state.sessionId)
+      return
+    }
+
+    void endWorkoutLiveActivity()
+  }, [isHydrated, state.phase, state.sessionId])
 
   // 아래 함수들은 화면이 직접 dispatch를 다루지 않게 감싼 액션 API
   const startCountdown = useCallback(() => {

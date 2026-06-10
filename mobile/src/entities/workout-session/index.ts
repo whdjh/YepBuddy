@@ -18,6 +18,10 @@ export {
   subscribeLiveWorkoutStats,
 } from "./api/healthKit"
 export {
+  endWorkoutLiveActivity,
+  startWorkoutLiveActivity,
+} from "./api/liveActivity"
+export {
   normalizeWorkoutLiveStats,
   resolveWorkoutMetricSource,
   type WorkoutMetricProvider,
