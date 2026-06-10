@@ -1,19 +1,13 @@
 import {
-  getWorkoutBodyPartSetLabel,
-} from "@/entities/workout-session/model/bodyPartSet"
-import type {
-  BodyPart,
-  BodyPartDetail,
-  StoredWorkoutSession,
-} from "@/entities/workout-session/model/types"
-import type {
-  RoutineCycleProgress as RoutineCycleProgress,
-} from "@/entities/workout-session/lib/routineCycleProgress"
-import type { RoutineCycleSession as RoutineCycleSession } from "@/entities/workout-session/model/routineCycle"
-import {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
-} from "@/entities/workout-session/lib/sessionMetrics"
+  getWorkoutBodyPartSetLabel,
+  type BodyPart,
+  type BodyPartDetail,
+  type RoutineCycleProgress,
+  type RoutineCycleSession,
+  type StoredWorkoutSession,
+} from "@/entities/workout-session"
 
 export type RoutineCycleSessionRowStatus = "completed" | "planned" | "deload"
 

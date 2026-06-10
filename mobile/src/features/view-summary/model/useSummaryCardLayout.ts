@@ -4,10 +4,10 @@ import {
   SUMMARY_CARD_DEFINITIONS,
   addSummaryCard,
   buildSummaryCardRows,
-  moveSummaryCard,
-  moveSummaryCardWithinRow,
+  moveSummaryCardByVisualDirection,
   removeSummaryCard,
   type SummaryCardId,
+  type SummaryCardVisualDirection,
 } from "./summaryCardLayout"
 import {
   loadSummaryCardIds,
@@ -63,18 +63,15 @@ export function useSummaryCardLayout() {
     [cardIds, persistCardIds],
   )
 
-  // 카드를 direction(-1: 앞, +1: 뒤)으로 한 칸 이동
-  const moveCard = useCallback(
-    (cardId: SummaryCardId, direction: -1 | 1) => {
-      persistCardIds(moveSummaryCard(cardIds, cardId, direction))
-    },
-    [cardIds, persistCardIds],
-  )
-
-  // 카드를 같은 행 안에서 direction(-1: 왼쪽, +1: 오른쪽)으로 한 칸 이동
-  const moveCardWithinRow = useCallback(
-    (cardId: SummaryCardId, direction: -1 | 1) => {
-      persistCardIds(moveSummaryCardWithinRow(cardIds, cardId, direction))
+  const moveCardByVisualDirection = useCallback(
+    (
+      cardId: SummaryCardId,
+      direction: SummaryCardVisualDirection,
+      steps?: number,
+    ) => {
+      persistCardIds(
+        moveSummaryCardByVisualDirection(cardIds, cardId, direction, steps),
+      )
     },
     [cardIds, persistCardIds],
   )
@@ -99,7 +96,6 @@ export function useSummaryCardLayout() {
     availableCards,
     addCard,
     removeCard,
-    moveCard,
-    moveCardWithinRow,
+    moveCardByVisualDirection,
   }
 }

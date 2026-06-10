@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { usePathname, useRouter } from "expo-router"
-import { useWorkout } from "@/entities/workout-session/model/WorkoutContext"
+import { useWorkout } from "@/entities/workout-session"
 
 const ACTIVE_WORKOUT_ALLOWED_PATHS = new Set(["/workout/active", "/tempo"])
 

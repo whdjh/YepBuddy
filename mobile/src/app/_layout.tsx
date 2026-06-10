@@ -12,16 +12,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
   ensureProteinSaleNotificationChannel,
   syncProteinSaleNotificationsIfEnabled,
-} from "@/entities/protein/lib/protein-sale-notification"
-import { ensureWorkoutSessionNotificationChannels } from "@/entities/workout-session/lib/notificationChannels"
-import { syncWorkoutReminderAtNight } from "@/entities/workout-session/lib/reminder"
+} from "@/entities/protein"
 import {
+  ensureWorkoutSessionNotificationChannels,
   registerWorkoutPlaceArrivalNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
-} from "@/entities/workout-session/lib/workoutPlaceArrivalReminder"
-import {
+  syncWorkoutReminderAtNight,
   WorkoutProvider,
-} from "@/entities/workout-session/model/WorkoutContext"
+} from "@/entities/workout-session"
 import { setupProteinSaleNotificationHandler } from "@/features/protein-sale-notification/lib/handler"
 import { NotificationPermissionRequestProvider } from "@/shared/lib/notificationPermissionRequest"
 

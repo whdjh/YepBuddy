@@ -1,7 +1,9 @@
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
-import type { BodyPart } from "@/entities/workout-session/model/types"
-import { BodyPartIconHost } from "@/entities/workout-session/ui/BodyPartIcon"
+import {
+  BodyPartIconHost,
+  type BodyPart,
+} from "@/entities/workout-session"
 import { Card } from "@/shared/ui/Card"
 
 interface SessionLinkCardProps {

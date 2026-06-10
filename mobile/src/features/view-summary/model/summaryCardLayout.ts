@@ -10,6 +10,7 @@ export const SUMMARY_CARD_DEFINITIONS = [
 export type SummaryCardId = (typeof SUMMARY_CARD_DEFINITIONS)[number]["id"]
 export type SummaryCardWidth =
   (typeof SUMMARY_CARD_DEFINITIONS)[number]["width"]
+export type SummaryCardVisualDirection = "left" | "right" | "up" | "down"
 
 export interface SummaryCardDefinition {
   id: SummaryCardId
@@ -139,6 +140,94 @@ export function moveSummaryCardWithinRow(
     nextCardIds.splice(toIndex, 0, movedCardId)
 
     return nextCardIds
+  }
+
+  return [...cardIds]
+}
+
+function moveSummaryCardToIndex(
+  cardIds: readonly SummaryCardId[],
+  fromIndex: number,
+  toIndex: number,
+) {
+  const boundedToIndex = Math.max(0, Math.min(cardIds.length - 1, toIndex))
+
+  if (
+    fromIndex < 0 ||
+    fromIndex >= cardIds.length ||
+    boundedToIndex === fromIndex
+  ) {
+    return [...cardIds]
+  }
+
+  const nextCardIds = [...cardIds]
+  const [movedCardId] = nextCardIds.splice(fromIndex, 1)
+
+  nextCardIds.splice(boundedToIndex, 0, movedCardId)
+
+  return nextCardIds
+}
+
+export function moveSummaryCardByVisualDirection(
+  cardIds: readonly SummaryCardId[],
+  cardId: SummaryCardId,
+  direction: SummaryCardVisualDirection,
+  steps = 1,
+) {
+  const rows = buildSummaryCardRows(cardIds)
+  let rowStartIndex = 0
+  const moveSteps = Math.max(1, Math.floor(steps))
+
+  for (let rowIndex = 0; rowIndex < rows.length; rowIndex += 1) {
+    const row = rows[rowIndex]
+    const columnIndex = row.indexOf(cardId)
+
+    if (columnIndex < 0) {
+      rowStartIndex += row.length
+      continue
+    }
+
+    const fromIndex = rowStartIndex + columnIndex
+
+    if (direction === "left") {
+      return moveSummaryCardToIndex(cardIds, fromIndex, fromIndex - moveSteps)
+    }
+
+    if (direction === "right") {
+      return moveSummaryCardToIndex(cardIds, fromIndex, fromIndex + moveSteps)
+    }
+
+    if (direction === "up") {
+      const targetRowIndex = Math.max(0, rowIndex - moveSteps)
+      const targetIndex = rows
+        .slice(0, targetRowIndex)
+        .reduce((sum, previousRow) => sum + previousRow.length, 0)
+
+      return moveSummaryCardToIndex(
+        cardIds,
+        fromIndex,
+        targetIndex,
+      )
+    }
+
+    if (direction === "down") {
+      const targetRowIndex = Math.min(rows.length - 1, rowIndex + moveSteps)
+      const targetRowEndIndex = rows
+        .slice(0, targetRowIndex + 1)
+        .reduce((sum, previousRow) => sum + previousRow.length, 0)
+      const targetIndex =
+        fromIndex < targetRowEndIndex
+          ? targetRowEndIndex - 1
+          : targetRowEndIndex
+
+      return moveSummaryCardToIndex(
+        cardIds,
+        fromIndex,
+        targetIndex,
+      )
+    }
+
+    return [...cardIds]
   }
 
   return [...cardIds]

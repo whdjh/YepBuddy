@@ -38,38 +38,38 @@ EXPO_PUBLIC_PRIVACY_POLICY_URL
 EXPO_PUBLIC_SUPPORT_URL
 ```
 
-## 권한과 알림
-
-- 알림 권한은 설정 화면에서 사용자가 `운동 리마인더`, `프로틴 세일 알림`, `운동 장소 도착 알림`을 직접 ON 할 때만 요청합니다.
-- 앱 시작, 운동 종료, 운동 기록 삭제 같은 자동 동기화 경로는 저장된 enabled 값과 현재 권한 상태만 확인하고 OS 권한 프롬프트를 띄우지 않습니다.
-- 운동 시작 위치 저장은 foreground 위치 권한만 사용합니다.
-- 백그라운드 위치 권한은 설정 화면의 `운동 장소 도착 알림` ON 동작에서만 요청합니다.
-- 장소 도착 알림은 2회 이상 운동한 장소 근처 도착을 OS geofence로 감지하며, 알림에는 주소, 좌표, 운동 상세를 담지 않습니다.
-
-## 구조
-
-- `src/app`: Expo Router 라우트
-- `src/entities`: 도메인 모델과 데이터 헬퍼
-- `src/features`: 사용자 기능 단위 모듈
-- `src/shared`: 공용 훅, 라이브러리, i18n, UI
-- `src/tokens`: 디자인 토큰
-- `docs/page`: 화면과 기능별 동작 문서
-
-주요 기능 위치는 다음과 같습니다.
-
-- `src/features/manage-settings`: 설정 화면, 알림 토글, 주간 루틴 설정
-- `src/features/view-summary`: 운동일지 화면과 주간 루틴 진행률
-- `src/features/do-workout`: 운동 진행 화면
-- `src/features/view-proteins`: 프로틴 목록과 상세 진입
-- `src/entities/workout-session`: 운동 세션 저장, 루틴, 리마인더, 장소 도착 알림 로직
-- `src/shared/lib/protein-sale-notification`: 프로틴 세일 알림 권한과 예약 로직
-
 ## 자주 쓰는 명령어
 
+### simulator 실행
 ```bash
-bunx tsc --noEmit
-bun run lint
-bun run web
+bunx expo run:ios --device "iPhone 14 Plus"
 ```
 
-루트에서 실행할 때는 `bun run mobile`, `bun run mobile:ios`, `bun run mobile:android`를 사용합니다.
+### build 명령어
+#### Eas 빌드(iOS)
+```bash
+npx --yes eas-cli@latest build --platform ios --profile production --local --output /private/tmp/my-app.ipa  
+
+npx --yes eas-cli@latest submit --platform ios --path /private/tmp/my-app.ipa  
+```
+
+#### Eas 클라우드빌드(android)
+```bash
+pnpm dlx eas-cli@latest build --platform android --profile production
+```
+
+#### Eas 빌드 우회(IOS)
+```bash
+printf "App-specific password: "
+  read -rs ASC_PASSWORD
+  printf "\n"
+
+  xcrun altool --upload-package /private/tmp/my-app.ipa \
+    --platform ios \
+    -u "실제email작성" \
+    -p "$ASC_PASSWORD" \
+    --show-progress \
+    --output-format json
+
+  unset ASC_PASSWORD
+```

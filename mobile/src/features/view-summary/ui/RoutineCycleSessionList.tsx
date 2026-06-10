@@ -1,7 +1,7 @@
 import { Fragment } from "react"
 import { Pressable } from "react-native"
 import { useTranslation } from "react-i18next"
-import { BodyPartIconHost } from "@/entities/workout-session/ui/BodyPartIcon"
+import { BodyPartIconHost } from "@/entities/workout-session"
 import { Card } from "@/shared/ui/Card"
 import type { RoutineCycleSessionRow } from "../model/routineCycleSessionRows"
 

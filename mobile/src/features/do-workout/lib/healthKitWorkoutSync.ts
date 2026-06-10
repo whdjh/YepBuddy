@@ -1,7 +1,7 @@
 import {
   EMPTY_WORKOUT_LIVE_STATS,
   type WorkoutLiveStats,
-} from "@/entities/workout-session/model/types"
+} from "@/entities/workout-session"
 
 const DEFAULT_SYNC_INTERVAL_MS = 5000
 const DEFAULT_FALLBACK_POLLING_DELAY_MS = 10_000
