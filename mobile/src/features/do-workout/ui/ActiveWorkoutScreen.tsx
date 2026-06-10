@@ -7,7 +7,8 @@ import { ActiveWorkoutContent } from "./ActiveWorkoutContent"
 export function ActiveWorkoutScreen() {
   const { isHydrated, state } = useWorkout()
   const shouldRedirectToCountdown = isHydrated && state.phase === "countdown"
-  const shouldRedirectToHome = isHydrated && state.phase === "idle"
+  const shouldRedirectToHome =
+    isHydrated && (state.phase === "idle" || state.phase === "completed")
 
   useEffect(() => {
     if (shouldRedirectToCountdown) {

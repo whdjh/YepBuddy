@@ -16,6 +16,7 @@ export type SymbolViewName = Extract<
   | "figure.run"
   | "gearshape.fill"
   | "heart.fill"
+  | "pause.fill"
   | "play.fill"
   | "plus"
   | "stop.fill"
@@ -32,6 +33,7 @@ const androidNameBySymbolName = {
   "figure.run": "directions_run",
   "gearshape.fill": "settings",
   "heart.fill": "favorite",
+  "pause.fill": "pause",
   "play.fill": "play_arrow",
   plus: "add",
   "stop.fill": "stop",

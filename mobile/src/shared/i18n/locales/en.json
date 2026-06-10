@@ -60,6 +60,13 @@
       "statusPermissionDenied": "Location or notification permissions need attention.",
       "statusRegistrationFailed": "Could not register place alerts.",
       "statusNoPlaces": "Places will register after repeated workouts."
+    },
+    "calendarAutoAdd": {
+      "title": "Calendar Auto Save",
+      "body": "Automatically adds completed workout time to your device calendar.",
+      "permissionDeniedTitle": "Calendar Permission Needed",
+      "permissionDeniedBody": "Allow calendar event access to enable auto save. If you already denied it, turn it back on from iOS Settings.",
+      "openSettings": "Open Settings"
     }
   },
   "workoutPlaceReminder": {
@@ -98,7 +105,11 @@
       "addPromptTitle": "Add to Calendar?",
       "addPromptBody": "You can save this completed workout as an event in your device calendar.",
       "addAction": "Add to Calendar",
-      "notNow": "Not Now"
+      "notNow": "Not Now",
+      "autoAddPromptTitle": "Automatically save workouts to Calendar?",
+      "autoAddPromptBody": "If you agree, completed workout time will be added to your device calendar automatically. You can change this later in Settings.",
+      "autoAddAccept": "Auto Save",
+      "autoAddDecline": "Do Not Save"
     },
     "reminder": {
       "title": "Workout Reminder",

@@ -9,6 +9,7 @@ import { IconButton } from "@/shared/ui/IconButton"
 import { Main } from "@/shared/ui/Main"
 import { ProteinSaleNotificationToggle } from "./ProteinSaleNotificationToggle"
 import { RoutineCycleToggle } from "./RoutineCycleToggle"
+import { CalendarAutoAddToggle } from "./CalendarAutoAddToggle"
 import { WorkoutPlaceArrivalReminderToggle } from "./WorkoutPlaceArrivalReminderToggle"
 import { WorkoutReminderToggle } from "./WorkoutReminderToggle"
 import { SettingsLegalFooter } from "./SettingsLegalFooter"
@@ -55,6 +56,7 @@ export function SettingsScreen() {
           <RoutineCycleToggle />
           <WorkoutReminderToggle />
           <WorkoutPlaceArrivalReminderToggle />
+          <CalendarAutoAddToggle />
         </View>
 
         <View className="gap-yb-3">

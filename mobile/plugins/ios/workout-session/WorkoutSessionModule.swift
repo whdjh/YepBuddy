@@ -4,7 +4,7 @@ import UIKit
 
 @objc(WorkoutSession)
 final class WorkoutSessionModule: RCTEventEmitter {
-  private let controller = LiveWorkoutSessionController()
+  private let controller = LiveWorkoutSessionController.shared
   private var hasListeners = false
 
   override init() {
@@ -112,6 +112,50 @@ final class WorkoutSessionModule: RCTEventEmitter {
       resolve: { resolve($0) },
       reject: { code, message, error in reject(code, message, error) }
     )
+  }
+
+  /// 운동 Live Activity 표시 시작
+  @objc(startLiveActivity:cardioStartedAt:statusText:timerStartAt:timerPausedAt:resolver:rejecter:)
+  func startLiveActivity(
+    _ sessionId: String,
+    cardioStartedAt: String?,
+    statusText: String,
+    timerStartAt: String,
+    timerPausedAt: String?,
+    resolver resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      let started = await WorkoutLiveActivityController.start(
+        sessionId: sessionId,
+        cardioStartedAt: cardioStartedAt,
+        statusText: statusText,
+        timerStartAt: timerStartAt,
+        timerPausedAt: timerPausedAt
+      )
+      resolve(started)
+    }
+  }
+
+  /// 운동 Live Activity 표시 종료
+  @objc(endLiveActivity:rejecter:)
+  func endLiveActivity(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    Task {
+      await WorkoutLiveActivityController.endAll()
+      resolve(true)
+    }
+  }
+
+  /// Live Activity 액션 command 소비
+  @objc(consumeLiveActivityCommands:rejecter:)
+  func consumeLiveActivityCommands(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    resolve(WorkoutLiveActivityCommandQueue.consume())
   }
 
   /// 라이브 stats 조회

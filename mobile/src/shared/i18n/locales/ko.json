@@ -60,6 +60,13 @@
       "statusPermissionDenied": "위치 또는 알림 권한 확인이 필요해요.",
       "statusRegistrationFailed": "장소 알림 등록에 실패했어요.",
       "statusNoPlaces": "반복 운동 장소가 생기면 자동 등록됩니다."
+    },
+    "calendarAutoAdd": {
+      "title": "캘린더 자동 저장",
+      "body": "완료한 운동 시간을 기기 캘린더에 자동으로 추가합니다.",
+      "permissionDeniedTitle": "캘린더 권한이 필요해요",
+      "permissionDeniedBody": "자동 저장을 켜려면 캘린더 이벤트 추가 권한을 허용해주세요. 이미 거절했다면 iOS 설정에서 다시 켜야 합니다.",
+      "openSettings": "설정 열기"
     }
   },
   "workoutPlaceReminder": {
@@ -98,7 +105,11 @@
       "addPromptTitle": "캘린더에 추가할까요?",
       "addPromptBody": "완료한 운동 시간을 기기 캘린더에 일정으로 저장할 수 있습니다.",
       "addAction": "캘린더에 추가",
-      "notNow": "지금은 안 함"
+      "notNow": "지금은 안 함",
+      "autoAddPromptTitle": "앞으로 캘린더에 자동 저장할까요?",
+      "autoAddPromptBody": "동의하면 완료한 운동 시간이 기기 캘린더에 자동으로 추가됩니다. 이 설정은 나중에 설정 화면에서 바꿀 수 있습니다.",
+      "autoAddAccept": "자동 저장",
+      "autoAddDecline": "저장 안 함"
     },
     "reminder": {
       "title": "운동 리마인더",
