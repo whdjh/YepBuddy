@@ -9,6 +9,7 @@ import Svg, { Circle } from "react-native-svg"
 import {
   cancelScheduledWorkoutReminder,
   getWorkoutLocationOnce,
+  promptCalendarAutoAddPreferenceIfUnknown,
   useWorkout,
 } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
@@ -46,6 +47,10 @@ export function CountdownScreen() {
 
   useEffect(() => {
     void cancelScheduledWorkoutReminder()
+  }, [])
+
+  useEffect(() => {
+    void promptCalendarAutoAddPreferenceIfUnknown().catch(() => undefined)
   }, [])
 
   useEffect(() => {

@@ -55,6 +55,7 @@ export {
 export { ensureWorkoutSessionNotificationChannels } from "./lib/notificationChannels"
 export {
   hasCalendarEventWritePermission,
+  promptCalendarAutoAddPreferenceIfUnknown,
   processCompletedWorkoutCalendarAutoAdd,
   registerWorkoutToCalendar,
   requestCalendarEventWritePermission,

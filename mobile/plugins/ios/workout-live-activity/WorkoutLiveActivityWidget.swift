@@ -47,9 +47,15 @@ private struct WorkoutLiveActivityIconAction: View {
   }
 }
 
-// 잠금화면 Live Activity 레이아웃
-private struct WorkoutLiveActivityLockScreenView: View {
+private enum WorkoutLiveActivityActionLayout {
+  case dynamicIslandExpanded
+  case lockScreen
+}
+
+// 운동 Live Activity command 액션
+private struct WorkoutLiveActivityActions: View {
   let context: ActivityViewContext<WorkoutLiveActivityAttributes>
+  let layout: WorkoutLiveActivityActionLayout
 
   private var primaryActionSystemName: String {
     context.state.timerPausedAt == nil ? "pause.fill" : "play.fill"
@@ -140,6 +146,32 @@ private struct WorkoutLiveActivityLockScreenView: View {
   }
 
   var body: some View {
+    switch layout {
+    case .dynamicIslandExpanded:
+      HStack(spacing: 16) {
+        cardioAction
+        primaryAction
+        finishAction
+      }
+      .frame(maxWidth: .infinity)
+    case .lockScreen:
+      VStack(alignment: .trailing, spacing: 14) {
+        cardioAction
+
+        HStack(spacing: 10) {
+          primaryAction
+          finishAction
+        }
+      }
+    }
+  }
+}
+
+// 잠금화면 Live Activity 레이아웃
+private struct WorkoutLiveActivityLockScreenView: View {
+  let context: ActivityViewContext<WorkoutLiveActivityAttributes>
+
+  var body: some View {
     HStack(alignment: .bottom, spacing: 16) {
       VStack(alignment: .leading, spacing: 5) {
         Text("옙버디")
@@ -163,19 +195,59 @@ private struct WorkoutLiveActivityLockScreenView: View {
 
       Spacer(minLength: 12)
 
-      VStack(alignment: .trailing, spacing: 14) {
-        cardioAction
-
-        HStack(spacing: 10) {
-          primaryAction
-          finishAction
-        }
-      }
+      WorkoutLiveActivityActions(context: context, layout: .lockScreen)
     }
     .padding(.horizontal, 20)
     .padding(.vertical, 17)
     .activityBackgroundTint(Color.workoutBackground)
     .activitySystemActionForegroundColor(Color.workoutAccent)
+  }
+}
+
+@DynamicIslandExpandedContentBuilder
+private func workoutLiveActivityExpandedContent(
+  context: ActivityViewContext<WorkoutLiveActivityAttributes>
+) -> DynamicIslandExpandedContent<some View> {
+  DynamicIslandExpandedRegion(.leading) {
+    VStack(alignment: .leading, spacing: 2) {
+      Text("옙버디")
+        .font(.caption2.weight(.semibold))
+        .foregroundStyle(.white.opacity(0.62))
+
+      Text(context.state.statusText)
+        .font(.caption.weight(.semibold))
+        .foregroundStyle(.white)
+        .lineLimit(1)
+    }
+    .padding(.leading, 14)
+  }
+
+  DynamicIslandExpandedRegion(.trailing) {
+    HStack(spacing: 5) {
+      if context.state.cardioStartedAt != nil {
+        Image(systemName: "figure.run")
+          .font(.caption.weight(.semibold))
+          .foregroundStyle(Color.workoutAccent)
+          .accessibilityLabel("유산소 기록 중")
+      }
+
+      WorkoutLiveActivityTimerText(
+        timerStartAt: context.state.timerStartAt,
+        timerPausedAt: context.state.timerPausedAt
+      )
+      .font(.system(size: 18, weight: .semibold, design: .rounded))
+      .monospacedDigit()
+      .foregroundStyle(Color.workoutAccent)
+      .lineLimit(1)
+      .minimumScaleFactor(0.74)
+    }
+    .padding(.trailing, 14)
+  }
+
+  DynamicIslandExpandedRegion(.bottom) {
+    WorkoutLiveActivityActions(context: context, layout: .dynamicIslandExpanded)
+      .padding(.horizontal, 24)
+      .padding(.top, 8)
   }
 }
 
@@ -186,38 +258,26 @@ struct WorkoutLiveActivityWidget: Widget {
       WorkoutLiveActivityLockScreenView(context: context)
     } dynamicIsland: { context in
       DynamicIsland {
-        DynamicIslandExpandedRegion(.leading) {
-          Text("옙버디")
-            .font(.caption.weight(.semibold))
-        }
-
-        DynamicIslandExpandedRegion(.trailing) {
-          Image(systemName: "figure.strengthtraining.traditional")
-            .foregroundStyle(Color.workoutAccent)
-        }
-
-        DynamicIslandExpandedRegion(.bottom) {
-          HStack {
-            Text(context.state.statusText)
-            WorkoutLiveActivityTimerText(
-              timerStartAt: context.state.timerStartAt,
-              timerPausedAt: context.state.timerPausedAt
-            )
-              .monospacedDigit()
-          }
-          .font(.subheadline.weight(.medium))
-        }
+        workoutLiveActivityExpandedContent(context: context)
       } compactLeading: {
         Image(systemName: "figure.strengthtraining.traditional")
+          .accessibilityLabel("근력 운동")
           .foregroundStyle(Color.workoutAccent)
       } compactTrailing: {
-        Text("운동")
-          .font(.caption2.weight(.semibold))
+        EmptyView()
+          .accessibilityHidden(true)
       } minimal: {
-        Image(systemName: "figure.strengthtraining.traditional")
+        let minimalSystemName =
+          context.state.cardioStartedAt == nil ? "figure.strengthtraining.traditional" : "figure.run"
+
+        Image(systemName: minimalSystemName)
+          .accessibilityLabel(
+            context.state.cardioStartedAt == nil ? "근력 운동" : "유산소 기록 중"
+          )
           .foregroundStyle(Color.workoutAccent)
       }
       .keylineTint(Color.workoutAccent)
+      .contentMargins(.all, 16, for: .expanded)
     }
   }
 }

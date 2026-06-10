@@ -24,6 +24,10 @@ import {
   getCalendarAutoAddDecision,
   type WorkoutCompletionSource,
 } from "./calendarAutoAdd"
+import {
+  promptCalendarAutoAddPreference,
+  type CalendarAutoAddPromptHandlers,
+} from "./calendarAutoAddPrompt"
 import { formatWorkoutLocationLabel } from "./locationLabel"
 import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
 
@@ -143,6 +147,45 @@ export async function requestCalendarEventWritePermission() {
   return permission.status === "granted"
 }
 
+/** 캘린더 자동 저장 선호값을 묻는 기본 Alert를 표시한다. */
+function showCalendarAutoAddPreferencePrompt(
+  handlers: CalendarAutoAddPromptHandlers,
+) {
+  Alert.alert(
+    i18n.t("workout.calendar.autoAddPromptTitle"),
+    i18n.t("workout.calendar.autoAddPromptBody"),
+    [
+      {
+        text: i18n.t("workout.calendar.autoAddDecline"),
+        style: "cancel",
+        onPress: handlers.onDecline,
+      },
+      {
+        text: i18n.t("workout.calendar.autoAddAccept"),
+        onPress: handlers.onAccept,
+      },
+    ],
+    { cancelable: false },
+  )
+}
+
+/** 캘린더 자동 추가 선호값이 정해지지 않았으면 운동 시작 흐름에서 미리 묻는다. */
+export async function promptCalendarAutoAddPreferenceIfUnknown() {
+  const preference = await getCalendarAutoAddPreference()
+
+  if (preference !== "unknown") {
+    return false
+  }
+
+  const hasPermission = await hasCalendarEventWritePermission()
+  return promptCalendarAutoAddPreference({
+    hasPermission,
+    requestPermission: requestCalendarEventWritePermission,
+    setPreference: setCalendarAutoAddPreference,
+    showPrompt: showCalendarAutoAddPreferencePrompt,
+  })
+}
+
 /** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
 export async function registerWorkoutToCalendar(
   params: {
@@ -252,53 +295,26 @@ export async function processCompletedWorkoutCalendarAutoAdd(
     return false
   }
 
-  return new Promise<boolean>((resolve) => {
-    Alert.alert(
-      i18n.t("workout.calendar.autoAddPromptTitle"),
-      i18n.t("workout.calendar.autoAddPromptBody"),
-      [
-        {
-          text: i18n.t("workout.calendar.autoAddDecline"),
-          style: "cancel",
-          onPress: () => {
-            void setCalendarAutoAddPreference("disabled").finally(() => {
-              resolve(false)
-            })
-          },
-        },
-        {
-          text: i18n.t("workout.calendar.autoAddAccept"),
-          onPress: () => {
-            void (async () => {
-              const granted =
-                hasPermission || (await requestCalendarEventWritePermission())
-              if (!granted) {
-                await setCalendarAutoAddPreference("disabled")
-                resolve(false)
-                return
-              }
-
-              await setCalendarAutoAddPreference("enabled")
-              resolve(
-                await registerWorkoutToCalendar(
-                  {
-                    startedAt: session.startedAt,
-                    completedAt: session.completedAt,
-                    cardioStartedAt: session.cardioStartedAt,
-                    memo: session.memo,
-                    bodyParts: session.bodyParts,
-                    location: session.location,
-                  },
-                  { allowPermissionRequest: false, showAlerts: false },
-                ),
-              )
-            })().catch(() => {
-              resolve(false)
-            })
-          },
-        },
-      ],
-      { cancelable: false },
-    )
+  const enabled = await promptCalendarAutoAddPreference({
+    hasPermission,
+    requestPermission: requestCalendarEventWritePermission,
+    setPreference: setCalendarAutoAddPreference,
+    showPrompt: showCalendarAutoAddPreferencePrompt,
   })
+
+  if (!enabled) {
+    return false
+  }
+
+  return registerWorkoutToCalendar(
+    {
+      startedAt: session.startedAt,
+      completedAt: session.completedAt,
+      cardioStartedAt: session.cardioStartedAt,
+      memo: session.memo,
+      bodyParts: session.bodyParts,
+      location: session.location,
+    },
+    { allowPermissionRequest: false, showAlerts: false },
+  )
 }
