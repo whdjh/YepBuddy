@@ -68,7 +68,6 @@ export function WorkoutDrawer({
   bottomPadding,
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
-  const dangerColor = useResolvedColorToken(semanticColorTokens.statusError)
   const accentColor = useResolvedColorToken(semanticColorTokens.accent)
   const cardioColor = useResolvedColorToken(semanticColorTokens.statusSuccess)
   const onDangerColor = useResolvedColorToken(semanticColorTokens.onAccent)
@@ -88,6 +87,8 @@ export function WorkoutDrawer({
     : "rgba(255,255,255,0.08)"
   const cardioButtonOpacity = isPaused && !hasCardioStarted ? 0.55 : 1
   const cardioIconColor = hasCardioStarted ? onDangerColor : cardioColor
+  const timerControlBackgroundColor =
+    timerControl.tone === "neutral" ? "rgba(255,255,255,0.12)" : accentColor
 
   const openDrawer = () => {
     translateY.value = withSpring(0, SPRING_CONFIG)
@@ -235,7 +236,7 @@ export function WorkoutDrawer({
             accessibilityState={{ disabled: false }}
             className="items-center justify-center rounded-full"
             style={{
-              backgroundColor: isPaused ? accentColor : dangerColor,
+              backgroundColor: timerControlBackgroundColor,
               height: 48,
               width: 48,
             }}
@@ -243,7 +244,7 @@ export function WorkoutDrawer({
             <SymbolView
               name={timerControl.iconName}
               size={20}
-              tintColor={onDangerColor}
+              tintColor={accentColor}
             />
           </Pressable>
         </View>
