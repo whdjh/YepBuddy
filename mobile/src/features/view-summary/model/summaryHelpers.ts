@@ -1,9 +1,9 @@
 import {
   appendCardioDurationToTitle,
   getCardioDurationMinutes,
-} from "@/entities/workout-session/lib/cardioSession"
-import { getWorkoutBodyPartSetLabel } from "@/entities/workout-session/model/bodyPartSet"
-import type { StoredWorkoutSession } from "@/entities/workout-session/model/types"
+  getWorkoutBodyPartSetLabel,
+  type StoredWorkoutSession,
+} from "@/entities/workout-session"
 import { bodyPartDetailLabel, bodyPartLabel } from "@/shared/lib/format"
 
 export function getBodyPartsLabel(

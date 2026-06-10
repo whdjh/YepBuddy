@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next"
 import { useRouter } from "expo-router"
-import { useRoutineCyclePlan as useRoutineCyclePlan } from "@/entities/workout-session/model/useRoutineCyclePlan"
+import { useRoutineCyclePlan } from "@/entities/workout-session"
 import { formatDateWithDay, bodyPartLabel, bodyPartDetailLabel } from "@/shared/lib/format"
 import { useTodayCompleted } from "./useTodayCompleted"
 import { useTodaySummary } from "./useTodaySummary"

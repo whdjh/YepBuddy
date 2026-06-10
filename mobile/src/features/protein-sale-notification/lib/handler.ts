@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications"
 import { router } from "expo-router"
-import { PROTEIN_SALE_NOTIFICATION_KIND } from "@/entities/protein/lib/protein-sale-notification"
+import { PROTEIN_SALE_NOTIFICATION_KIND } from "@/entities/protein"
 
 // 동일 알림 중복 처리 방지용 id 캐시
 const handledResponseIds = new Set<string>()
