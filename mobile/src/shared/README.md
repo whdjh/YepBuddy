@@ -1,6 +1,6 @@
 # Shared Guide
 
-`mobile/src/shared`는 앱 전체에서 같이 쓰는 UI, 훅, 유틸, 다국어 리소스를 모아둔 곳입니다.
+`src/shared`는 앱 전체에서 같이 쓰는 UI, 훅, 유틸, 다국어 리소스를 모아둔 곳입니다.
 
 ```
 shared/
@@ -26,9 +26,9 @@ shared/
 
 주요 토큰 위치:
 
-- `mobile/tailwind.config.js`: Tailwind/NativeWind 클래스 토큰
-- `mobile/src/global.css`: light/dark CSS 변수
-- `mobile/src/tokens/*.json`: 토큰 원본 문서
+- `tailwind.config.js`: Tailwind/NativeWind 클래스 토큰
+- `src/global.css`: light/dark CSS 변수
+- `src/tokens/*.json`: 토큰 원본 문서
 
 자주 쓰는 컴포넌트 크기:
 

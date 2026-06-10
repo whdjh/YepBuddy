@@ -1,6 +1,6 @@
 # Features Guide
 
-`mobile/src/features`는 Expo Router 화면에서 바로 조합되는 사용자 흐름을 둔다. 도메인 데이터, 저장소, HealthKit, 알림, Supabase 조회 같은 규칙은 `entities`가 맡고, 화면 공용 UI와 순수 유틸은 `shared`를 사용한다.
+`src/features`는 Expo Router 화면에서 바로 조합되는 사용자 흐름을 둔다. 도메인 데이터, 저장소, HealthKit, 알림, Supabase 조회 같은 규칙은 `entities`가 맡고, 화면 공용 UI와 순수 유틸은 `shared`를 사용한다.
 
 Feature에서는 route 진입, 화면 전용 상태, 사용자 액션 orchestration, loading/error/empty UI를 관리한다. 화면 흐름을 위해 route 문자열을 쓰는 것은 feature/app 책임이지만, route 지식이 `entities`로 올라가면 안 된다.
 
@@ -467,23 +467,15 @@ features/
 - 한 번만 쓰이고 UI 의미가 즉시 보이는 숫자는 유지할 수 있다.
 - 토큰/상수로 바꿨을 때 더 읽기 어려우면 유지한다.
 
-## 삭제한 미사용 코드
-
-이번 정리에서 파일 삭제는 없었다. 대신 아래 미사용/중복 코드를 제거했다.
-
-- `view-summary`: `TodayWorkoutCard`의 사용하지 않는 `targetSets` prop과 호출부 제거
-- `view-summary`: `Main` 배경과 같은 색을 다시 칠하던 `LinearGradient` 제거
-- `do-workout`: `MemoSection`에서 controlled input과 중복되던 `defaultValue` 제거
-
 ## 수정 전 체크 명령어
 
 features를 수정하기 전후에는 최소한 아래 명령어를 확인한다.
 
 ```bash
-cd mobile && bunx tsc --noEmit --pretty false
-cd mobile && bun run lint
+bunx tsc --noEmit --pretty false
+bun run lint
 git diff --check
-rg -n "#[0-9A-Fa-f]{3,8}" mobile/src/features
-rg -n "px-\\[|py-\\[|pt-\\[|pb-\\[|pl-\\[|pr-\\[|m-\\[|w-\\[|h-\\[|min-h-\\[|max-w-\\[" mobile/src/features
-rg -n "Linking.openURL|router\\.push|router\\.replace|AsyncStorage\\.|Notifications\\." mobile/src/features
+rg -n "#[0-9A-Fa-f]{3,8}" src/features
+rg -n "px-\\[|py-\\[|pt-\\[|pb-\\[|pl-\\[|pr-\\[|m-\\[|w-\\[|h-\\[|min-h-\\[|max-w-\\[" src/features
+rg -n "Linking.openURL|router\\.push|router\\.replace|AsyncStorage\\.|Notifications\\." src/features
 ```

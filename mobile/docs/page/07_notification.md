@@ -11,7 +11,7 @@
 
 ## 2. 기능 한눈에 보기
 
-현재 앱 알림은 2가지 축으로 동작한다.
+현재 앱 알림은 3가지 축으로 동작한다.
 
 1. 운동 리마인더 알림
 2. 프로틴 세일 알림
@@ -264,3 +264,5 @@ Android에서는 다음 notification channel을 사용한다.
 2. 운동 리마인더와 프로틴 세일 알림은 서로 다른 저장 키/취소 경로를 사용하므로 서로를 직접 취소하지 않는다.
 3. 자동 동기화 경로는 OS 알림 권한 요청을 시작하지 않는다.
 4. 장소 도착 알림은 OS geofence 정책에 따라 지연되거나 전달되지 않을 수 있다.
+5. `syncWorkoutPlaceArrivalReminder`는 `allowPrompt: false`에서 권한이 없으면 geofence를 중지하고 `operational=false`를 저장하지만, 사용자의 enabled 의도는 보존한다.
+6. 프로틴 세일과 장소 도착 알림은 응답 핸들러가 있지만, 운동 리마인더의 `kind: workoutReminder`를 처리하는 별도 탭 라우팅은 현재 없다.

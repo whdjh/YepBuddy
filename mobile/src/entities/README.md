@@ -2,7 +2,7 @@
 
 `entities`는 앱의 도메인 데이터와 도메인 side effect를 다룬다. 화면 흐름, 라우팅, 화면 전용 UI 상태는 `features`나 `app`에서 처리한다.
 
-이 문서는 `mobile/src/entities`를 수정하는 에이전트가 따라야 할 기준이다. 리팩토링은 동작을 보존하는 작업이어야 하며, 경계 이동이나 공통화는 아래 규칙으로 설명 가능해야 한다.
+이 문서는 `src/entities`를 수정하는 에이전트가 따라야 할 기준이다. 리팩토링은 동작을 보존하는 작업이어야 하며, 경계 이동이나 공통화는 아래 규칙으로 설명 가능해야 한다.
 
 ## 에이전트 리팩토링 계약
 
@@ -45,7 +45,7 @@
 ## 전체 구조
 
 ```txt
-mobile/src/entities
+src/entities
 ├── protein
 │   ├── api      # Supabase 조회
 │   ├── lib      # 프로틴 세일 알림 예약/권한/저장소
@@ -116,7 +116,7 @@ Feature 사용처:
 
 ### 왜 일부 코드가 feature/app으로 이동했나
 
-이번 정리에서 `entities`가 `features`로 바뀐 것은 아니다. 운동 세션 상태, 저장소, HealthKit, 캘린더, 알림, 장소 리마인더, 주간 루틴 규칙은 그대로 `workout-session` entity가 가진다.
+현재 구조에서 `entities`가 `features`로 대체된 것은 아니다. 운동 세션 상태, 저장소, HealthKit, 캘린더, 알림, 장소 리마인더, 주간 루틴 규칙은 그대로 `workout-session` entity가 가진다.
 
 이동한 것은 route를 직접 아는 orchestration 코드다.
 
@@ -300,24 +300,17 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `git diff --check`, TypeScript, lint가 통과한다.
 - 의도한 변경과 무관한 파일은 같은 커밋에 넣지 않는다.
 
-## 삭제한 미사용 코드
-
-이번 정리에서 실제 import가 없는 내부 파일을 삭제했다.
-
-- `workout-session/model/useWorkoutActions.ts`: `WorkoutContext.tsx`가 직접 action API를 제공하고 있어 사용처가 없었다.
-- `workout-session/model/useWorkoutPersistence.ts`: persistence와 route guard가 `WorkoutContext`/`features/do-workout`으로 나뉘어 있어 사용처가 없었다.
-
 ## 수정 전 체크 명령어
 
 entities를 수정하기 전후에는 아래를 확인한다.
 
 ```bash
-cd mobile && bunx tsc --noEmit --pretty false
-cd mobile && bun run lint
+bunx tsc --noEmit --pretty false
+bun run lint
 git diff --check
-rg -n "#[0-9A-Fa-f]{3,8}" mobile/src/entities
-rg -n "px-\\[|py-\\[|pt-\\[|pb-\\[|pl-\\[|pr-\\[|m-\\[|w-\\[|h-\\[|min-h-\\[|max-w-\\[" mobile/src/entities
-rg -n 'Linking[.]openURL|router[.](push|replace)|AsyncStorage[.]|Notifications[.]' mobile/src/entities
-rg -n '@/entities/[^"]+/(api|model|lib|ui)' mobile/src/app mobile/src/features mobile/src/shared
-rg -n 'primitive[.]json|useUnstableNativeVariable' mobile/src/entities mobile/src/features mobile/src/shared
+rg -n "#[0-9A-Fa-f]{3,8}" src/entities
+rg -n "px-\\[|py-\\[|pt-\\[|pb-\\[|pl-\\[|pr-\\[|m-\\[|w-\\[|h-\\[|min-h-\\[|max-w-\\[" src/entities
+rg -n 'Linking[.]openURL|router[.](push|replace)|AsyncStorage[.]|Notifications[.]' src/entities
+rg -n '@/entities/[^"]+/(api|model|lib|ui)' src/app src/features src/shared
+rg -n 'primitive[.]json|useUnstableNativeVariable' src/entities src/features src/shared
 ```

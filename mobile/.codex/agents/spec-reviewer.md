@@ -1,5 +1,5 @@
 # Spec 리뷰어 프롬프트
-<!-- 담당 모델: gpt-5.3-codex / Medium reasoning -->
+<!-- 권장 effort: medium -->
 
 ## 네 역할
 
