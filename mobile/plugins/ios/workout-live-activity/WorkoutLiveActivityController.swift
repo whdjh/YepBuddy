@@ -6,12 +6,14 @@ enum WorkoutLiveActivityController {
   @available(iOS 16.2, *)
   // Live Activity 표시 상태
   private static func activityContent(
+    cardioStartedAt: Date?,
     statusText: String,
     timerStartAt: Date,
     timerPausedAt: Date?
   ) -> ActivityContent<WorkoutLiveActivityAttributes.ContentState> {
     ActivityContent(
       state: WorkoutLiveActivityAttributes.ContentState(
+        cardioStartedAt: cardioStartedAt,
         statusText: statusText,
         timerStartAt: timerStartAt,
         timerPausedAt: timerPausedAt
@@ -34,6 +36,7 @@ enum WorkoutLiveActivityController {
   // Live Activity 시작
   static func start(
     sessionId: String,
+    cardioStartedAt: String?,
     statusText: String,
     timerStartAt: String,
     timerPausedAt: String?
@@ -49,8 +52,10 @@ enum WorkoutLiveActivityController {
     guard let timerStartDate = date(from: timerStartAt) else {
       return false
     }
+    let cardioStartedDate = cardioStartedAt.flatMap { date(from: $0) }
     let timerPausedDate = timerPausedAt.flatMap { date(from: $0) }
     let content = activityContent(
+      cardioStartedAt: cardioStartedDate,
       statusText: statusText,
       timerStartAt: timerStartDate,
       timerPausedAt: timerPausedDate

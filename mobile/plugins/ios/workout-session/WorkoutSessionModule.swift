@@ -115,9 +115,10 @@ final class WorkoutSessionModule: RCTEventEmitter {
   }
 
   /// 운동 Live Activity 표시 시작
-  @objc(startLiveActivity:statusText:timerStartAt:timerPausedAt:resolver:rejecter:)
+  @objc(startLiveActivity:cardioStartedAt:statusText:timerStartAt:timerPausedAt:resolver:rejecter:)
   func startLiveActivity(
     _ sessionId: String,
+    cardioStartedAt: String?,
     statusText: String,
     timerStartAt: String,
     timerPausedAt: String?,
@@ -127,6 +128,7 @@ final class WorkoutSessionModule: RCTEventEmitter {
     Task {
       let started = await WorkoutLiveActivityController.start(
         sessionId: sessionId,
+        cardioStartedAt: cardioStartedAt,
         statusText: statusText,
         timerStartAt: timerStartAt,
         timerPausedAt: timerPausedAt

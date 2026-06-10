@@ -8,6 +8,7 @@ interface NativeWorkoutSessionModule {
   /** 진행 중인 운동 Live Activity 시작 또는 갱신 */
   startLiveActivity?: (
     sessionId: string,
+    cardioStartedAt: string | null,
     statusText: string,
     timerStartAt: string,
     timerPausedAt: string | null,
@@ -16,7 +17,7 @@ interface NativeWorkoutSessionModule {
 
 export interface WorkoutLiveActivityCommand {
   /** 실행할 운동 제어 명령 */
-  command: "pause" | "resume"
+  command: "pause" | "resume" | "startCardio"
   /** command가 생성된 시각 */
   createdAt: string
   /** command 중복 처리를 피하기 위한 식별자 */
@@ -46,7 +47,9 @@ function normalizeLiveActivityCommand(
   command: NativeWorkoutLiveActivityCommand,
 ): WorkoutLiveActivityCommand | null {
   if (
-    (command.command !== "pause" && command.command !== "resume") ||
+    (command.command !== "pause" &&
+      command.command !== "resume" &&
+      command.command !== "startCardio") ||
     typeof command.createdAt !== "string" ||
     typeof command.id !== "string" ||
     typeof command.sessionId !== "string"
@@ -64,6 +67,7 @@ function normalizeLiveActivityCommand(
 
 /** 운동 Live Activity 시작 */
 export async function startWorkoutLiveActivity(params: {
+  cardioStartedAt: string | null
   sessionId: string
   statusText: string
   timerPausedAt: string | null
@@ -76,6 +80,7 @@ export async function startWorkoutLiveActivity(params: {
   return nativeWorkoutSession
     .startLiveActivity(
       params.sessionId,
+      params.cardioStartedAt,
       params.statusText,
       params.timerStartAt,
       params.timerPausedAt,

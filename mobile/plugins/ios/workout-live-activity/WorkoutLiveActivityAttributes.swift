@@ -7,6 +7,7 @@ import Foundation
 struct WorkoutLiveActivityAttributes: ActivityAttributes {
   // Live Activity 동적 상태
   public struct ContentState: Codable, Hashable {
+    var cardioStartedAt: Date?
     var statusText: String
     var timerStartAt: Date
     var timerPausedAt: Date?
@@ -19,6 +20,7 @@ struct WorkoutLiveActivityAttributes: ActivityAttributes {
 enum WorkoutLiveActivityCommand: String, Codable {
   case pause
   case resume
+  case startCardio
 }
 
 // Live Activity command 저장
@@ -94,17 +96,23 @@ enum WorkoutLiveActivityCommandRunner {
         guard state.timerPausedAt == nil else {
           return
         }
-        state.statusText = "운동 일시정지"
+        state.statusText = state.cardioStartedAt == nil ? "운동 일시정지" : "유산소 일시정지"
         state.timerPausedAt = now
       case .resume:
         guard let pausedAt = state.timerPausedAt else {
           return
         }
-        state.statusText = "운동 기록 중"
+        state.statusText = state.cardioStartedAt == nil ? "운동 기록 중" : "유산소 기록 중"
         state.timerStartAt = state.timerStartAt.addingTimeInterval(
           now.timeIntervalSince(pausedAt)
         )
         state.timerPausedAt = nil
+      case .startCardio:
+        guard state.timerPausedAt == nil, state.cardioStartedAt == nil else {
+          return
+        }
+        state.cardioStartedAt = now
+        state.statusText = "유산소 기록 중"
       }
 
       await activity.update(ActivityContent(state: state, staleDate: nil))
@@ -121,6 +129,8 @@ enum WorkoutLiveActivityCommandRunner {
         _ = LiveWorkoutSessionController.shared.pause()
       case .resume:
         _ = LiveWorkoutSessionController.shared.resume()
+      case .startCardio:
+        break
       }
     #endif
 
@@ -129,6 +139,29 @@ enum WorkoutLiveActivityCommandRunner {
     }
 
     await updateLiveActivity(command: command, sessionId: sessionId, now: now)
+  }
+}
+
+@available(iOS 17.0, *)
+// Live Activity 유산소 시작 intent
+struct StartCardioWorkoutLiveActivityIntent: LiveActivityIntent {
+  static var title: LocalizedStringResource = "유산소 시작"
+
+  @Parameter(title: "Session ID")
+  var sessionId: String
+
+  init() {}
+
+  init(sessionId: String) {
+    self.sessionId = sessionId
+  }
+
+  func perform() async throws -> some IntentResult {
+    await WorkoutLiveActivityCommandRunner.perform(
+      command: .startCardio,
+      sessionId: sessionId
+    )
+    return .result()
   }
 }
 

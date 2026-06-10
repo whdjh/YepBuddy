@@ -90,6 +90,19 @@ interface WorkoutContextValue {
 
 // Provider 밖에서 잘못 사용할 경우를 잡기 위해 초기값은 null
 const WorkoutContext = createContext<WorkoutContextValue | null>(null)
+
+/** Live Activity 운동 상태 문구 */
+function getWorkoutLiveActivityStatusText(params: {
+  cardioStartedAt: string | null
+  phase: WorkoutState["phase"]
+}) {
+  if (params.phase === "paused") {
+    return params.cardioStartedAt ? "유산소 일시정지" : "운동 일시정지"
+  }
+
+  return params.cardioStartedAt ? "유산소 기록 중" : "운동 기록 중"
+}
+
 export function WorkoutProvider({ children }: PropsWithChildren) {
   // 실제 운동 세션 상태 관리
   const [state, dispatch] = useReducer(workoutReducer, initialWorkoutState)
@@ -156,9 +169,12 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
       }
 
       void startWorkoutLiveActivity({
+        cardioStartedAt: state.cardioStartedAt,
         sessionId: state.sessionId,
-        statusText:
-          state.phase === "paused" ? "운동 일시정지" : "운동 기록 중",
+        statusText: getWorkoutLiveActivityStatusText({
+          cardioStartedAt: state.cardioStartedAt,
+          phase: state.phase,
+        }),
         timerPausedAt: timing.timerPausedAt,
         timerStartAt: timing.timerStartAt,
       })
@@ -168,6 +184,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     void endWorkoutLiveActivity()
   }, [
     isHydrated,
+    state.cardioStartedAt,
     state.pausedAt,
     state.pausedDuration,
     state.phase,
@@ -192,11 +209,16 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
 
       if (command.command === "pause") {
         dispatch({ type: "PAUSE", payload: { pausedAt: command.createdAt } })
-      } else {
+      } else if (command.command === "resume") {
         dispatch({ type: "RESUME", payload: { resumedAt: command.createdAt } })
+      } else if (!state.cardioStartedAt && state.phase === "recording") {
+        dispatch({
+          type: "START_CARDIO",
+          payload: { cardioStartedAt: command.createdAt },
+        })
       }
     }
-  }, [isHydrated, state.phase, state.sessionId])
+  }, [isHydrated, state.cardioStartedAt, state.phase, state.sessionId])
 
   useEffect(() => {
     void consumeLiveActivityCommands()

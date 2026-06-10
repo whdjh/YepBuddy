@@ -59,6 +59,18 @@ private struct WorkoutLiveActivityLockScreenView: View {
     context.state.timerPausedAt == nil ? "운동중지" : "재개"
   }
 
+  private var cardioAccessibilityLabel: String {
+    context.state.cardioStartedAt == nil ? "유산소 시작" : "유산소 기록 중"
+  }
+
+  private var cardioBackground: Color {
+    if context.state.cardioStartedAt == nil {
+      return Color.workoutPanel
+    }
+
+    return Color.workoutAccent.opacity(0.22)
+  }
+
   @ViewBuilder
   private var primaryAction: some View {
     let icon = WorkoutLiveActivityIconAction(
@@ -82,6 +94,29 @@ private struct WorkoutLiveActivityLockScreenView: View {
       }
     } else {
       icon
+    }
+  }
+
+  @ViewBuilder
+  private var cardioAction: some View {
+    let icon = WorkoutLiveActivityIconAction(
+      accessibilityLabel: cardioAccessibilityLabel,
+      background: cardioBackground,
+      foreground: Color.workoutAccent,
+      systemName: "figure.run"
+    )
+
+    if #available(iOSApplicationExtension 17.0, *),
+      context.state.cardioStartedAt == nil,
+      context.state.timerPausedAt == nil
+    {
+      Button(intent: StartCardioWorkoutLiveActivityIntent(sessionId: context.attributes.sessionId)) {
+        icon
+      }
+      .buttonStyle(.plain)
+    } else {
+      icon
+        .opacity(context.state.cardioStartedAt == nil ? 0.48 : 1)
     }
   }
 
@@ -110,11 +145,7 @@ private struct WorkoutLiveActivityLockScreenView: View {
       Spacer(minLength: 12)
 
       VStack(alignment: .trailing, spacing: 14) {
-        Image(systemName: "figure.strengthtraining.traditional")
-          .font(.system(size: 20, weight: .semibold))
-          .foregroundStyle(Color.workoutAccent)
-          .frame(width: 38, height: 38)
-          .background(Color.workoutPanel, in: RoundedRectangle(cornerRadius: 10))
+        cardioAction
 
         HStack(spacing: 10) {
           primaryAction
