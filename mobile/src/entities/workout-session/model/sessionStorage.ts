@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getLocalDateKeyFromIso, getTimestampMsFromIso } from "@/shared/lib/date"
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
+import type { CalendarAutoAddPreference } from "../lib/calendarAutoAdd"
 import { normalizeOptionalMetricCount } from "./metricNormalization"
 import {
   BODY_PART_DETAILS,
@@ -21,6 +22,9 @@ export const WORKOUT_REMINDER_STORAGE_KEY = "yb:workout:reminder"
 // 운동 리마인더 사용 여부를 저장하는 키
 export const WORKOUT_REMINDER_ENABLED_STORAGE_KEY =
   "yb:workout:reminder:enabled"
+// 완료 운동을 기기 캘린더에 자동 추가할지 저장하는 키
+export const CALENDAR_AUTO_ADD_PREFERENCE_STORAGE_KEY =
+  "yb:workout:calendar:auto-add"
 // 완료 세션 ID 인덱스
 const WORKOUT_SESSION_IDS_STORAGE_KEY = "yb:workout:sessions"
 // 완료 세션 저장 키 prefix
@@ -239,6 +243,25 @@ export async function setWorkoutReminderEnabled(enabled: boolean) {
   await AsyncStorage.setItem(
     WORKOUT_REMINDER_ENABLED_STORAGE_KEY,
     enabled ? "true" : "false",
+  )
+}
+
+/** 캘린더 자동 추가 선호값을 조회 */
+export async function getCalendarAutoAddPreference(): Promise<CalendarAutoAddPreference> {
+  const value = await AsyncStorage.getItem(
+    CALENDAR_AUTO_ADD_PREFERENCE_STORAGE_KEY,
+  )
+
+  return value === "enabled" || value === "disabled" ? value : "unknown"
+}
+
+/** 캘린더 자동 추가 선호값을 저장 */
+export async function setCalendarAutoAddPreference(
+  preference: CalendarAutoAddPreference,
+) {
+  await AsyncStorage.setItem(
+    CALENDAR_AUTO_ADD_PREFERENCE_STORAGE_KEY,
+    preference,
   )
 }
 

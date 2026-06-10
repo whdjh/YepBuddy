@@ -17,7 +17,7 @@ interface NativeWorkoutSessionModule {
 
 export interface WorkoutLiveActivityCommand {
   /** 실행할 운동 제어 명령 */
-  command: "pause" | "resume" | "startCardio"
+  command: "pause" | "resume" | "startCardio" | "finish"
   /** command가 생성된 시각 */
   createdAt: string
   /** command 중복 처리를 피하기 위한 식별자 */
@@ -49,7 +49,8 @@ function normalizeLiveActivityCommand(
   if (
     (command.command !== "pause" &&
       command.command !== "resume" &&
-      command.command !== "startCardio") ||
+      command.command !== "startCardio" &&
+      command.command !== "finish") ||
     typeof command.createdAt !== "string" ||
     typeof command.id !== "string" ||
     typeof command.sessionId !== "string"

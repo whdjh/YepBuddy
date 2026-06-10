@@ -15,6 +15,7 @@ import {
   loadCurrentWorkoutSnapshot,
   saveCompletedWorkoutSession,
   saveCurrentWorkoutSnapshot,
+  updateStoredWorkoutHealthKitMetrics,
 } from "./sessionStorage"
 import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
 import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
@@ -23,6 +24,9 @@ import {
   endWorkoutLiveActivity,
   startWorkoutLiveActivity,
 } from "../api/liveActivity"
+import { endWorkoutSession } from "../api/healthKit"
+import { processCompletedWorkoutCalendarAutoAdd } from "../lib/calendar"
+import { syncWorkoutReminderAtNight } from "../lib/reminder"
 import { getWorkoutLiveActivityTiming } from "../lib/liveActivityTiming"
 import {
   buildCompletedWorkoutSession,
@@ -192,67 +196,6 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     state.startedAt,
   ])
 
-  const consumeLiveActivityCommands = useCallback(async () => {
-    if (
-      !isHydrated ||
-      !state.sessionId ||
-      (state.phase !== "recording" && state.phase !== "paused")
-    ) {
-      return
-    }
-
-    const commands = await consumeWorkoutLiveActivityCommands()
-    for (const command of commands) {
-      if (command.sessionId !== state.sessionId) {
-        continue
-      }
-
-      if (command.command === "pause") {
-        dispatch({ type: "PAUSE", payload: { pausedAt: command.createdAt } })
-      } else if (command.command === "resume") {
-        dispatch({ type: "RESUME", payload: { resumedAt: command.createdAt } })
-      } else if (!state.cardioStartedAt && state.phase === "recording") {
-        dispatch({
-          type: "START_CARDIO",
-          payload: { cardioStartedAt: command.createdAt },
-        })
-      }
-    }
-  }, [isHydrated, state.cardioStartedAt, state.phase, state.sessionId])
-
-  useEffect(() => {
-    void consumeLiveActivityCommands()
-
-    const subscription = AppState.addEventListener("change", (status) => {
-      if (status === "active") {
-        void consumeLiveActivityCommands()
-      }
-    })
-
-    return () => subscription.remove()
-  }, [consumeLiveActivityCommands])
-
-  useEffect(() => {
-    if (
-      !isHydrated ||
-      !state.sessionId ||
-      (state.phase !== "recording" && state.phase !== "paused")
-    ) {
-      return
-    }
-
-    const timer = setInterval(() => {
-      void consumeLiveActivityCommands()
-    }, 1000)
-
-    return () => clearInterval(timer)
-  }, [
-    consumeLiveActivityCommands,
-    isHydrated,
-    state.phase,
-    state.sessionId,
-  ])
-
   // 아래 함수들은 화면이 직접 dispatch를 다루지 않게 감싼 액션 API
   const startCountdown = useCallback(() => {
     dispatch({ type: "START_COUNTDOWN" })
@@ -365,6 +308,117 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     state.sessionId,
     state.startedAt,
     state.totalKcal,
+  ])
+
+  const completeLiveActivityWorkout = useCallback(async () => {
+    if (!state.sessionId || !state.startedAt) {
+      return
+    }
+
+    const completedSession = await completeWorkout()
+    if (!completedSession) {
+      return
+    }
+
+    const endedWorkout = await endWorkoutSession({
+      startedAt: completedSession.startedAt,
+      endedAt: completedSession.completedAt,
+      activeKcal: state.activeKcal,
+      totalKcal: state.totalKcal,
+    }).catch(() => false)
+
+    if (endedWorkout && typeof endedWorkout !== "boolean") {
+      await updateStoredWorkoutHealthKitMetrics(completedSession.sessionId, {
+        averageHeartRate: endedWorkout.averageHeartRate,
+        healthKitWorkoutUUID: endedWorkout.healthKitWorkoutUUID,
+      }).catch(() => undefined)
+    }
+
+    await syncWorkoutReminderAtNight({ allowPrompt: false }).catch(
+      () => false,
+    )
+    await processCompletedWorkoutCalendarAutoAdd(
+      completedSession,
+      "background",
+    ).catch(() => false)
+    await endWorkoutLiveActivity().catch(() => false)
+  }, [
+    completeWorkout,
+    state.activeKcal,
+    state.sessionId,
+    state.startedAt,
+    state.totalKcal,
+  ])
+
+  const consumeLiveActivityCommands = useCallback(async () => {
+    if (
+      !isHydrated ||
+      !state.sessionId ||
+      (state.phase !== "recording" && state.phase !== "paused")
+    ) {
+      return
+    }
+
+    const commands = await consumeWorkoutLiveActivityCommands()
+    for (const command of commands) {
+      if (command.sessionId !== state.sessionId) {
+        continue
+      }
+
+      if (command.command === "pause") {
+        dispatch({ type: "PAUSE", payload: { pausedAt: command.createdAt } })
+      } else if (command.command === "resume") {
+        dispatch({ type: "RESUME", payload: { resumedAt: command.createdAt } })
+      } else if (command.command === "startCardio") {
+        if (!state.cardioStartedAt && state.phase === "recording") {
+          dispatch({
+            type: "START_CARDIO",
+            payload: { cardioStartedAt: command.createdAt },
+          })
+        }
+      } else {
+        await completeLiveActivityWorkout()
+      }
+    }
+  }, [
+    completeLiveActivityWorkout,
+    isHydrated,
+    state.cardioStartedAt,
+    state.phase,
+    state.sessionId,
+  ])
+
+  useEffect(() => {
+    void consumeLiveActivityCommands()
+
+    const subscription = AppState.addEventListener("change", (status) => {
+      if (status === "active") {
+        void consumeLiveActivityCommands()
+      }
+    })
+
+    return () => subscription.remove()
+  }, [consumeLiveActivityCommands])
+
+  useEffect(() => {
+    if (
+      !isHydrated ||
+      !state.sessionId ||
+      (state.phase !== "recording" && state.phase !== "paused")
+    ) {
+      return
+    }
+
+    const timer = setInterval(() => {
+      void consumeLiveActivityCommands()
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [
+    consumeLiveActivityCommands,
+    isHydrated,
+    state.phase,
+    state.sessionId,
   ])
 
   const resetWorkout = useCallback(async () => {

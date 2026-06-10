@@ -21,6 +21,7 @@ enum WorkoutLiveActivityCommand: String, Codable {
   case pause
   case resume
   case startCardio
+  case finish
 }
 
 // Live Activity command 저장
@@ -113,6 +114,9 @@ enum WorkoutLiveActivityCommandRunner {
         }
         state.cardioStartedAt = now
         state.statusText = "유산소 기록 중"
+      case .finish:
+        await activity.end(nil, dismissalPolicy: .immediate)
+        continue
       }
 
       await activity.update(ActivityContent(state: state, staleDate: nil))
@@ -130,6 +134,8 @@ enum WorkoutLiveActivityCommandRunner {
       case .resume:
         _ = LiveWorkoutSessionController.shared.resume()
       case .startCardio:
+        break
+      case .finish:
         break
       }
     #endif
@@ -205,6 +211,29 @@ struct ResumeWorkoutLiveActivityIntent: LiveActivityIntent {
   func perform() async throws -> some IntentResult {
     await WorkoutLiveActivityCommandRunner.perform(
       command: .resume,
+      sessionId: sessionId
+    )
+    return .result()
+  }
+}
+
+@available(iOS 17.0, *)
+// Live Activity 운동 종료 intent
+struct FinishWorkoutLiveActivityIntent: LiveActivityIntent {
+  static var title: LocalizedStringResource = "운동종료"
+
+  @Parameter(title: "Session ID")
+  var sessionId: String
+
+  init() {}
+
+  init(sessionId: String) {
+    self.sessionId = sessionId
+  }
+
+  func perform() async throws -> some IntentResult {
+    await WorkoutLiveActivityCommandRunner.perform(
+      command: .finish,
       sessionId: sessionId
     )
     return .result()

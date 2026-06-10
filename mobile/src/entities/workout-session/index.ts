@@ -53,16 +53,27 @@ export {
   syncWorkoutReminderAtNight,
 } from "./lib/reminder"
 export { ensureWorkoutSessionNotificationChannels } from "./lib/notificationChannels"
-export { registerWorkoutToCalendar } from "./lib/calendar"
+export {
+  hasCalendarEventWritePermission,
+  processCompletedWorkoutCalendarAutoAdd,
+  registerWorkoutToCalendar,
+  requestCalendarEventWritePermission,
+} from "./lib/calendar"
+export type {
+  CalendarAutoAddPreference,
+  WorkoutCompletionSource,
+} from "./lib/calendarAutoAdd"
 export {
   deleteStoredWorkoutSession,
   getAllStoredWorkoutSessions,
+  getCalendarAutoAddPreference,
   getWorkoutReminderEnabled,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
   getStoredWorkoutSessionsForMonth,
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
+  setCalendarAutoAddPreference,
   setWorkoutReminderEnabled,
   updateStoredWorkoutHealthKitMetrics,
   updateStoredWorkoutMemo,

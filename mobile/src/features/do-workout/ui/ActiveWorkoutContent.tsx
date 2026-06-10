@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   getWorkoutBodyPartSetKey,
-  registerWorkoutToCalendar,
+  processCompletedWorkoutCalendarAutoAdd,
   syncWorkoutReminderAtNight,
   updateStoredWorkoutHealthKitMetrics,
   useWorkout,
@@ -177,49 +177,18 @@ export function ActiveWorkoutContent() {
       () => false,
     )
 
-    const goToResult = () => {
-      router.replace({
-        pathname: "/workout/[id]",
-        params: {
-          id: completedSession.sessionId,
-          fromWorkout: "1",
-        },
-      })
-    }
+    await processCompletedWorkoutCalendarAutoAdd(
+      completedSession,
+      "foreground",
+    ).catch(() => false)
 
-    const addWorkoutToCalendar = async () => {
-      try {
-        await registerWorkoutToCalendar({
-          startedAt: completedSession.startedAt,
-          completedAt: completedSession.completedAt,
-          cardioStartedAt: completedSession.cardioStartedAt,
-          memo: completedSession.memo,
-          bodyParts: completedSession.bodyParts,
-          location: completedSession.location,
-        })
-      } finally {
-        goToResult()
-      }
-    }
-
-    Alert.alert(
-      t("workout.calendar.addPromptTitle"),
-      t("workout.calendar.addPromptBody"),
-      [
-        {
-          text: t("workout.calendar.notNow"),
-          style: "cancel",
-          onPress: goToResult,
-        },
-        {
-          text: t("workout.calendar.addAction"),
-          onPress: () => {
-            void addWorkoutToCalendar()
-          },
-        },
-      ],
-      { cancelable: false },
-    )
+    router.replace({
+      pathname: "/workout/[id]",
+      params: {
+        id: completedSession.sessionId,
+        fromWorkout: "1",
+      },
+    })
   }
 
   const discardWorkoutAndGoHome = async () => {

@@ -120,6 +120,25 @@ private struct WorkoutLiveActivityLockScreenView: View {
     }
   }
 
+  @ViewBuilder
+  private var finishAction: some View {
+    let icon = WorkoutLiveActivityIconAction(
+      accessibilityLabel: "운동종료",
+      background: Color.workoutDangerPanel,
+      foreground: Color.workoutDanger,
+      systemName: "stop.fill"
+    )
+
+    if #available(iOSApplicationExtension 17.0, *) {
+      Button(intent: FinishWorkoutLiveActivityIntent(sessionId: context.attributes.sessionId)) {
+        icon
+      }
+      .buttonStyle(.plain)
+    } else {
+      icon
+    }
+  }
+
   var body: some View {
     HStack(alignment: .bottom, spacing: 16) {
       VStack(alignment: .leading, spacing: 5) {
@@ -149,14 +168,7 @@ private struct WorkoutLiveActivityLockScreenView: View {
 
         HStack(spacing: 10) {
           primaryAction
-
-          WorkoutLiveActivityIconAction(
-            accessibilityLabel: "운동종료",
-            background: Color.workoutDangerPanel,
-            foreground: Color.workoutDanger,
-            systemName: "stop.fill"
-          )
-          .opacity(0.72)
+          finishAction
         }
       }
     }

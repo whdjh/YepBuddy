@@ -1,6 +1,15 @@
-import { Alert, Linking, Platform } from "react-native"
+import { Alert, Platform } from "react-native"
 import * as Calendar from "expo-calendar"
 import i18n from "@/shared/i18n/i18n"
+import {
+  getCalendarAutoAddPreference,
+  setCalendarAutoAddPreference,
+} from "../model/sessionStorage"
+import type {
+  StoredWorkoutSession,
+  WorkoutBodyPartSet,
+  WorkoutLocation,
+} from "../model/types"
 import {
   findYepBuddyCalendarId,
   YEPBUDDY_CALENDAR_COLOR,
@@ -11,9 +20,12 @@ import {
   appendCardioDurationToTitle,
   getCardioDurationMinutes,
 } from "./cardioSession"
+import {
+  getCalendarAutoAddDecision,
+  type WorkoutCompletionSource,
+} from "./calendarAutoAdd"
 import { formatWorkoutLocationLabel } from "./locationLabel"
 import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
-import type { WorkoutBodyPartSet, WorkoutLocation } from "../model/types"
 
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   chest: "workout.bodyParts.chest",
@@ -119,40 +131,45 @@ function showCalendarRegistrationFailureAlert() {
   )
 }
 
-/** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
-export async function registerWorkoutToCalendar(params: {
-  startedAt: string
-  completedAt: string
-  cardioStartedAt?: string | null
-  memo: string
-  bodyParts: WorkoutBodyPartSet[]
-  location?: WorkoutLocation | null
-}) {
+/** 캘린더 이벤트 쓰기 권한 보유 여부 */
+export async function hasCalendarEventWritePermission() {
   const permission = await Calendar.getCalendarPermissionsAsync()
-  let status = permission.status
+  return permission.status === "granted"
+}
 
-  if (status !== "granted") {
-    const requested = await Calendar.requestCalendarPermissionsAsync()
-    status = requested.status
+/** 사용자 액션 직후 캘린더 이벤트 쓰기 권한 요청 */
+export async function requestCalendarEventWritePermission() {
+  const permission = await Calendar.requestCalendarPermissionsAsync()
+  return permission.status === "granted"
+}
+
+/** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
+export async function registerWorkoutToCalendar(
+  params: {
+    startedAt: string
+    completedAt: string
+    cardioStartedAt?: string | null
+    memo: string
+    bodyParts: WorkoutBodyPartSet[]
+    location?: WorkoutLocation | null
+  },
+  options: {
+    allowPermissionRequest?: boolean
+    showAlerts?: boolean
+  } = {},
+) {
+  const { allowPermissionRequest = true, showAlerts = true } = options
+  let hasPermission = await hasCalendarEventWritePermission()
+
+  if (!hasPermission && allowPermissionRequest) {
+    hasPermission = await requestCalendarEventWritePermission()
   }
 
-  if (status !== "granted") {
-    Alert.alert(
-      i18n.t("workout.calendar.permissionTitle"),
-      i18n.t("workout.calendar.permissionBody"),
-      [
-        { text: i18n.t("common.cancel"), style: "cancel" },
-        {
-          text: i18n.t("workout.calendar.openSettings"),
-          onPress: () => void Linking.openSettings(),
-        },
-      ],
-    )
+  if (!hasPermission) {
     return false
   }
 
   let calendarId: string | null = null
-
   try {
     calendarId = await getOrCreateYepBuddyCalendarId()
   } catch {
@@ -160,7 +177,9 @@ export async function registerWorkoutToCalendar(params: {
   }
 
   if (!calendarId) {
-    showCalendarRegistrationFailureAlert()
+    if (showAlerts) {
+      showCalendarRegistrationFailureAlert()
+    }
     return false
   }
 
@@ -187,13 +206,99 @@ export async function registerWorkoutToCalendar(params: {
       location: eventLocation,
     })
   } catch {
-    showCalendarRegistrationFailureAlert()
+    if (showAlerts) {
+      showCalendarRegistrationFailureAlert()
+    }
     return false
   }
 
-  Alert.alert(
-    i18n.t("workout.calendar.successTitle"),
-    i18n.t("workout.calendar.successBody"),
-  )
+  if (showAlerts) {
+    Alert.alert(
+      i18n.t("workout.calendar.successTitle"),
+      i18n.t("workout.calendar.successBody"),
+    )
+  }
   return true
+}
+
+/** 완료 세션의 캘린더 자동 추가 정책 실행 */
+export async function processCompletedWorkoutCalendarAutoAdd(
+  session: StoredWorkoutSession,
+  completionSource: WorkoutCompletionSource,
+) {
+  const preference = await getCalendarAutoAddPreference()
+  const hasPermission = await hasCalendarEventWritePermission()
+  const decision = getCalendarAutoAddDecision({
+    completionSource,
+    hasCalendarPermission: hasPermission,
+    preference,
+  })
+
+  if (decision.shouldRegister) {
+    return registerWorkoutToCalendar(
+      {
+        startedAt: session.startedAt,
+        completedAt: session.completedAt,
+        cardioStartedAt: session.cardioStartedAt,
+        memo: session.memo,
+        bodyParts: session.bodyParts,
+        location: session.location,
+      },
+      { allowPermissionRequest: false, showAlerts: false },
+    )
+  }
+
+  if (!decision.shouldAskUser) {
+    return false
+  }
+
+  return new Promise<boolean>((resolve) => {
+    Alert.alert(
+      i18n.t("workout.calendar.autoAddPromptTitle"),
+      i18n.t("workout.calendar.autoAddPromptBody"),
+      [
+        {
+          text: i18n.t("workout.calendar.autoAddDecline"),
+          style: "cancel",
+          onPress: () => {
+            void setCalendarAutoAddPreference("disabled").finally(() => {
+              resolve(false)
+            })
+          },
+        },
+        {
+          text: i18n.t("workout.calendar.autoAddAccept"),
+          onPress: () => {
+            void (async () => {
+              const granted =
+                hasPermission || (await requestCalendarEventWritePermission())
+              if (!granted) {
+                await setCalendarAutoAddPreference("disabled")
+                resolve(false)
+                return
+              }
+
+              await setCalendarAutoAddPreference("enabled")
+              resolve(
+                await registerWorkoutToCalendar(
+                  {
+                    startedAt: session.startedAt,
+                    completedAt: session.completedAt,
+                    cardioStartedAt: session.cardioStartedAt,
+                    memo: session.memo,
+                    bodyParts: session.bodyParts,
+                    location: session.location,
+                  },
+                  { allowPermissionRequest: false, showAlerts: false },
+                ),
+              )
+            })().catch(() => {
+              resolve(false)
+            })
+          },
+        },
+      ],
+      { cancelable: false },
+    )
+  })
 }
