@@ -39,7 +39,7 @@
 
 현재 entity는 두 개다.
 
-- `workout-session`: 운동 세션, 저장된 운동 기록, HealthKit, 캘린더, 운동 리마인더, 운동 장소 도착 리마인더, 주간 루틴
+- `workout-session`: 운동 세션, 저장된 운동 기록, HealthKit, 캘린더, 운동 리마인더, 운동 장소 알림, 주간 루틴
 - `protein`: 프로틴 상품/가격 데이터, 가격 배지, 상세 모델 조립, 가격 차트, 목록 카드, 프로틴 세일 알림
 
 ## 전체 구조
@@ -85,7 +85,7 @@ src/entities
 - `api/healthKit.ts`: HealthKit 권한, 운동 저장, 심박/운동 요약 조회
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
-- `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 도착 알림
+- `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 장소 알림
 - `model/weeklyRoutine.ts`, `model/weeklyRoutineStorage.ts`, `lib/weeklyRoutineProgress.ts`, `lib/weeklyRoutineCycle.ts`: 주간 루틴 설정/진행/사이클
 
 공개 API는 `workout-session/index.ts`에서만 export한다. 주요 그룹은 다음과 같다.
@@ -111,7 +111,7 @@ Feature 사용처:
 - `features/view-sessions`: 월별 저장 세션과 HealthKit 요약 조회
 - `features/view-calendar`: 날짜 범위별 저장 세션 조회
 - `features/view-summary`: 오늘/이번 주/최근 세션, 주간 루틴 진행률과 사이클, 장소 알림 pending prompt 처리
-- `features/manage-settings`: 운동 리마인더, 장소 도착 리마인더, 주간 루틴 설정 UI
+- `features/manage-settings`: 운동 리마인더, 운동 장소 알림, 주간 루틴 설정 UI
 - `entities/workout-session/ui/BodyPartIcon`: 운동 부위 아이콘 표시
 
 ### 왜 일부 코드가 feature/app으로 이동했나
@@ -121,7 +121,7 @@ Feature 사용처:
 이동한 것은 route를 직접 아는 orchestration 코드다.
 
 - 운동 중 다른 화면에 들어가면 `/workout/active`로 돌려보내는 가드
-- 장소 도착 알림을 탭한 뒤 홈으로 이동시키는 처리
+- 운동 장소 알림을 탭한 뒤 화면 이동시키는 처리
 
 이 둘은 운동 세션 도메인 규칙이 아니라 앱 화면 흐름이다. entity 안에 있으면 `workout-session`이 Expo Router 경로 문자열과 화면 정책을 알아야 하고, 같은 운동 상태를 다른 화면 흐름에서 재사용하기 어려워진다. 그래서 entity는 “운동이 복구 가능한 상태인지”, “장소 알림 pending prompt를 저장했는지” 같은 도메인 상태만 제공하고, 실제 화면 이동은 `features`와 `app`에서 한다.
 
@@ -129,7 +129,7 @@ Feature 사용처:
 
 - `entities/workout-session`: 운동 상태와 저장 데이터, 외부 API side effect를 관리한다.
 - `features/do-workout/ui/WorkoutNavigationGuard.tsx`: 현재 route를 보고 운동 화면으로 복귀시킨다.
-- `app/_layout.tsx`: 장소 도착 알림 handler에 홈 이동 콜백을 넘긴다.
+- `app/_layout.tsx`: 운동 장소 알림 handler에 화면 이동 콜백을 넘긴다.
 
 따라서 feature가 entity를 대체한 것이 아니라, entity가 알면 안 되는 route 책임만 feature/app으로 내려간 것이다.
 

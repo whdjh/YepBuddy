@@ -15,7 +15,7 @@
 
 1. 운동 리마인더 알림
 2. 프로틴 세일 알림
-3. 운동 장소 도착 알림
+3. 운동 장소 알림
 4. iOS 운동 Live Activity
 
 핵심 역할은 8가지다.
@@ -27,7 +27,8 @@
 5. 운동 시작 직전 기존 운동 리마인더를 취소하고, 운동 종료 후 프롬프트 없이 다시 동기화한다.
 6. 프로틴 세일 알림을 탭하면 프로틴 탭으로 이동시킨다.
 7. 반복 운동 장소 근처 도착 알림을 탭하면 운동일지에서 운동 시작 확인 Alert를 띄운다.
-8. 운동 중에는 iOS 잠금화면 Live Activity로 일시정지/재개, 유산소 시작, 운동 종료를 제어할 수 있다.
+8. 운동 종료 누락 리마인더를 탭하면 현재 운동 세션이 맞을 때 운동 중 화면으로 이동한다.
+9. 운동 중에는 iOS 잠금화면 Live Activity로 일시정지/재개, 유산소 시작, 운동 종료를 제어할 수 있다.
 
 ## 3. 사용자 흐름
 
@@ -39,7 +40,7 @@
       │   └─ 활성 상태면 현재 권한만 확인하고 향후 세일 알림 재예약
       └─ 저장된 운동 리마인더 활성 상태 확인
           └─ 활성 상태면 현재 권한과 오늘 운동 기록을 확인하고 다음 22:00 알림 재예약
-      └─ 저장된 운동 장소 도착 알림 활성 상태 확인
+      └─ 저장된 운동 장소 알림 활성 상태 확인
           └─ 활성 상태면 현재 권한만 확인하고 geofence 재등록
 
 설정 화면
@@ -57,13 +58,13 @@
   │   └─ 권한 거부 → enabled false 저장 및 예약 취소
   └─ 프로틴 세일 알림 토글 OFF
       └─ enabled false 저장 및 예약 취소
-  ├─ 운동 장소 도착 알림 토글 ON
+  ├─ 운동 장소 알림 토글 ON
   │   ├─ OS 알림 권한 확인/요청 가능
   │   ├─ foreground 위치 권한 확인/요청 가능
   │   ├─ background 위치 권한 확인/요청 가능
   │   ├─ 권한 허용 → 반복 운동 장소 geofence 등록 및 enabled true 저장
   │   └─ 권한 거부 → enabled false 저장, geofence 중지, 동기화 상태 저장
-  └─ 운동 장소 도착 알림 토글 OFF
+  └─ 운동 장소 알림 토글 OFF
       └─ enabled false 저장 및 geofence 중지
 
 운동 시작 카드 탭
@@ -75,7 +76,7 @@
   └─ 로컬 세션/헬스킷/캘린더 저장 흐름
       └─ iOS 운동 Live Activity 종료
       └─ 운동 리마인더 권한 프롬프트 없이 재동기화
-      └─ 장소 히스토리 반영 후 장소 도착 알림 권한 프롬프트 없이 재동기화
+      └─ 장소 히스토리 반영 후 운동 장소 알림 권한 프롬프트 없이 재동기화
 
 프로틴 세일 알림 탭
   └─ 알림 payload kind 확인
@@ -85,6 +86,10 @@
   └─ 알림 payload type 확인
       └─ type이 workout-place-arrival이면 운동일지로 이동
           └─ 운동 시작 확인 Alert 표시
+
+운동 종료 누락 리마인더 탭
+  └─ 알림 payload type/sessionId 확인
+      └─ 현재 진행 중인 운동 sessionId와 같으면 운동 중 화면으로 이동
 ```
 
 ## 4. 화면 범위
@@ -93,7 +98,7 @@
 | --- | --- | --- |
 | 앱 루트 레이아웃 | `src/app/_layout.tsx` | 알림 핸들러 등록, 권한 프롬프트 없는 초기 동기화 실행 |
 | 설정 화면 | `/settings` | 운동 리마인더와 프로틴 세일 알림 수신 동의 ON/OFF 제어 |
-| 설정 화면 | `/settings` | 운동 장소 도착 알림 권한 동의와 geofence ON/OFF 제어 |
+| 설정 화면 | `/settings` | 운동 장소 알림 권한 동의와 geofence ON/OFF 제어 |
 | 카운트다운 화면 | `/workout/countdown` | 운동 시작 직전 기존 운동 리마인더 취소 |
 | 운동 중 화면 | `/workout/active` | iOS Live Activity 시작/갱신/종료, Live Activity action 처리, 운동 종료 시 운동 리마인더를 권한 프롬프트 없이 재동기화 |
 | 프로틴 목록 화면 | `/protein` | 프로틴 세일 알림 탭 라우팅 대상 |
@@ -249,9 +254,9 @@ Android에서는 다음 notification channel을 사용한다.
 - 동일 notification identifier는 중복 처리하지 않도록 캐시한다.
 - 처리 후 `clearLastNotificationResponseAsync()`로 마지막 응답을 정리한다.
 
-### 5.7 운동 장소 도착 알림
+### 5.7 운동 장소 알림
 
-운동 장소 도착 알림은 `entities/workout-session/lib/workoutPlaceArrivalReminder.ts`에서 관리한다.
+운동 장소 알림은 `entities/workout-session/lib/workoutPlaceArrivalReminder.ts`에서 관리한다.
 
 장소 판정:
 
@@ -263,7 +268,7 @@ Android에서는 다음 notification channel을 사용한다.
 
 권한 규칙:
 
-- 설정 화면에서 사용자가 `운동 장소 도착 알림`을 ON 하는 경우에만 알림 권한, foreground 위치 권한, background 위치 권한을 요청할 수 있다.
+- 설정 화면에서 사용자가 `운동 장소 알림`을 ON 하는 경우에만 알림 권한, foreground 위치 권한, background 위치 권한을 요청할 수 있다.
 - 앱 시작, 운동 종료, 운동 기록 삭제 후 재동기화에서는 현재 권한 상태만 확인한다.
 - 자동 동기화에서 권한이 꺼져 있으면 enabled 값은 유지하고 geofence 등록 중지와 동기화 상태 저장만 수행한다.
 
@@ -406,7 +411,7 @@ OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 
 - `yb:protein-sale-notification:ids`
   - 값: 예약된 프로틴 세일 notification identifier 배열(JSON)
 
-### 6.3 운동 장소 도착 알림
+### 6.3 운동 장소 알림
 
 - `yb:workout-place-reminder:enabled`
   - 값: `"true"` / `"false"`
@@ -443,8 +448,8 @@ OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 
 1. 운동 리마인더는 “22:00 고정 시각 + 오늘 운동 완료 시 다음 날로 이월” 정책으로 동작한다.
 2. 운동 리마인더와 프로틴 세일 알림은 서로 다른 저장 키/취소 경로를 사용하므로 서로를 직접 취소하지 않는다.
 3. 자동 동기화 경로는 OS 알림 권한 요청을 시작하지 않는다.
-4. 장소 도착 알림은 OS geofence 정책에 따라 지연되거나 전달되지 않을 수 있다.
+4. 운동 장소 알림은 OS geofence 정책에 따라 지연되거나 전달되지 않을 수 있다.
 5. `syncWorkoutPlaceArrivalReminder`는 `allowPrompt: false`에서 권한이 없으면 geofence를 중지하고 `operational=false`를 저장하지만, 사용자의 enabled 의도는 보존한다.
-6. 프로틴 세일과 장소 도착 알림은 응답 핸들러가 있지만, 운동 리마인더의 `kind: workoutReminder`를 처리하는 별도 탭 라우팅은 현재 없다.
+6. 프로틴 세일과 운동 장소 알림은 응답 핸들러가 있지만, 운동 리마인더의 `kind: workoutReminder`를 처리하는 별도 탭 라우팅은 현재 없다.
 7. iOS 운동 Live Activity는 ActivityKit 기능이며 Android 알림 채널을 사용하지 않는다.
 8. 현재 Dynamic Island는 기본 표시만 있고, 잠금화면과 같은 운동 제어 UX는 다음 단계에서 별도 확장한다.

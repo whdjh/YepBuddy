@@ -52,13 +52,13 @@
       "body": "We will remind you once at 22:00 on days when you have not logged a workout."
     },
     "workoutPlaceReminder": {
-      "title": "Workout Place Arrival Reminder",
-      "body": "When you arrive near a place where you have worked out at least twice, we will suggest starting a workout.",
+      "title": "Workout Place Alerts",
+      "body": "At repeated workout places, we will suggest starting a workout and remind you to stop recording after you leave.",
       "backgroundPermissionTitle": "Background Location Permission Needed",
-      "backgroundPermissionBody": "To detect arrival near workout places when the app is not open, change location access to Always on the next screen.",
+      "backgroundPermissionBody": "To detect arrival and leaving near workout places when the app is not open, change location access to Always on the next screen.",
       "backgroundPermissionAction": "Open Permission Settings",
       "statusPermissionDenied": "Location or notification permissions need attention.",
-      "statusRegistrationFailed": "Could not register place alerts.",
+      "statusRegistrationFailed": "Could not register workout place alerts.",
       "statusNoPlaces": "Places will register after repeated workouts."
     },
     "calendarAutoAdd": {
