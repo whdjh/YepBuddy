@@ -74,6 +74,10 @@
       "title": "You are near a workout place",
       "body": "Would you like to start a workout?"
     },
+    "exitNotification": {
+      "title": "Your workout is still recording",
+      "body": "If you are done, return to end the workout."
+    },
     "prompt": {
       "title": "You are near a workout place",
       "body": "Would you like to start a workout?",

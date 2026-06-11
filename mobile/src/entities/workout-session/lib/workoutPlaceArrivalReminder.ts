@@ -6,6 +6,7 @@ import i18n from "@/shared/i18n/i18n"
 import { getDistanceMeters, isValidCoordinates } from "@/shared/lib/geo"
 import {
   evaluateGymArrivalPolicy,
+  evaluateGymExitPolicy,
   type GymLocationSample,
   type GymPlaceContext,
   type GymPolicyInput,
@@ -40,6 +41,8 @@ export const WORKOUT_PLACE_ARRIVAL_TASK_NAME =
   "yb-workout-place-arrival-reminder"
 export const WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE =
   "workout-place-arrival"
+export const WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE =
+  "workout-place-exit-reminder"
 
 const GEOFENCE_RADIUS_METERS = 150
 const POLICY_SAMPLE_MAX_NEAREST_DISTANCE_M = 300
@@ -231,6 +234,20 @@ async function markGymArrivalPolicyNotified(placeId: string, now: string) {
     arrivalLastNotifiedAtByPlaceId: {
       ...cooldowns.arrivalLastNotifiedAtByPlaceId,
       [placeId]: now,
+    },
+  })
+}
+
+/** 알림 예약 성공 후에만 종료 cooldown을 기록 */
+async function markGymExitPolicyNotified(sessionId: string, now: string) {
+  const cooldowns = await getGymLocationPolicyCooldowns()
+
+  await saveGymLocationPolicyCooldowns({
+    ...cooldowns,
+    exitGlobalLastNotifiedAt: now,
+    exitLastNotifiedAtBySessionId: {
+      ...cooldowns.exitLastNotifiedAtBySessionId,
+      [sessionId]: now,
     },
   })
 }
@@ -582,6 +599,129 @@ async function handleWorkoutPlaceArrivalEnter(placeId: string) {
   await markGymArrivalPolicyNotified(placeId, now)
 }
 
+async function handleWorkoutPlaceExit(placeId: string) {
+  const places = await getWorkoutPlaceReminderPlaces()
+  const place = places.find((item) => item.id === placeId)
+
+  if (!place) {
+    return
+  }
+
+  const now = new Date().toISOString()
+  const currentLocation = await getCurrentLocationWithoutPrompt()
+  const currentSample = currentLocation
+    ? buildGymLocationSampleFromCurrentLocation({
+        location: currentLocation,
+        now,
+        places,
+        source: "geofence-exit",
+      })
+    : null
+
+  if (currentSample) {
+    await appendGymLocationPolicySample(currentSample, now)
+  }
+
+  await evaluateAndScheduleGymExitReminder({
+    activeWorkout: await getGymPolicyActiveWorkout(),
+    currentSample,
+    now,
+    place,
+  })
+}
+
+/** 종료 누락 리마인더를 보낼지 확인하고 알림을 예약 */
+async function evaluateAndScheduleGymExitReminder({
+  activeWorkout,
+  currentSample,
+  now,
+  place,
+}: {
+  activeWorkout: GymPolicyInput["activeWorkout"]
+  currentSample: GymLocationSample | null
+  now: string
+  place: WorkoutPlaceReminderPlace
+}) {
+  const [contexts, cooldowns, sampleRecord] = await Promise.all([
+    getGymLocationPolicyContexts(),
+    getGymLocationPolicyCooldowns(),
+    getGymLocationPolicySamples(now),
+  ])
+
+  const decision = evaluateGymExitPolicy({
+    activeWorkout,
+    context: contexts[place.id] ?? getDefaultGymPlaceContext(place.id, now),
+    cooldowns,
+    currentLocation: currentSample,
+    now,
+    place,
+    recentSamples: sampleRecord[place.id] ?? [],
+  })
+
+  if (!decision.shouldNotify || !activeWorkout.sessionId) {
+    return false
+  }
+
+  await ensureWorkoutPlaceArrivalNotificationChannel()
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: i18n.t("workoutPlaceReminder.exitNotification.title"),
+      body: i18n.t("workoutPlaceReminder.exitNotification.body"),
+      data: {
+        type: WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE,
+        placeId: place.id,
+        sessionId: activeWorkout.sessionId,
+      },
+    },
+    trigger:
+      Platform.OS === "android"
+        ? { channelId: WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID }
+        : null,
+  })
+  await markGymExitPolicyNotified(activeWorkout.sessionId, now)
+  return true
+}
+
+/** 앱이 active로 돌아왔을 때 진행 중 운동의 종료 누락 가능성을 한 번 확인 */
+export async function syncWorkoutPlaceExitReminderOnAppActive() {
+  const activeWorkout = await getGymPolicyActiveWorkout()
+  if (
+    activeWorkout.phase !== "recording" &&
+    activeWorkout.phase !== "paused"
+  ) {
+    return false
+  }
+
+  const places = await getWorkoutPlaceReminderPlaces()
+  const now = new Date().toISOString()
+  const currentLocation = await getCurrentLocationWithoutPrompt()
+  const currentSample = currentLocation
+    ? buildGymLocationSampleFromCurrentLocation({
+        location: currentLocation,
+        now,
+        places,
+        source: "workout-active-check",
+      })
+    : null
+
+  if (currentSample) {
+    await appendGymLocationPolicySample(currentSample, now)
+  }
+
+  const place = places.find((item) => item.id === currentSample?.placeId)
+  if (!place) {
+    return false
+  }
+
+  return evaluateAndScheduleGymExitReminder({
+    activeWorkout,
+    currentSample,
+    now,
+    place,
+  })
+}
+
 if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
   TaskManager.defineTask<GeofencingTaskData>(
     WORKOUT_PLACE_ARRIVAL_TASK_NAME,
@@ -617,11 +757,12 @@ if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
         placeId,
       }).catch(() => undefined)
 
-      if (data.eventType !== Location.GeofencingEventType.Enter) {
+      if (data.eventType === Location.GeofencingEventType.Enter) {
+        await handleWorkoutPlaceArrivalEnter(placeId).catch(() => undefined)
         return
       }
 
-      await handleWorkoutPlaceArrivalEnter(placeId).catch(() => undefined)
+      await handleWorkoutPlaceExit(placeId).catch(() => undefined)
     },
   )
 }

@@ -45,6 +45,7 @@ export {
 export {
   disableWorkoutPlaceArrivalReminder,
   registerWorkoutPlaceArrivalNotificationHandler,
+  syncWorkoutPlaceExitReminderOnAppActive,
   syncWorkoutPlaceArrivalReminder,
 } from "./lib/workoutPlaceArrivalReminder"
 export {
