@@ -1,3 +1,6 @@
+import { getTimestampMsFromIso } from "@/shared/lib/date"
+import { getDistanceMeters, isValidCoordinates } from "@/shared/lib/geo"
+
 /** 장소별 위치 정책에서 쓰는 장소 상태 분류 */
 export type GymContext =
   /** 샘플이 부족해 장소 특성을 아직 확정하지 못한 상태 */
@@ -32,7 +35,7 @@ export interface GymLocationSample {
   lat: number
   /** 샘플 경도 */
   lng: number
-  /** 가장 가까운 place를 안정적으로 고를 수 없으면 policy 판단에서 제 */
+  /** 가장 가까운 place를 안정적으로 고를 수 없으면 policy 판단에서 제외 */
   ambiguous?: boolean
   /** OS가 제공한 위치 정확도(m). null이면 정확도 정보가 없는 샘플 */
   accuracyM: number | null
@@ -169,12 +172,6 @@ function reject(
   }
 }
 
-/** ISO 문자열을 비교 가능한 millisecond timestamp로 정규화 */
-function getTimestampMs(iso: string) {
-  const timestamp = new Date(iso).getTime()
-  return Number.isFinite(timestamp) ? timestamp : null
-}
-
 /** 마지막 알림 시각이 현재 기준 cooldown 안쪽인지 확인 */
 function hasCooldown(
   lastNotifiedAt: string | null | undefined,
@@ -185,8 +182,8 @@ function hasCooldown(
     return false
   }
 
-  const lastMs = getTimestampMs(lastNotifiedAt)
-  const nowMs = getTimestampMs(now)
+  const lastMs = getTimestampMsFromIso(lastNotifiedAt)
+  const nowMs = getTimestampMsFromIso(now)
   if (lastMs === null || nowMs === null) {
     return false
   }
@@ -194,24 +191,12 @@ function hasCooldown(
   return nowMs - lastMs < ms
 }
 
-/** 위도/경도가 실제 좌표 범위 안의 유한한 숫자인지 확인 */
-function isValidCoordinate(lat: number, lng: number) {
-  return (
-    Number.isFinite(lat) &&
-    lat >= -90 &&
-    lat <= 90 &&
-    Number.isFinite(lng) &&
-    lng >= -180 &&
-    lng <= 180
-  )
-}
-
 /** policy 판단에 쓸 수 있는 place 매칭/정확도/좌표 조건을 만족하는 샘플인지 확인 */
 function isUsableLocationSample(sample: GymLocationSample, placeId: string) {
   return (
     sample.placeId === placeId &&
     sample.ambiguous !== true &&
-    isValidCoordinate(sample.lat, sample.lng) &&
+    isValidCoordinates(sample.lat, sample.lng) &&
     Number.isFinite(sample.distanceToGymM) &&
     sample.distanceToGymM >= 0 &&
     (sample.accuracyM === null ||
@@ -226,8 +211,8 @@ function compareSamplesByRecordedAt(
   right: GymLocationSample,
 ) {
   return (
-    (getTimestampMs(left.recordedAt) ?? 0) -
-    (getTimestampMs(right.recordedAt) ?? 0)
+    (getTimestampMsFromIso(left.recordedAt) ?? 0) -
+    (getTimestampMsFromIso(right.recordedAt) ?? 0)
   )
 }
 
@@ -253,7 +238,9 @@ function getPreviousSample(input: GymPolicyInput) {
     return null
   }
 
-  const currentRecordedAtMs = getTimestampMs(input.currentLocation.recordedAt)
+  const currentRecordedAtMs = getTimestampMsFromIso(
+    input.currentLocation.recordedAt,
+  )
   const candidates = getValidSamples(input).filter((sample) => {
     if (sample.id === input.currentLocation?.id) {
       return false
@@ -263,38 +250,13 @@ function getPreviousSample(input: GymPolicyInput) {
       return true
     }
 
-    const sampleRecordedAtMs = getTimestampMs(sample.recordedAt)
+    const sampleRecordedAtMs = getTimestampMsFromIso(sample.recordedAt)
     return (
       sampleRecordedAtMs === null || sampleRecordedAtMs <= currentRecordedAtMs
     )
   })
 
   return candidates.at(-1) ?? null
-}
-
-/** 두 좌표 사이의 haversine 거리(m)를 계산 */
-function getDistanceMeters(
-  a: { lat: number; lng: number },
-  b: { lat: number; lng: number },
-) {
-  const earthRadiusMeters = 6_371_000
-  const lat1 = toRadians(a.lat)
-  const lat2 = toRadians(b.lat)
-  const deltaLat = toRadians(b.lat - a.lat)
-  const deltaLng = toRadians(b.lng - a.lng)
-
-  const haversine =
-    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(deltaLng / 2) *
-      Math.sin(deltaLng / 2)
-
-  return (
-    earthRadiusMeters *
-    2 *
-    Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
-  )
 }
 
 /** 특정 좌표가 gym center에서 얼마나 떨어져 있는지 계산 */
@@ -306,11 +268,6 @@ function getDistanceFromPlaceMeters(
     { lat: place.latitude, lng: place.longitude },
     location,
   )
-}
-
-/** 각도 값을 삼각함수 계산에 필요한 radian으로 변환 */
-function toRadians(value: number) {
-  return (value * Math.PI) / 180
 }
 
 /** 도착 정책을 평가하기 전에 공통 차단 조건을 확인 */
@@ -330,7 +287,7 @@ function getArrivalGateFailure(input: GymPolicyInput) {
     return "non-arrival-source"
   }
 
-  // 운동이 이미 진행 중이면 시작 알림과 pending prompt를 모두 만듬X
+  // 운동이 이미 진행 중이면 시작 알림과 pending prompt를 모두 만들지 않음
   if (!isUsableLocationSample(currentLocation, input.place.id)) {
     return "invalid-current-location"
   }
@@ -470,8 +427,8 @@ function getExitGateFailure(input: GymPolicyInput) {
     return "missing-workout-start"
   }
 
-  const nowMs = getTimestampMs(input.now)
-  const startedAtMs = getTimestampMs(activeWorkout.startedAt)
+  const nowMs = getTimestampMsFromIso(input.now)
+  const startedAtMs = getTimestampMsFromIso(activeWorkout.startedAt)
   if (nowMs === null || startedAtMs === null) {
     return "invalid-workout-time"
   }
@@ -486,7 +443,7 @@ function getExitGateFailure(input: GymPolicyInput) {
   }
 
   if (
-    !isValidCoordinate(activeWorkout.location.lat, activeWorkout.location.lng)
+    !isValidCoordinates(activeWorkout.location.lat, activeWorkout.location.lng)
   ) {
     return "invalid-workout-start-location"
   }

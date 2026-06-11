@@ -1,8 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getLocalDateKey } from "@/shared/lib/date"
-import { isValidCoordinates } from "@/shared/lib/geo"
+import { getDistanceMeters, isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
-import type { StoredWorkoutSession, WorkoutLocation } from "./types"
+import type { StoredWorkoutSession } from "./types"
 
 export const WORKOUT_PLACE_REMINDER_ENABLED_STORAGE_KEY =
   "yb:workout-place-reminder:enabled"
@@ -370,7 +370,11 @@ function upsertWorkoutPlaceReminderPlace(
   }
 
   const placeIndex = places.findIndex(
-    (place) => getDistanceMeters(place, location) <= PLACE_MATCH_RADIUS_METERS,
+    (place) =>
+      getDistanceMeters(
+        { lat: place.latitude, lng: place.longitude },
+        location,
+      ) <= PLACE_MATCH_RADIUS_METERS,
   )
 
   if (placeIndex === -1) {
@@ -431,36 +435,6 @@ function sortWorkoutPlaceReminderPlaces(places: WorkoutPlaceReminderPlace[]) {
 
     return b.workoutCount - a.workoutCount
   })
-}
-
-/** 두 좌표 사이의 직선 거리를 haversine 공식으로 계산 */
-function getDistanceMeters(
-  a: Pick<WorkoutPlaceReminderPlace, "latitude" | "longitude">,
-  b: WorkoutLocation,
-) {
-  const earthRadiusMeters = 6371000
-  const lat1 = toRadians(a.latitude)
-  const lat2 = toRadians(b.lat)
-  const deltaLat = toRadians(b.lat - a.latitude)
-  const deltaLng = toRadians(b.lng - a.longitude)
-
-  const haversine =
-    Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
-    Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(deltaLng / 2) *
-      Math.sin(deltaLng / 2)
-
-  return (
-    earthRadiusMeters *
-    2 *
-    Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
-  )
-}
-
-/** 각도 값을 삼각함수 계산에 필요한 라디안으로 변환 */
-function toRadians(value: number) {
-  return (value * Math.PI) / 180
 }
 
 /** 오늘 날짜를 운동 장소 알림 쿨다운 키 형식으로 반환 */

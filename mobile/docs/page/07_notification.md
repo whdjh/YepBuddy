@@ -411,7 +411,21 @@ OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 
 - `yb:workout-place-reminder:sync-status`
   - 값: enabled, operational, 권한 상태, 등록 region, 마지막 geofence 이벤트 상태(JSON)
 
-### 6.4 iOS 운동 Live Activity
+### 6.4 헬스장 위치 정책
+
+- `yb:gym-location-policy:contexts`
+  - 값: 장소별 위치 특성(JSON)
+  - 예: 일반 헬스장, 집/회사/학교 근처 헬스장, GPS가 자주 튀는 헬스장
+- `yb:gym-location-policy:cooldowns`
+  - 값: 운동 시작 제안과 종료 누락 리마인더의 재알림 제한 시간(JSON)
+  - 도착 알림 제한과 종료 리마인더 제한은 서로 분리한다.
+- `yb:gym-location-policy:samples`
+  - 값: 장소별 최근 위치 기록(JSON)
+  - 한 장소는 최근 30개까지만 보관한다.
+  - 전체 위치 기록은 600개까지만 보관한다.
+  - 14일이 지난 위치 기록은 제거한다.
+
+### 6.5 iOS 운동 Live Activity
 
 - `yb:workout-live-activity:commands`
   - 값: Live Activity AppIntent가 생성한 운동 command 배열(JSON)
