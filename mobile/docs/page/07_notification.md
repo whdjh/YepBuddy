@@ -269,8 +269,10 @@ Android에서는 다음 notification channel을 사용한다.
 
 알림 규칙:
 
-- OS geofence Enter 이벤트에서만 알림을 보내고, Exit 이벤트는 마지막 이벤트 상태만 저장한다.
-- 같은 장소는 하루 1회만 알림을 보낸다.
+- OS geofence Enter 이벤트는 알림 후보 신호다. 이벤트만으로 바로 알림을 보내지 않는다.
+- Enter 이벤트를 받으면 권한 프롬프트 없이 현재 위치를 1회 확인하고, 위치 정책을 통과한 경우에만 운동 시작 제안 알림을 보낸다.
+- 같은 장소 도착 알림은 12시간 cooldown, 전체 도착 알림은 30분 cooldown을 적용한다.
+- Exit 이벤트는 현재 단계에서는 마지막 이벤트 상태만 저장한다.
 - 알림 data에는 `type: "workout-place-arrival"`과 `placeId`만 포함한다.
 - 알림 제목/본문에는 주소, 좌표, 운동 기록 상세를 포함하지 않는다.
 - OS geofence 이벤트에 의존하므로 알림이 지연되거나 전달되지 않을 수 있다.
@@ -288,7 +290,7 @@ Android에서는 다음 notification channel을 사용한다.
 
 OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 알림 여부는 현재 위치, 최근 위치 기록, 운동 상태, 장소 특성, 재알림 제한 시간을 함께 보고 결정한다.
 
-현재 첫 구현 단위는 `entities/workout-session/lib/gymLocationPolicy.ts`의 순수 policy 함수와 단위 테스트다. 이 단계에서는 저장소, geofence task, 알림 예약, 라우팅에 연결하지 않는다. 실제 geofence Enter/Exit 이벤트 연결과 종료 알림 예약은 다음 구현 단계에서 붙인다.
+현재 구현은 순수 policy 함수, context/cooldown/sample 저장소, geofence Enter 기반 운동 시작 제안 알림까지 연결되어 있다. geofence Exit 기반 종료 누락 리마인더와 app-active 운동 중 확인은 다음 구현 단계에서 붙인다.
 
 #### 5.8.1 사용자가 보는 알림 종류
 
