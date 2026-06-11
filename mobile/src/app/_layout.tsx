@@ -7,7 +7,7 @@ import {
   DefaultTheme,
 } from "@react-navigation/native"
 import { router, Stack } from "expo-router"
-import { useColorScheme, View } from "react-native"
+import { AppState, useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
   ensureProteinSaleNotificationChannel,
@@ -15,7 +15,8 @@ import {
 } from "@/entities/protein"
 import {
   ensureWorkoutSessionNotificationChannels,
-  registerWorkoutPlaceArrivalNotificationHandler,
+  registerWorkoutPlaceNotificationHandler,
+  syncWorkoutPlaceExitReminderOnAppActive,
   syncWorkoutPlaceArrivalReminder,
   syncWorkoutReminderAtNight,
   WorkoutProvider,
@@ -30,8 +31,19 @@ export default function RootLayout() {
   useEffect(() => {
     const unsubscribeProteinSaleNotificationHandler =
       setupProteinSaleNotificationHandler()
-    const unsubscribeWorkoutPlaceArrivalNotificationHandler =
-      registerWorkoutPlaceArrivalNotificationHandler(() => router.push("/"))
+    const unsubscribeWorkoutPlaceNotificationHandler =
+      registerWorkoutPlaceNotificationHandler(
+        () => router.push("/"),
+        () => router.push("/workout/active"),
+      )
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (status) => {
+        if (status === "active") {
+          void syncWorkoutPlaceExitReminderOnAppActive().catch(() => undefined)
+        }
+      },
+    )
 
     void (async () => {
       await Promise.all([
@@ -47,8 +59,9 @@ export default function RootLayout() {
     })().catch(() => undefined)
 
     return () => {
+      appStateSubscription.remove()
       unsubscribeProteinSaleNotificationHandler()
-      unsubscribeWorkoutPlaceArrivalNotificationHandler()
+      unsubscribeWorkoutPlaceNotificationHandler()
     }
   }, [])
 

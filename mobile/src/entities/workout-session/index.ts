@@ -44,7 +44,8 @@ export {
 } from "./lib/workoutHistoryPrefill"
 export {
   disableWorkoutPlaceArrivalReminder,
-  registerWorkoutPlaceArrivalNotificationHandler,
+  registerWorkoutPlaceNotificationHandler,
+  syncWorkoutPlaceExitReminderOnAppActive,
   syncWorkoutPlaceArrivalReminder,
 } from "./lib/workoutPlaceArrivalReminder"
 export {

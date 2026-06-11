@@ -345,7 +345,7 @@ features/
 주요 흐름:
 - `SettingsScreen`이 운동/프로틴 섹션을 나누고 각 row를 렌더링한다.
 - `WorkoutReminderToggle`은 매일 운동 리마인더 enabled 값과 notification sync를 관리한다.
-- `WorkoutPlaceArrivalReminderToggle`은 장소 도착 리마인더 enabled 값과 geofence/sync를 관리한다.
+- `WorkoutPlaceArrivalReminderToggle`은 운동 장소 알림 enabled 값과 geofence/sync를 관리한다.
 - `ProteinSaleNotificationToggle`은 프로틴 세일 알림 예약/해제를 관리한다.
 - `WeeklyRoutineToggle`은 `useWeeklyRoutinePlan`을 사용하고, `routineSetup=1` param이면 설정 sheet를 연다.
 - `WeeklyRoutineSettingsSheet`와 `RoutineSettingsEditors`가 주간 루틴 split/cycle/body part 설정을 편집한다.
