@@ -117,7 +117,7 @@ function normalizeLiveActivityExtensionBuildSettings(
     settings.PRODUCT_NAME = '"$(TARGET_NAME)"'
     settings.SKIP_INSTALL = "YES"
     settings.OTHER_SWIFT_FLAGS =
-      "$(inherited) -D WORKOUT_LIVE_ACTIVITY_EXTENSION"
+      '"$(inherited) -D WORKOUT_LIVE_ACTIVITY_EXTENSION"'
     settings.SWIFT_EMIT_LOC_STRINGS = "YES"
     settings.SWIFT_VERSION = 5.0
     settings.TARGETED_DEVICE_FAMILY = 1
