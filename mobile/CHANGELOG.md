@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/whdjh/yepbuddy/compare/v1.1.1...v1.1.2) (2026-06-11)
+
+
+### Bug Fixes
+
+* **mobile:** 라이브 액티비티 익스텐션 서명 설정 추가 ([b8e4b0b](https://github.com/whdjh/yepbuddy/commit/b8e4b0b5a507fe05c4570b63b64f70c27fe157b0))
+
 ## [1.1.1](https://github.com/whdjh/yepbuddy/compare/v1.1.0...v1.1.1) (2026-06-11)
 
 
