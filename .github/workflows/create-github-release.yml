@@ -39,6 +39,66 @@ jobs:
           skip-github-release: true
           target-branch: ${{ github.event.inputs.target_branch }}
 
+      - name: Checkout release PR branch
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Normalize native build numbers
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        working-directory: mobile
+        run: |
+          node <<'NODE'
+          const fs = require("node:fs")
+
+          const appJsonPath = "app.json"
+          const appConfig = JSON.parse(fs.readFileSync(appJsonPath, "utf8"))
+          const version = appConfig.expo.version
+          const match = /^(\d+)\.(\d+)\.(\d+)(?:[-+].*)?$/.exec(version)
+
+          if (!match) {
+            throw new Error(`Unsupported Expo version format: ${version}`)
+          }
+
+          const [, majorText, minorText, patchText] = match
+          const major = Number(majorText)
+          const minor = Number(minorText)
+          const patch = Number(patchText)
+
+          appConfig.expo.ios = appConfig.expo.ios || {}
+          appConfig.expo.ios.buildNumber = String(patch + 1)
+
+          appConfig.expo.android = appConfig.expo.android || {}
+
+          const currentVersionCode = Number(appConfig.expo.android.versionCode || 0)
+          let versionCodePrefix = Math.floor(currentVersionCode / 10000000)
+
+          if (versionCodePrefix <= 0) {
+            versionCodePrefix = 55
+          }
+
+          appConfig.expo.android.versionCode =
+            versionCodePrefix * 10000000 + major * 10000 + minor * 100 + patch
+
+          fs.writeFileSync(appJsonPath, `${JSON.stringify(appConfig, null, 2)}\n`)
+          NODE
+
+      - name: Commit native build number changes
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        run: |
+          if git diff --quiet -- mobile/app.json; then
+            echo "No native build number changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mobile/app.json
+          git commit -m "chore: normalize native build numbers"
+          git push origin HEAD:${{ fromJSON(steps.release.outputs.pr).headBranchName }}
+
   release:
     if: github.event_name == 'push'
     name: GitHub Release 생성
