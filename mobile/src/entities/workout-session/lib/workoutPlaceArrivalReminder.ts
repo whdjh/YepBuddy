@@ -493,9 +493,25 @@ export async function syncWorkoutPlaceArrivalReminder(
   return true
 }
 
-/** 장소 도착 알림 탭 응답을 운동일지 pending prompt로 변환한다. */
-export function registerWorkoutPlaceArrivalNotificationHandler(
+/** 종료 리마인더 탭이 현재 운동 세션과 맞는지 확인 */
+async function handleWorkoutPlaceExitReminderResponse(
+  sessionId: string,
+  onExitReminderReady?: () => void,
+) {
+  const activeWorkout = await getGymPolicyActiveWorkout()
+  if (
+    (activeWorkout.phase === "recording" ||
+      activeWorkout.phase === "paused") &&
+    activeWorkout.sessionId === sessionId
+  ) {
+    onExitReminderReady?.()
+  }
+}
+
+/** 운동 장소 알림 탭 응답을 처리 */
+export function registerWorkoutPlaceNotificationHandler(
   onPromptReady?: () => void,
+  onExitReminderReady?: () => void,
 ) {
   const handleResponse = (
     response: Notifications.NotificationResponse | null | undefined,
@@ -508,25 +524,39 @@ export function registerWorkoutPlaceArrivalNotificationHandler(
     const data = response?.notification.request.content.data
     const placeId = data?.placeId
 
-    if (
-      data?.type !== WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE ||
-      typeof placeId !== "string"
-    ) {
+    if (data?.type === WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE) {
+      if (typeof placeId !== "string") {
+        return
+      }
+
+      handledResponseIds.add(requestId)
+
+      void savePendingWorkoutPlaceReminderPrompt({
+        placeId,
+        createdAt: new Date().toISOString(),
+      }).then(() => {
+        onPromptReady?.()
+      })
+
+      Notifications.clearLastNotificationResponse()
       return
     }
 
-    handledResponseIds.add(requestId)
+    if (data?.type === WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE) {
+      const sessionId = data.sessionId
+      if (typeof placeId !== "string" || typeof sessionId !== "string") {
+        return
+      }
 
-    void savePendingWorkoutPlaceReminderPrompt({
-      placeId,
-      createdAt: new Date().toISOString(),
-    }).then(() => {
-      onPromptReady?.()
-    })
+      handledResponseIds.add(requestId)
 
-    void Notifications.clearLastNotificationResponseAsync().catch(
-      () => undefined,
-    )
+      void handleWorkoutPlaceExitReminderResponse(
+        sessionId,
+        onExitReminderReady,
+      ).finally(() => {
+        Notifications.clearLastNotificationResponse()
+      })
+    }
   }
 
   handleResponse(Notifications.getLastNotificationResponse())

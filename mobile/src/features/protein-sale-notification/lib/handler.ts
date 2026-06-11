@@ -23,9 +23,7 @@ function handleProteinSaleNotificationResponse(
   const data = response.notification.request.content.data
   if (data?.kind === PROTEIN_SALE_NOTIFICATION_KIND) {
     router.push("/protein")
-    void Notifications.clearLastNotificationResponseAsync().catch(
-      () => undefined,
-    )
+    Notifications.clearLastNotificationResponse()
   }
 }
 

@@ -15,7 +15,7 @@ import {
 } from "@/entities/protein"
 import {
   ensureWorkoutSessionNotificationChannels,
-  registerWorkoutPlaceArrivalNotificationHandler,
+  registerWorkoutPlaceNotificationHandler,
   syncWorkoutPlaceExitReminderOnAppActive,
   syncWorkoutPlaceArrivalReminder,
   syncWorkoutReminderAtNight,
@@ -31,8 +31,11 @@ export default function RootLayout() {
   useEffect(() => {
     const unsubscribeProteinSaleNotificationHandler =
       setupProteinSaleNotificationHandler()
-    const unsubscribeWorkoutPlaceArrivalNotificationHandler =
-      registerWorkoutPlaceArrivalNotificationHandler(() => router.push("/"))
+    const unsubscribeWorkoutPlaceNotificationHandler =
+      registerWorkoutPlaceNotificationHandler(
+        () => router.push("/"),
+        () => router.push("/workout/active"),
+      )
     const appStateSubscription = AppState.addEventListener(
       "change",
       (status) => {
@@ -58,7 +61,7 @@ export default function RootLayout() {
     return () => {
       appStateSubscription.remove()
       unsubscribeProteinSaleNotificationHandler()
-      unsubscribeWorkoutPlaceArrivalNotificationHandler()
+      unsubscribeWorkoutPlaceNotificationHandler()
     }
   }, [])
 

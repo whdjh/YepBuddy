@@ -281,10 +281,12 @@ Android에서는 다음 notification channel을 사용한다.
 
 탭 동작:
 
-- 알림을 누르면 운동일지 화면으로 이동한다.
+- 운동 시작 제안 알림을 누르면 운동일지 화면으로 이동한다.
 - 운동일지에서 `운동을 시작하시겠어요?` 확인 Alert를 표시한다.
 - `운동 시작`을 누르면 진행 중 운동이 없을 때 `/workout/countdown`으로 이동한다.
 - 이미 진행 중인 운동이 있으면 `/workout/active`로 이동한다.
+- 종료 누락 리마인더를 누르면 현재 진행 중이거나 일시정지된 운동의 `sessionId`가 알림 data와 같을 때만 `/workout/active`로 이동한다.
+- `sessionId`가 다르거나 운동이 이미 끝난 경우에는 이동하지 않는다.
 
 ### 5.8 헬스장 위치 정책 엔진
 
@@ -292,7 +294,7 @@ Android에서는 다음 notification channel을 사용한다.
 
 OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 알림 여부는 현재 위치, 최근 위치 기록, 운동 상태, 장소 특성, 재알림 제한 시간을 함께 보고 결정한다.
 
-현재 구현은 순수 policy 함수, context/cooldown/sample 저장소, geofence Enter 기반 운동 시작 제안 알림, geofence Exit/app-active 기반 종료 누락 리마인더 예약까지 연결되어 있다. 종료 리마인더 탭 후 `/workout/active` 복귀 검증은 다음 구현 단계에서 붙인다.
+현재 구현은 순수 policy 함수, context/cooldown/sample 저장소, geofence Enter 기반 운동 시작 제안 알림, geofence Exit/app-active 기반 종료 누락 리마인더 예약, 종료 리마인더 탭 후 `/workout/active` 복귀 검증까지 연결되어 있다.
 
 #### 5.8.1 사용자가 보는 알림 종류
 

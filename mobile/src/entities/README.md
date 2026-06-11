@@ -94,7 +94,7 @@ src/entities
 - HealthKit: `startWorkoutSession`, `pauseWorkoutSession`, `resumeWorkoutSession`, `endWorkoutSession`, `readLiveWorkoutStats`, `getWorkoutDetail`, `getWorkoutSummariesForDate`, `getWorkoutSummariesForMonth`
 - 위치/캘린더: `getWorkoutLocationOnce`, `registerWorkoutToCalendar`
 - 운동 리마인더: `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`, `cancelScheduledWorkoutReminder`
-- 장소 도착 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceArrivalNotificationHandler`, pending prompt API
+- 장소 도착/이탈 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceNotificationHandler`, pending prompt API
 - 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `deleteStoredWorkoutSession`
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
 - 이전 기록 프리필: `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
@@ -232,7 +232,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `registerWorkoutToCalendar`는 캘린더 권한 요청, YepBuddy 캘린더 생성, 이벤트 생성, 권한 거부 시 설정 안내 Alert를 수행한다.
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
 - `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 반복 장소 후보에 맞춰 geofence를 등록/중지하고 동기화 상태를 저장한다.
-- `registerWorkoutPlaceArrivalNotificationHandler`는 장소 알림 탭을 pending prompt 저장으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
+- `registerWorkoutPlaceNotificationHandler`는 장소 알림 탭을 pending prompt 저장 또는 active workout 복귀 콜백으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
 - `TaskManager.defineTask`는 장소 Enter 이벤트에서 하루 1회 알림을 예약하고 Enter/Exit 이벤트 상태를 저장한다.
 - `fetch*Protein*` 함수는 Supabase network 요청을 수행하고 실패 시 `Error`를 throw한다.
 
