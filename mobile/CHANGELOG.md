@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/whdjh/yepbuddy/compare/v1.1.0...v1.1.1) (2026-06-11)
+
+
+### Bug Fixes
+
+* **mobile:** 라이브 액티비티 Swift 플래그 인용 처리 ([#58](https://github.com/whdjh/yepbuddy/issues/58)) ([e342521](https://github.com/whdjh/yepbuddy/commit/e342521592e8a077ddd2cc3ac479ca25960c0f8d))
+
 ## [1.1.0](https://github.com/whdjh/yepbuddy/compare/v1.0.1...v1.1.0) (2026-06-11)
 
 
