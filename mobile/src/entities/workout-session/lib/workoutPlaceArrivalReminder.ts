@@ -20,6 +20,7 @@ import {
   getGymLocationPolicyContexts,
   getGymLocationPolicyCooldowns,
   getGymLocationPolicySamples,
+  refreshGymLocationPolicyContexts,
   saveGymLocationPolicyCooldowns,
 } from "../model/gymLocationPolicyStorage"
 import { loadCurrentWorkoutSnapshot } from "../model/sessionStorage"
@@ -250,6 +251,22 @@ async function markGymExitPolicyNotified(sessionId: string, now: string) {
       [sessionId]: now,
     },
   })
+}
+
+/** 위치 샘플을 저장하고 장소 context를 갱신 */
+async function appendGymLocationPolicySampleAndRefreshContext(
+  sample: GymLocationSample | null,
+  places: WorkoutPlaceReminderPlace[],
+  now: string,
+) {
+  if (!sample) {
+    return
+  }
+
+  const didAppend = await appendGymLocationPolicySample(sample, now)
+  if (didAppend) {
+    await refreshGymLocationPolicyContexts(places, now)
+  }
 }
 
 /** Android 백그라운드 위치 권한 안내 */
@@ -586,9 +603,7 @@ async function handleWorkoutPlaceArrivalEnter(placeId: string) {
       })
     : null
 
-  if (currentSample) {
-    await appendGymLocationPolicySample(currentSample, now)
-  }
+  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
 
   const [activeWorkout, contexts, cooldowns, sampleRecord] = await Promise.all([
     getGymPolicyActiveWorkout(),
@@ -648,9 +663,7 @@ async function handleWorkoutPlaceExit(placeId: string) {
       })
     : null
 
-  if (currentSample) {
-    await appendGymLocationPolicySample(currentSample, now)
-  }
+  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
 
   await evaluateAndScheduleGymExitReminder({
     activeWorkout: await getGymPolicyActiveWorkout(),
@@ -735,9 +748,7 @@ export async function syncWorkoutPlaceExitReminderOnAppActive() {
       })
     : null
 
-  if (currentSample) {
-    await appendGymLocationPolicySample(currentSample, now)
-  }
+  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
 
   const place = places.find((item) => item.id === currentSample?.placeId)
   if (!place) {

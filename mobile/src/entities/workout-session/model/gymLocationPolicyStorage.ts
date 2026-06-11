@@ -2,10 +2,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getTimestampMsFromIso } from "@/shared/lib/date"
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
+import { buildGymPlaceContexts } from "../lib/gymPlaceContext"
 import type {
   GymContext,
   GymLocationPolicyCooldowns,
   GymLocationSample,
+  GymPlace,
   GymPlaceContext,
 } from "../lib/gymLocationPolicy"
 
@@ -336,6 +338,22 @@ export async function saveGymLocationPolicyContexts(
     GYM_LOCATION_POLICY_CONTEXTS_STORAGE_KEY,
     JSON.stringify(normalizeContextRecord(contexts)),
   )
+}
+
+/** 저장된 위치 샘플을 기준으로 장소별 context를 다시 계산해 저장 */
+export async function refreshGymLocationPolicyContexts(
+  places: GymPlace[],
+  now: string,
+) {
+  const sampleRecord = await getGymLocationPolicySamples(now)
+  const contexts = buildGymPlaceContexts({
+    now,
+    places,
+    sampleRecord,
+  })
+
+  await saveGymLocationPolicyContexts(contexts)
+  return contexts
 }
 
 /** 도착/종료 재알림 제한 상태를 조회. 저장값이 없거나 깨졌으면 기본값 반환 */

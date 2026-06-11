@@ -294,7 +294,7 @@ Android에서는 다음 notification channel을 사용한다.
 
 OS의 150m 반경 감지는 앱을 깨우는 후보 신호일 뿐이다. 실제 알림 여부는 현재 위치, 최근 위치 기록, 운동 상태, 장소 특성, 재알림 제한 시간을 함께 보고 결정한다.
 
-현재 구현은 순수 policy 함수, context/cooldown/sample 저장소, geofence Enter 기반 운동 시작 제안 알림, geofence Exit/app-active 기반 종료 누락 리마인더 예약, 종료 리마인더 탭 후 `/workout/active` 복귀 검증까지 연결되어 있다.
+현재 구현은 순수 policy 함수, context/cooldown/sample 저장소, 샘플 기반 장소 context 자동 계산, geofence Enter 기반 운동 시작 제안 알림, geofence Exit/app-active 기반 종료 누락 리마인더 예약, 종료 리마인더 탭 후 `/workout/active` 복귀 검증까지 연결되어 있다.
 
 #### 5.8.1 사용자가 보는 알림 종류
 
