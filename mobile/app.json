@@ -61,7 +61,12 @@
           }
         }
       ],
-      "./plugins/with-workout-session",
+      [
+        "./plugins/with-workout-session",
+        {
+          "appleTeamId": "U9H4YARLH8"
+        }
+      ],
       [
         "react-native-health",
         {
@@ -105,7 +110,20 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "a6699f81-f2c2-4419-bbd1-e5b54e23ef77"
+        "projectId": "a6699f81-f2c2-4419-bbd1-e5b54e23ef77",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "WorkoutLiveActivityExtension",
+                  "bundleIdentifier": "com.juhun.yepbuddy.app.WorkoutLiveActivityExtension",
+                  "parentBundleIdentifier": "com.juhun.yepbuddy.app"
+                }
+              ]
+            }
+          }
+        }
       }
     },
     "experiments": {

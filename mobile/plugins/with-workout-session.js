@@ -95,6 +95,7 @@ function normalizeLiveActivityExtensionBuildSettings(
   bundleIdentifier,
   version,
   buildNumber,
+  appleTeamId,
 ) {
   const configurations = project.hash.project.objects.XCBuildConfiguration
 
@@ -104,6 +105,9 @@ function normalizeLiveActivityExtensionBuildSettings(
     settings.CLANG_ENABLE_MODULES = "YES"
     settings.CODE_SIGN_STYLE = "Automatic"
     settings.CURRENT_PROJECT_VERSION = buildNumber
+    if (appleTeamId) {
+      settings.DEVELOPMENT_TEAM = appleTeamId
+    }
     settings.GENERATE_INFOPLIST_FILE = "NO"
     settings.INFOPLIST_FILE = `${LIVE_ACTIVITY_EXTENSION_TARGET}/Info.plist`
     settings.IPHONEOS_DEPLOYMENT_TARGET = 16.2
@@ -209,7 +213,9 @@ function normalizeHealthKitEntitlementsFile(entitlementsPath) {
 }
 
 // config plugin 체인 메모리상 entitlements 선보정
-module.exports = function withWorkoutSession(config) {
+module.exports = function withWorkoutSession(config, props = {}) {
+  const appleTeamId = props.appleTeamId
+
   config = withInfoPlist(config, (config) => {
     config.modResults.NSSupportsLiveActivities = true
 
@@ -354,6 +360,7 @@ module.exports = function withWorkoutSession(config) {
     targetAttributes[extensionTarget] = {
       ...(targetAttributes[extensionTarget] ?? {}),
       CreatedOnToolsVersion: 15.0,
+      ...(appleTeamId ? { DevelopmentTeam: appleTeamId } : {}),
     }
     normalizeLiveActivityExtensionBuildSettings(
       project,
@@ -361,6 +368,7 @@ module.exports = function withWorkoutSession(config) {
       extensionBundleIdentifier,
       appVersion,
       appBuildNumber,
+      appleTeamId,
     )
 
     // Xcode project mod 이후 실제 entitlements 파일 최종 정규화
