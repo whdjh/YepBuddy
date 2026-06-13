@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>yepbuddy</title>
+<style>
+/* ═══ TOKENS ═══ */
+:root,[data-theme="light"]{
+  --bg:#FAF7F2;--sf:#FFF;--sf-s:#F5EFE6;--sf-m:#EDE4D6;--fp:#F2EBDD;--fs:#3A2A1A;
+  --fg:#3A2A1A;--fg2:#5A4A36;--fg3:#6B5638;--fgd:#A8A29E;
+  --ac:#9B7E56;--ach:#876B45;--bd:#DDD2BF;--bds:#E8DFD0;--bdst:#B59768;
+  --sh:0 1px 3px rgba(58,42,26,.08),0 1px 2px rgba(58,42,26,.04);
+  --shl:0 10px 25px rgba(58,42,26,.15);
+}
+[data-theme="dark"]{
+  --bg:#1A120A;--sf:#3A2A1A;--sf-s:#2A1E12;--sf-m:#4A3A28;--fp:#5A472D;--fs:#EDE4D6;
+  --fg:#FFF;--fg2:#EDE4D6;--fg3:#DDD2BF;--fgd:#7B6548;
+  --ac:#D9C99A;--ach:#C4A87E;--bd:#5A472D;--bds:#4A3A28;--bdst:#7B6548;
+  --sh:0 1px 3px rgba(0,0,0,.2),0 1px 2px rgba(0,0,0,.1);
+  --shl:0 10px 25px rgba(0,0,0,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{background:var(--bg)!important;color-scheme:light only}
+body{font-family:'Pretendard Variable','Pretendard',-apple-system,sans-serif;background:var(--bg)!important;color:var(--fg);min-height:100vh;overflow-x:hidden;font-size:15px;line-height:1.5}
+.app{max-width:400px;margin:0 auto;position:relative;min-height:100vh;padding-bottom:90px;background:var(--bg)}
+.scr{display:none;padding:0 20px 100px}.scr.on{display:block}
+
+/* ═══ RADIUS: outer 16 = inner 8 × 2 ═══ */
+.cd{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:24px;box-shadow:var(--sh)}
+.cd.ck{cursor:pointer;min-height:44px}.cd.ck:active{transform:scale(.98);transition:transform .15s}
+.cd-in{border-radius:8px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+
+/* ═══ CHIPS 44px ═══ */
+.ch{height:44px;padding:0 18px;border-radius:22px;border:1.5px solid var(--bd);background:var(--fp);color:var(--fg);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap;font-family:inherit}
+.ch.on{border-color:var(--ac);background:var(--ac);color:#FAF7F2}
+
+/* ═══ FLEX ═══ */
+.fl{display:flex}.ic{align-items:center}.jb{justify-content:space-between}.jc{justify-content:center}
+.col{flex-direction:column}.f1{flex:1}.fw{flex-wrap:wrap}
+.g4{gap:4px}.g8{gap:8px}.g10{gap:10px}.g12{gap:12px}.g16{gap:16px}.g20{gap:20px}.g24{gap:24px}
+.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}.mb32{margin-bottom:32px}
+
+.ring{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.ring svg{transform:rotate(-90deg)}
+.ring-c{position:absolute;display:flex;align-items:center;justify-content:center;flex-direction:column}
+
+/* ═══ BACK 44px, radius 12 ═══ */
+.bk{background:var(--sf-m);border:none;border-radius:12px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.sp{width:44px}
+
+/* ═══ BUTTONS 52px ═══ */
+.btn-p{height:52px;border-radius:14px;background:var(--fs);color:var(--bg);border:none;font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:inherit}
+.btn-a{height:52px;border-radius:14px;background:var(--ac);color:#FAF7F2;border:none;font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:inherit}
+.btn-o{height:52px;border-radius:14px;background:transparent;color:var(--ac);border:1.5px solid var(--ac);font-size:15px;font-weight:500;cursor:pointer;width:100%;font-family:inherit}
+.btn-g{height:44px;border-radius:10px;background:transparent;color:var(--fg2);border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;padding:0 16px}
+
+/* ═══ INPUTS ═══ */
+.sb{width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;cursor:pointer}
+.si{width:100px;height:56px;font-size:28px;font-weight:700;text-align:center;color:var(--ac);background:var(--sf);border:1.5px solid var(--ac);border-radius:14px;outline:none;font-family:inherit}
+.sc{height:56px;padding:0 24px;border-radius:14px;background:var(--ac);color:#FAF7F2;border:none;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit}
+textarea.mo{width:100%;min-height:120px;padding:16px;font-size:15px;color:var(--fg);background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;outline:none;resize:vertical;font-family:inherit;line-height:1.6}
+textarea.mo:focus{border-color:var(--ac)}
+input.sr{width:100%;height:48px;padding:0 16px 0 44px;font-size:15px;color:var(--fg);background:var(--sf);border:1.5px solid var(--bd);border-radius:14px;outline:none;font-family:inherit}
+input.sr:focus{border-color:var(--ac)}
+
+/* ═══ ICON BOX with border (#7 fix) ═══ */
+.ib{display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1.5px solid var(--bg)}
+.ib-sm{width:44px;height:44px;border-radius:8px}
+.ib-md{width:48px;height:48px;border-radius:8px}
+.ib-lg{width:56px;height:56px;border-radius:8px}
+.ib-su{background:#D6F0D6}
+
+/* ═══ PILL NAV expanded default (#4 fix) ═══ */
+.pw{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:100}
+.pl{display:flex;align-items:center;gap:6px;background:var(--fs);border-radius:9999px;padding:10px;box-shadow:var(--shl);min-width:240px;min-height:48px}
+.pb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;border-radius:22px;padding:10px 14px;cursor:pointer;min-height:44px}
+.pb.on{background:var(--ac)}
+.pb span:last-child{font-size:11px;font-weight:500;color:#FAF7F2}
+
+/* ═══ CALENDAR ═══ */
+.cn{display:flex;justify-content:center;gap:16px;margin-bottom:24px}
+.cn button{background:var(--fp);border:1px solid var(--bd);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:18px;color:var(--fg);font-family:inherit}
+.cg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.fs{display:flex;gap:10px;overflow-x:auto;padding-bottom:20px;scrollbar-width:none}.fs::-webkit-scrollbar{display:none}
+
+/* ═══ BADGES ═══ */
+.bd{padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;display:inline-flex;min-height:28px;align-items:center}
+.bd-l{background:#D6F0D6;color:#2E5A2E}.bd-m{background:#D6E8F0;color:#1A4A5E}.bd-h{background:#FDDDD6;color:#7A2419}
+
+/* ═══ PROTEIN ═══ */
+.pc{background:var(--sf);border:1px solid var(--bd);border-radius:16px;padding:20px;box-shadow:var(--sh);margin-bottom:12px;cursor:pointer;min-height:44px}
+.pc:active{transform:scale(.98)}
+
+/* ═══ MAP ═══ */
+.mp{height:180px;background:linear-gradient(135deg,var(--sf-m),var(--bd));display:flex;align-items:center;justify-content:center;position:relative;border-radius:0 0 16px 16px}
+
+/* ═══ TEMPO ═══ */
+.tf{background:var(--sf);border:1px solid var(--bd);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:center;gap:14px}
+.ab{width:44px;height:44px;border-radius:10px;border:1px solid var(--bd);background:var(--fp);color:var(--fg);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;flex-shrink:0}
+.ab:active{background:var(--ac);color:#FAF7F2;border-color:var(--ac)}
+.sg{display:flex;background:var(--sf-m);border-radius:12px;padding:4px;margin-bottom:24px}
+.sg button{flex:1;height:44px;border:none;border-radius:10px;font-size:14px;font-weight:500;font-family:inherit;background:transparent;color:var(--fg3);cursor:pointer}
+.sg button.on{background:var(--sf);color:var(--fg);font-weight:600;box-shadow:var(--sh)}
+
+/* ═══ DARK: COUNTDOWN + ACTIVE ═══ */
+.cd-bg{background:#1A120A;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0}
+.aw-bg{background:#1A120A;min-height:100vh;padding:0;position:relative}
+.aw-bg .scr-inner{padding:48px 24px 220px}
+.drawer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:400px;background:#3A2A1A;border-radius:20px 20px 0 0;transition:transform .3s;z-index:90}
+.drawer-handle{width:40px;height:5px;background:#9B7E56;border-radius:4px;margin:12px auto;cursor:pointer}
+.drawer-ctrl{display:flex;justify-content:center;gap:20px;padding:12px 24px 20px}
+.drawer-btn{width:56px;height:56px;border-radius:9999px;background:#5A472D;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.drawer-btn-lg{width:64px;height:64px;background:#6B5638}
+.drawer-ext{padding:16px 24px 36px;display:flex;flex-direction:column;gap:12px}
+.drawer-ext-btn{height:52px;border-radius:14px;border:none;font-size:16px;font-weight:600;cursor:pointer;width:100%;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* ═══ THEME TOGGLE ═══ */
+.theme-toggle{position:fixed;top:12px;right:12px;z-index:200;width:44px;height:44px;border-radius:22px;border:1.5px solid var(--bd);background:var(--sf);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;box-shadow:var(--sh)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- Theme toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" id="tt">🌙</button>
+
+<!-- ═══ Dashboard ═══ -->
+<div class="scr on" id="s-dashboard">
+  <div style="padding:20px 0 24px"><h1 style="font-size:30px;font-weight:700;letter-spacing:-.03em;color:var(--fg)">요약</h1><p style="font-size:14px;color:var(--fg2);margin-top:6px">3월 15일 일요일</p></div>
+  <div class="cd ck mb16" onclick="go('calendar')"><div class="fl ic jb"><div class="fl ic g20"><div class="ring" style="width:90px;height:90px"><svg width="90" height="90"><circle cx="45" cy="45" r="35" fill="none" stroke="var(--bds)" stroke-width="10"/><circle cx="45" cy="45" r="35" fill="none" stroke="var(--ac)" stroke-width="10" stroke-dasharray="219.9" stroke-dashoffset="61" stroke-linecap="round"/></svg><div class="ring-c"><span style="font-size:22px;font-weight:700;color:var(--ac)">18</span></div></div><div><p style="font-size:13px;color:var(--fg2);margin-bottom:4px">오늘의 운동</p><p style="font-size:20px;font-weight:700;color:var(--fg)">가슴</p><p style="font-size:26px;font-weight:700;color:var(--ac);margin-top:4px">18세트</p></div></div><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 4l6 6-6 6" stroke="var(--fgd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+  <div class="g2">
+    <div class="cd"><p style="font-size:13px;font-weight:600;color:var(--fg2);margin-bottom:4px">운동시간</p><p style="font-size:13px;color:var(--fg3);margin-bottom:8px">오늘</p><p style="font-size:32px;font-weight:700;color:var(--ac)">43<span style="font-size:15px;font-weight:500;margin-left:2px">분</span></p></div>
+    <div class="cd"><p style="font-size:13px;font-weight:600;color:var(--fg2);margin-bottom:4px">세트수</p><p style="font-size:13px;color:var(--fg3);margin-bottom:8px">오늘</p><p style="font-size:32px;font-weight:700;color:var(--ac)">18<span style="font-size:15px;font-weight:500;margin-left:2px">세트</span></p></div>
+  </div>
+  <div class="g2">
+    <div class="cd ck" onclick="go('sessions')"><div class="fl jb ic mb12"><p style="font-size:13px;font-weight:600;color:var(--fg2)">세션</p><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 4l6 6-6 6" stroke="var(--fgd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="ib ib-sm ib-su mb12" id="di1"></div><p style="font-size:16px;font-weight:600;color:var(--fg);margin-bottom:4px">가슴</p><p style="font-size:22px;font-weight:700;color:var(--ac)">262KCAL</p><p style="font-size:13px;color:var(--fg3);margin-top:8px">토요일</p></div>
+    <div class="cd ck" onclick="go('input')"><div class="fl jb ic mb12"><p style="font-size:13px;font-weight:600;color:var(--fg2)">운동</p><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 4l6 6-6 6" stroke="var(--fgd)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="fl col ic g10" style="padding-top:8px"><div id="di2"></div><p style="font-size:15px;font-weight:600;color:var(--fg)">근력 강화 운동</p><div class="fl ic g4"><div style="width:8px;height:8px;border-radius:4px;background:#4A8C4A"></div><span style="font-size:13px;font-weight:600;color:#4A8C4A">운동 시작</span></div></div></div>
+  </div>
+</div>
+
+<!-- ═══ Calendar ═══ -->
+<div class="scr" id="s-calendar"><div class="fl ic g12" style="padding:20px 0 24px"><button class="bk" onclick="go('dashboard')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2 style="font-size:22px;font-weight:700;color:var(--fg);flex:1;text-align:center" id="ct"></h2><div class="sp"></div></div><div class="cn"><button onclick="cN(-1)">‹</button><button onclick="cN(1)">›</button></div><div class="cg mb16" id="cds"></div><div class="cg" id="ccs"></div></div>
+
+<!-- ═══ Sessions ═══ -->
+<div class="scr" id="s-sessions"><div class="fl ic g12" style="padding:20px 0 24px"><button class="bk" onclick="go('dashboard')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2 style="font-size:22px;font-weight:700;color:var(--fg);flex:1;text-align:center">세션</h2><div class="sp"></div></div><div class="fs" id="sf"></div><div id="sl"></div></div>
+
+<!-- ═══ Detail ═══ -->
+<div class="scr" id="s-detail"><div class="fl ic g12" style="padding:20px 0 24px"><button class="bk" onclick="go('calendar')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2 style="font-size:22px;font-weight:700;color:var(--fg);flex:1;text-align:center" id="dt"></h2><div class="sp"></div></div><div id="dc"></div></div>
+
+<!-- ═══ Input ═══ -->
+<div class="scr" id="s-input"><div class="fl ic g12" style="padding:20px 0 24px"><button class="bk" onclick="go('dashboard')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2 style="font-size:22px;font-weight:700;color:var(--fg);flex:1;text-align:center">운동 기록</h2><div class="sp"></div></div>
+<div class="fl jc mb24" id="ii"></div>
+<div class="mb24"><p style="font-size:16px;font-weight:600;color:var(--fg);margin-bottom:12px">운동 부위</p><div class="fl g10 fw" id="ic"></div></div>
+<div class="mb24"><p style="font-size:16px;font-weight:600;color:var(--fg);margin-bottom:12px">세트수</p><div id="sa"></div></div>
+<div class="mb32"><p style="font-size:16px;font-weight:600;color:var(--fg);margin-bottom:12px">메모</p><textarea class="mo" id="memo-input" placeholder="운동 메모를 자유롭게 작성하세요..."></textarea><p style="font-size:13px;color:var(--fg3);margin-top:8px">운동 전·중·후 언제든 수정 가능</p></div>
+<div class="fl col g12"><button class="btn-a" onclick="startCountdown()">운동 시작</button><button class="btn-o" onclick="go('dashboard')">캘린더에 등록</button></div></div>
+
+<!-- ═══ Countdown (always dark) ═══ -->
+<div class="scr" id="s-countdown" style="padding:0"><div class="cd-bg"><div style="width:56px;height:56px;background:rgba(217,201,154,.15);border-radius:8px;border:1.5px solid #1A120A;display:flex;align-items:center;justify-content:center;margin-bottom:32px" id="cd-icon"></div><div class="ring" style="width:240px;height:240px"><svg width="240" height="240"><circle cx="120" cy="120" r="105" fill="none" stroke="rgba(217,201,154,.1)" stroke-width="16"/><circle cx="120" cy="120" r="105" fill="none" stroke="#D9C99A" stroke-width="16" stroke-dasharray="659.7" id="cd-arc" stroke-dashoffset="659.7" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/></svg><div class="ring-c"><span style="font-size:96px;font-weight:700;color:#FFF" id="cd-num">3</span></div></div><p style="font-size:18px;font-weight:500;color:#EDE4D6;margin-top:24px">근력 강화 운동</p></div></div>
+
+<!-- ═══ Active (always dark) ═══ -->
+<div class="scr" id="s-active" style="padding:0"><div class="aw-bg"><div class="scr-inner">
+  <div style="margin-top:60px"><span style="font-size:72px;font-weight:700;color:#FFF;line-height:1" id="aw-bpm">72</span><span style="font-size:32px;color:#D9C99A;vertical-align:middle;margin-left:6px">♥</span></div>
+  <div style="display:flex;gap:48px;margin-top:32px"><div><div style="font-size:40px;font-weight:700;color:#FFF" id="aw-kcal1">0</div><div style="font-size:14px;color:#DDD2BF;margin-top:4px">활동 킬로칼로리</div></div><div><div style="font-size:40px;font-weight:700;color:#FFF" id="aw-kcal2">0</div><div style="font-size:14px;color:#DDD2BF;margin-top:4px">총 킬로칼로리</div></div></div>
+</div></div>
+<div class="drawer" id="drawer" style="transform:translateY(calc(100% - 110px))">
+  <div class="drawer-handle" onclick="toggleDrawer()"></div>
+  <div style="display:flex;align-items:center;padding:12px 24px 8px;gap:16px">
+    <div style="width:48px;height:48px;border-radius:8px;background:rgba(217,201,154,.15);border:1.5px solid #1A120A;display:flex;align-items:center;justify-content:center" id="dw-icon"></div>
+    <div style="font-size:30px;font-weight:700;color:#FFF;font-variant-numeric:tabular-nums;flex:1;text-align:center" id="aw-timer">00:00.00</div>
+    <div class="ring" style="width:40px;height:40px"><svg width="40" height="40"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(217,201,154,.1)" stroke-width="4"/><circle cx="20" cy="20" r="16" fill="none" stroke="#D9C99A" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="90" stroke-linecap="round"/></svg></div>
+  </div>
+  <div class="drawer-ctrl"><button class="drawer-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#EDE4D6" stroke-width="2"/><text x="12" y="16" text-anchor="middle" fill="#EDE4D6" font-size="12" font-weight="600">1</text></svg></button><button class="drawer-btn drawer-btn-lg" onclick="togglePause()"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="8" y="6" width="4" height="16" rx="1" fill="#EDE4D6"/><rect x="16" y="6" width="4" height="16" rx="1" fill="#EDE4D6"/></svg></button><button class="drawer-btn"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="14" width="3" height="6" rx="1" fill="#EDE4D6"/><rect x="9" y="10" width="3" height="10" rx="1" fill="#EDE4D6"/><rect x="14" y="6" width="3" height="14" rx="1" fill="#EDE4D6"/></svg></button></div>
+  <div class="drawer-ext" id="drawer-ext" style="display:none">
+    <button class="drawer-ext-btn" style="background:#5A472D;color:#FFF" onclick="openMemo()">✏️ 메모 수정</button>
+    <button class="drawer-ext-btn" style="background:rgba(255,107,90,.15);color:#FF6B5A" onclick="endWorkout()">✕ 운동 종료</button>
+    <button class="drawer-ext-btn" style="background:#5A472D;color:#DDD2BF">🔒 제어 잠금</button>
+  </div>
+</div>
+<div id="mm" style="display:none;position:fixed;inset:0;background:rgba(26,18,10,.7);z-index:200;align-items:flex-end;justify-content:center"><div style="width:100%;max-width:400px;background:var(--bg);border-radius:20px 20px 0 0;padding:24px"><p style="font-size:18px;font-weight:700;color:var(--fg);margin-bottom:16px">메모 수정</p><textarea class="mo" id="me" style="min-height:120px"></textarea><div class="fl g12" style="margin-top:12px"><button class="btn-a" onclick="saveMemo()" style="height:48px;font-size:15px">저장</button><button class="btn-g" onclick="closeMemo()">취소</button></div></div></div>
+</div>
+
+<!-- ═══ Tempo ═══ -->
+<div class="scr" id="s-tempo"><div style="padding:20px 0 24px"><h1 style="font-size:30px;font-weight:700;letter-spacing:-.03em;color:var(--fg)">템포</h1><p style="font-size:14px;color:var(--fg2);margin-top:6px">수축·이완 타이밍에 집중하세요</p></div>
+<div class="sg" id="ot"><button class="on" onclick="sO('con')">수축 먼저</button><button onclick="sO('ecc')">이완 먼저</button></div>
+<div style="font-size:15px;font-weight:600;color:var(--ac);text-align:center;margin-bottom:8px" id="tp">대기 중</div>
+<div class="fl jc" style="margin:24px 0 36px"><div class="ring" style="width:200px;height:200px"><svg width="200" height="200"><circle cx="100" cy="100" r="88" fill="none" stroke="var(--bds)" stroke-width="14"/><circle cx="100" cy="100" r="88" fill="none" stroke="var(--ac)" stroke-width="14" stroke-dasharray="552.9" id="ta" stroke-dashoffset="552.9" stroke-linecap="round" style="transition:stroke-dashoffset 1s linear"/></svg><div class="ring-c"><span style="font-size:40px;font-weight:700;color:var(--ac)" id="tc">0</span><span style="font-size:13px;color:var(--fg2);margin-top:4px" id="tsi">0 / 0 세트</span></div></div></div>
+<div class="fl jc g24 mb24"><div style="text-align:center"><div style="font-size:12px;color:var(--fg3)">현재 세트</div><div style="font-size:18px;font-weight:700;color:var(--fg);margin-top:4px" id="xs">—</div></div><div style="text-align:center"><div style="font-size:12px;color:var(--fg3)">현재 횟수</div><div style="font-size:18px;font-weight:700;color:var(--fg);margin-top:4px" id="xr">—</div></div><div style="text-align:center"><div style="font-size:12px;color:var(--fg3)">구간</div><div style="font-size:18px;font-weight:700;color:var(--fg);margin-top:4px" id="xp">—</div></div></div>
+<div class="g2 mb16"><div class="tf"><button class="ab" onclick="tA('con',-1)">−</button><div class="fl col ic" style="min-width:48px"><div style="font-size:12px;font-weight:600;color:var(--fg3)">수축</div><div style="font-size:24px;font-weight:700;color:var(--fg)" id="tv-con">3<span style="font-size:13px;color:var(--fg3)">초</span></div></div><button class="ab" onclick="tA('con',1)">+</button></div><div class="tf"><button class="ab" onclick="tA('ecc',-1)">−</button><div class="fl col ic" style="min-width:48px"><div style="font-size:12px;font-weight:600;color:var(--fg3)">이완</div><div style="font-size:24px;font-weight:700;color:var(--fg)" id="tv-ecc">3<span style="font-size:13px;color:var(--fg3)">초</span></div></div><button class="ab" onclick="tA('ecc',1)">+</button></div></div>
+<div class="g2 mb16"><div class="tf"><button class="ab" onclick="tA('rep',-1)">−</button><div class="fl col ic" style="min-width:48px"><div style="font-size:12px;font-weight:600;color:var(--fg3)">횟수</div><div style="font-size:24px;font-weight:700;color:var(--fg)" id="tv-rep">10<span style="font-size:13px;color:var(--fg3)">회</span></div></div><button class="ab" onclick="tA('rep',1)">+</button></div><div class="tf"><button class="ab" onclick="tA('set',-1)">−</button><div class="fl col ic" style="min-width:48px"><div style="font-size:12px;font-weight:600;color:var(--fg3)">세트</div><div style="font-size:24px;font-weight:700;color:var(--fg)" id="tv-set">3<span style="font-size:13px;color:var(--fg3)">세트</span></div></div><button class="ab" onclick="tA('set',1)">+</button></div></div>
+<div class="tf mb24" style="max-width:220px;margin-left:auto;margin-right:auto"><button class="ab" onclick="tA('rest',-10)" style="font-size:12px">−10</button><button class="ab" onclick="tA('rest',-1)">−</button><div class="fl col ic" style="min-width:48px"><div style="font-size:12px;font-weight:600;color:var(--fg3)">휴식</div><div style="font-size:24px;font-weight:700;color:var(--fg)" id="tv-rest">60<span style="font-size:13px;color:var(--fg3)">초</span></div></div><button class="ab" onclick="tA('rest',1)">+</button><button class="ab" onclick="tA('rest',10)" style="font-size:12px">+10</button></div>
+<div class="fl col g12"><button class="btn-a" id="tsb" onclick="tS()">시작</button><button class="btn-g" id="trb" onclick="tR()" style="display:none">초기화</button></div></div>
+
+<!-- ═══ Protein List ═══ -->
+<div class="scr" id="s-protein"><div style="padding:20px 0 24px"><h1 style="font-size:30px;font-weight:700;letter-spacing:-.03em;color:var(--fg)">프로틴</h1><p style="font-size:14px;color:var(--fg2);margin-top:6px">가격 분석 · g당 최저가를 찾아보세요</p></div><div style="position:relative;margin-bottom:20px"><svg style="position:absolute;left:14px;top:50%;transform:translateY(-50%)" width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="8" cy="8" r="5.5" stroke="var(--fgd)" stroke-width="1.5"/><path d="M12.5 12.5L16 16" stroke="var(--fgd)" stroke-width="1.5" stroke-linecap="round"/></svg><input class="sr" placeholder="제품명 검색..." oninput="fP(this.value)"/></div><div class="fs mb20" id="pf"></div><div id="pls"></div></div>
+
+<!-- ═══ Protein Detail ═══ -->
+<div class="scr" id="s-prot-detail"><div class="fl ic g12" style="padding:20px 0 24px"><button class="bk" onclick="go('protein')"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="var(--fg)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h2 style="font-size:22px;font-weight:700;color:var(--fg);flex:1;text-align:center">상세 정보</h2><div class="sp"></div></div><div id="pdc"></div></div>
+
+<!-- ═══ Pill (expanded default, #4 fix) ═══ -->
+<div class="pw" id="pill-wrap"><div class="pl" id="pill"></div></div>
+
+</div>
+<script>
+const S=[{id:1,date:"2026-03-15",part:"가슴",sets:18,mins:43,kcal:262,memo:"벤치프레스 무게 올림 80kg 성공",bpm:126},{id:2,date:"2026-03-14",part:"등",sets:20,mins:51,kcal:279,memo:"데드리프트 폼 교정 필요",bpm:131},{id:3,date:"2026-03-13",part:"하체",sets:16,mins:38,kcal:232,memo:"스쿼트 5x5 완료",bpm:138},{id:4,date:"2026-03-12",part:"어깨",sets:15,mins:35,kcal:210,memo:"오버헤드프레스 집중",bpm:119},{id:5,date:"2026-03-11",part:"가슴",sets:22,mins:55,kcal:328,memo:"인클라인 추가 세트",bpm:134},{id:6,date:"2026-03-10",part:"등",sets:19,mins:47,kcal:270,memo:"풀업 8회 달성",bpm:128},{id:7,date:"2026-03-07",part:"하체",sets:14,mins:40,kcal:257,memo:"레그프레스 위주",bpm:135},{id:8,date:"2026-03-05",part:"팔",sets:12,mins:30,kcal:180,memo:"바이셉 컬 집중",bpm:112},{id:9,date:"2026-03-04",part:"가슴",sets:20,mins:48,kcal:290,memo:"디클라인 벤치 추가",bpm:130},{id:10,date:"2026-03-02",part:"등",sets:18,mins:44,kcal:265,memo:"바벨로우 5세트",bpm:125},{id:11,date:"2026-02-28",part:"하체",sets:16,mins:42,kcal:248,memo:"불가리안 스쿼트",bpm:140},{id:12,date:"2026-02-26",part:"어깨",sets:14,mins:33,kcal:198,memo:"사이드레터럴 4세트",bpm:115}];
+const P=[{id:0,name:"옵티멈 골드 스탠다드 웨이",cat:"WPC",wt:2268,fl:"초코맛",price:116690,ppg:51.5,badge:"mid",feat:["인지도가 높음","맛과 성분은 좋지만 가격이 비싼편"]},{id:1,name:"마이프로틴 임팩트 웨이",cat:"WPC",wt:2500,fl:"바닐라맛",price:52900,ppg:21.2,badge:"low",feat:["가성비 최강","맛 선택지가 다양함"]},{id:2,name:"BSN 신타-6 프로틴",cat:"Blend",wt:2270,fl:"쿠키앤크림",price:71500,ppg:31.5,badge:"mid",feat:["블렌드 제품 중 인기","맛이 뛰어남"]},{id:3,name:"머슬팜 컴뱃 100% 웨이",cat:"WPC",wt:2269,fl:"초코밀크",price:62000,ppg:27.3,badge:"mid",feat:["가성비 양호","단백질 함량 적정"]},{id:4,name:"다이마타이즈 ISO100",cat:"WPI",wt:2300,fl:"퍼지브라우니",price:89000,ppg:38.7,badge:"high",feat:["WPI 중 인기 제품","유당 불내증 적합"]},{id:5,name:"룰원 R1 프로틴 WPI",cat:"WPI",wt:2270,fl:"초코맛",price:82000,ppg:36.1,badge:"mid",feat:["순수 WPI","첨가물 최소"]},{id:6,name:"나우푸드 웨이 아이솔레이트",cat:"WPI",wt:1814,fl:"무맛",price:61900,ppg:34.1,badge:"low",feat:["무첨가 무맛","가성비 WPI"]},{id:7,name:"얼티밋 뉴트리션 프로스타",cat:"WPC",wt:2390,fl:"바나나맛",price:54500,ppg:22.8,badge:"low",feat:["대용량 가성비","단백질 순도 양호"]},{id:8,name:"머슬테크 니트로테크 골드",cat:"WPI",wt:2270,fl:"더블초코",price:78500,ppg:34.6,badge:"high",feat:["프리미엄 라인","크레아틴 포함"]},{id:9,name:"셀루코어 COR 퍼포먼스",cat:"WPC",wt:1820,fl:"시나몬",price:58000,ppg:31.9,badge:"mid",feat:["맛이 독특함","소화 흡수 양호"]}];
+const PT=["가슴","등","하체","어깨","팔","코어"],DN=["월","화","수","목","금","토","일"],MN=["1월","2월","3월","4월","5월","6월","7월","8월","9월","10월","11월","12월"],PC=["전체","WPC","WPI","Blend"];
+let cM=2,cY=2026,cF="모두",sP=[],sV=0,cT="journal",cPC="전체",cPS="";
+let tv={con:3,ecc:3,rep:10,set:3,rest:60},tOr="con",tRn=false,tTm=null;
+let awTm=null,awStart=0,awPaused=false,awElapsed=0,drawerUp=false,curMemo="";
+
+/* Theme */
+function toggleTheme(){const h=document.documentElement;const d=h.getAttribute('data-theme')==='dark'?'light':'dark';h.setAttribute('data-theme',d);document.getElementById('tt').textContent=d==='dark'?'☀️':'🌙';renderPill();}
+
+function wS(s,c){c=c||'var(--ac)';return`<svg width="${s}" height="${s}" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" fill="var(--fp)" stroke="${c}" stroke-width="1.5"/><g stroke="${c}" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="${c}"/><rect x="30" y="18" width="4" height="12" rx="1" fill="${c}"/><rect x="10" y="20" width="4" height="8" rx="1" fill="${c}"/><rect x="34" y="20" width="4" height="8" rx="1" fill="${c}"/></g></svg>`;}
+function rH(p,sz,sw,c,bg,i){const r=(sz-sw)/2,ci=2*Math.PI*r,o=ci*(1-Math.min(p,1));return`<div class="ring" style="width:${sz}px;height:${sz}px"><svg width="${sz}" height="${sz}"><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${bg||'var(--sf-m)'}" stroke-width="${sw}"/><circle cx="${sz/2}" cy="${sz/2}" r="${r}" fill="none" stroke="${c||'var(--ac)'}" stroke-width="${sw}" stroke-dasharray="${ci}" stroke-dashoffset="${o}" stroke-linecap="round"/></svg><div class="ring-c">${i||''}</div></div>`;}
+function dL(d){return["일","월","화","수","목","금","토"][new Date(d).getDay()]+"요일";}
+
+function go(s,p){document.querySelectorAll('.scr').forEach(x=>x.classList.remove('on'));document.getElementById('s-'+s).classList.add('on');document.getElementById('pill-wrap').style.display=(s==='countdown'||s==='active')?'none':'block';window.scrollTo(0,0);if(s==='calendar')rC();if(s==='sessions')rS();if(s==='detail')rD(p);if(s==='input')rI();if(s==='protein')rPL();if(s==='prot-detail')rPD(p);}
+function sT(t){cT=t;renderPill();if(t==='journal')go('dashboard');if(t==='tempo')go('tempo');if(t==='protein')go('protein');}
+
+/* Pill — always expanded (#4) */
+function renderPill(){document.getElementById('pill').innerHTML=[{k:'journal',l:'일지',i:'📋'},{k:'tempo',l:'템포',i:'⏱'},{k:'protein',l:'프로틴',i:'💊'}].map(x=>`<button class="pb${cT===x.k?' on':''}" onclick="sT('${x.k}')"><span style="font-size:18px">${x.i}</span><span>${x.l}</span></button>`).join('');}
+
+function rC(){document.getElementById('ct').textContent=`${cY}년 ${MN[cM]}`;document.getElementById('cds').innerHTML=DN.map(d=>`<div style="text-align:center;font-size:13px;font-weight:600;color:var(--fg2);padding:6px">${d}</div>`).join('');const f=new Date(cY,cM,1);let sd=f.getDay()-1;if(sd<0)sd=6;const dm=new Date(cY,cM+1,0).getDate(),ds=new Set(S.map(s=>s.date));let h='';for(let i=0;i<sd;i++)h+='<div></div>';for(let d=1;d<=dm;d++){const dt=`${cY}-${String(cM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;const s=S.find(x=>x.date===dt),has=ds.has(dt),pct=s?Math.min(s.sets/22,1):0,it=cM===2&&d===15,c=has?'var(--ac)':'var(--bds)',inn=has?'<div style="width:5px;height:5px;border-radius:3px;background:#4A8C4A"></div>':'';h+=`<div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px;cursor:${has?'pointer':'default'};min-height:44px" ${has?`onclick="go('detail',${d})"`:''}><span style="font-size:12px;color:${it?'var(--ac)':'var(--fg2)'};font-weight:${it?700:500}">${d}</span>${rH(pct,38,4,c,'var(--sf-m)',inn)}</div>`;}document.getElementById('ccs').innerHTML=h;}
+function cN(d){cM+=d;if(cM<0){cM=11;cY--}if(cM>11){cM=0;cY++}rC();}
+
+function rS(){const fs=["모두",...PT];document.getElementById('sf').innerHTML=fs.map(f=>`<button class="ch${cF===f?' on':''}" onclick="cF='${f}';rS()">${f}</button>`).join('');const fl=cF==="모두"?S:S.filter(s=>s.part===cF);const g={};fl.forEach(s=>{const m=s.date.slice(0,7),l=`${m.split('-')[0]}년 ${parseInt(m.split('-')[1])}월`;if(!g[l])g[l]=[];g[l].push(s);});let h='';for(const[l,ls]of Object.entries(g)){h+=`<h3 style="font-size:20px;font-weight:700;color:var(--fg);margin-bottom:16px">${l}</h3><div class="fl col g12 mb24">`;ls.forEach(s=>{const dy=parseInt(s.date.split('-')[2]);h+=`<div class="cd ck" style="padding:20px" onclick="go('detail',${dy})"><div class="fl ic g16"><div class="ib ib-md ib-su">${wS(28,'#2E5A2E')}</div><div class="f1"><p style="font-size:14px;color:var(--fg2)">${s.part}</p><p style="font-size:24px;font-weight:700;color:var(--ac)">${s.kcal}KCAL</p></div><p style="font-size:13px;color:var(--fg2)">${s.date.slice(5).replace('-','.')} ${dL(s.date)}</p></div></div>`;});h+='</div>';}document.getElementById('sl').innerHTML=h;}
+
+function rD(day){document.getElementById('dt').textContent=`3월 ${day}일`;const ds=`2026-03-${String(day).padStart(2,'0')}`,s=S.find(x=>x.date===ds)||S[0];const bp=Array.from({length:40},()=>80+Math.floor(Math.random()*70)),mn=Math.min(...bp),mx=Math.max(...bp),rn=mx-mn||1,W=300,H=100,px=4,py=8;const pts=bp.map((v,i)=>({x:px+(i/39)*(W-px*2),y:py+(1-(v-mn)/rn)*(H-py*2)}));const ln=pts.map((p,i)=>`${i?'L':'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');const ar=`${ln} L${pts[39].x.toFixed(1)},${H} L${pts[0].x.toFixed(1)},${H} Z`,ay=(py+(1-(s.bpm-mn)/rn)*(H-py*2)).toFixed(1),pi=bp.indexOf(mx);const svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="display:block"><defs><linearGradient id="bf" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ac)" stop-opacity=".25"/><stop offset="100%" stop-color="var(--ac)" stop-opacity=".02"/></linearGradient></defs>${[mn,Math.round((mn+mx)/2),mx].map(v=>{const y=py+(1-(v-mn)/rn)*(H-py*2);return`<line x1="${px}" y1="${y}" x2="${W-px}" y2="${y}" stroke="var(--bd)" stroke-width=".5" stroke-dasharray="3,3"/>`;}).join('')}<path d="${ar}" fill="url(#bf)"/><path d="${ln}" fill="none" stroke="var(--ac)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="${px}" y1="${ay}" x2="${W-px}" y2="${ay}" stroke="var(--ach)" stroke-width="1" stroke-dasharray="4,3" opacity=".7"/><circle cx="${pts[0].x.toFixed(1)}" cy="${pts[0].y.toFixed(1)}" r="3" fill="var(--sf)" stroke="var(--ac)" stroke-width="1.5"/><circle cx="${pts[39].x.toFixed(1)}" cy="${pts[39].y.toFixed(1)}" r="3" fill="var(--sf)" stroke="var(--ac)" stroke-width="1.5"/><circle cx="${pts[pi].x.toFixed(1)}" cy="${pts[pi].y.toFixed(1)}" r="3" fill="#C0392B" stroke="var(--sf)" stroke-width="1.5"/><text x="${px}" y="${pts[0].y-6}" font-size="9" fill="var(--fg2)">${bp[0]}</text><text x="${W-px}" y="${pts[39].y-6}" text-anchor="end" font-size="9" fill="var(--fg2)">${bp[39]}</text><text x="${W-px-30}" y="${ay-5}" font-size="8" fill="var(--ach)" font-weight="600">평균 ${s.bpm}</text></svg>`;
+document.getElementById('dc').innerHTML=`<div class="fl ic g16 mb24"><div class="ib ib-lg ib-su">${wS(36,'#2E5A2E')}</div><div><p style="font-size:18px;font-weight:700;color:var(--fg)">${s.part}</p><p style="font-size:14px;color:var(--fg2);margin-top:4px">${s.date} · ${s.mins}분</p></div></div><div class="mb24"><h3 style="font-size:18px;font-weight:700;color:var(--fg);margin-bottom:12px">메모</h3><div class="cd cd-in" style="background:var(--sf-s)"><p style="font-size:15px;color:var(--fg);line-height:1.6">${s.memo}</p></div></div><div class="mb24"><h3 style="font-size:18px;font-weight:700;color:var(--fg);margin-bottom:12px">운동 세부사항</h3><div class="cd"><div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">${[['운동 시간',`0:${String(s.mins).padStart(2,'0')}:00`],['활동 칼로리',`${s.kcal}KCAL`],['세트수',`${s.sets}세트`],['평균 심박수',`${s.bpm}BPM`]].map(([l,v])=>`<div><p style="font-size:13px;color:var(--fg2);margin-bottom:4px">${l}</p><p style="font-size:22px;font-weight:700;color:var(--ac)">${v}</p></div>`).join('')}</div></div></div><div class="mb24"><h3 style="font-size:18px;font-weight:700;color:var(--fg);margin-bottom:12px">심박수</h3><div class="cd">${svg}<div class="fl jb" style="margin-top:10px"><span style="font-size:13px;color:var(--fg2)">시작</span><span style="font-size:13px;font-weight:600;color:var(--ac)">평균 ${s.bpm}BPM</span><span style="font-size:13px;color:var(--fg2)">종료</span></div></div></div><div><h3 style="font-size:18px;font-weight:700;color:var(--fg);margin-bottom:12px">지도</h3><div class="cd" style="padding:0;overflow:hidden"><div class="mp"><div style="width:14px;height:14px;border-radius:7px;background:#4A8C4A;border:3px solid var(--sf)"></div><p style="position:absolute;bottom:14px;right:14px;font-size:12px;color:var(--fg);background:var(--sf);padding:4px 10px;border-radius:8px;font-weight:500">운동 위치</p></div></div></div>`;}
+
+function rI(){document.getElementById('ii').innerHTML=wS(72);document.getElementById('ic').innerHTML=PT.map(p=>`<button class="ch${sP.includes(p)?' on':''}" onclick="tPt('${p}')">${p}</button>`).join('');rSA();}
+function tPt(p){const i=sP.indexOf(p);if(i>=0)sP.splice(i,1);else sP.push(p);rI();}
+function rSA(ed){const a=document.getElementById('sa');if(ed){a.innerHTML=`<div class="fl g10 ic"><input class="si" type="number" id="sii" value="${sV||''}" onkeydown="if(event.key==='Enter')cS()"><button class="sc" onclick="cS()">확인</button></div>`;document.getElementById('sii').focus();}else{a.innerHTML=`<div class="sb" onclick="rSA(true)"><span style="font-size:28px;font-weight:700;color:${sV>0?'var(--ac)':'var(--fgd)'}">${sV||0}</span></div>`;}}
+function cS(){sV=parseInt(document.getElementById('sii').value)||0;rSA();}
+
+function startCountdown(){curMemo=document.getElementById('memo-input').value;go('countdown');document.getElementById('cd-icon').innerHTML=wS(36,'#D9C99A');let c=3;const arc=document.getElementById('cd-arc'),ci=659.7;document.getElementById('cd-num').textContent=c;arc.style.strokeDashoffset=ci;const iv=setInterval(()=>{c--;if(c>0){document.getElementById('cd-num').textContent=c;arc.style.strokeDashoffset=ci*(c/3);}else{clearInterval(iv);startActive();}},1000);setTimeout(()=>{arc.style.strokeDashoffset=ci*(2/3);},50);}
+function startActive(){go('active');document.getElementById('dw-icon').innerHTML=wS(28,'#D9C99A');awStart=Date.now();awPaused=false;awElapsed=0;drawerUp=false;document.getElementById('drawer').style.transform='translateY(calc(100% - 110px))';document.getElementById('drawer-ext').style.display='none';awTm=setInterval(updateActive,100);updateBpm();}
+function updateActive(){if(awPaused)return;const el=awElapsed+(Date.now()-awStart);const sec=Math.floor(el/1000),ms=Math.floor((el%1000)/10);const m=Math.floor(sec/60),s=sec%60;document.getElementById('aw-timer').textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(ms).padStart(2,'0')}`;const kcal=Math.floor(el/10000);document.getElementById('aw-kcal1').textContent=kcal;document.getElementById('aw-kcal2').textContent=Math.floor(kcal*1.15);}
+function updateBpm(){if(!document.getElementById('s-active').classList.contains('on'))return;document.getElementById('aw-bpm').textContent=60+Math.floor(Math.random()*20);setTimeout(updateBpm,2000);}
+function togglePause(){if(awPaused){awPaused=false;awStart=Date.now();}else{awPaused=true;awElapsed+=Date.now()-awStart;}}
+function toggleDrawer(){drawerUp=!drawerUp;document.getElementById('drawer').style.transform=drawerUp?'translateY(0)':'translateY(calc(100% - 110px))';document.getElementById('drawer-ext').style.display=drawerUp?'flex':'none';}
+function openMemo(){document.getElementById('mm').style.display='flex';document.getElementById('me').value=curMemo;}
+function saveMemo(){curMemo=document.getElementById('me').value;closeMemo();}
+function closeMemo(){document.getElementById('mm').style.display='none';}
+function endWorkout(){clearInterval(awTm);drawerUp=false;go('dashboard');}
+
+function sO(o){tOr=o;const b=document.getElementById('ot').querySelectorAll('button');b[0].className=o==='con'?'on':'';b[1].className=o==='ecc'?'on':'';}
+function tA(k,d){const mx={con:10,ecc:10,rep:20,set:10,rest:300};tv[k]=Math.max(k==='rest'?0:1,Math.min(mx[k],tv[k]+d));const u={con:'초',ecc:'초',rep:'회',set:'세트',rest:'초'};document.getElementById('tv-'+k).innerHTML=`${tv[k]}<span style="font-size:13px;color:var(--fg3)">${u[k]}</span>`;}
+function tS(){if(tRn)return;tRn=true;document.getElementById('tsb').textContent='진행 중...';document.getElementById('tsb').style.opacity='.6';document.getElementById('trb').style.display='block';const{con,ecc,rep,set,rest}=tv,arc=document.getElementById('ta'),ci=552.9,f1=tOr==='con'?'con':'ecc',f2=tOr==='con'?'ecc':'con';let cs=1,cr=1;async function w(ms){return new Promise(r=>tTm=setTimeout(r,ms));}async function tk(ph,dur){const nm={con:'수축',ecc:'이완',rest:'휴식'},cl={con:'var(--ac)',ecc:'var(--ach)',rest:'#4A8C4A'};arc.style.stroke=cl[ph];document.getElementById('tp').textContent=nm[ph];document.getElementById('xp').textContent=nm[ph];for(let i=dur;i>=1;i--){if(!tRn)return;arc.style.strokeDashoffset=ci*(1-(dur-i+1)/dur);document.getElementById('tc').textContent=i;document.getElementById('xs').textContent=`${cs} / ${set}`;document.getElementById('xr').textContent=ph==='rest'?'—':`${cr} / ${rep}`;document.getElementById('tsi').textContent=`${cs} / ${set} 세트`;await w(1000);}}(async()=>{const d1=tOr==='con'?con:ecc,d2=tOr==='con'?ecc:con;for(cs=1;cs<=set;cs++){for(cr=1;cr<=rep;cr++){if(!tRn)return;await tk(f1,d1);if(!tRn)return;await tk(f2,d2);}if(cs<set)await tk('rest',rest);}tR();document.getElementById('tp').textContent='완료!';document.getElementById('tc').textContent='✓';})();}
+function tR(){tRn=false;clearTimeout(tTm);document.getElementById('tsb').textContent='시작';document.getElementById('tsb').style.opacity='1';document.getElementById('trb').style.display='none';document.getElementById('ta').style.strokeDashoffset='552.9';document.getElementById('ta').style.stroke='var(--ac)';document.getElementById('tc').textContent='0';document.getElementById('tsi').textContent='0 / 0 세트';document.getElementById('tp').textContent='대기 중';document.getElementById('xs').textContent='—';document.getElementById('xr').textContent='—';document.getElementById('xp').textContent='—';}
+
+function rPL(){document.getElementById('pf').innerHTML=PC.map(c=>`<button class="ch${cPC===c?' on':''}" onclick="cPC='${c}';rPL()">${c}</button>`).join('');let ls=P;if(cPC!=='전체')ls=ls.filter(p=>p.cat===cPC);if(cPS)ls=ls.filter(p=>p.name.includes(cPS));const bc={low:'bd-l',mid:'bd-m',high:'bd-h'},bl={low:'저점',mid:'중간',high:'고점'};document.getElementById('pls').innerHTML=ls.length?ls.map(p=>`<div class="pc" onclick="go('prot-detail',${p.id})"><div class="fl jb" style="align-items:flex-start;margin-bottom:12px"><div style="font-size:16px;font-weight:600;color:var(--fg);line-height:1.4;flex:1;margin-right:10px">${p.name}</div><span class="bd ${bc[p.badge]}">${bl[p.badge]}</span></div><div class="fl g20 fw"><div class="fl col"><span style="font-size:12px;color:var(--fg3)">카테고리</span><span style="font-size:15px;font-weight:600;color:var(--fg);margin-top:2px">${p.cat}</span></div><div class="fl col"><span style="font-size:12px;color:var(--fg3)">용량</span><span style="font-size:15px;font-weight:600;color:var(--fg);margin-top:2px">${p.wt}g</span></div><div class="fl col"><span style="font-size:12px;color:var(--fg3)">가격</span><span style="font-size:15px;font-weight:600;color:var(--fg);margin-top:2px">${p.price.toLocaleString()}원</span></div><div class="fl col"><span style="font-size:12px;color:var(--fg3)">g당 가격</span><span style="font-size:15px;font-weight:600;color:var(--ac);margin-top:2px">${p.ppg.toFixed(1)}원</span></div></div></div>`).join(''):'<div class="fl jc" style="margin-top:40px"><p style="font-size:15px;color:var(--fg2)">검색 결과가 없습니다</p></div>';}
+function fP(v){cPS=v;rPL();}
+
+function rPD(id){const p=P.find(x=>x.id===id);if(!p)return;const bc={low:'bd-l',mid:'bd-m',high:'bd-h'},bl={low:'저점',mid:'중간',high:'고점'};const pr=Array.from({length:24},(_,i)=>{const b=60000+Math.random()*60000;return Math.max(20000,Math.round(b+i*1500+(Math.random()-.5)*15000));});const mn=Math.min(...pr),mx=Math.max(...pr),W=320,H=160,px=40,py=10,gw=W-px-10,gh=H-py-20,mxY=Math.max(mx*1.1,160000);const xl=["24-01","24-06","24-11","25-03","25-10","25-12","26-03"];let gl='';[0,40000,80000,120000,160000].filter(v=>v<=mxY).forEach(v=>{const y=py+gh-(v/mxY)*gh;gl+=`<line x1="${px}" y1="${y}" x2="${px+gw}" y2="${y}" stroke="var(--bd)" stroke-width=".5" stroke-dasharray="3,3"/><text x="${px-4}" y="${y+3}" text-anchor="end" font-size="8" fill="var(--fg2)">${(v/1000).toFixed(0)},000</text>`;});xl.forEach((l,i)=>{const x=px+(i/(xl.length-1))*gw;gl+=`<line x1="${x}" y1="${py}" x2="${x}" y2="${py+gh}" stroke="var(--bd)" stroke-width=".5" stroke-dasharray="3,3"/><text x="${x}" y="${py+gh+14}" text-anchor="middle" font-size="8" fill="var(--fg2)">${l}</text>`;});const pts=pr.map((v,i)=>({x:px+(i/(pr.length-1))*gw,y:py+gh-(v/mxY)*gh}));const ln=pts.map((pt,i)=>`${i?'L':'M'}${pt.x.toFixed(1)},${pt.y.toFixed(1)}`).join(' ');const ar=`${ln} L${pts[pts.length-1].x.toFixed(1)},${py+gh} L${pts[0].x.toFixed(1)},${py+gh} Z`;
+document.getElementById('pdc').innerHTML=`<div class="mb24"><div class="fl ic g10 mb8"><span style="font-size:24px;font-weight:700;color:var(--fg);line-height:1.3">${p.name}</span><span class="bd ${bc[p.badge]}">${bl[p.badge]}</span></div><p style="font-size:15px;color:var(--fg2);margin-top:6px">${p.wt}g · ${p.cat} · ${p.fl}</p></div><div style="background:var(--sf-s);border:1px solid var(--bds);border-radius:8px;padding:20px;margin-bottom:24px"><h4 style="font-size:16px;font-weight:700;color:var(--fg);margin-bottom:10px">특징</h4><ul style="margin-left:18px">${p.feat.map(f=>`<li style="font-size:15px;color:var(--fg);line-height:1.7">${f}</li>`).join('')}</ul></div><div class="mb24"><span style="font-size:14px;color:var(--fg2)">현재가 </span><span style="font-size:30px;font-weight:700;color:var(--fg)">${p.price.toLocaleString()}원</span><span style="font-size:15px;color:var(--fg2);margin-left:6px">(${p.ppg.toFixed(0)}원/g)</span></div><div class="cd mb24" style="padding:20px"><svg viewBox="0 0 ${W} ${H+10}" width="100%" style="display:block"><defs><linearGradient id="pf2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--ach)" stop-opacity=".3"/><stop offset="100%" stop-color="var(--ach)" stop-opacity=".05"/></linearGradient></defs>${gl}<path d="${ar}" fill="url(#pf2)"/><path d="${ln}" fill="none" stroke="var(--ach)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${pts[pts.length-1].x.toFixed(1)}" cy="${pts[pts.length-1].y.toFixed(1)}" r="4" fill="var(--ach)" stroke="var(--sf)" stroke-width="2"/></svg></div><button class="btn-p" onclick="alert('구매 링크로 이동합니다')">구매하러 가기</button>`;}
+
+/* Init */
+document.getElementById('di1').innerHTML=wS(24,'#2E5A2E');
+document.getElementById('di2').innerHTML=wS(56);
+renderPill();
+</script>
+</body>
+</html>

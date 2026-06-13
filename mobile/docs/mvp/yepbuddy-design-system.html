@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>yepbuddy Components</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:#E7E5E4;padding:40px;font-size:14px;color:#3A2A1A}
+.page{max-width:1100px;margin:0 auto}
+.sec{margin-bottom:56px}
+.sec-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9B7E56;margin-bottom:20px;padding-bottom:8px;border-bottom:2px solid #DDD2BF}
+.sub-t{font-size:12px;font-weight:600;color:#6B5638;margin-bottom:10px}
+.note{font-size:10px;color:#A8A29E;margin-top:6px;font-family:monospace}
+.row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:16px}
+/* Light frame */
+.f-l{background:#FAF7F2;border-radius:16px;padding:24px;border:1px solid #DDD2BF}
+/* Dark frame */
+.f-d{background:#1A120A;border-radius:16px;padding:24px;border:1px solid #5A472D}
+.tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.tag-l{color:#9B7E56}.tag-d{color:#D9C99A}
+/* Spacing anno */
+.anno{display:inline-block;background:#FF634740;color:#FF6347;font-size:9px;font-weight:700;padding:1px 4px;border-radius:3px;font-family:monospace}
+/* Shared component styles */
+.cmp-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.cmp-row:last-child{margin-bottom:0}
+</style>
+</head>
+<body>
+<div class="page">
+<h1 style="font-size:24px;font-weight:700;margin-bottom:8px">yepbuddy Component Sheet</h1>
+<p style="font-size:13px;color:#78716C;margin-bottom:40px">22 Components · Light + Dark · Radius rule: outer = inner × 2</p>
+
+<!-- ═══ 1. BUTTON ═══ -->
+<div class="sec">
+<div class="sec-t">1. Button <span class="anno">h:52px</span> <span class="anno">r:14px</span> <span class="anno">px:24px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div>
+    <div class="cmp-row">
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:#3A2A1A;color:#FAF7F2;border:none;font-size:16px;font-weight:600;font-family:inherit">Primary</button>
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:#9B7E56;color:#FAF7F2;border:none;font-size:16px;font-weight:600;font-family:inherit">Accent</button>
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:transparent;color:#9B7E56;border:1.5px solid #9B7E56;font-size:15px;font-weight:500;font-family:inherit">Outline</button>
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:#C0392B;color:#FFF;border:none;font-size:16px;font-weight:600;font-family:inherit">Danger</button>
+    </div>
+    <div class="cmp-row">
+      <button style="height:44px;padding:0 16px;border-radius:10px;background:transparent;color:#5A4A36;border:none;font-size:14px;font-weight:500;font-family:inherit">Ghost</button>
+    </div>
+    <div class="note">touch: 52px (md), 44px (sm/ghost). radius-lg:14px</div>
+  </div>
+  <div class="f-d"><div class="tag tag-d">Dark</div>
+    <div class="cmp-row">
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:#EDE4D6;color:#1A120A;border:none;font-size:16px;font-weight:600;font-family:inherit">Primary</button>
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:#D9C99A;color:#1A120A;border:none;font-size:16px;font-weight:600;font-family:inherit">Accent</button>
+      <button style="height:52px;padding:0 24px;border-radius:14px;background:transparent;color:#D9C99A;border:1.5px solid #D9C99A;font-size:15px;font-weight:500;font-family:inherit">Outline</button>
+    </div>
+    <div class="note">dark: fill-strong=#EDE4D6, accent=#D9C99A</div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 2. ICON BUTTON ═══ -->
+<div class="sec">
+<div class="sec-t">2. IconButton <span class="anno">44×44</span> <span class="anno">r:12px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row">
+    <div style="width:44px;height:44px;background:#EDE4D6;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="#3A2A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div style="width:44px;height:44px;background:#F2EBDD;border:1px solid #DDD2BF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#3A2A1A;font-family:inherit">−</div>
+    <div style="width:44px;height:44px;background:#F2EBDD;border:1px solid #DDD2BF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#3A2A1A;font-family:inherit">+</div>
+  </div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row">
+    <div style="width:44px;height:44px;background:#4A3A28;border-radius:12px;display:flex;align-items:center;justify-content:center"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div style="width:44px;height:44px;background:#5A472D;border:1px solid #7B6548;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#FFF;font-family:inherit">−</div>
+    <div style="width:44px;height:44px;background:#5A472D;border:1px solid #7B6548;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#FFF;font-family:inherit">+</div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 3. CHIP ═══ -->
+<div class="sec">
+<div class="sec-t">3. Chip <span class="anno">h:44px</span> <span class="anno">r:22px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row">
+    <div style="height:44px;padding:0 18px;border-radius:22px;border:1.5px solid #DDD2BF;background:#F2EBDD;color:#3A2A1A;font-size:14px;font-weight:500;display:flex;align-items:center">가슴</div>
+    <div style="height:44px;padding:0 18px;border-radius:22px;border:1.5px solid #9B7E56;background:#9B7E56;color:#FAF7F2;font-size:14px;font-weight:500;display:flex;align-items:center">하체 ✓</div>
+  </div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row">
+    <div style="height:44px;padding:0 18px;border-radius:22px;border:1.5px solid #5A472D;background:#5A472D;color:#FFF;font-size:14px;font-weight:500;display:flex;align-items:center">가슴</div>
+    <div style="height:44px;padding:0 18px;border-radius:22px;border:1.5px solid #D9C99A;background:#D9C99A;color:#1A120A;font-size:14px;font-weight:500;display:flex;align-items:center">하체 ✓</div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 4. BADGE ═══ -->
+<div class="sec">
+<div class="sec-t">4. Badge <span class="anno">h:28px</span> <span class="anno">r:pill</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row">
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#D6F0D6;color:#2E5A2E">저점</span>
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#D6E8F0;color:#1A4A5E">중간</span>
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#FDDDD6;color:#7A2419">고점</span>
+  </div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row">
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#D6F0D6;color:#2E5A2E">저점</span>
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#D6E8F0;color:#1A4A5E">중간</span>
+    <span style="padding:4px 12px;border-radius:9999px;font-size:12px;font-weight:600;background:#FDDDD6;color:#7A2419">고점</span>
+  </div><div class="note">badges same in both modes</div></div>
+</div>
+</div>
+
+<!-- ═══ 5. CARD ═══ -->
+<div class="sec">
+<div class="sec-t">5. Card <span class="anno">r-outer:16px</span> <span class="anno">r-inner:8px</span> <span class="anno">p:24px</span> <span class="anno">border:1px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div>
+    <div style="background:#FFF;border:1px solid #DDD2BF;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(58,42,26,.08)">
+      <div style="background:#F5EFE6;border-radius:8px;padding:16px;font-size:15px;color:#3A2A1A">Inner content (r:8px)</div>
+    </div>
+    <div class="note">outer:16px, inner:8px → ratio 2:1 ✓</div>
+  </div>
+  <div class="f-d"><div class="tag tag-d">Dark</div>
+    <div style="background:#3A2A1A;border:1px solid #5A472D;border-radius:16px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.2)">
+      <div style="background:#2A1E12;border-radius:8px;padding:16px;font-size:15px;color:#FFF">Inner content (r:8px)</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 6-8. INPUT / SEARCH / TEXTAREA ═══ -->
+<div class="sec">
+<div class="sec-t">6-8. Input · Search · Textarea <span class="anno">h:48px</span> <span class="anno">r:14px</span> <span class="anno">bw:1.5px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <input style="height:48px;border:1.5px solid #DDD2BF;border-radius:14px;padding:0 16px;font-size:15px;color:#3A2A1A;background:#FFF;font-family:inherit;outline:none;width:100%" placeholder="Default input" readonly>
+      <input style="height:48px;border:1.5px solid #9B7E56;border-radius:14px;padding:0 16px;font-size:15px;color:#3A2A1A;background:#FFF;font-family:inherit;outline:none;box-shadow:0 0 0 3px rgba(155,126,86,.2);width:100%" value="Focused" readonly>
+      <div style="min-height:80px;border:1.5px solid #DDD2BF;border-radius:14px;padding:16px;font-size:15px;color:#A8A29E;background:#FFF;line-height:1.6">Textarea placeholder...</div>
+    </div>
+  </div>
+  <div class="f-d"><div class="tag tag-d">Dark</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <input style="height:48px;border:1.5px solid #5A472D;border-radius:14px;padding:0 16px;font-size:15px;color:#FFF;background:#3A2A1A;font-family:inherit;outline:none;width:100%" placeholder="Default input" readonly>
+      <input style="height:48px;border:1.5px solid #D9C99A;border-radius:14px;padding:0 16px;font-size:15px;color:#FFF;background:#3A2A1A;font-family:inherit;outline:none;box-shadow:0 0 0 3px rgba(217,201,154,.15);width:100%" value="Focused" readonly>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 9. NUMBER INPUT ═══ -->
+<div class="sec">
+<div class="sec-t">9. NumberInput <span class="anno">56×100px</span> <span class="anno">r:14px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row">
+    <div style="width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:#FFF;border:1.5px solid #DDD2BF;border-radius:14px;font-size:28px;font-weight:700;color:#A8A29E">0</div>
+    <div style="width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:#FFF;border:1.5px solid #DDD2BF;border-radius:14px;font-size:28px;font-weight:700;color:#9B7E56">18</div>
+    <div style="width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:#FFF;border:1.5px solid #9B7E56;border-radius:14px;font-size:28px;font-weight:700;color:#9B7E56;box-shadow:0 0 0 3px rgba(155,126,86,.2)">21</div>
+  </div><div class="note">empty → filled → editing</div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row">
+    <div style="width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:#3A2A1A;border:1.5px solid #5A472D;border-radius:14px;font-size:28px;font-weight:700;color:#7B6548">0</div>
+    <div style="width:100px;height:56px;display:flex;align-items:center;justify-content:center;background:#3A2A1A;border:1.5px solid #5A472D;border-radius:14px;font-size:28px;font-weight:700;color:#D9C99A">18</div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 10. ICON BOX ═══ -->
+<div class="sec">
+<div class="sec-t">10. IconBox <span class="anno">border:1.5px bg-color</span> <span class="anno">r:8px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light — border=#FAF7F2 (=bg)</div><div class="cmp-row">
+    <div style="width:44px;height:44px;background:#D6F0D6;border-radius:8px;border:1.5px solid #FAF7F2;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 48 48" fill="none"><g stroke="#2E5A2E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/></g></svg></div>
+    <div style="width:48px;height:48px;background:#D6F0D6;border-radius:8px;border:1.5px solid #FAF7F2;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 48 48" fill="none"><g stroke="#2E5A2E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/></g></svg></div>
+    <div style="width:56px;height:56px;background:#D6F0D6;border-radius:8px;border:1.5px solid #FAF7F2;display:flex;align-items:center;justify-content:center"><svg width="36" height="36" viewBox="0 0 48 48" fill="none"><g stroke="#2E5A2E" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#2E5A2E"/></g></svg></div>
+  </div><div class="note">44 · 48 · 56px. border-color = app bg for seamless blend</div></div>
+  <div class="f-d"><div class="tag tag-d">Dark — border=#1A120A (=bg)</div><div class="cmp-row">
+    <div style="width:44px;height:44px;background:rgba(217,201,154,.15);border-radius:8px;border:1.5px solid #1A120A;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 48 48" fill="none"><g stroke="#D9C99A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#D9C99A"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#D9C99A"/></g></svg></div>
+    <div style="width:48px;height:48px;background:rgba(217,201,154,.15);border-radius:8px;border:1.5px solid #1A120A;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 48 48" fill="none"><g stroke="#D9C99A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#D9C99A"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#D9C99A"/></g></svg></div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 11. RING PROGRESS ═══ -->
+<div class="sec">
+<div class="sec-t">11. RingProgress <span class="anno">38 · 90 · 200px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row" style="gap:24px">
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#EDE4D6" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#9B7E56" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="28" stroke-linecap="round"/></svg></div>
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="90" height="90" style="transform:rotate(-90deg)"><circle cx="45" cy="45" r="35" fill="none" stroke="#EDE4D6" stroke-width="10"/><circle cx="45" cy="45" r="35" fill="none" stroke="#9B7E56" stroke-width="10" stroke-dasharray="219.9" stroke-dashoffset="61" stroke-linecap="round"/></svg><span style="position:absolute;font-size:22px;font-weight:700;color:#9B7E56">18</span></div>
+  </div><div class="note">calendar:38 dashboard:90 tempo:200</div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row" style="gap:24px">
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#4A3A28" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#D9C99A" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="28" stroke-linecap="round"/></svg></div>
+    <div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="90" height="90" style="transform:rotate(-90deg)"><circle cx="45" cy="45" r="35" fill="none" stroke="#4A3A28" stroke-width="10"/><circle cx="45" cy="45" r="35" fill="none" stroke="#D9C99A" stroke-width="10" stroke-dasharray="219.9" stroke-dashoffset="61" stroke-linecap="round"/></svg><span style="position:absolute;font-size:22px;font-weight:700;color:#D9C99A">18</span></div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 12. SEGMENT TOGGLE ═══ -->
+<div class="sec">
+<div class="sec-t">12. Segment Toggle <span class="anno">h:44px</span> <span class="anno">r-outer:12px</span> <span class="anno">r-inner:10px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div>
+    <div style="display:flex;background:#EDE4D6;border-radius:12px;padding:4px;width:240px"><button style="flex:1;height:44px;border:none;border-radius:10px;font-size:14px;font-weight:600;background:#FFF;color:#3A2A1A;box-shadow:0 1px 3px rgba(58,42,26,.08);font-family:inherit">수축 먼저</button><button style="flex:1;height:44px;border:none;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:#6B5638;font-family:inherit">이완 먼저</button></div>
+  </div>
+  <div class="f-d"><div class="tag tag-d">Dark</div>
+    <div style="display:flex;background:#4A3A28;border-radius:12px;padding:4px;width:240px"><button style="flex:1;height:44px;border:none;border-radius:10px;font-size:14px;font-weight:600;background:#3A2A1A;color:#FFF;box-shadow:0 1px 3px rgba(0,0,0,.2);font-family:inherit">수축 먼저</button><button style="flex:1;height:44px;border:none;border-radius:10px;font-size:14px;font-weight:500;background:transparent;color:#DDD2BF;font-family:inherit">이완 먼저</button></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 18. PILL NAV (always expanded) ═══ -->
+<div class="sec">
+<div class="sec-t">18. Pill Nav — always expanded <span class="anno">h:48px+</span> <span class="anno">r:pill</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div>
+    <div style="display:flex;align-items:center;gap:6px;background:#3A2A1A;border-radius:9999px;padding:10px;width:240px">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:#9B7E56;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">📋</span><span style="font-size:11px;font-weight:500;color:#FAF7F2">일지</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">⏱</span><span style="font-size:11px;font-weight:500;color:#FAF7F2">템포</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">💊</span><span style="font-size:11px;font-weight:500;color:#FAF7F2">프로틴</span></div>
+    </div>
+    <div class="note">always expanded. active tab gets accent bg</div>
+  </div>
+  <div class="f-d"><div class="tag tag-d">Dark</div>
+    <div style="display:flex;align-items:center;gap:6px;background:#EDE4D6;border-radius:9999px;padding:10px;width:240px">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:#D9C99A;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">📋</span><span style="font-size:11px;font-weight:500;color:#1A120A">일지</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">⏱</span><span style="font-size:11px;font-weight:500;color:#1A120A">템포</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border-radius:22px;padding:10px 14px;min-height:44px"><span style="font-size:18px">💊</span><span style="font-size:11px;font-weight:500;color:#1A120A">프로틴</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ 19. CALENDAR CELL ═══ -->
+<div class="sec">
+<div class="sec-t">19. Calendar Cell <span class="anno">38px ring</span> <span class="anno">min-h:44px</span></div>
+<div class="duo">
+  <div class="f-l"><div class="tag tag-l">Light</div><div class="cmp-row" style="gap:20px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;color:#5A4A36">12</span><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#EDE4D6" stroke-width="4"/></svg></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;color:#5A4A36">13</span><div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#EDE4D6" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#9B7E56" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="47" stroke-linecap="round"/></svg><div style="position:absolute;width:5px;height:5px;border-radius:3px;background:#4A8C4A"></div></div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;font-weight:700;color:#9B7E56">15</span><div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#EDE4D6" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#9B7E56" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="28" stroke-linecap="round"/></svg><div style="position:absolute;width:5px;height:5px;border-radius:3px;background:#4A8C4A"></div></div></div>
+  </div><div class="note">empty · partial · today</div></div>
+  <div class="f-d"><div class="tag tag-d">Dark</div><div class="cmp-row" style="gap:20px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;color:#DDD2BF">12</span><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#4A3A28" stroke-width="4"/></svg></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;color:#DDD2BF">13</span><div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#4A3A28" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#D9C99A" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="47" stroke-linecap="round"/></svg><div style="position:absolute;width:5px;height:5px;border-radius:3px;background:#4A8C4A"></div></div></div>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;min-height:44px"><span style="font-size:12px;font-weight:700;color:#D9C99A">15</span><div style="position:relative;display:inline-flex;align-items:center;justify-content:center"><svg width="38" height="38" style="transform:rotate(-90deg)"><circle cx="19" cy="19" r="15" fill="none" stroke="#4A3A28" stroke-width="4"/><circle cx="19" cy="19" r="15" fill="none" stroke="#D9C99A" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="28" stroke-linecap="round"/></svg><div style="position:absolute;width:5px;height:5px;border-radius:3px;background:#4A8C4A"></div></div></div>
+  </div></div>
+</div>
+</div>
+
+<!-- ═══ 22. BOTTOM DRAWER ═══ -->
+<div class="sec">
+<div class="sec-t">22. Bottom Drawer <span class="anno">r:20px</span> <span class="anno">btn:56/64px</span></div>
+<div style="max-width:360px">
+  <div style="background:#3A2A1A;border-radius:20px;padding:0;overflow:hidden;margin-bottom:16px">
+    <div style="display:flex;justify-content:center;padding:12px 0 0"><div style="width:40px;height:5px;background:#9B7E56;border-radius:4px"></div></div>
+    <div style="display:flex;align-items:center;padding:12px 24px 8px;gap:16px">
+      <div style="width:48px;height:48px;border-radius:8px;background:rgba(217,201,154,.15);border:1.5px solid #1A120A;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 48 48" fill="none"><g stroke="#D9C99A" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="24" x2="36" y2="24"/><rect x="14" y="18" width="4" height="12" rx="1" fill="#D9C99A"/><rect x="30" y="18" width="4" height="12" rx="1" fill="#D9C99A"/></g></svg></div>
+      <div style="font-size:30px;font-weight:700;color:#FFF;flex:1;text-align:center">00:05.33</div>
+      <svg width="40" height="40" style="transform:rotate(-90deg)"><circle cx="20" cy="20" r="16" fill="none" stroke="rgba(217,201,154,.1)" stroke-width="4"/><circle cx="20" cy="20" r="16" fill="none" stroke="#D9C99A" stroke-width="4" stroke-dasharray="100.5" stroke-dashoffset="90" stroke-linecap="round"/></svg>
+    </div>
+    <div style="display:flex;justify-content:center;gap:20px;padding:12px 24px 20px">
+      <div style="width:56px;height:56px;border-radius:9999px;background:#5A472D;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#EDE4D6" stroke-width="2"/><text x="12" y="16" text-anchor="middle" fill="#EDE4D6" font-size="12" font-weight="600">1</text></svg></div>
+      <div style="width:64px;height:64px;border-radius:9999px;background:#6B5638;display:flex;align-items:center;justify-content:center"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="8" y="6" width="4" height="16" rx="1" fill="#EDE4D6"/><rect x="16" y="6" width="4" height="16" rx="1" fill="#EDE4D6"/></svg></div>
+      <div style="width:56px;height:56px;border-radius:9999px;background:#5A472D;display:flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="14" width="3" height="6" rx="1" fill="#EDE4D6"/><rect x="9" y="10" width="3" height="10" rx="1" fill="#EDE4D6"/><rect x="14" y="6" width="3" height="14" rx="1" fill="#EDE4D6"/></svg></div>
+    </div>
+    <div style="padding:16px 24px 28px;display:flex;flex-direction:column;gap:12px">
+      <button style="height:52px;border-radius:14px;border:none;font-size:16px;font-weight:600;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#5A472D;color:#FFF;cursor:pointer;font-family:inherit">✏️ 메모 수정</button>
+      <button style="height:52px;border-radius:14px;border:none;font-size:16px;font-weight:600;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:rgba(255,107,90,.15);color:#FF6B5A;cursor:pointer;font-family:inherit">✕ 운동 종료</button>
+      <button style="height:52px;border-radius:14px;border:none;font-size:16px;font-weight:600;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:#5A472D;color:#DDD2BF;cursor:pointer;font-family:inherit">🔒 제어 잠금</button>
+    </div>
+  </div>
+  <div class="note">bg:#3A2A1A, handle:#9B7E56, btns:#5A472D/#6B5638, ext-btn r:14px h:52px</div>
+</div>
+</div>
+
+<!-- ═══ SPACING REFERENCE ═══ -->
+<div class="sec">
+<div class="sec-t">Spacing Reference</div>
+<div style="background:#FFF;border-radius:16px;padding:24px;border:1px solid #DDD2BF">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">4</span><div style="height:12px;width:4px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">4px</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">8</span><div style="height:12px;width:8px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">8px</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">12</span><div style="height:12px;width:12px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">12px</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">16</span><div style="height:12px;width:16px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">16px — grid gap, inner padding</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">20</span><div style="height:12px;width:20px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">20px — screen padding-x</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">24</span><div style="height:12px;width:24px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">24px — card padding, section gap</span></div>
+    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:11px;font-family:monospace;color:#A8A29E;width:32px;text-align:right">32</span><div style="height:12px;width:32px;background:#9B7E56;border-radius:2px"></div><span style="font-size:10px;font-family:monospace;color:#6B5638">32px</span></div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ RADIUS REFERENCE ═══ -->
+<div class="sec">
+<div class="sec-t">Radius Reference — outer = inner × 2</div>
+<div style="display:flex;gap:20px;flex-wrap:wrap">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:8px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">sm/inner</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">8px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:10px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">md</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">10px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:12px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">icon-btn</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">12px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:14px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">lg/btn</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">14px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:16px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">xl/card</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">16px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:20px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">drawer</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">20px</span></div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:48px;height:48px;background:#9B7E56;border-radius:9999px"></div><span style="font-size:11px;font-weight:600;color:#3A2A1A">pill</span><span style="font-size:10px;font-family:monospace;color:#A8A29E">9999px</span></div>
+</div>
+</div>
+
+</div>
+</body>
+</html>
