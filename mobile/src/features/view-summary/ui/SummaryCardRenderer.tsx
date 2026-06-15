@@ -70,6 +70,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
           representativeBodyPart={bodyPartCardRepresentativeBodyPart}
           kcal="--"
           day={bodyPartCardDay}
+          isDeload={isTodayWorkoutDeload}
           onLongPress={onLongPress}
           onPress={
             bodyPartCardSession
