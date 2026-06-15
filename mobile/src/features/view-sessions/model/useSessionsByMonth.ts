@@ -7,6 +7,10 @@ import {
   type BodyPart,
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
+import {
+  findWorkoutSummaryForSession,
+  getSessionListKcal,
+} from "./sessionWorkoutMatching"
 import type { SessionListItem } from "./types"
 
 function getSessionBodyParts(session: StoredWorkoutSession): BodyPart[] {
@@ -24,13 +28,8 @@ export async function loadSessionsByMonth(year: number, month: number) {
     getWorkoutSummariesForMonth(year, month),
   ])
 
-  // 세션 ID(= workout.startDate)로 매칭해서 kcal 정보 찾기
-  const hkWorkoutMap = new Map(
-    hkWorkouts.map((workout) => [workout.startDate, workout]),
-  )
-
   return storedSessions.map<SessionListItem>((session) => {
-    const workout = hkWorkoutMap.get(session.sessionId) ?? null
+    const workout = findWorkoutSummaryForSession(session, hkWorkouts)
 
     return {
       sessionId: session.sessionId,
@@ -44,7 +43,10 @@ export async function loadSessionsByMonth(year: number, month: number) {
           })
         : null,
       totalSets: getSessionTotalSets(session),
-      kcal: workout?.kcal ?? null,
+      kcal: getSessionListKcal({
+        healthKitKcal: workout?.kcal,
+        storedActiveKcal: session.activeKcal,
+      }),
       date: new Date(session.startedAt),
     }
   })
