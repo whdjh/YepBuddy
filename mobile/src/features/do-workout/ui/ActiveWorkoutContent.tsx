@@ -150,7 +150,9 @@ export function ActiveWorkoutContent() {
       return
     }
 
-    const completedSession = await completeWorkout()
+    const completedSession = await completeWorkout({
+      isDeload: routineProgress.isDeloadCycle,
+    })
     if (!completedSession) {
       return
     }

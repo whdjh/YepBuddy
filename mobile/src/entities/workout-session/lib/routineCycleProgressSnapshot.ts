@@ -54,6 +54,7 @@ export interface RoutineCycleProgressSnapshot {
   currentCycleAnchorDateKey: string
   featureStatus: RoutineCycleFeatureStatus
   hasCustomSettings: boolean
+  isDeloadCycle: boolean
   isRoutineEnabled: boolean
   nextSuggestion: RoutineCycleSession | null
   progress: RoutineCycleProgress
@@ -107,6 +108,7 @@ export function buildRoutineCycleProgressSnapshot({
     currentCycleAnchorDateKey,
     featureStatus,
     hasCustomSettings: settings !== null,
+    isDeloadCycle: isRoutineEnabled && resolvedCycleState.isDeloadCycle,
     isRoutineEnabled,
     nextSuggestion: isRoutineEnabled && !resolvedCycleState.isCycleComplete
       ? getNextRoutineSuggestion(progress)

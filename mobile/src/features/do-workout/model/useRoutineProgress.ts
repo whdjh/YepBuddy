@@ -15,6 +15,7 @@ export interface RoutineProgressResult {
   isRoutineEnabled: boolean
   progress: RoutineCycleProgress
   nextSuggestion: RoutineCycleSession | null
+  isDeloadCycle: boolean
   isLoading: boolean
   reload: () => Promise<void>
   markSlotFilled: (slotId: string) => Promise<void>
@@ -95,6 +96,7 @@ export function useRoutineProgress(): RoutineProgressResult {
 
   return {
     hasCustomSettings: snapshot.hasCustomSettings,
+    isDeloadCycle: snapshot.isDeloadCycle,
     isRoutineEnabled: snapshot.isRoutineEnabled,
     progress: snapshot.progress,
     nextSuggestion: snapshot.nextSuggestion,
