@@ -63,6 +63,7 @@ export interface StoredWorkoutSession {
   averageHeartRate: number | null
   totalKcal: number | null
   healthKitWorkoutUUID: string | null
+  isDeload: boolean
   routineSubstitution: WorkoutRoutineSubstitution | null
   bodyParts: WorkoutBodyPartSet[]
   memo: string

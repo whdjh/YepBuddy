@@ -31,6 +31,7 @@ export function buildCompletedWorkoutSession(
   state: CompletedWorkoutState,
   completedAt: string,
   routineSubstitution: WorkoutRoutineSubstitution | null = null,
+  isDeload = false,
 ): StoredWorkoutSession | null {
   if (!state.sessionId || !state.startedAt) {
     return null
@@ -45,6 +46,7 @@ export function buildCompletedWorkoutSession(
     averageHeartRate: null,
     totalKcal: normalizeOptionalMetricCount(state.totalKcal),
     healthKitWorkoutUUID: null,
+    isDeload,
     routineSubstitution,
     bodyParts: state.bodyParts,
     memo: state.memo,
