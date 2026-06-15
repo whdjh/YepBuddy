@@ -111,6 +111,8 @@
 - 월 단위로 저장된 완료 세션을 조회한다.
 - 같은 월의 HealthKit workout 요약도 함께 읽는다.
 - 저장 세션을 기준으로 카드 목록을 만들고, HealthKit 데이터는 kcal 보강용으로 병합한다.
+- HealthKit workout 시작 시각이 저장 세션 시작 시각과 몇 초 차이 나는 경우에도 같은 세션으로 간주해 병합한다.
+- HealthKit 요약이 없거나 매칭되지 않으면 저장 세션에 기록된 활동 칼로리를 fallback으로 사용한다.
 
 현재 구현 기준의 의미:
 
@@ -132,8 +134,9 @@
 - 운동 부위는 저장 세션의 `bodyParts`에서 상위 부위만 중복 없이 추려 표시한다.
 - 세션 목록 카드에서는 `가슴 상부` 같은 세부 라벨을 직접 표시하지 않고 `가슴`으로 표시한다.
 - 부위가 없으면 `미지정`으로 표시한다.
-- 칼로리는 같은 `sessionId`를 가진 HealthKit workout의 `kcal`을 사용한다.
-- HealthKit 값이 없으면 `--`로 표시한다.
+- 칼로리는 같은 `sessionId` 또는 저장 세션 시작 시각과 가까운 HealthKit workout의 `kcal`을 우선 사용한다.
+- HealthKit 값이 없으면 저장 세션의 활동 칼로리로 보강한다.
+- 모든 칼로리 값이 없으면 `--`로 표시한다.
 - 날짜는 `startedAt` 기준으로 `MM.DD 요일` 형식으로 표시한다.
 
 현재 구현 기준의 의미:
@@ -203,7 +206,8 @@ HealthKit에서 사용하는 정보:
 현재 구현 기준 제약:
 
 - 세션 목록은 HealthKit workout을 단독 세션으로 노출하지 않는다.
-- HealthKit 값은 `sessionId = startedAt ISO string` 계약으로 저장 세션과 병합될 때만 사용된다.
+- HealthKit 값은 기본적으로 `sessionId = startedAt ISO string` 계약으로 병합하고, iOS live workout이 네이티브 시작 시각을 별도로 기록해 몇 초 차이가 나는 경우에는 가까운 시작 시각 기준으로 보강한다.
+- HealthKit 조회 결과가 비어 있으면 저장 세션의 `activeKcal`로 칼로리 값을 보강한다.
 
 ## 7. 상태와 예외 케이스
 
