@@ -248,6 +248,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
             startTime={startTime}
             endTime={endTime}
             location={locationLabel}
+            isDeload={stored.isDeload === true}
           />
 
           {/* 메모 */}
