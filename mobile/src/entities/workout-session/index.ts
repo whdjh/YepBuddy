@@ -179,7 +179,6 @@ export {
   fillRoutineCycleSlotProgress,
   getRoutineCycleEditPolicy,
   getRoutineCyclePhase,
-  getRoutineCycleState,
   getRoutineCycleStateFromProgress,
   normalizeRoutineCycleProgressState,
   restartRoutineCycle,
