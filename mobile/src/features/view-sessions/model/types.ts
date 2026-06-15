@@ -8,6 +8,7 @@ export interface SessionListItem {
   completedAt: string | null
   bodyParts: BodyPart[]
   cardioDurationMinutes: number | null
+  isDeload: boolean
   totalSets: number
   kcal: number | null
   date: Date
