@@ -1,14 +1,12 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
-import { useRoutineCyclePlan } from "@/entities/workout-session"
 import { useCardColors } from "@/shared/hooks/useCardColors"
 import { SymbolView } from "@/shared/ui/SymbolView"
 import { Main } from "@/shared/ui/Main"
 import { IconButton } from "@/shared/ui/IconButton"
 import { getDateParts } from "../lib/getTodayParts"
-import { buildCurrentCycleDeloadDateLabels } from "../model/calendarDeloadLabels"
 import { useCalendarRefreshSignal } from "../model/useCalendarRefreshSignal"
 import { useInfiniteMonths } from "../model/useInfiniteMonths"
 import { MonthGrid } from "./MonthGrid"
@@ -21,19 +19,6 @@ export function CalendarScreen() {
   const { anchorDate, refreshKey } = useCalendarRefreshSignal()
   const months = useInfiniteMonths(anchorDate)
   const today = getDateParts(anchorDate)
-  const routinePlan = useRoutineCyclePlan()
-  const deloadDateLabels = useMemo(
-    () =>
-      buildCurrentCycleDeloadDateLabels({
-        currentCycleAnchorDateKey: routinePlan.currentCycleAnchorDateKey,
-        isDeloadCycle: routinePlan.isRoutineEnabled && routinePlan.isDeloadCycle,
-      }),
-    [
-      routinePlan.currentCycleAnchorDateKey,
-      routinePlan.isDeloadCycle,
-      routinePlan.isRoutineEnabled,
-    ],
-  )
 
   const { fg: fgColor } = useCardColors()
 
@@ -85,7 +70,6 @@ export function CalendarScreen() {
             month={month}
             today={today}
             refreshKey={refreshKey}
-            deloadDateLabels={deloadDateLabels}
             onDayPress={handleDayPress}
           />
         ))}

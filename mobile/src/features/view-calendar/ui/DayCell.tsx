@@ -29,7 +29,8 @@ export function DayCell({
   onPress,
 }: DayCellProps) {
   const { t } = useTranslation()
-  const { accent, fg } = useCardColors()
+  const { accent } = useCardColors()
+  const deloadLabel = t("workout.routineCycle.status.deload")
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 })
   const [tooltipWidth, setTooltipWidth] = useState(0)
@@ -62,7 +63,7 @@ export function DayCell({
         onLongPress={handleLongPress}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityLabel={`Day ${day}${hasWorkout ? ", workout available" : ""}${isDeload ? ", deload" : ""}`}
+        accessibilityLabel={`Day ${day}${hasWorkout ? ", workout available" : ""}${isDeload ? `, ${deloadLabel}` : ""}`}
         accessibilityState={{ disabled }}
       >
         <View style={{ height: 24, alignItems: "center", justifyContent: "center" }}>
@@ -100,18 +101,12 @@ export function DayCell({
           </View>
         )}
 
-        {isDeload && (
-          <Text
-            numberOfLines={1}
-            style={{
-              color: accent,
-              fontSize: 9,
-              fontWeight: "700",
-              lineHeight: 12,
-            }}
-          >
-            {t("workout.routineCycle.status.deload")}
-          </Text>
+        {hasWorkout && isDeload && (
+          <View
+            accessibilityElementsHidden
+            importantForAccessibility="no"
+            className="mt-yb-0.5 h-yb-0.5 w-yb-5 rounded-full bg-yb-accent"
+          />
         )}
       </Pressable>
 
@@ -122,29 +117,15 @@ export function DayCell({
           onRequestClose={() => setTooltipVisible(false)}
         >
           <Pressable
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-            }}
+            className="absolute inset-0"
             onPress={() => setTooltipVisible(false)}
           >
             <View
-              className="flex-row rounded-yb-sm bg-yb-surface"
+              className="absolute flex-row gap-yb-1.5 rounded-yb-sm bg-yb-surface p-yb-2 shadow-yb-md"
               style={{
-                position: "absolute",
                 left: tooltipLeft,
                 top: tooltipPos.y - 60,
-                gap: 6,
-                padding: 8,
                 opacity: tooltipWidth === 0 ? 0 : 1,
-                shadowColor: fg,
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                elevation: 8,
               }}
               onLayout={(e) => setTooltipWidth(e.nativeEvent.layout.width)}
             >
