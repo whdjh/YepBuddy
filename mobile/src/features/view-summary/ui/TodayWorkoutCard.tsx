@@ -11,6 +11,7 @@ interface TodayWorkoutCardProps {
   bodyParts: string
   representativeBodyPart: BodyPart | null
   totalSets: number
+  isDeload: boolean
   onLongPress?: () => void
 }
 
@@ -18,6 +19,7 @@ export function TodayWorkoutCard({
   bodyParts,
   representativeBodyPart,
   totalSets,
+  isDeload,
   onLongPress,
 }: TodayWorkoutCardProps) {
   const router = useRouter()
@@ -34,7 +36,12 @@ export function TodayWorkoutCard({
         <Card.Row spacing={16}>
           <BodyPartIconHost bodyPart={representativeBodyPart} size="xl" />
           <Card.Column alignment="leading" spacing={4}>
-            <Card.Label>{t("summary.todayWorkout")}</Card.Label>
+            <Card.Header
+              label={t("summary.todayWorkout")}
+              badge={
+                isDeload ? t("workout.routineCycle.status.deload") : undefined
+              }
+            />
             <Card.Title size={22}>{bodyParts}</Card.Title>
             <Card.Accent size={22}>{`${totalSets}${t("summary.setsUnit")}`}</Card.Accent>
           </Card.Column>
