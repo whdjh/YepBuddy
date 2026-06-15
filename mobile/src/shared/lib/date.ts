@@ -35,6 +35,11 @@ export function getLocalDateKey(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+/** 루틴 사이클의 현재 앵커 날짜 키를 반환 */
+export function getCurrentCycleAnchorDateKey(date = new Date()) {
+  return getLocalDateKey(date)
+}
+
 const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
 
 /** YYYY-MM-DD 형식의 날짜 키를 UTC 자정 timestamp로 변환 */

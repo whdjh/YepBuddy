@@ -1,4 +1,4 @@
-import { getThisWeekDateRange } from "@/shared/lib/date"
+import { getCurrentCycleAnchorDateKey } from "@/shared/lib/date"
 import {
   createRoutineCycleProgressState,
   getRoutineCycleStateFromProgress,
@@ -28,11 +28,6 @@ import {
   type RoutineCycleProgress,
 } from "./routineCycleProgress"
 
-interface CycleAnchorDateRange {
-  startDateKey: string
-  endDateKey: string
-}
-
 interface RoutineCycleProgressSnapshotInput {
   cycleProgress: RoutineCycleProgressState | null
   currentCycleAnchorDateKey: string
@@ -43,7 +38,7 @@ interface RoutineCycleProgressSnapshotInput {
 
 interface LoadRoutineCycleProgressSnapshotOptions {
   getAllStoredWorkoutSessions?: typeof getAllStoredWorkoutSessions
-  getCycleAnchorDateRange?: () => CycleAnchorDateRange
+  getCycleAnchorDateKey?: () => string
   loadRoutineCycleProgressState?: typeof loadRoutineCycleProgressState
   loadRoutineCycleFeatureStatus?: typeof loadRoutineCycleFeatureStatus
   loadRoutineCycleSettings?: typeof loadRoutineCycleSettings
@@ -122,19 +117,19 @@ export function buildRoutineCycleProgressSnapshot({
 // 저장된 루틴 설정과 전체 운동 세션을 불러와 세션 단위 진행 상태 스냅샷을 만든다.
 export async function loadRoutineCycleProgressSnapshot({
   getAllStoredWorkoutSessions: loadSessions = getAllStoredWorkoutSessions,
-  getCycleAnchorDateRange = getThisWeekDateRange,
+  getCycleAnchorDateKey = getCurrentCycleAnchorDateKey,
   loadRoutineCycleProgressState: loadCycleProgress = loadRoutineCycleProgressState,
   loadRoutineCycleFeatureStatus: loadFeatureStatus = loadRoutineCycleFeatureStatus,
   loadRoutineCycleSettings: loadSettings = loadRoutineCycleSettings,
 }: LoadRoutineCycleProgressSnapshotOptions = {}) {
-  const { startDateKey } = getCycleAnchorDateRange()
+  const cycleAnchorDateKey = getCycleAnchorDateKey()
   const [settings, featureStatus] = await Promise.all([
     loadSettings(),
     loadFeatureStatus(),
   ])
   const normalizedSettings = normalizeRoutineCycleSettings(
-    settings ?? createDefaultRoutineCycleSettings(startDateKey),
-    startDateKey,
+    settings ?? createDefaultRoutineCycleSettings(cycleAnchorDateKey),
+    cycleAnchorDateKey,
   )
   const [cycleProgress, sessions] = await Promise.all([
     loadCycleProgress(normalizedSettings.cycleStartDateKey),
@@ -143,7 +138,7 @@ export async function loadRoutineCycleProgressSnapshot({
 
   return buildRoutineCycleProgressSnapshot({
     cycleProgress,
-    currentCycleAnchorDateKey: startDateKey,
+    currentCycleAnchorDateKey: cycleAnchorDateKey,
     featureStatus,
     sessions,
     settings,

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { getThisWeekDateRange } from "@/shared/lib/date"
+import { getCurrentCycleAnchorDateKey } from "@/shared/lib/date"
 import {
   createRoutineCycleProgressState,
   getRoutineCycleEditPolicy,
@@ -70,11 +70,11 @@ export function useRoutineCyclePlan(): RoutineCyclePlanResult {
   )
   const [sessions, setSessions] = useState<StoredWorkoutSession[]>([])
   const [currentCycleAnchorDateKey, setCurrentCycleAnchorDateKey] = useState(
-    () => getThisWeekDateRange().startDateKey,
+    () => getCurrentCycleAnchorDateKey(),
   )
   const [cycleProgress, setCycleProgress] =
     useState<RoutineCycleProgressState>(() =>
-      createRoutineCycleProgressState(getThisWeekDateRange().startDateKey),
+      createRoutineCycleProgressState(getCurrentCycleAnchorDateKey()),
     )
   const [isLoading, setIsLoading] = useState(true)
 
