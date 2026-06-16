@@ -55,6 +55,15 @@ interface RoutineCycleSetupPromptInput {
   cycleState: RoutineCycleState | null
 }
 
+interface RoutineCyclePromptStateForCycleStateInput {
+  // 사용자가 현재 사이클 앵커 날짜의 안내를 닫았는지 추적하는 상태
+  promptState: RoutineCyclePromptState
+  // 안내 중복 노출 방지에 쓰는 현재 사이클 앵커 날짜 키
+  currentCycleAnchorDateKey: string
+  // 이미 계산한 슬롯 기반 사이클 상태
+  cycleState: RoutineCycleState | null
+}
+
 function getTotalCycleCount(settings: RoutineCycleSettings) {
   return Math.max(1, settings.trainingCycles) + Math.max(0, settings.deloadCycles)
 }
@@ -217,10 +226,12 @@ export function fillRoutineCycleSlotProgress(
 export function restartRoutineCycle(
   settings: RoutineCycleSettings,
   cycleStartDateKey: string,
+  cycleStartedAtIso = new Date().toISOString(),
 ): RoutineCycleSettings {
   return {
     ...settings,
     cycleStartDateKey,
+    cycleStartedAtIso,
   }
 }
 
@@ -233,6 +244,26 @@ export function getRoutineCyclePhase(
   }
 
   return cycleState.isDeloadCycle ? "deload" : "regular"
+}
+
+// 완료 안내를 닫은 뒤 세션 삭제 등으로 같은 앵커의 사이클이 다시 미완료가 되면 다음 재완료 때 안내가 다시 뜰 수 있도록 닫힘 상태를 초기화
+export function getRoutineCyclePromptStateForCycleState({
+  promptState,
+  currentCycleAnchorDateKey,
+  cycleState,
+}: RoutineCyclePromptStateForCycleStateInput): RoutineCyclePromptState {
+  if (
+    cycleState?.isCycleComplete !== false ||
+    promptState.cycleRenewalDismissedForAnchorDateKey !==
+      currentCycleAnchorDateKey
+  ) {
+    return promptState
+  }
+
+  return {
+    ...promptState,
+    cycleRenewalDismissedForAnchorDateKey: null,
+  }
 }
 
 // 설정된 루틴 사이클이 끝났을 때 안내 모달을 보여줄지 판단

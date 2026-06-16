@@ -16,6 +16,7 @@ export interface RoutineCycleSession {
 export interface RoutineCycleSettings {
   sessions: RoutineCycleSession[]
   cycleStartDateKey: string
+  cycleStartedAtIso: string | null
   trainingCycles: number
   deloadCycles: number
   splitCount: number
@@ -80,6 +81,7 @@ export function createDefaultRoutineCycleSettings(
   return {
     sessions: DEFAULT_ROUTINE_CYCLE_SESSIONS,
     cycleStartDateKey,
+    cycleStartedAtIso: null,
     trainingCycles: DEFAULT_ROUTINE_CYCLE_TRAINING_CYCLES,
     deloadCycles: DEFAULT_ROUTINE_CYCLE_DELOAD_CYCLES,
     splitCount: DEFAULT_ROUTINE_CYCLE_SPLIT_COUNT,
@@ -130,6 +132,11 @@ export function normalizeRoutineCycleSettings(
     sessions: resizeRoutineCycleSessions(baseSessions, splitCount),
     cycleStartDateKey:
       settings.cycleStartDateKey ?? fallbackCycleStartDateKey,
+    cycleStartedAtIso:
+      typeof settings.cycleStartedAtIso === "string" &&
+      Number.isFinite(new Date(settings.cycleStartedAtIso).getTime())
+        ? settings.cycleStartedAtIso
+        : null,
     trainingCycles,
     deloadCycles,
     splitCount,

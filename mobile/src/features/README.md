@@ -8,7 +8,7 @@ Feature에서는 route 진입, 화면 전용 상태, 사용자 액션 orchestrat
 
 ```txt
 features/
-├── view-summary          # 홈/일지 탭, 요약 카드와 주간 루틴 prompt
+├── view-summary          # 홈/일지 탭, 요약 카드와 루틴 사이클 prompt
 ├── start-workout         # 운동 시작 countdown
 ├── do-workout            # 운동 중 화면, drawer, HealthKit/timer orchestration
 ├── view-result           # 운동 결과 상세, 메모, 삭제
@@ -46,12 +46,13 @@ features/
 홈 일지 화면이다. `app/(tabs)/index.tsx`에서 `SummaryScreen`으로 진입한다.
 
 주요 흐름:
-- `SummaryScreen`이 카드 레이아웃, 편집 상태, 데이터 hook, 루틴 사이클 안내 prompt를 조합한다.
+- `SummaryScreen`이 카드 레이아웃, 편집 상태, 데이터 hook, 루틴 사이클 안내 Alert를 조합한다.
 - `useSummaryCardLayout`이 카드 순서/숨김 상태를 `AsyncStorage`에 저장한다.
 - `SummaryCardRows` → `EditableSummaryCardFrame` → `SummaryCardRenderer` 순서로 카드가 렌더링된다.
 - `SummaryCardRenderer`는 오늘 운동, 운동 시간, 세트 수, 최근 세션, 운동 시작, 분할 루틴 카드를 분기한다.
 - 장소 도착 알림 pending prompt가 있으면 요약 화면 focus 시 확인 Alert를 띄우고 `/workout/countdown` 또는 `/workout/active`로 보낸다.
 - 루틴 사이클 첫 안내는 `useRoutineCycleFeaturePrompt`가 `/settings?routineSetup=1`로 연결한다.
+- 루틴 사이클 종료 안내는 `RoutineCycleSetupPromptAlert`가 native Alert로 표시하며, `루틴 변경`, `그대로 시작`, `나중에` 선택을 처리한다.
 
 주요 컴포넌트:
 - `SummaryScreen`
@@ -64,7 +65,7 @@ features/
 - `WorkoutLinkCard`
 - `SessionLinkCard`
 - `RoutineCycleSessionList`
-- `RoutineCycleSetupPromptModal`
+- `RoutineCycleSetupPromptAlert`
 
 사용하는 `entities/workout-session` API:
 - `useWorkout`
@@ -72,7 +73,7 @@ features/
 - `getStoredWorkoutSessionIdByDate`, `getLatestStoredWorkoutSession`
 - `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionDurationMinutes`
 - `getWorkoutBodyPartSetLabel`
-- weekly routine load/save/progress/cycle/prompt API
+- routine cycle load/save/progress/cycle/prompt API
 
 사용하는 shared API:
 - `Main`, `Card`, `StatCard`, `BodyPartIconHost`, `IconButton`, `GlassCircleBackground`
@@ -85,7 +86,7 @@ features/
 주요 side effect:
 - summary card layout `AsyncStorage` read/write
 - AppState active/자정 기준 summary refresh
-- weekly routine setting/status/prompt storage load/save
+- routine cycle setting/status/prompt storage load/save
 - pending workout place reminder prompt clear
 - legal link open
 
@@ -149,7 +150,7 @@ features/
 - `readLiveWorkoutStats`
 - `registerWorkoutToCalendar`
 - `syncWorkoutReminderAtNight`
-- weekly routine load/progress/suggestion API
+- routine cycle load/progress/suggestion API
 - body part set helpers and types
 
 사용하는 shared API:
@@ -347,14 +348,14 @@ features/
 - `WorkoutReminderToggle`은 매일 운동 리마인더 enabled 값과 notification sync를 관리한다.
 - `WorkoutPlaceArrivalReminderToggle`은 운동 장소 알림 enabled 값과 geofence/sync를 관리한다.
 - `ProteinSaleNotificationToggle`은 프로틴 세일 알림 예약/해제를 관리한다.
-- `WeeklyRoutineToggle`은 `useWeeklyRoutinePlan`을 사용하고, `routineSetup=1` param이면 설정 sheet를 연다.
-- `WeeklyRoutineSettingsSheet`와 `RoutineSettingsEditors`가 주간 루틴 split/cycle/body part 설정을 편집한다.
+- `RoutineCycleToggle`은 `useRoutineCyclePlan`을 사용하고, `routineSetup=1` param이면 설정 sheet를 연다.
+- `RoutineCycleSettingsSheet`와 `RoutineSettingsEditors`가 루틴 사이클 split/cycle/body part 설정을 편집한다.
 
 주요 컴포넌트:
 - `SettingsScreen`
 - `SettingsRow`
-- `WeeklyRoutineToggle`
-- `WeeklyRoutineSettingsSheet`
+- `RoutineCycleToggle`
+- `RoutineCycleSettingsSheet`
 - `RoutineSettingsEditors`
 - `WorkoutReminderToggle`
 - `WorkoutPlaceArrivalReminderToggle`
@@ -363,7 +364,7 @@ features/
 사용하는 `entities/workout-session` API:
 - `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`
 - `getWorkoutPlaceReminderEnabled`, `setWorkoutPlaceReminderEnabled`, `disableWorkoutPlaceArrivalReminder`, `syncWorkoutPlaceArrivalReminder`
-- weekly routine defaults/types/constants/session resize API
+- routine cycle defaults/types/constants/session resize API
 
 사용하는 `entities/protein` API:
 - 프로틴 세일 알림 scheduler/storage API
@@ -375,7 +376,7 @@ features/
 
 주요 side effect:
 - notification permission/schedule/cancel through entity or shared notification APIs
-- weekly routine storage save through `useWeeklyRoutinePlan`
+- routine cycle storage save through `useRoutineCyclePlan`
 - route back
 
 ### `use-tempo`

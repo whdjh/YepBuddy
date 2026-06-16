@@ -204,7 +204,9 @@
         "cycleComplete": {
           "title": "이번 루틴 사이클이 끝났어요",
           "body": "새 사이클로 다시 시작하거나 루틴을 조정하세요.",
-          "action": "새 사이클 시작"
+          "action": "새 사이클 설정",
+          "changeRoutine": "루틴 변경",
+          "keepRoutine": "그대로 시작"
         }
       },
       "featurePrompt": {

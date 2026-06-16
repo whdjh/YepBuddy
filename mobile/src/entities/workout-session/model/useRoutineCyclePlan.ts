@@ -4,6 +4,7 @@ import {
   createRoutineCycleProgressState,
   getRoutineCycleEditPolicy,
   getRoutineCyclePhase,
+  getRoutineCyclePromptStateForCycleState,
   getRoutineCycleStateFromProgress,
   restartRoutineCycle,
   shouldShowRoutineCycleSetupPrompt,
@@ -267,6 +268,31 @@ export function useRoutineCyclePlan(): RoutineCyclePlanResult {
           },
     [effectiveSettings, isRoutineEnabled, progressSnapshot.cycleProgress],
   )
+
+  useEffect(() => {
+    if (!isRoutineEnabled || isLoading) {
+      return
+    }
+
+    const nextPromptState = getRoutineCyclePromptStateForCycleState({
+      cycleState,
+      currentCycleAnchorDateKey,
+      promptState,
+    })
+
+    if (nextPromptState === promptState) {
+      return
+    }
+
+    setPromptState(nextPromptState)
+    void saveRoutineCyclePromptState(nextPromptState).catch(() => undefined)
+  }, [
+    currentCycleAnchorDateKey,
+    cycleState,
+    isLoading,
+    isRoutineEnabled,
+    promptState,
+  ])
 
   const setupPromptKind = useMemo(
     () =>

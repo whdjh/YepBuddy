@@ -39,7 +39,7 @@
 
 현재 entity는 두 개다.
 
-- `workout-session`: 운동 세션, 저장된 운동 기록, HealthKit, 캘린더, 운동 리마인더, 운동 장소 알림, 주간 루틴
+- `workout-session`: 운동 세션, 저장된 운동 기록, HealthKit, 캘린더, 운동 리마인더, 운동 장소 알림, 루틴 사이클
 - `protein`: 프로틴 상품/가격 데이터, 가격 배지, 상세 모델 조립, 가격 차트, 목록 카드, 프로틴 세일 알림
 
 ## 전체 구조
@@ -86,7 +86,7 @@ src/entities
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
 - `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 장소 알림
-- `model/weeklyRoutine.ts`, `model/weeklyRoutineStorage.ts`, `lib/weeklyRoutineProgress.ts`, `lib/weeklyRoutineCycle.ts`: 주간 루틴 설정/진행/사이클
+- `model/routineCycle.ts`, `model/routineCycleStorage.ts`, `lib/routineCycleProgress.ts`, `lib/routineCycleProgressSnapshot.ts`, `lib/routineCycleState.ts`: 루틴 사이클 설정/진행/상태
 
 공개 API는 `workout-session/index.ts`에서만 export한다. 주요 그룹은 다음과 같다.
 
@@ -99,8 +99,8 @@ src/entities
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
 - 이전 기록 프리필: `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
 - 세션 표시 UI: `BodyPartIcon`, `BodyPartIconHost`
-- 주간 루틴: 기본 설정, normalize/resize, 저장소 load/save, progress/cycle 계산
-- 타입: `BodyPart`, `WorkoutBodyPartSet`, `StoredWorkoutSession`, `WorkoutState`, weekly routine 타입들
+- 루틴 사이클: 기본 설정, normalize/resize, 저장소 load/save, progress/cycle 계산
+- 타입: `BodyPart`, `WorkoutBodyPartSet`, `StoredWorkoutSession`, `WorkoutState`, 루틴 사이클 타입들
 
 Feature 사용처:
 
@@ -110,13 +110,13 @@ Feature 사용처:
 - `features/view-result`: 저장 세션/HealthKit 상세 조회, 메모 수정, 세션 삭제, 삭제 후 장소 리마인더 재빌드
 - `features/view-sessions`: 월별 저장 세션과 HealthKit 요약 조회
 - `features/view-calendar`: 날짜 범위별 저장 세션 조회
-- `features/view-summary`: 오늘/이번 주/최근 세션, 주간 루틴 진행률과 사이클, 장소 알림 pending prompt 처리
-- `features/manage-settings`: 운동 리마인더, 운동 장소 알림, 주간 루틴 설정 UI
+- `features/view-summary`: 오늘/이번 주/최근 세션, 루틴 사이클 진행률과 사이클, 장소 알림 pending prompt 처리
+- `features/manage-settings`: 운동 리마인더, 운동 장소 알림, 루틴 사이클 설정 UI
 - `entities/workout-session/ui/BodyPartIcon`: 운동 부위 아이콘 표시
 
 ### 왜 일부 코드가 feature/app으로 이동했나
 
-현재 구조에서 `entities`가 `features`로 대체된 것은 아니다. 운동 세션 상태, 저장소, HealthKit, 캘린더, 알림, 장소 리마인더, 주간 루틴 규칙은 그대로 `workout-session` entity가 가진다.
+현재 구조에서 `entities`가 `features`로 대체된 것은 아니다. 운동 세션 상태, 저장소, HealthKit, 캘린더, 알림, 장소 리마인더, 루틴 사이클 규칙은 그대로 `workout-session` entity가 가진다.
 
 이동한 것은 route를 직접 아는 orchestration 코드다.
 
@@ -207,9 +207,9 @@ Workout session AsyncStorage:
 - `yb:workout:dates`: 완료 세션이 있는 날짜 키 배열 JSON. 없거나 깨지면 실제 `yb:workout:date:*` 키를 스캔해 재생성한다.
 - `yb:workout:reminder`: 예약된 운동 리마인더 notification identifier.
 - `yb:workout:reminder:enabled`: `"true"` 또는 `"false"`.
-- `yb:workout:weekly-routine`: `WeeklyRoutineSettings` JSON.
+- `yb:workout:weekly-routine`: `RoutineCycleSettings` JSON. 같은 날짜에 새 사이클을 시작한 경우 이전 세션을 제외하기 위한 `cycleStartedAtIso`를 포함할 수 있다.
 - `yb:workout:weekly-routine-feature-status`: `"unasked"`, `"enabled"`, `"disabled"`.
-- `yb:workout:weekly-routine-prompt`: `WeeklyRoutinePromptState` JSON.
+- `yb:workout:weekly-routine-prompt`: `RoutineCyclePromptState` JSON. 사이클 종료 Alert를 dismiss한 앵커 날짜 키를 저장한다.
 - `yb:workout-place-reminder:enabled`: `"true"` 또는 `"false"`.
 - `yb:workout-place-reminder:places`: `WorkoutPlaceReminderPlace[]` JSON. 반복 운동 장소 후보다.
 - `yb:workout-place-reminder:pending-prompt`: `PendingWorkoutPlaceReminderPrompt` JSON. 장소 도착 알림을 탭한 뒤 요약 화면에서 운동 시작 확인을 띄우기 위한 값이다.
