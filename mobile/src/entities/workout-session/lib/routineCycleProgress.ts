@@ -5,6 +5,10 @@ import type {
   RoutineCycleSettings,
 } from "../model/routineCycle"
 import type { RoutineCycleProgressState } from "./routineCycleState"
+import {
+  getLocalDateKeyFromIso,
+  getTimestampMsFromIso,
+} from "@/shared/lib/date"
 
 /** 루틴 슬롯의 진행 상태: 미시작 / 일부 완료 / 완전 완료 / 대체 완료 */
 export type RoutineCycleSlotStatus =
@@ -159,6 +163,30 @@ function sortSessionsNewestFirst(sessions: StoredWorkoutSession[]) {
   })
 }
 
+/** 현재 사이클 시작 날짜/시각 이후에 시작한 세션인지 판단 */
+function isSessionInRoutineCycle(
+  settings: RoutineCycleSettings,
+  session: StoredWorkoutSession,
+) {
+  const sessionDateKey = getLocalDateKeyFromIso(session.startedAt)
+  if (sessionDateKey && sessionDateKey < settings.cycleStartDateKey) {
+    return false
+  }
+
+  if (!settings.cycleStartedAtIso) {
+    return true
+  }
+
+  const cycleStartedAtMs = getTimestampMsFromIso(settings.cycleStartedAtIso)
+  const sessionStartedAtMs = getTimestampMsFromIso(session.startedAt)
+
+  if (cycleStartedAtMs === null || sessionStartedAtMs === null) {
+    return true
+  }
+
+  return sessionStartedAtMs >= cycleStartedAtMs
+}
+
 /**
  * 완료된 운동 세션 목록을 시간순으로 재생해 저장소에 둘 루틴 사이클 진행 상태를 재구성한다.
  * 각 루틴 슬롯이 한 번씩 채워지면 하나의 사이클이 완료된 것으로 보고 다음 사이클로 넘어간다.
@@ -181,7 +209,9 @@ export function buildRoutineCycleProgressStateFromSessions(
     }
   }
 
-  sortSessionsOldestFirst(sessions).forEach((session) => {
+  sortSessionsOldestFirst(
+    sessions.filter((session) => isSessionInRoutineCycle(settings, session)),
+  ).forEach((session) => {
     if (completedCycleCount >= totalCycleCount) {
       return
     }

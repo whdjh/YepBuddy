@@ -9,7 +9,6 @@ interface MonthGridProps {
   month: number
   today: { year: number; month: number; day: number }
   refreshKey: number
-  deloadDateLabels?: Record<string, true>
   onDayPress: (sessionId: string) => void
 }
 
@@ -18,7 +17,6 @@ export function MonthGrid({
   month,
   today,
   refreshKey,
-  deloadDateLabels,
   onDayPress,
 }: MonthGridProps) {
   const { t } = useTranslation()
@@ -26,7 +24,6 @@ export function MonthGrid({
     year,
     month,
     refreshKey,
-    deloadDateLabels,
   )
 
   const firstDay = getFirstDayOfWeek(year, month)

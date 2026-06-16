@@ -21,6 +21,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     todayTotalSets,
     todayBodyParts,
     todayRepresentativeBodyPart,
+    isTodayWorkoutDeload,
     bodyPartCardSession,
     bodyPartCardBodyParts,
     bodyPartCardRepresentativeBodyPart,
@@ -38,6 +39,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
           bodyParts={todayBodyParts}
           representativeBodyPart={todayRepresentativeBodyPart}
           totalSets={todayTotalSets}
+          isDeload={isTodayWorkoutDeload}
           onLongPress={onLongPress}
         />
       )
@@ -68,6 +70,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
           representativeBodyPart={bodyPartCardRepresentativeBodyPart}
           kcal="--"
           day={bodyPartCardDay}
+          isDeload={isTodayWorkoutDeload}
           onLongPress={onLongPress}
           onPress={
             bodyPartCardSession

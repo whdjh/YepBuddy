@@ -27,6 +27,7 @@ export function useSummaryCardData() {
   const todayRepresentativeBodyPart = getRepresentativeBodyPart(
     todaySummaryStoredSession,
   )
+  const isTodayWorkoutDeload = todaySummaryStoredSession?.isDeload === true
   const bodyPartCardSession = todaySummaryStoredSession
   const bodyPartCardBodyParts = todayBodyParts
   const bodyPartCardRepresentativeBodyPart = todayRepresentativeBodyPart
@@ -54,6 +55,7 @@ export function useSummaryCardData() {
     todayTotalSets,
     todayBodyParts,
     todayRepresentativeBodyPart,
+    isTodayWorkoutDeload,
     todaySummaryStoredSession,
     bodyPartCardSession,
     bodyPartCardBodyParts,

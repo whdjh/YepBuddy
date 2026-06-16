@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { getThisWeekDateRange } from "@/shared/lib/date"
+import { getCurrentCycleAnchorDateKey } from "@/shared/lib/date"
 import { parseJsonOrNull } from "@/shared/lib/json"
 import {
   createRoutineCycleProgressState,
@@ -67,7 +67,7 @@ export async function resetRoutineCycleProgressState(
 export async function markRoutineCycleSlotFilled(
   slotId: string,
 ): Promise<RoutineCycleProgressState | null> {
-  const { startDateKey } = getThisWeekDateRange()
+  const cycleAnchorDateKey = getCurrentCycleAnchorDateKey()
   const [settings, featureStatus] = await Promise.all([
     loadRoutineCycleSettings(),
     loadRoutineCycleFeatureStatus(),
@@ -78,8 +78,8 @@ export async function markRoutineCycleSlotFilled(
   }
 
   const normalizedSettings = normalizeRoutineCycleSettings(
-    settings ?? createDefaultRoutineCycleSettings(startDateKey),
-    startDateKey,
+    settings ?? createDefaultRoutineCycleSettings(cycleAnchorDateKey),
+    cycleAnchorDateKey,
   )
   const currentProgress = await loadRoutineCycleProgressState(
     normalizedSettings.cycleStartDateKey,

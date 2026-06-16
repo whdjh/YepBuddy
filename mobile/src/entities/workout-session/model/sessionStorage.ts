@@ -45,6 +45,7 @@ type PersistedWorkoutSession = Omit<
   | "averageHeartRate"
   | "cardioStartedAt"
   | "healthKitWorkoutUUID"
+  | "isDeload"
   | "routineSubstitution"
   | "totalKcal"
 > &
@@ -55,6 +56,7 @@ type PersistedWorkoutSession = Omit<
       | "averageHeartRate"
       | "cardioStartedAt"
       | "healthKitWorkoutUUID"
+      | "isDeload"
       | "routineSubstitution"
       | "totalKcal"
     >
@@ -476,6 +478,7 @@ function parseStoredWorkoutSession(value: string) {
       session.healthKitWorkoutUUID.length > 0
         ? session.healthKitWorkoutUUID
         : null,
+    isDeload: session.isDeload === true,
     routineSubstitution: normalizeRoutineSubstitution(
       session.routineSubstitution,
     ),

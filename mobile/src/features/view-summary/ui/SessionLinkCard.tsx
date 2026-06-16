@@ -11,6 +11,7 @@ interface SessionLinkCardProps {
   representativeBodyPart: BodyPart | null
   kcal: number | string
   day: string
+  isDeload: boolean
   onPress?: () => void
   onLongPress?: () => void
 }
@@ -20,6 +21,7 @@ export function SessionLinkCard({
   representativeBodyPart,
   kcal,
   day,
+  isDeload,
   onPress,
   onLongPress,
 }: SessionLinkCardProps) {
@@ -34,7 +36,13 @@ export function SessionLinkCard({
     >
       <Card variant="glass" minHeight={200}>
         <Card.Column alignment="leading" spacing={0}>
-          <Card.Header label={t("summary.session")} chevron />
+          <Card.Header
+            label={t("summary.session")}
+            badge={
+              isDeload ? t("workout.routineCycle.status.deload") : undefined
+            }
+            chevron
+          />
           <Card.Spacer size={12} />
           {representativeBodyPart ? (
             <BodyPartIconHost bodyPart={representativeBodyPart} size="md" />

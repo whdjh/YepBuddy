@@ -35,7 +35,10 @@ export function getLocalDateKey(date: Date) {
   return `${year}-${month}-${day}`
 }
 
-const MS_PER_WEEK = 7 * 24 * 60 * 60 * 1000
+/** 루틴 사이클의 현재 앵커 날짜 키를 반환 */
+export function getCurrentCycleAnchorDateKey(date = new Date()) {
+  return getLocalDateKey(date)
+}
 
 /** YYYY-MM-DD 형식의 날짜 키를 UTC 자정 timestamp로 변환 */
 export function getUtcMsFromDateKey(dateKey: string) {
@@ -59,20 +62,6 @@ export function getUtcMsFromDateKey(dateKey: string) {
   }
 
   return timestamp
-}
-
-/** 두 날짜 키 사이에 지난 전체 주 수를 반환. 시작일보다 이전이면 0 */
-export function getElapsedWeeksBetweenDateKeys(
-  startDateKey: string,
-  endDateKey: string,
-) {
-  const startMs = getUtcMsFromDateKey(startDateKey)
-  const endMs = getUtcMsFromDateKey(endDateKey)
-  if (startMs === null || endMs === null) {
-    return 0
-  }
-
-  return Math.max(0, Math.floor((endMs - startMs) / MS_PER_WEEK))
 }
 
 /** 이번 주 로컬 날짜 키 범위(월요일 ~ 일요일)를 반환 */

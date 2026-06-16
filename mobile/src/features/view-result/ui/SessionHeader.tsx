@@ -9,6 +9,7 @@ interface SessionHeaderProps {
   startTime: string
   endTime: string
   location: string | null
+  isDeload?: boolean
 }
 
 export function SessionHeader({
@@ -17,6 +18,7 @@ export function SessionHeader({
   startTime,
   endTime,
   location,
+  isDeload = false,
 }: SessionHeaderProps) {
   const { t } = useTranslation()
 
@@ -29,7 +31,12 @@ export function SessionHeader({
           <Card.Icon name="dumbbell.fill" variant="xl" />
         )}
         <Card.Column alignment="leading" spacing={2}>
-          <Card.Caption>{t("workout.result.strengthTraining")}</Card.Caption>
+          <Card.Header
+            label={t("workout.result.strengthTraining")}
+            badge={
+              isDeload ? t("workout.routineCycle.status.deload") : undefined
+            }
+          />
           <Card.Title size={20}>{bodyPartLabel}</Card.Title>
           <Card.Caption size={12}>{`${startTime} – ${endTime}${location ? ` · ${location}` : ""}`}</Card.Caption>
         </Card.Column>

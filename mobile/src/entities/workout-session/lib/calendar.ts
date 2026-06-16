@@ -17,10 +17,6 @@ import {
   YEPBUDDY_CALENDAR_TITLE,
 } from "./calendarRegistration"
 import {
-  appendCardioDurationToTitle,
-  getCardioDurationMinutes,
-} from "./cardioSession"
-import {
   getCalendarAutoAddDecision,
   type WorkoutCompletionSource,
 } from "./calendarAutoAdd"
@@ -29,7 +25,7 @@ import {
   type CalendarAutoAddPromptHandlers,
 } from "./calendarAutoAddPrompt"
 import { formatWorkoutLocationLabel } from "./locationLabel"
-import { getWorkoutBodyPartSetLabel } from "../model/bodyPartSet"
+import { formatWorkoutCalendarTitle } from "./calendarTitle"
 
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   chest: "workout.bodyParts.chest",
@@ -38,36 +34,6 @@ const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   shoulders: "workout.bodyParts.shoulders",
   arms: "workout.bodyParts.arms",
   core: "workout.bodyParts.core",
-}
-
-/** 운동 부위와 세트 수를 묶어 캘린더 이벤트 제목 문자열로 만듬 */
-function formatWorkoutCalendarTitle(params: {
-  bodyParts: WorkoutBodyPartSet[]
-  cardioStartedAt?: string | null
-  completedAt: string
-}) {
-  const bodyPartTitle =
-    params.bodyParts.length === 0
-      ? i18n.t("workout.calendar.defaultTitle")
-      : params.bodyParts
-          .map((item) => {
-            const label = getWorkoutBodyPartSetLabel(item, {
-              bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
-              bodyPartDetailLabel: (detail) =>
-                i18n.t(`workout.bodyPartDetails.${detail}`),
-            })
-            return `${label}(${item.setCount})`
-          })
-          .join(", ")
-
-  return appendCardioDurationToTitle({
-    title: bodyPartTitle,
-    cardioLabel: i18n.t("workout.calendar.cardio"),
-    cardioMinutes: getCardioDurationMinutes({
-      cardioStartedAt: params.cardioStartedAt,
-      completedAt: params.completedAt,
-    }),
-  })
 }
 
 /** 새 캘린더를 만들 때 사용할 기기 기본 캘린더 소스를 가져옴 */
@@ -194,6 +160,7 @@ export async function registerWorkoutToCalendar(
     cardioStartedAt?: string | null
     memo: string
     bodyParts: WorkoutBodyPartSet[]
+    isDeload?: boolean
     location?: WorkoutLocation | null
   },
   options: {
@@ -238,11 +205,23 @@ export async function registerWorkoutToCalendar(
 
   try {
     await Calendar.createEventAsync(calendarId, {
-      title: formatWorkoutCalendarTitle({
-        bodyParts: params.bodyParts,
-        cardioStartedAt: params.cardioStartedAt,
-        completedAt: params.completedAt,
-      }),
+      title: formatWorkoutCalendarTitle(
+        {
+          bodyParts: params.bodyParts,
+          cardioStartedAt: params.cardioStartedAt,
+          completedAt: params.completedAt,
+          isDeload: params.isDeload,
+        },
+        {
+          bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
+          bodyPartDetailLabel: (detail) =>
+            i18n.t(`workout.bodyPartDetails.${detail}`),
+          cardioLabel: i18n.t("workout.calendar.cardio"),
+          cardioMinuteUnit: i18n.t("summary.minuteUnit"),
+          defaultTitle: i18n.t("workout.calendar.defaultTitle"),
+          deloadLabel: i18n.t("workout.routineCycle.status.deload"),
+        },
+      ),
       startDate,
       endDate,
       notes: params.memo || undefined,
@@ -285,6 +264,7 @@ export async function processCompletedWorkoutCalendarAutoAdd(
         cardioStartedAt: session.cardioStartedAt,
         memo: session.memo,
         bodyParts: session.bodyParts,
+        isDeload: session.isDeload,
         location: session.location,
       },
       { allowPermissionRequest: false, showAlerts: false },
@@ -313,6 +293,7 @@ export async function processCompletedWorkoutCalendarAutoAdd(
       cardioStartedAt: session.cardioStartedAt,
       memo: session.memo,
       bodyParts: session.bodyParts,
+      isDeload: session.isDeload,
       location: session.location,
     },
     { allowPermissionRequest: false, showAlerts: false },

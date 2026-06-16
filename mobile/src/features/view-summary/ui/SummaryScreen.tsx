@@ -24,7 +24,7 @@ import { useRoutineCycleFeaturePrompt } from "../model/useRoutineCycleFeaturePro
 import { SummaryCardRows } from "./SummaryCardRows"
 import { SummaryHiddenCardPicker } from "./SummaryHiddenCardPicker"
 import { SummaryEditControls } from "./SummaryEditControls"
-import { RoutineCycleSetupPromptModal } from "./RoutineCycleSetupPromptModal"
+import { RoutineCycleSetupPromptAlert } from "./RoutineCycleSetupPromptAlert"
 
 interface SummaryScreenProps {
   onEditingChange?: (isEditing: boolean) => void
@@ -66,10 +66,17 @@ export function SummaryScreen({ onEditingChange }: SummaryScreenProps = {}) {
   const hiddenCardIds = availableCards
     .filter((card) => !card.isVisible)
     .map((card) => card.id)
+  const reloadRoutineCyclePlan = routineCyclePlan.reload
 
   useEffect(() => {
     onEditingChange?.(isEditing)
   }, [isEditing, onEditingChange])
+
+  useFocusEffect(
+    useCallback(() => {
+      void reloadRoutineCyclePlan()
+    }, [reloadRoutineCyclePlan]),
+  )
 
   useFocusEffect(
     useCallback(() => {
@@ -182,7 +189,7 @@ export function SummaryScreen({ onEditingChange }: SummaryScreenProps = {}) {
         onAddCard={addPickedCard}
         onClose={closeCardPicker}
       />
-      <RoutineCycleSetupPromptModal
+      <RoutineCycleSetupPromptAlert
         plan={routineCyclePlan}
         visible={
           routineCyclePlan.isRoutineEnabled &&

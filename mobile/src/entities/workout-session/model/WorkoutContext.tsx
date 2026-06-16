@@ -28,6 +28,7 @@ import { endWorkoutSession } from "../api/healthKit"
 import { processCompletedWorkoutCalendarAutoAdd } from "../lib/calendar"
 import { syncWorkoutReminderAtNight } from "../lib/reminder"
 import { getWorkoutLiveActivityTiming } from "../lib/liveActivityTiming"
+import { loadRoutineCycleProgressSnapshot } from "../lib/routineCycleProgressSnapshot"
 import {
   buildCompletedWorkoutSession,
   getWorkoutCompletedAt,
@@ -81,9 +82,10 @@ interface WorkoutContextValue {
   /** 일시정지된 운동을 다시 시작 */
   resumeWorkout: () => void
   /** 운동을 종료하고 완료 세션을 저장한 뒤 결과를 반환 */
-  completeWorkout: (
-    routineSubstitution?: WorkoutRoutineSubstitution | null,
-  ) => Promise<StoredWorkoutSession | null>
+  completeWorkout: (options?: {
+    routineSubstitution?: WorkoutRoutineSubstitution | null
+    isDeload?: boolean
+  }) => Promise<StoredWorkoutSession | null>
   /** 운동 상태와 진행 중 스냅샷을 모두 초기화 */
   resetWorkout: () => Promise<void>
   /** 추천된 루틴 부위 목록으로 운동 부위를 일괄 교체 */
@@ -260,9 +262,10 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     })
   }, [])
 
-  const completeWorkout = useCallback(async (
-    routineSubstitution: WorkoutRoutineSubstitution | null = null,
-  ) => {
+  const completeWorkout = useCallback(async (options: {
+    routineSubstitution?: WorkoutRoutineSubstitution | null
+    isDeload?: boolean
+  } = {}) => {
     if (!state.sessionId || !state.startedAt) {
       return null
     }
@@ -270,6 +273,11 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     // 종료 시각을 reducer에 반영하고, 별도로 완료 세션 저장까지 수행한다.
     const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
     dispatch({ type: "COMPLETE", payload: { completedAt } })
+    const isDeload =
+      options.isDeload ??
+      (await loadRoutineCycleProgressSnapshot()
+        .then((snapshot) => snapshot.isDeloadCycle)
+        .catch(() => false))
 
     const session = buildCompletedWorkoutSession(
       {
@@ -283,7 +291,8 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
         totalKcal: state.totalKcal,
       },
       completedAt,
-      routineSubstitution,
+      options.routineSubstitution ?? null,
+      isDeload,
     )
     if (!session) {
       return null

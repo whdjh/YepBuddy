@@ -18,6 +18,7 @@ export interface RoutineCycleSessionRow {
   bodyPart: string
   representativeBodyPart: BodyPart | null
   day: string
+  isDeload: boolean
   durationMin: number | null
   sets: number | null
   kcal: number | string | null
@@ -71,6 +72,7 @@ function getActualSessionRow(
             .join(", "),
     representativeBodyPart: session.bodyParts[0]?.part ?? null,
     day: formatDate(new Date(session.startedAt)),
+    isDeload: session.isDeload === true,
     durationMin: getStoredWorkoutSessionDurationMinutes(session),
     sets: getStoredWorkoutSessionSetCount(session),
     kcal: "--",
@@ -112,6 +114,7 @@ function getPlannedRoutineRow(
     day: isDeloadCycle
       ? input.deloadLabel ?? input.plannedLabel
       : input.plannedLabel,
+    isDeload: isDeloadCycle,
     durationMin: null,
     sets: null,
     kcal: null,

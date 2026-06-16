@@ -3,9 +3,6 @@ import type {
   RoutineCyclePromptState,
   RoutineCycleSettings,
 } from "../model/routineCycle"
-import {
-  getElapsedWeeksBetweenDateKeys as getElapsedCycleAnchorSteps,
-} from "@/shared/lib/date"
 
 export type RoutineCycleSetupPromptKind = "cycleComplete"
 
@@ -52,10 +49,19 @@ interface RoutineCycleSetupPromptInput {
   settings: RoutineCycleSettings | null
   // 사용자가 현재 사이클 앵커 날짜의 안내를 닫았는지 추적하는 상태
   promptState: RoutineCyclePromptState
-  // 안내 중복 노출 방지와 날짜 기반 fallback 계산에 쓰는 현재 사이클 앵커 날짜 키
+  // 안내 중복 노출 방지에 쓰는 현재 사이클 앵커 날짜 키
   currentCycleAnchorDateKey: string
-  // 이미 계산한 슬롯 기반 사이클 상태. 없으면 날짜 기반 상태를 fallback으로 계산
-  cycleState?: RoutineCycleState | null
+  // 이미 계산한 슬롯 기반 사이클 상태
+  cycleState: RoutineCycleState | null
+}
+
+interface RoutineCyclePromptStateForCycleStateInput {
+  // 사용자가 현재 사이클 앵커 날짜의 안내를 닫았는지 추적하는 상태
+  promptState: RoutineCyclePromptState
+  // 안내 중복 노출 방지에 쓰는 현재 사이클 앵커 날짜 키
+  currentCycleAnchorDateKey: string
+  // 이미 계산한 슬롯 기반 사이클 상태
+  cycleState: RoutineCycleState | null
 }
 
 function getTotalCycleCount(settings: RoutineCycleSettings) {
@@ -109,33 +115,6 @@ export function normalizeRoutineCycleProgressState(
       progress?.completedCycleCount,
     ),
     filledSlotIds: normalizeFilledSlotIds(progress?.filledSlotIds),
-  }
-}
-
-// 날짜 기반 루틴 사이클 상태 계산
-// 슬롯 기반 전환 전 계산 방식 및 cycleState 미제공 시 fallback
-export function getRoutineCycleState(
-  settings: RoutineCycleSettings,
-  currentCycleAnchorDateKey: string,
-): RoutineCycleState {
-  const trainingCycles = Math.max(1, settings.trainingCycles)
-  const deloadCycles = Math.max(0, settings.deloadCycles)
-  const totalCycleCount = trainingCycles + deloadCycles
-  const elapsedCycleAnchorSteps = getElapsedCycleAnchorSteps(
-    settings.cycleStartDateKey,
-    currentCycleAnchorDateKey,
-  )
-  const currentCycleNumber = elapsedCycleAnchorSteps + 1
-  const isCycleComplete = elapsedCycleAnchorSteps >= totalCycleCount
-
-  return {
-    currentCycleNumber,
-    totalCycleCount,
-    isDeloadCycle:
-      !isCycleComplete &&
-      deloadCycles > 0 &&
-      currentCycleNumber > trainingCycles,
-    isCycleComplete,
   }
 }
 
@@ -247,10 +226,12 @@ export function fillRoutineCycleSlotProgress(
 export function restartRoutineCycle(
   settings: RoutineCycleSettings,
   cycleStartDateKey: string,
+  cycleStartedAtIso = new Date().toISOString(),
 ): RoutineCycleSettings {
   return {
     ...settings,
     cycleStartDateKey,
+    cycleStartedAtIso,
   }
 }
 
@@ -265,21 +246,36 @@ export function getRoutineCyclePhase(
   return cycleState.isDeloadCycle ? "deload" : "regular"
 }
 
+// 완료 안내를 닫은 뒤 세션 삭제 등으로 같은 앵커의 사이클이 다시 미완료가 되면 다음 재완료 때 안내가 다시 뜰 수 있도록 닫힘 상태를 초기화
+export function getRoutineCyclePromptStateForCycleState({
+  promptState,
+  currentCycleAnchorDateKey,
+  cycleState,
+}: RoutineCyclePromptStateForCycleStateInput): RoutineCyclePromptState {
+  if (
+    cycleState?.isCycleComplete !== false ||
+    promptState.cycleRenewalDismissedForAnchorDateKey !==
+      currentCycleAnchorDateKey
+  ) {
+    return promptState
+  }
+
+  return {
+    ...promptState,
+    cycleRenewalDismissedForAnchorDateKey: null,
+  }
+}
+
 // 설정된 루틴 사이클이 끝났을 때 안내 모달을 보여줄지 판단
 export function shouldShowRoutineCycleSetupPrompt({
   settings,
   promptState,
   currentCycleAnchorDateKey,
-  cycleState: providedCycleState,
+  cycleState,
 }: RoutineCycleSetupPromptInput): RoutineCycleSetupPromptKind | null {
-  if (!settings) {
+  if (!settings || !cycleState) {
     return null
   }
-
-  // 슬롯 기반 cycleState 우선, 미제공 시 날짜 기반 fallback
-  const cycleState =
-    providedCycleState ??
-    getRoutineCycleState(settings, currentCycleAnchorDateKey)
 
   if (!cycleState.isCycleComplete) {
     return null

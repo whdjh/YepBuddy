@@ -8,13 +8,14 @@ import {
   type RoutineCycleSession,
   type RoutineCycleProgressSnapshot,
 } from "@/entities/workout-session"
-import { getThisWeekDateRange } from "@/shared/lib/date"
+import { getCurrentCycleAnchorDateKey } from "@/shared/lib/date"
 
 export interface RoutineProgressResult {
   hasCustomSettings: boolean
   isRoutineEnabled: boolean
   progress: RoutineCycleProgress
   nextSuggestion: RoutineCycleSession | null
+  isDeloadCycle: boolean
   isLoading: boolean
   reload: () => Promise<void>
   markSlotFilled: (slotId: string) => Promise<void>
@@ -23,17 +24,17 @@ export interface RoutineProgressResult {
 // 운동 중 화면에서 루틴 사이클 진행률과 다음 추천 세션을 계산
 export function useRoutineProgress(): RoutineProgressResult {
   const loadRequestIdRef = useRef(0)
-  const [snapshot, setSnapshot] = useState<RoutineCycleProgressSnapshot>(() =>
-    buildRoutineCycleProgressSnapshot({
-      cycleProgress: createRoutineCycleProgressState(
-        getThisWeekDateRange().startDateKey,
-      ),
-      currentCycleAnchorDateKey: getThisWeekDateRange().startDateKey,
+  const [snapshot, setSnapshot] = useState<RoutineCycleProgressSnapshot>(() => {
+    const cycleAnchorDateKey = getCurrentCycleAnchorDateKey()
+
+    return buildRoutineCycleProgressSnapshot({
+      cycleProgress: createRoutineCycleProgressState(cycleAnchorDateKey),
+      currentCycleAnchorDateKey: cycleAnchorDateKey,
       featureStatus: "unasked",
       sessions: [],
       settings: null,
-    }),
-  )
+    })
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   const load = useCallback(async () => {
@@ -54,13 +55,13 @@ export function useRoutineProgress(): RoutineProgressResult {
         return
       }
 
+      const cycleAnchorDateKey = getCurrentCycleAnchorDateKey()
+
       // 저장소/권한 오류가 나도 화면은 안전한 기본 상태로 유지
       setSnapshot(
         buildRoutineCycleProgressSnapshot({
-          cycleProgress: createRoutineCycleProgressState(
-            getThisWeekDateRange().startDateKey,
-          ),
-          currentCycleAnchorDateKey: getThisWeekDateRange().startDateKey,
+          cycleProgress: createRoutineCycleProgressState(cycleAnchorDateKey),
+          currentCycleAnchorDateKey: cycleAnchorDateKey,
           featureStatus: "unasked",
           sessions: [],
           settings: null,
@@ -95,6 +96,7 @@ export function useRoutineProgress(): RoutineProgressResult {
 
   return {
     hasCustomSettings: snapshot.hasCustomSettings,
+    isDeloadCycle: snapshot.isDeloadCycle,
     isRoutineEnabled: snapshot.isRoutineEnabled,
     progress: snapshot.progress,
     nextSuggestion: snapshot.nextSuggestion,

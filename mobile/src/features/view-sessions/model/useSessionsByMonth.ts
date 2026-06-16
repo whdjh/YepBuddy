@@ -42,6 +42,7 @@ export async function loadSessionsByMonth(year: number, month: number) {
             completedAt: session.completedAt,
           })
         : null,
+      isDeload: session.isDeload === true,
       totalSets: getSessionTotalSets(session),
       kcal: getSessionListKcal({
         healthKitKcal: workout?.kcal,

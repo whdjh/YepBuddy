@@ -67,6 +67,14 @@ export function RoutineCycleSessionList({
                         <Card.Caption>{session.day}</Card.Caption>
                         {session.status === "completed" && (
                           <>
+                            {session.isDeload ? (
+                              <>
+                                <Card.Dot />
+                                <Card.Caption>
+                                  {t("workout.routineCycle.status.deload")}
+                                </Card.Caption>
+                              </>
+                            ) : null}
                             <Card.Dot />
                             <Card.Caption>{`${session.durationMin}${t("summary.minuteUnit")}`}</Card.Caption>
                             <Card.Dot />
