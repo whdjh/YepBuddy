@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/whdjh/yepbuddy/compare/v1.1.2...v1.2.0) (2026-06-17)
+
+
+### Features
+
+* **mobile:** 디로드 사이클 상태 저장 및 화면 표시 추가 ([#62](https://github.com/whdjh/yepbuddy/issues/62)) ([0934cb2](https://github.com/whdjh/yepbuddy/commit/0934cb2467e958ad96f3531de21827b9879188fe))
+
+
+### Bug Fixes
+
+* **sessions:** 세션 리스트에 활동 칼로리 표시 ([#61](https://github.com/whdjh/yepbuddy/issues/61)) ([e746183](https://github.com/whdjh/yepbuddy/commit/e7461835fbd4a6cfac3656f0a002659fab5fd275))
+
 ## [1.1.2](https://github.com/whdjh/yepbuddy/compare/v1.1.1...v1.1.2) (2026-06-11)
 
 
