@@ -17,7 +17,7 @@ const EMPTY_PREFILL: WorkoutHistoryPrefill = {
 }
 
 // 운동 중 화면에서 이전 완료 세션 기반 프리필 계산기를 제공
-export function useWorkoutHistoryPrefill() {
+export function useWorkoutHistoryPrefill(isDeloadCycle: boolean) {
   const [sessions, setSessions] = useState<StoredWorkoutSession[]>([])
   const mountedRef = useRef(true)
 
@@ -46,18 +46,22 @@ export function useWorkoutHistoryPrefill() {
   const getPrefill = useCallback(
     (bodyParts: WorkoutBodyPartSet[]) =>
       bodyParts.length > 0
-        ? buildWorkoutHistoryPrefill(sessions, bodyParts)
+        ? buildWorkoutHistoryPrefill(sessions, bodyParts, {
+            isDeload: isDeloadCycle,
+          })
         : EMPTY_PREFILL,
-    [sessions],
+    [isDeloadCycle, sessions],
   )
 
   // 루틴 슬롯의 운동 부위 구성 기준 프리필 조회
   const getRoutinePrefill = useCallback(
     (routineParts: RoutinePart[]) =>
       routineParts.length > 0
-        ? buildRoutinePartHistoryPrefill(sessions, routineParts)
+        ? buildRoutinePartHistoryPrefill(sessions, routineParts, {
+            isDeload: isDeloadCycle,
+          })
         : EMPTY_PREFILL,
-    [sessions],
+    [isDeloadCycle, sessions],
   )
 
   return {
