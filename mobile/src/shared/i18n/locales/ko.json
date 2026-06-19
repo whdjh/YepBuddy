@@ -131,6 +131,8 @@
       "memo": "메모",
       "memoPlaceholder": "운동 메모를 자유롭게 작성하세요",
       "memoHint": "운동중에도 자유롭게 기록",
+      "usePreviousMemo": "지난 메모 사용",
+      "previousMemoHint": "입력하거나 불러오면 이번 운동 메모로 저장돼요",
       "stop": "중지",
       "stopWorkout": "운동 중지",
       "resume": "운동 재개",

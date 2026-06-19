@@ -12,6 +12,7 @@ export type SymbolViewName = Extract<
   | "chevron.left"
   | "chevron.right"
   | "circle.fill"
+  | "doc.on.doc"
   | "dumbbell.fill"
   | "figure.run"
   | "gearshape.fill"
@@ -29,6 +30,7 @@ const androidNameBySymbolName = {
   "chevron.left": "chevron_left",
   "chevron.right": "chevron_right",
   "circle.fill": "circle",
+  "doc.on.doc": "content_copy",
   "dumbbell.fill": "fitness_center",
   "figure.run": "directions_run",
   "gearshape.fill": "settings",

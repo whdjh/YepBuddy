@@ -131,6 +131,8 @@
       "memo": "Memo",
       "memoPlaceholder": "Write workout notes freely",
       "memoHint": "Record freely during workout",
+      "usePreviousMemo": "Use previous memo",
+      "previousMemoHint": "Typing or importing saves this as today's workout memo",
       "stop": "Stop",
       "stopWorkout": "Stop Workout",
       "resume": "Resume Workout",
