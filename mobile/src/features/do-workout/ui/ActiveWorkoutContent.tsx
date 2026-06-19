@@ -63,7 +63,7 @@ export function ActiveWorkoutContent() {
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const routineProgress = useRoutineProgress()
-  const historyPrefill = useWorkoutHistoryPrefill()
+  const historyPrefill = useWorkoutHistoryPrefill(routineProgress.isDeloadCycle)
   const [expandedBodyPart, setExpandedBodyPart] = useState<BodyPart | null>(null)
   const [selectedRoutineSessionId, setSelectedRoutineSessionId] = useState<
     string | null

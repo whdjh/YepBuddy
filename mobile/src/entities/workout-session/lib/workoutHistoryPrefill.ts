@@ -12,6 +12,10 @@ export interface WorkoutHistoryPrefill {
   sourceSessionId: string | null
 }
 
+interface WorkoutHistoryPrefillOptions {
+  isDeload?: boolean
+}
+
 // 세트 수 정규화
 function normalizeSetCount(value: unknown) {
   return typeof value === "number" && Number.isFinite(value)
@@ -69,9 +73,13 @@ function hasSameBodyPartKeys(
 function findLatestExactSession(
   sessions: StoredWorkoutSession[],
   bodyParts: WorkoutBodyPartSet[],
+  options: WorkoutHistoryPrefillOptions = {},
 ) {
-  return sessions.find((session) =>
-    hasSameBodyPartKeys(session.bodyParts, bodyParts),
+  return sessions.find(
+    (session) =>
+      (options.isDeload === undefined ||
+        session.isDeload === options.isDeload) &&
+      hasSameBodyPartKeys(session.bodyParts, bodyParts),
   )
 }
 
@@ -86,8 +94,9 @@ function getBodyPartSetMap(bodyParts: WorkoutBodyPartSet[]) {
 export function buildWorkoutHistoryPrefill(
   sessions: StoredWorkoutSession[],
   bodyParts: WorkoutBodyPartSet[],
+  options: WorkoutHistoryPrefillOptions = {},
 ): WorkoutHistoryPrefill {
-  const exactSession = findLatestExactSession(sessions, bodyParts)
+  const exactSession = findLatestExactSession(sessions, bodyParts, options)
   const exactBodyPartMap = exactSession
     ? getBodyPartSetMap(exactSession.bodyParts)
     : null
@@ -116,9 +125,11 @@ export function buildWorkoutHistoryPrefill(
 export function buildRoutinePartHistoryPrefill(
   sessions: StoredWorkoutSession[],
   routineParts: RoutinePart[],
+  options: WorkoutHistoryPrefillOptions = {},
 ): WorkoutHistoryPrefill {
   return buildWorkoutHistoryPrefill(
     sessions,
     routineParts.map(toWorkoutBodyPartSet),
+    options,
   )
 }
