@@ -35,6 +35,7 @@ interface BuildRoutineCycleSessionRowsInput
   progress: RoutineCycleProgress
   deloadLabel?: string
   fallbackBodyPartLabel: string
+  hidePlannedRows?: boolean
   isDeloadCycle?: boolean
   plannedLabel: string
 }
@@ -149,7 +150,11 @@ export function buildRoutineCycleSessionRows(
       return
     }
 
-    if (slot.status !== "completed" && slot.status !== "substituted") {
+    if (
+      slot.status !== "completed" &&
+      slot.status !== "substituted" &&
+      !input.hidePlannedRows
+    ) {
       rows.push(getPlannedRoutineRow(slot.routineSession, input))
     }
   })

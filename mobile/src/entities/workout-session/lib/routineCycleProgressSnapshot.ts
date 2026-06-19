@@ -1,4 +1,7 @@
-import { getCurrentCycleAnchorDateKey } from "@/shared/lib/date"
+import {
+  getCurrentCycleAnchorDateKey,
+  getLocalDateKeyFromIso,
+} from "@/shared/lib/date"
 import {
   createRoutineCycleProgressState,
   getRoutineCycleStateFromProgress,
@@ -27,6 +30,12 @@ import {
   getNextRoutineSuggestion,
   type RoutineCycleProgress,
 } from "./routineCycleProgress"
+
+function hasSessionOnDate(sessions: StoredWorkoutSession[], dateKey: string) {
+  return sessions.some(
+    (session) => getLocalDateKeyFromIso(session.startedAt) === dateKey,
+  )
+}
 
 interface RoutineCycleProgressSnapshotInput {
   cycleProgress: RoutineCycleProgressState | null
@@ -80,7 +89,11 @@ export function buildRoutineCycleProgressSnapshot({
     cycleProgress ??
     createRoutineCycleProgressState(normalizedSettings.cycleStartDateKey)
   const sessionCycleProgress = isRoutineEnabled
-    ? buildRoutineCycleProgressStateFromSessions(normalizedSettings, sessions)
+    ? buildRoutineCycleProgressStateFromSessions(
+        normalizedSettings,
+        sessions,
+        currentCycleAnchorDateKey,
+      )
     : normalizedCycleProgress
   const resolvedCycleProgress = isRoutineEnabled
     ? sessionCycleProgress
@@ -97,6 +110,10 @@ export function buildRoutineCycleProgressSnapshot({
     filledSlotIds,
     sessions,
   )
+  const hasCompletedSessionToday = hasSessionOnDate(
+    sessions,
+    currentCycleAnchorDateKey,
+  )
 
   return {
     cycleProgress: resolvedCycleProgress,
@@ -105,9 +122,12 @@ export function buildRoutineCycleProgressSnapshot({
     hasCustomSettings: settings !== null,
     isDeloadCycle: isRoutineEnabled && resolvedCycleState.isDeloadCycle,
     isRoutineEnabled,
-    nextSuggestion: isRoutineEnabled && !resolvedCycleState.isCycleComplete
-      ? getNextRoutineSuggestion(progress)
-      : null,
+    nextSuggestion:
+      isRoutineEnabled &&
+      !resolvedCycleState.isCycleComplete &&
+      !hasCompletedSessionToday
+        ? getNextRoutineSuggestion(progress)
+        : null,
     progress,
     sessions,
     settings: settings ? normalizedSettings : null,

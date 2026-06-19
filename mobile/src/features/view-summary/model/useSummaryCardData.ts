@@ -36,6 +36,7 @@ export function useSummaryCardData() {
     progress: routineCyclePlan.progress,
     deloadLabel: t("workout.routineCycle.status.deload"),
     fallbackBodyPartLabel,
+    hidePlannedRows: todayCompleted,
     isDeloadCycle: routineCyclePlan.isDeloadCycle,
     plannedLabel: t("workout.routineCycle.status.pending"),
     formatDate: formatDateWithDay,

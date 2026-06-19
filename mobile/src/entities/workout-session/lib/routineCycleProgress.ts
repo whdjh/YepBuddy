@@ -194,6 +194,7 @@ function isSessionInRoutineCycle(
 export function buildRoutineCycleProgressStateFromSessions(
   settings: RoutineCycleSettings,
   sessions: StoredWorkoutSession[],
+  currentDateKey?: string,
 ): RoutineCycleProgressState {
   const routineSessions = settings.sessions
   const totalCycleCount = getTotalRoutineCycleCount(settings)
@@ -227,6 +228,14 @@ export function buildRoutineCycleProgressStateFromSessions(
     }
 
     filledSlotIds.add(matchingSlotId)
+
+    // 오늘 완료한 슬롯은 당일에는 현재 슬롯으로 유지하고, 다음 날짜부터 다음 슬롯/회차로 넘긴다.
+    if (
+      currentDateKey &&
+      getLocalDateKeyFromIso(session.startedAt) === currentDateKey
+    ) {
+      return
+    }
 
     // 모든 루틴 슬롯을 채우면 사이클 완료 횟수를 올리고 다음 사이클 슬롯 채움을 새로 시작한다.
     if (filledSlotIds.size === routineSlotCount) {
