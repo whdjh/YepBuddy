@@ -59,6 +59,11 @@ jobs:
         with:
           bun-version: "1.3.11"
 
+      - name: pnpm 설정
+        uses: pnpm/action-setup@v4
+        with:
+          version: "10.0.0"
+
       - name: 의존성 설치
         run: bun install --frozen-lockfile
 
