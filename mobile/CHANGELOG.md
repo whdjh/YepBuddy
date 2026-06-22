@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/whdjh/yepbuddy/compare/v1.2.0...v1.3.0) (2026-06-22)
+
+
+### Features
+
+* **workout:** 지난 메모 불러오기 버튼 추가 ([#64](https://github.com/whdjh/yepbuddy/issues/64)) ([5e59bf7](https://github.com/whdjh/yepbuddy/commit/5e59bf7305482d66b8d2b81a82db38c3b31389a9))
+
+
+### Bug Fixes
+
+* **routine-cycle:** 완료 당일 다음 세션 노출 방지 ([#66](https://github.com/whdjh/yepbuddy/issues/66)) ([cd62e0e](https://github.com/whdjh/yepbuddy/commit/cd62e0e3bc5e3e29c9f34ed221d486a786a7ce89))
+* **workout:** 디로드주와 세션주 프리필 분리 ([#65](https://github.com/whdjh/yepbuddy/issues/65)) ([ef7cf64](https://github.com/whdjh/yepbuddy/commit/ef7cf646ae14726e588cbbfdddd63efacb3c527c))
+
 ## [1.2.0](https://github.com/whdjh/yepbuddy/compare/v1.1.2...v1.2.0) (2026-06-17)
 
 
