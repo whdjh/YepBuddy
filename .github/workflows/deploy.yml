@@ -1,21 +1,17 @@
-name: Deploy to Stores
+name: 스토어 배포
 
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "배포할 태그 (예: v1.0.1)"
-        type: string
-        required: true
       platform:
         description: "배포할 플랫폼"
         type: choice
         required: true
-        default: both
+        default: 둘다
         options:
           - ios
           - android
-          - both
+          - 둘다
       submit:
         description: "스토어 자동 제출 (해제 시 빌드만 실행)"
         type: boolean
@@ -25,11 +21,15 @@ on:
 permissions:
   contents: read
 
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  IOS_IPA_PATH: /private/tmp/yepbuddy.ipa
+
 jobs:
   deploy:
-    name: EAS Build & Submit
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    name: EAS 빌드 및 제출
+    runs-on: macos-latest
+    timeout-minutes: 180
     if: github.actor == 'whdjh'
 
     defaults:
@@ -37,49 +37,77 @@ jobs:
         working-directory: mobile
 
     steps:
-      - name: Checkout (tag)
+      - name: main 브랜치 확인
+        if: ${{ github.ref_name != 'main' }}
+        working-directory: .
+        run: |
+          echo "::error::스토어 배포는 main 브랜치에서만 실행할 수 있습니다. 현재 선택: ${{ github.ref_name }}"
+          exit 1
+
+      - name: main 체크아웃
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag }}
+          ref: main
 
-      - name: Setup Node
+      - name: Node 설정
         uses: actions/setup-node@v4
         with:
           node-version: "20"
 
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Bun 설정
+        uses: oven-sh/setup-bun@v2
 
-      - name: Verify EAS auth
-        run: eas whoami
+      - name: 의존성 설치
+        run: bun install --frozen-lockfile
 
-      - name: Trigger iOS build
-        if: ${{ inputs.platform == 'ios' || inputs.platform == 'both' }}
+      - name: EAS 인증 확인
+        run: npx --yes eas-cli@latest whoami
+
+      - name: iOS 로컬 빌드
+        if: ${{ inputs.platform == 'ios' || inputs.platform == '둘다' }}
+        run: |
+          npx --yes eas-cli@latest build \
+            --platform ios \
+            --profile production \
+            --local \
+            --output "$IOS_IPA_PATH" \
+            --non-interactive
+
+      - name: iOS 스토어 제출
+        if: ${{ (inputs.platform == 'ios' || inputs.platform == '둘다') && inputs.submit }}
+        run: |
+          npx --yes eas-cli@latest submit \
+            --platform ios \
+            --profile production \
+            --path "$IOS_IPA_PATH" \
+            --non-interactive
+
+      - name: Android 클라우드 빌드
+        if: ${{ inputs.platform == 'android' || inputs.platform == '둘다' }}
         run: |
           if [ "${{ inputs.submit }}" = "true" ]; then
-            eas build --platform ios --profile production --non-interactive --no-wait --auto-submit
+            npx --yes eas-cli@latest build \
+              --platform android \
+              --profile production \
+              --non-interactive \
+              --auto-submit
           else
-            eas build --platform ios --profile production --non-interactive --no-wait
+            npx --yes eas-cli@latest build \
+              --platform android \
+              --profile production \
+              --non-interactive
           fi
 
-      - name: Trigger Android build
-        if: ${{ inputs.platform == 'android' || inputs.platform == 'both' }}
+      - name: 요약
+        if: always()
+        working-directory: .
         run: |
-          if [ "${{ inputs.submit }}" = "true" ]; then
-            eas build --platform android --profile production --non-interactive --no-wait --auto-submit
-          else
-            eas build --platform android --profile production --non-interactive --no-wait
-          fi
-
-      - name: Summary
-        run: |
-          echo "### 빌드 트리거 완료" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- 태그: \`${{ inputs.tag }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- 플랫폼: \`${{ inputs.platform }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- 자동 제출: \`${{ inputs.submit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "진행 상황은 [EAS 대시보드](https://expo.dev/accounts) 에서 확인하세요." >> $GITHUB_STEP_SUMMARY
+          echo "### 스토어 배포 실행 결과" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 브랜치: \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 체크아웃: \`main\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 작업 폴더: \`mobile\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 플랫폼: \`${{ inputs.platform }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- 스토어 자동 제출: \`${{ inputs.submit }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "진행 상황은 [EAS 대시보드](https://expo.dev/accounts)에서 확인하세요." >> "$GITHUB_STEP_SUMMARY"
