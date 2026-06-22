@@ -1,4 +1,4 @@
-name: Create GitHub Release
+name: GitHub 릴리즈 생성
 
 on:
   workflow_dispatch:
@@ -25,10 +25,10 @@ jobs:
         github.event.inputs.target_branch == 'main' ||
         startsWith(github.event.inputs.target_branch, 'release/')
       )
-    name: Release PR 생성
+    name: 릴리즈 PR 생성
     runs-on: ubuntu-latest
     steps:
-      - name: Run release-please
+      - name: release-please 실행
         id: release
         uses: googleapis/release-please-action@v4
         with:
@@ -39,14 +39,14 @@ jobs:
           skip-github-release: true
           target-branch: ${{ github.event.inputs.target_branch }}
 
-      - name: Checkout release PR branch
+      - name: 릴리즈 PR 브랜치 체크아웃
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         uses: actions/checkout@v4
         with:
           ref: ${{ fromJSON(steps.release.outputs.pr).headBranchName }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Normalize native build numbers
+      - name: 네이티브 빌드 번호 정규화
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         working-directory: mobile
         run: |
@@ -85,11 +85,11 @@ jobs:
           fs.writeFileSync(appJsonPath, `${JSON.stringify(appConfig, null, 2)}\n`)
           NODE
 
-      - name: Commit native build number changes
+      - name: 네이티브 빌드 번호 변경 커밋
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         run: |
           if git diff --quiet -- mobile/app.json; then
-            echo "No native build number changes to commit."
+            echo "커밋할 네이티브 빌드 번호 변경이 없습니다."
             exit 0
           fi
 
@@ -101,7 +101,7 @@ jobs:
 
   release:
     if: github.event_name == 'push'
-    name: GitHub Release 생성
+    name: GitHub 릴리즈 생성
     runs-on: ubuntu-latest
     steps:
       - uses: googleapis/release-please-action@v4

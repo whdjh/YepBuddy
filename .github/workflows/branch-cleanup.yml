@@ -1,4 +1,4 @@
-name: Branch Cleanup
+name: 브랜치 정리
 
 on:
   pull_request:
@@ -13,11 +13,12 @@ permissions:
 
 jobs:
   auto-assign:
+    name: PR 작성자 자동 지정
     if: github.event.action == 'opened'
     runs-on: ubuntu-latest
 
     steps:
-      - name: Auto assign PR creator
+      - name: PR 작성자 담당자 지정
         uses: actions/github-script@v7
         with:
           script: |
@@ -34,12 +35,13 @@ jobs:
                 assignees: [prAuthor]
               });
 
-              console.log(`Assigned @${prAuthor} to PR #${prNumber}`);
+              console.log(`PR #${prNumber}에 @${prAuthor}를 담당자로 지정했습니다.`);
             } catch (error) {
-              console.log(`Failed to assign @${prAuthor}: ${error.message}`);
+              console.log(`@${prAuthor} 담당자 지정에 실패했습니다: ${error.message}`);
             }
 
   cleanup-and-notify:
+    name: 병합 브랜치 삭제 및 알림
     if: >-
       github.event.action == 'closed' &&
       github.event.pull_request.merged == true &&
@@ -48,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Delete merged branch and notify
+      - name: 병합된 브랜치 삭제 및 댓글 작성
         uses: actions/github-script@v7
         with:
           script: |
@@ -65,18 +67,18 @@ jobs:
                 ref: `heads/${branchName}`
               });
 
-              console.log(`Deleted branch '${branchName}'`);
+              console.log(`'${branchName}' 브랜치를 삭제했습니다.`);
 
               await github.rest.issues.createComment({
                 owner,
                 repo,
                 issue_number: prNumber,
-                body: `Merged PR branch \`${branchName}\` was deleted automatically. Merged by @${context.actor}, authored by @${prAuthor}.`
+                body: `병합된 PR 브랜치 \`${branchName}\`를 자동으로 삭제했습니다. 병합: @${context.actor}, 작성: @${prAuthor}.`
               });
             } catch (error) {
-              console.log(`Failed to delete branch '${branchName}': ${error.message}`);
+              console.log(`'${branchName}' 브랜치 삭제에 실패했습니다: ${error.message}`);
 
               if (error.status === 422) {
-                console.log("Branch was already deleted or can't be deleted by workflow.");
+                console.log("브랜치가 이미 삭제되었거나 workflow 권한으로 삭제할 수 없습니다.");
               }
             }

@@ -1,4 +1,4 @@
-name: PR Title Check
+name: PR 제목 검사
 
 on:
   pull_request_target:
@@ -13,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: amannn/action-semantic-pull-request@v5.5.3
+      - name: PR 제목 형식 검증
+        uses: amannn/action-semantic-pull-request@v5.5.3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

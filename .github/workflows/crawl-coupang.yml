@@ -1,4 +1,4 @@
-name: Coupang Price Tracker
+name: 쿠팡 가격 추적
 
 on:
   schedule:
@@ -23,20 +23,20 @@ jobs:
         working-directory: worker
 
     steps:
-      - name: Checkout repository
+      - name: 저장소 체크아웃
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Node.js 설정
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           cache-dependency-path: worker/package-lock.json
 
-      - name: Install dependencies
+      - name: 의존성 설치
         run: npm ci --no-audit --no-fund
 
-      - name: Run Coupang trackers
+      - name: 쿠팡 가격 추적 실행
         run: node trackers/all.js
         env:
           COUPANG_ACCESS_KEY: ${{ secrets.COUPANG_ACCESS_KEY }}
