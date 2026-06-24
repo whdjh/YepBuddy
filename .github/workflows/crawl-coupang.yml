@@ -1,4 +1,4 @@
-name: 쿠팡 가격 추적
+name: 01 쿠팡 가격 추적
 
 on:
   schedule:

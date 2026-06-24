@@ -1,4 +1,4 @@
-name: PR 제목 검사
+name: 02 PR 제목 검사
 
 on:
   pull_request_target:

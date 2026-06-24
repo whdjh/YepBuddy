@@ -1,4 +1,4 @@
-name: GitHub 릴리즈 생성
+name: 04 GitHub 릴리즈 생성
 
 on:
   workflow_dispatch:

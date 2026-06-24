@@ -1,4 +1,4 @@
-name: 브랜치 정리
+name: 03 브랜치 정리
 
 on:
   pull_request:
