@@ -38,6 +38,10 @@ export {
   getCardioDurationMinutes,
 } from "./lib/cardioSession"
 export {
+  findWorkoutSummaryForSession,
+  getWorkoutSessionKcal,
+} from "./lib/sessionWorkoutMatching"
+export {
   buildRoutinePartHistoryPrefill,
   buildWorkoutHistoryPrefill,
   type WorkoutHistoryPrefill,
