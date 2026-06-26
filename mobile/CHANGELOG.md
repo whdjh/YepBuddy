@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/whdjh/yepbuddy/compare/v1.3.0...v1.3.1) (2026-06-26)
+
+
+### Bug Fixes
+
+* **view-summary:** 칼로리 데이터 heathkit으로 수정 ([#68](https://github.com/whdjh/yepbuddy/issues/68)) ([40fd0e7](https://github.com/whdjh/yepbuddy/commit/40fd0e713b164ce6457e5bb3d14f28ab84ef0e18))
+
 ## [1.3.0](https://github.com/whdjh/yepbuddy/compare/v1.2.0...v1.3.0) (2026-06-22)
 
 
