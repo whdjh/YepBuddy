@@ -7,6 +7,7 @@ import { useTodaySummary } from "./useTodaySummary"
 import { buildRoutineCycleSessionRows } from "./routineCycleSessionRows"
 import { getBodyPartsLabel, getRepresentativeBodyPart } from "./summaryHelpers"
 import { getRoutineProgressBadge } from "./routineProgressBadge"
+import { useRoutineCycleWorkoutSummaries } from "./useRoutineCycleWorkoutSummaries"
 
 export function useSummaryCardData() {
   const router = useRouter()
@@ -15,6 +16,9 @@ export function useSummaryCardData() {
     useTodaySummary()
   const todayCompleted = useTodayCompleted()
   const routineCyclePlan = useRoutineCyclePlan()
+  const routineCycleWorkouts = useRoutineCycleWorkoutSummaries(
+    routineCyclePlan.progress,
+  )
   const fallbackBodyPartLabel = t("workout.result.unspecified")
   const todayDurationMin = Math.round(todaySummary.totalDuration / 60)
   const todayTotalSets = todaySummary.totalSets
@@ -39,6 +43,7 @@ export function useSummaryCardData() {
     hidePlannedRows: todayCompleted,
     isDeloadCycle: routineCyclePlan.isDeloadCycle,
     plannedLabel: t("workout.routineCycle.status.pending"),
+    workouts: routineCycleWorkouts.data,
     formatDate: formatDateWithDay,
     bodyPartLabel,
     bodyPartDetailLabel,

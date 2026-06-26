@@ -2,11 +2,14 @@ import {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
   getWorkoutBodyPartSetLabel,
+  findWorkoutSummaryForSession,
+  getWorkoutSessionKcal,
   type BodyPart,
   type BodyPartDetail,
   type RoutineCycleProgress,
   type RoutineCycleSession,
   type StoredWorkoutSession,
+  type WorkoutHealthKitWorkout,
 } from "@/entities/workout-session"
 
 export type RoutineCycleSessionRowStatus = "completed" | "planned" | "deload"
@@ -38,6 +41,7 @@ interface BuildRoutineCycleSessionRowsInput
   hidePlannedRows?: boolean
   isDeloadCycle?: boolean
   plannedLabel: string
+  workouts?: WorkoutHealthKitWorkout[]
 }
 
 // 루틴 슬롯에 매칭된 완료 운동 기록을 카드 행으로 변환
@@ -48,14 +52,18 @@ function getActualSessionRow(
     bodyPartLabel,
     bodyPartDetailLabel,
     formatDate,
+    workouts = [],
   }: Pick<
     BuildRoutineCycleSessionRowsInput,
     | "fallbackBodyPartLabel"
     | "bodyPartLabel"
     | "bodyPartDetailLabel"
     | "formatDate"
+    | "workouts"
   >,
 ): RoutineCycleSessionRow {
+  const workout = findWorkoutSummaryForSession(session, workouts)
+
   return {
     id: `session:${session.sessionId}`,
     sessionId: session.sessionId,
@@ -76,7 +84,11 @@ function getActualSessionRow(
     isDeload: session.isDeload === true,
     durationMin: getStoredWorkoutSessionDurationMinutes(session),
     sets: getStoredWorkoutSessionSetCount(session),
-    kcal: "--",
+    kcal:
+      getWorkoutSessionKcal({
+        healthKitKcal: workout?.kcal,
+        storedActiveKcal: session.activeKcal,
+      }) ?? "--",
   }
 }
 

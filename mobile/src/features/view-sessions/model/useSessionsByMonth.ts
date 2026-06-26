@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react"
 import {
   getCardioDurationMinutes,
+  findWorkoutSummaryForSession,
   getStoredWorkoutSessionsForMonth,
   getUniqueWorkoutBodyParts,
+  getWorkoutSessionKcal,
   getWorkoutSummariesForMonth,
   type BodyPart,
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
-import {
-  findWorkoutSummaryForSession,
-  getSessionListKcal,
-} from "./sessionWorkoutMatching"
 import type { SessionListItem } from "./types"
 
 function getSessionBodyParts(session: StoredWorkoutSession): BodyPart[] {
@@ -44,7 +42,7 @@ export async function loadSessionsByMonth(year: number, month: number) {
         : null,
       isDeload: session.isDeload === true,
       totalSets: getSessionTotalSets(session),
-      kcal: getSessionListKcal({
+      kcal: getWorkoutSessionKcal({
         healthKitKcal: workout?.kcal,
         storedActiveKcal: session.activeKcal,
       }),
