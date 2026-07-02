@@ -26,6 +26,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
     bodyPartCardBodyParts,
     bodyPartCardRepresentativeBodyPart,
     bodyPartCardDay,
+    bodyPartCardKcal,
     todayCompleted,
     routineCycleSessions,
     routineProgress,
@@ -68,7 +69,7 @@ export function SummaryCardRenderer({ cardId, data, onLongPress }: Props) {
         <SessionLinkCard
           bodyPart={bodyPartCardBodyParts}
           representativeBodyPart={bodyPartCardRepresentativeBodyPart}
-          kcal="--"
+          kcal={bodyPartCardKcal}
           day={bodyPartCardDay}
           isDeload={isTodayWorkoutDeload}
           onLongPress={onLongPress}

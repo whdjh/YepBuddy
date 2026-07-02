@@ -3,12 +3,17 @@ import type {
   WorkoutBodyPartSet,
   WorkoutHealthKitWorkout,
 } from "@/entities/workout-session"
-import { getStoredWorkoutSessionDurationMinutes } from "@/entities/workout-session"
+import {
+  findWorkoutSummaryForSession,
+  getStoredWorkoutSessionDurationMinutes,
+  getWorkoutSessionKcal,
+} from "@/entities/workout-session"
 
 /** 메인 요약 화면에서 오늘 카드/통계가 함께 쓰는 계산 결과 타입 */
 export interface TodaySummary {
   bodyParts: WorkoutBodyPartSet[]
   hkWorkouts: WorkoutHealthKitWorkout[]
+  sessionKcal: number | null
   storedSession: StoredWorkoutSession | null
   totalDuration: number
   totalKcal: number
@@ -19,6 +24,7 @@ export interface TodaySummary {
 export const EMPTY_TODAY_SUMMARY: TodaySummary = {
   bodyParts: [],
   hkWorkouts: [],
+  sessionKcal: null,
   storedSession: null,
   totalDuration: 0,
   totalKcal: 0,
@@ -44,10 +50,22 @@ export function mergeTodaySummary(params: {
     (sum, workout) => sum + workout.kcal,
     0,
   )
+  const sessionWorkout =
+    params.storedSession != null
+      ? findWorkoutSummaryForSession(params.storedSession, params.hkWorkouts)
+      : null
+  const sessionKcal =
+    params.storedSession != null
+      ? getWorkoutSessionKcal({
+          healthKitKcal: sessionWorkout?.kcal,
+          storedActiveKcal: params.storedSession.activeKcal,
+        })
+      : null
 
   return {
     bodyParts,
     hkWorkouts: params.hkWorkouts,
+    sessionKcal,
     storedSession: params.storedSession,
     totalDuration: totalDuration > 0 ? totalDuration : fallbackDuration,
     totalKcal,
