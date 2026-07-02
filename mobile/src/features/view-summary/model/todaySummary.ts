@@ -4,9 +4,8 @@ import type {
   WorkoutHealthKitWorkout,
 } from "@/entities/workout-session"
 import {
-  findWorkoutSummaryForSession,
   getStoredWorkoutSessionDurationMinutes,
-  getWorkoutSessionKcal,
+  getWorkoutSessionKcalFromSummaries,
 } from "@/entities/workout-session"
 
 /** 메인 요약 화면에서 오늘 카드/통계가 함께 쓰는 계산 결과 타입 */
@@ -50,16 +49,12 @@ export function mergeTodaySummary(params: {
     (sum, workout) => sum + workout.kcal,
     0,
   )
-  const sessionWorkout =
-    params.storedSession != null
-      ? findWorkoutSummaryForSession(params.storedSession, params.hkWorkouts)
-      : null
   const sessionKcal =
     params.storedSession != null
-      ? getWorkoutSessionKcal({
-          healthKitKcal: sessionWorkout?.kcal,
-          storedActiveKcal: params.storedSession.activeKcal,
-        })
+      ? getWorkoutSessionKcalFromSummaries(
+          params.storedSession,
+          params.hkWorkouts,
+        )
       : null
 
   return {

@@ -2,8 +2,7 @@ import {
   getStoredWorkoutSessionDurationMinutes,
   getStoredWorkoutSessionSetCount,
   getWorkoutBodyPartSetLabel,
-  findWorkoutSummaryForSession,
-  getWorkoutSessionKcal,
+  getWorkoutSessionKcalFromSummaries,
   type BodyPart,
   type BodyPartDetail,
   type RoutineCycleProgress,
@@ -33,8 +32,7 @@ interface RoutineCycleSessionRowsFormatters {
   formatDate: (date: Date) => string
 }
 
-interface BuildRoutineCycleSessionRowsInput
-  extends RoutineCycleSessionRowsFormatters {
+interface BuildRoutineCycleSessionRowsInput extends RoutineCycleSessionRowsFormatters {
   progress: RoutineCycleProgress
   deloadLabel?: string
   fallbackBodyPartLabel: string
@@ -62,8 +60,6 @@ function getActualSessionRow(
     | "workouts"
   >,
 ): RoutineCycleSessionRow {
-  const workout = findWorkoutSummaryForSession(session, workouts)
-
   return {
     id: `session:${session.sessionId}`,
     sessionId: session.sessionId,
@@ -84,11 +80,7 @@ function getActualSessionRow(
     isDeload: session.isDeload === true,
     durationMin: getStoredWorkoutSessionDurationMinutes(session),
     sets: getStoredWorkoutSessionSetCount(session),
-    kcal:
-      getWorkoutSessionKcal({
-        healthKitKcal: workout?.kcal,
-        storedActiveKcal: session.activeKcal,
-      }) ?? "--",
+    kcal: getWorkoutSessionKcalFromSummaries(session, workouts) ?? "--",
   }
 }
 
@@ -125,7 +117,7 @@ function getPlannedRoutineRow(
     bodyPart: getRoutineSessionLabel(routineSession, input),
     representativeBodyPart: routineSession.parts[0]?.part ?? null,
     day: isDeloadCycle
-      ? input.deloadLabel ?? input.plannedLabel
+      ? (input.deloadLabel ?? input.plannedLabel)
       : input.plannedLabel,
     isDeload: isDeloadCycle,
     durationMin: null,
