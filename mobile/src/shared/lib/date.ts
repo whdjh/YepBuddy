@@ -6,6 +6,39 @@ function pad2(value: number) {
   return String(value).padStart(2, "0")
 }
 
+export interface YearMonth {
+  month: number
+  year: number
+}
+
+function getDateKeyParts(dateKey: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey)
+  if (!match) {
+    return null
+  }
+
+  const year = Number(match[1])
+  const month = Number(match[2])
+  const day = Number(match[3])
+  const timestamp = Date.UTC(year, month - 1, day)
+  const date = new Date(timestamp)
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() + 1 !== month ||
+    date.getUTCDate() !== day
+  ) {
+    return null
+  }
+
+  return {
+    day,
+    month,
+    timestamp,
+    year,
+  }
+}
+
 /** 해당 월 1일의 요일 (월=0, 일=6) */
 export function getFirstDayOfWeek(year: number, month: number): number {
   const day = new Date(year, month - 1, 1).getDay()
@@ -35,6 +68,29 @@ export function getLocalDateKey(date: Date) {
   return `${year}-${month}-${day}`
 }
 
+/** YYYY-MM-DD 날짜 키를 연월 값으로 변환 */
+export function getYearMonthFromDateKey(dateKey: string): YearMonth | null {
+  const parts = getDateKeyParts(dateKey)
+  if (!parts) {
+    return null
+  }
+
+  return {
+    month: parts.month,
+    year: parts.year,
+  }
+}
+
+/** ISO 시각 문자열을 로컬 연월 값으로 변환 */
+export function getYearMonthFromIso(iso: string): YearMonth | null {
+  return getYearMonthFromDateKey(getLocalDateKeyFromIso(iso))
+}
+
+/** 연월 값을 YYYY-MM key로 변환 */
+export function getYearMonthKey({ month, year }: YearMonth) {
+  return `${year}-${pad2(month)}`
+}
+
 /** 루틴 사이클의 현재 앵커 날짜 키를 반환 */
 export function getCurrentCycleAnchorDateKey(date = new Date()) {
   return getLocalDateKey(date)
@@ -42,26 +98,7 @@ export function getCurrentCycleAnchorDateKey(date = new Date()) {
 
 /** YYYY-MM-DD 형식의 날짜 키를 UTC 자정 timestamp로 변환 */
 export function getUtcMsFromDateKey(dateKey: string) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey)
-  if (!match) {
-    return null
-  }
-
-  const year = Number(match[1])
-  const month = Number(match[2])
-  const day = Number(match[3])
-  const timestamp = Date.UTC(year, month - 1, day)
-  const date = new Date(timestamp)
-
-  if (
-    date.getUTCFullYear() !== year ||
-    date.getUTCMonth() + 1 !== month ||
-    date.getUTCDate() !== day
-  ) {
-    return null
-  }
-
-  return timestamp
+  return getDateKeyParts(dateKey)?.timestamp ?? null
 }
 
 /** 이번 주 로컬 날짜 키 범위(월요일 ~ 일요일)를 반환 */
