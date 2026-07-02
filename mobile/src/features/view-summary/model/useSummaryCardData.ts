@@ -36,6 +36,7 @@ export function useSummaryCardData() {
   const bodyPartCardBodyParts = todayBodyParts
   const bodyPartCardRepresentativeBodyPart = todayRepresentativeBodyPart
   const bodyPartCardDay = t("summary.today")
+  const bodyPartCardKcal = todaySummary.sessionKcal ?? "--"
   const routineCycleSessions = buildRoutineCycleSessionRows({
     progress: routineCyclePlan.progress,
     deloadLabel: t("workout.routineCycle.status.deload"),
@@ -66,6 +67,7 @@ export function useSummaryCardData() {
     bodyPartCardBodyParts,
     bodyPartCardRepresentativeBodyPart,
     bodyPartCardDay,
+    bodyPartCardKcal,
     todayCompleted,
     routineCycleSessions,
     routineCyclePlan,
