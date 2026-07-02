@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/whdjh/yepbuddy/compare/v1.3.1...v1.4.0) (2026-07-02)
+
+
+### Features
+
+* **view-summary:** 운동부위 카드 kcal 표시 추가 ([#71](https://github.com/whdjh/yepbuddy/issues/71)) ([7cab67d](https://github.com/whdjh/yepbuddy/commit/7cab67d65d6e5789692559781499550d7646474c))
+
+
+### Bug Fixes
+
+* **summary:** 루틴 예정 행 당일 표시 유지 ([#70](https://github.com/whdjh/yepbuddy/issues/70)) ([1708ca7](https://github.com/whdjh/yepbuddy/commit/1708ca710c3d35850e4bd1a6ec3b91a56f4eb6dc))
+
 ## [1.3.1](https://github.com/whdjh/yepbuddy/compare/v1.3.0...v1.3.1) (2026-06-26)
 
 
