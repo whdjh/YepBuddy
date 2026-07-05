@@ -24,18 +24,18 @@ features/
 
 ## Route Map
 
-| Route | Feature | 렌더링 |
-| --- | --- | --- |
-| `/(tabs)/index` | `view-summary` | `SummaryScreen` + app route의 `SettingsFab` |
-| `/(tabs)/protein` | `view-proteins` | `ProteinListScreen` + app route의 `SettingsFab` |
-| `/(tabs)/tempo` | `use-tempo` | `TempoScreen`, `fromWorkout=1`이면 back button 표시 |
-| `/workout/countdown` | `start-workout` | `CountdownScreen` |
-| `/workout/active` | `do-workout` | `ActiveWorkoutScreen` |
-| `/workout/[id]` | `view-result` | `ResultScreen` |
-| `/sessions` | `view-sessions` | `WorkoutNavigationGuard` + `SessionListScreen` |
-| `/calendar` | `view-calendar` | `WorkoutNavigationGuard` + `CalendarScreen` |
-| `/protein/[id]` | `view-protein-detail` | `WorkoutNavigationGuard` + `ProteinDetailScreen` |
-| `/settings` | `manage-settings` | `SettingsScreen` |
+| Route                | Feature               | 렌더링                                              |
+| -------------------- | --------------------- | --------------------------------------------------- |
+| `/(tabs)/index`      | `view-summary`        | `SummaryScreen` + app route의 `SettingsFab`         |
+| `/(tabs)/protein`    | `view-proteins`       | `ProteinListScreen` + app route의 `SettingsFab`     |
+| `/(tabs)/tempo`      | `use-tempo`           | `TempoScreen`, `fromWorkout=1`이면 back button 표시 |
+| `/workout/countdown` | `start-workout`       | `CountdownScreen`                                   |
+| `/workout/active`    | `do-workout`          | `ActiveWorkoutScreen`                               |
+| `/workout/[id]`      | `view-result`         | `ResultScreen`                                      |
+| `/sessions`          | `view-sessions`       | `WorkoutNavigationGuard` + `SessionListScreen`      |
+| `/calendar`          | `view-calendar`       | `WorkoutNavigationGuard` + `CalendarScreen`         |
+| `/protein/[id]`      | `view-protein-detail` | `WorkoutNavigationGuard` + `ProteinDetailScreen`    |
+| `/settings`          | `manage-settings`     | `SettingsScreen`                                    |
 
 `WorkoutNavigationGuard`는 `do-workout`에 있지만 여러 route에서 함께 mounted 된다. 진행 중이거나 일시정지된 운동이 있고 현재 route가 허용 목록이 아니면 `/workout/active`로 돌려보낸다.
 
@@ -46,6 +46,7 @@ features/
 홈 일지 화면이다. `app/(tabs)/index.tsx`에서 `SummaryScreen`으로 진입한다.
 
 주요 흐름:
+
 - `SummaryScreen`이 카드 레이아웃, 편집 상태, 데이터 hook, 루틴 사이클 안내 Alert를 조합한다.
 - `useSummaryCardLayout`이 카드 순서/숨김 상태를 `AsyncStorage`에 저장한다.
 - `SummaryCardRows` → `EditableSummaryCardFrame` → `SummaryCardRenderer` 순서로 카드가 렌더링된다.
@@ -55,6 +56,7 @@ features/
 - 루틴 사이클 종료 안내는 `RoutineCycleSetupPromptAlert`가 native Alert로 표시하며, `루틴 변경`, `그대로 시작`, `나중에` 선택을 처리한다.
 
 주요 컴포넌트:
+
 - `SummaryScreen`
 - `SummaryCardRows`
 - `EditableSummaryCardFrame`
@@ -68,14 +70,18 @@ features/
 - `RoutineCycleSetupPromptAlert`
 
 사용하는 `entities/workout-session` API:
+
 - `useWorkout`
 - `getPendingWorkoutPlaceReminderPrompt`, `clearPendingWorkoutPlaceReminderPrompt`
+- `getWorkoutSessionSummaryDataForDate`, `getWorkoutSummariesForSessions`
+- `getWorkoutSessionKcalFromSummaries`
 - `getStoredWorkoutSessionIdByDate`, `getLatestStoredWorkoutSession`
 - `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionDurationMinutes`
 - `getWorkoutBodyPartSetLabel`
 - routine cycle load/save/progress/cycle/prompt API
 
 사용하는 shared API:
+
 - `Main`, `Card`, `StatCard`, `BodyPartIconHost`, `IconButton`, `GlassCircleBackground`
 - `formatDateWithDay`, `bodyPartLabel`, `bodyPartDetailLabel`
 - `getThisWeekDateRange`, `getLocalDateKey`, `getLocalDateKeyFromIso`
@@ -84,6 +90,7 @@ features/
 - `useNotificationPermissionRequestDone`
 
 주요 side effect:
+
 - summary card layout `AsyncStorage` read/write
 - AppState active/자정 기준 summary refresh
 - routine cycle setting/status/prompt storage load/save
@@ -95,24 +102,29 @@ features/
 운동 시작 전 countdown 화면이다. `app/workout/countdown.tsx`에서 `CountdownScreen`으로 진입한다.
 
 주요 흐름:
+
 - `CountdownScreen`이 `startCountdown()`을 호출한다.
 - 예약된 운동 리마인더를 취소한다.
 - 현재 위치를 한 번 조회해서 workout state에 저장한다. 실패하면 `null`로 둔다.
 - `useCountdown` 완료 시 `startRecording()` 후 `/workout/active`로 replace한다.
 
 주요 컴포넌트:
+
 - `CountdownScreen`
 
 사용하는 `entities/workout-session` API:
+
 - `useWorkout`
 - `cancelScheduledWorkoutReminder`
 - `getWorkoutLocationOnce`
 
 사용하는 shared API:
+
 - `Main`, `IconBox`
 - `useResolvedColorToken`, `semanticColorTokens`
 
 주요 side effect:
+
 - reminder cancel
 - location permission/current position request
 - route replace to active workout
@@ -122,6 +134,7 @@ features/
 운동 중 화면과 운동 상태 전환을 조합한다. `app/workout/active.tsx`에서 `ActiveWorkoutScreen`으로 진입하고, guard는 app route 여러 곳에서 사용된다.
 
 주요 흐름:
+
 - `ActiveWorkoutScreen`은 hydration 전이나 `idle/countdown` phase에서 실제 운동 UI를 렌더링하지 않고 올바른 route로 보낸다.
 - `useWorkoutTimer`가 기록 중일 때만 timer를 갱신하고, pause 상태에서는 표시를 고정한다.
 - `useHealthKitWorkout`이 recording 상태에서 HealthKit 세션 시작과 live stats polling을 맡는다.
@@ -132,6 +145,7 @@ features/
 - 완료 시 `completeWorkout()` 후 HealthKit 종료, 운동 리마인더 sync, 캘린더 등록 확인 Alert, 결과 화면 이동을 처리한다.
 
 주요 컴포넌트:
+
 - `ActiveWorkoutScreen`
 - `WorkoutNavigationGuard`
 - `WorkoutDrawer`
@@ -143,6 +157,7 @@ features/
 - `useWorkoutHistoryPrefill`
 
 사용하는 `entities/workout-session` API:
+
 - `useWorkout`
 - `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
 - `getAllStoredWorkoutSessions`
@@ -154,12 +169,14 @@ features/
 - body part set helpers and types
 
 사용하는 shared API:
+
 - `Main`, `Chip`, `GlassSurface`, `GlassTextarea`, `Stepper`
 - `formatElapsedMs`, `bodyPartLabel`, `bodyPartDetailLabel`
 - `getThisWeekDateRange`
 - `useResolvedColorToken`, `semanticColorTokens`
 
 주요 side effect:
+
 - HealthKit workout session start/pause/resume/end
 - live HealthKit polling interval
 - current workout state updates through `useWorkout`
@@ -173,6 +190,7 @@ features/
 운동 결과 상세 화면이다. `app/workout/[id].tsx`가 route param을 decode해서 `ResultScreen`에 넘긴다.
 
 주요 흐름:
+
 - `useSessionDetail`이 저장된 세션과 HealthKit 상세를 함께 조회한다.
 - 저장 세션이 없으면 no data 상태를 보여준다.
 - 메모는 `GlassTextarea`에서 debounce로 `updateStoredWorkoutMemo`에 저장한다.
@@ -180,6 +198,7 @@ features/
 - HealthKit 심박 샘플이 있으면 `HeartRateChart`, 위치가 있으면 `LocationMap`을 렌더링한다.
 
 주요 컴포넌트:
+
 - `ResultScreen`
 - `SessionHeader`
 - `StatsGrid`
@@ -187,8 +206,9 @@ features/
 - `LocationMap`
 
 사용하는 `entities/workout-session` API:
-- `getStoredWorkoutSession`
-- `getWorkoutDetail`
+
+- `getWorkoutSessionDetailData`
+- `getWorkoutSessionDetailActiveKcal`
 - `updateStoredWorkoutMemo`
 - `deleteStoredWorkoutSession`
 - `getAllStoredWorkoutSessions`
@@ -198,12 +218,14 @@ features/
 - body part label helpers
 
 사용하는 shared API:
+
 - `Main`, `GlassTextarea`, `IconButton`, `Card`, `StatCard`, `GlassSurface`, `BodyPartIconHost`
 - `useCardColors`
 - `formatDateWithDay`, `formatDuration`, `formatTime`, `bodyPartLabel`, `bodyPartDetailLabel`
 - `buildLinePath`, `buildAreaPath`
 
 주요 side effect:
+
 - stored session and HealthKit detail reads
 - memo save debounce
 - delete confirmation and deletion
@@ -215,6 +237,7 @@ features/
 세션 목록 화면이다. `/sessions`에서 `WorkoutNavigationGuard`와 함께 `SessionListScreen`이 렌더링된다.
 
 주요 흐름:
+
 - `useInfiniteSessions`가 현재 월부터 과거 월을 순차 로드하고, 스크롤 하단 접근 시 이전 월을 추가 로드한다.
 - AppState active와 자정 경계에서 refresh key를 올려 목록을 다시 계산한다.
 - `FilterTabs`가 body part filter를 관리하고 `filterSessions`로 목록을 거른다.
@@ -222,22 +245,26 @@ features/
 - 세션 press 시 `/workout/[id]`로 이동한다.
 
 주요 컴포넌트:
+
 - `SessionListScreen`
 - `FilterTabs`
 - `SessionCard`
 
 사용하는 `entities/workout-session` API:
-- `getStoredWorkoutSessionsForMonth`
-- `getWorkoutSummariesForMonth`
+
+- `getWorkoutSessionSummaryDataForMonth`
+- `getWorkoutSessionKcalFromSummaries`
 - `getUniqueWorkoutBodyParts`
 
 사용하는 shared API:
+
 - `Main`, `IconButton`, `FilterPill`, `Card`, `BodyPartIconHost`
 - `useCardColors`
 - `formatMonthYear`, `formatDateWithDay`, `bodyPartLabel`
 - `groupByMonth`
 
 주요 side effect:
+
 - month-based stored session and HealthKit summary reads
 - AppState/자정 refresh
 - route push to workout result
@@ -247,6 +274,7 @@ features/
 운동 캘린더 화면이다. `/calendar`에서 `WorkoutNavigationGuard`와 함께 `CalendarScreen`이 렌더링된다.
 
 주요 흐름:
+
 - `useCalendarRefreshSignal`이 오늘 기준 날짜와 refresh key를 관리한다.
 - `useInfiniteMonths`가 현재 월부터 여러 달을 렌더링 대상으로 만든다.
 - `MonthGrid`가 월별 날짜 grid를 만들고, `useMonthWorkoutDates`가 해당 월 저장 세션을 조회한다.
@@ -254,22 +282,26 @@ features/
 - 운동이 있는 날짜 press 시 `/workout/[id]`로 이동한다.
 
 주요 컴포넌트:
+
 - `CalendarScreen`
 - `MonthGrid`
 - `DayCell`
 - `BodyPartBadge`
 
 사용하는 `entities/workout-session` API:
+
 - `getStoredWorkoutSessionsInRange`
 - `getUniqueWorkoutBodyParts`
 - `BodyPart` type
 
 사용하는 shared API:
+
 - `Main`, `IconButton`, `BodyPartIcon`
 - `useCardColors`
 - `getFirstDayOfWeek`, `getDaysInMonth`, `getLocalDateKeyFromIso`
 
 주요 side effect:
+
 - month range stored session reads
 - AppState/자정 refresh
 - route push to workout result
@@ -279,6 +311,7 @@ features/
 프로틴 목록 화면이다. `app/(tabs)/protein.tsx`에서 `ProteinListScreen`으로 진입한다.
 
 주요 흐름:
+
 - 상품 목록과 최신 가격을 함께 조회한다.
 - `mergeProteinListItems`로 list model을 조립한다.
 - category filter로 목록을 거른다.
@@ -286,10 +319,12 @@ features/
 - loading/error/empty 상태를 화면 안에서 처리한다.
 
 주요 컴포넌트:
+
 - `ProteinListScreen`
 - entity UI인 `ProteinCard`, `CoupangPartnersDisclosure`
 
 사용하는 `entities/protein` API:
+
 - `fetchProteins`
 - `fetchLatestProteinPrices`
 - `mergeProteinListItems`
@@ -298,10 +333,12 @@ features/
 - `CoupangPartnersDisclosure`
 
 사용하는 shared API:
+
 - `Main`
 - `FilterPill`
 
 주요 side effect:
+
 - Supabase product/latest price fetch through entity API
 - route push to protein detail
 
@@ -310,6 +347,7 @@ features/
 프로틴 상세 화면이다. `/protein/[id]`에서 `WorkoutNavigationGuard`와 함께 `ProteinDetailScreen`이 렌더링된다.
 
 주요 흐름:
+
 - route `id`가 없거나 배열이면 안전하게 단건 string으로 좁힌다.
 - 상품, 가격 히스토리, 맛 정보를 함께 조회한다.
 - `buildProteinDetail`로 상세 model을 조립한다.
@@ -318,10 +356,12 @@ features/
 - loading/error/not found 상태를 화면 안에서 처리한다.
 
 주요 컴포넌트:
+
 - `ProteinDetailScreen`
 - entity UI인 `PriceTrendChart`, `CoupangPartnersDisclosure`
 
 사용하는 `entities/protein` API:
+
 - `fetchProtein`
 - `fetchProteinPrices`
 - `fetchProteinFlavors`
@@ -330,11 +370,13 @@ features/
 - `CoupangPartnersDisclosure`
 
 사용하는 shared API:
+
 - `Badge`, `Button`, `IconButton`, `Card`
 - `useCardColors`
 - `getSafeWebUrl`, `openWebUrl`
 
 주요 side effect:
+
 - Supabase detail/history/flavor fetch through entity API
 - safe external URL open
 - route back
@@ -344,6 +386,7 @@ features/
 설정 화면이다. `/settings`에서 `SettingsScreen`으로 진입한다.
 
 주요 흐름:
+
 - `SettingsScreen`이 운동/프로틴 섹션을 나누고 각 row를 렌더링한다.
 - `WorkoutReminderToggle`은 매일 운동 리마인더 enabled 값과 notification sync를 관리한다.
 - `WorkoutPlaceArrivalReminderToggle`은 운동 장소 알림 enabled 값과 geofence/sync를 관리한다.
@@ -352,6 +395,7 @@ features/
 - `RoutineCycleSettingsSheet`와 `RoutineSettingsEditors`가 루틴 사이클 split/cycle/body part 설정을 편집한다.
 
 주요 컴포넌트:
+
 - `SettingsScreen`
 - `SettingsRow`
 - `RoutineCycleToggle`
@@ -362,19 +406,23 @@ features/
 - `ProteinSaleNotificationToggle`
 
 사용하는 `entities/workout-session` API:
+
 - `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`
 - `getWorkoutPlaceReminderEnabled`, `setWorkoutPlaceReminderEnabled`, `disableWorkoutPlaceArrivalReminder`, `syncWorkoutPlaceArrivalReminder`
 - routine cycle defaults/types/constants/session resize API
 
 사용하는 `entities/protein` API:
+
 - 프로틴 세일 알림 scheduler/storage API
 
 사용하는 shared API:
+
 - `Main`, `IconButton`, `GlassSurface`
 - `useResolvedColorToken`, `semanticColorTokens`
 - `bodyPartLabel`, `bodyPartDetailLabel`
 
 주요 side effect:
+
 - notification permission/schedule/cancel through entity or shared notification APIs
 - routine cycle storage save through `useRoutineCyclePlan`
 - route back
@@ -384,6 +432,7 @@ features/
 템포 타이머 화면이다. `/(tabs)/tempo`에서 `TempoScreen`으로 진입하고, 운동 중 drawer에서는 `/(tabs)/tempo?fromWorkout=1`로 진입한다.
 
 주요 흐름:
+
 - `TempoScreen`이 `tempoReducer`와 `useTempoTimer`를 조합한다.
 - `TempoModeButtons`와 `TempoSettings`가 mode/초/횟수/세트/휴식 설정을 바꾼다.
 - `TempoRingDisplay`가 `RingProgress`로 countdown/tempo/rest 진행률을 보여준다.
@@ -391,19 +440,23 @@ features/
 - `fromWorkout=1`이면 route wrapper가 back button을 넘기고 `/workout/active`로 replace한다.
 
 주요 컴포넌트:
+
 - `TempoScreen`
 - `TempoModeButtons`
 - `TempoSettings`
 - `TempoRingDisplay`
 
 사용하는 entities API:
+
 - feature 내부에서는 직접 사용하지 않는다. 운동 화면과의 연결은 `do-workout` route push와 app route wrapper가 담당한다.
 
 사용하는 shared API:
+
 - `Main`, `Button`, `IconButton`, `Stepper`, `RingProgress`
 - `useCardColors`
 
 주요 side effect:
+
 - `expo-audio` audio player init/play/cleanup
 - `expo-haptics` feedback
 - `requestAnimationFrame`

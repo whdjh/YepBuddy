@@ -91,7 +91,8 @@ src/entities
 공개 API는 `workout-session/index.ts`에서만 export한다. 주요 그룹은 다음과 같다.
 
 - Context: `WorkoutProvider`, `useWorkout`
-- HealthKit: `startWorkoutSession`, `pauseWorkoutSession`, `resumeWorkoutSession`, `endWorkoutSession`, `readLiveWorkoutStats`, `getWorkoutDetail`, `getWorkoutSummariesForDate`, `getWorkoutSummariesForMonth`
+- HealthKit 세션 제어: `startWorkoutSession`, `pauseWorkoutSession`, `resumeWorkoutSession`, `endWorkoutSession`, `readLiveWorkoutStats`
+- 저장 세션/HealthKit 조회 조합: `getWorkoutSessionDetailData`, `getWorkoutSessionSummaryDataForDate`, `getWorkoutSessionSummaryDataForMonth`, `getWorkoutSummariesForSessions`, `getWorkoutSessionKcalFromSummaries`, `getWorkoutSessionDetailActiveKcal`
 - 위치/캘린더: `getWorkoutLocationOnce`, `registerWorkoutToCalendar`
 - 운동 리마인더: `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`, `cancelScheduledWorkoutReminder`
 - 장소 도착/이탈 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceNotificationHandler`, pending prompt API

@@ -42,6 +42,17 @@ export {
   getWorkoutSessionKcal,
 } from "./lib/sessionWorkoutMatching"
 export {
+  getWorkoutSessionDetailActiveKcal,
+  getWorkoutSessionDetailData,
+  getWorkoutSessionKcalFromSummaries,
+  getWorkoutSessionSummaryDataForDate,
+  getWorkoutSessionSummaryDataForMonth,
+  getWorkoutSummariesForSessions,
+  type WorkoutSessionDetailData,
+  type WorkoutSessionMonthSummaryData,
+  type WorkoutSessionSummaryData,
+} from "./lib/sessionHealthKitData"
+export {
   buildRoutinePartHistoryPrefill,
   buildWorkoutHistoryPrefill,
   type WorkoutHistoryPrefill,

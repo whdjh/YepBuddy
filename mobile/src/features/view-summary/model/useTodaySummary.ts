@@ -1,10 +1,6 @@
 import { useCallback } from "react"
 import { getLocalDateKey } from "@/shared/lib/date"
-import {
-  getStoredWorkoutSession,
-  getStoredWorkoutSessionIdByDate,
-  getWorkoutSummariesForDate,
-} from "@/entities/workout-session"
+import { getWorkoutSessionSummaryDataForDate } from "@/entities/workout-session"
 import {
   EMPTY_TODAY_SUMMARY,
   mergeTodaySummary,
@@ -15,16 +11,11 @@ import { useSummaryRefresh } from "./useSummaryRefresh"
 export function useTodaySummary() {
   const loadTodaySummary = useCallback(async () => {
     const dateKey = getLocalDateKey(new Date())
-    const [sessionId, hkWorkouts] = await Promise.all([
-      getStoredWorkoutSessionIdByDate(dateKey),
-      getWorkoutSummariesForDate(dateKey),
-    ])
-    const storedSession = sessionId
-      ? await getStoredWorkoutSession(sessionId)
-      : null
+    const { storedSession, workouts } =
+      await getWorkoutSessionSummaryDataForDate(dateKey)
 
     return mergeTodaySummary({
-      hkWorkouts,
+      hkWorkouts: workouts,
       storedSession,
     })
   }, [])

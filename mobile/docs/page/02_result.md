@@ -173,7 +173,7 @@
 - 운동 시간은 HealthKit `duration`을 우선 사용하고, 없으면 로컬 세션의 저장된 duration으로 폴백한다.
 - 활동 칼로리는 HealthKit `activeKcal`을 우선 사용하고, 없으면 로컬 세션의 저장된 `activeKcal`로 폴백한다.
 - 세트수는 로컬 세션의 각 운동 항목 `setCount` 합계로 계산한다.
-- 평균 심박수는 HealthKit 심박 샘플 평균값을 반올림해 계산한다.
+- 평균 심박수는 저장 세션의 `averageHeartRate`가 있으면 우선 사용하고, 없으면 HealthKit `averageHeartRate`, 없으면 HealthKit 심박 샘플 평균값을 반올림해 계산한다.
 
 빈 상태 처리:
 

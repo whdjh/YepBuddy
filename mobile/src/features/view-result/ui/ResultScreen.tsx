@@ -18,6 +18,7 @@ import {
   getAllStoredWorkoutSessions,
   getCardioDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,
+  getWorkoutSessionDetailActiveKcal,
   getWorkoutBodyPartSetLabel,
   rebuildWorkoutPlaceReminderPlacesFromSessions,
   syncWorkoutPlaceArrivalReminder,
@@ -47,7 +48,10 @@ interface ResultScreenProps {
   fromWorkout?: boolean
 }
 
-export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenProps) {
+export function ResultScreen({
+  sessionId,
+  fromWorkout = false,
+}: ResultScreenProps) {
   const router = useRouter()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
@@ -208,17 +212,18 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
   return (
     <Main>
       {/* 네비게이션 */}
-      <View className="flex-row items-center px-yb-5 pt-yb-2 pb-yb-4 gap-yb-3">
+      <View className="flex-row items-center gap-yb-3 px-yb-5 pb-yb-4 pt-yb-2">
         <IconButton
           accessibilityLabel={t("common.back")}
           variant="back-square"
-          onPress={() =>
-            fromWorkout ? router.replace("/") : router.back()
-          }
+          onPress={() => (fromWorkout ? router.replace("/") : router.back())}
         >
           <SymbolView name="chevron.left" size={20} tintColor={fgColor} />
         </IconButton>
-        <Text className="min-w-0 grow shrink text-yb-title text-yb-fg" numberOfLines={1}>
+        <Text
+          className="min-w-0 shrink grow text-yb-title text-yb-fg"
+          numberOfLines={1}
+        >
           {dateLabel}
         </Text>
         <View className="w-yb-icon-btn" />
@@ -230,14 +235,16 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
         </View>
       ) : !stored ? (
         <View className="grow items-center justify-center px-yb-5">
-          <Text className="text-yb-fg text-yb-heading-sm">
+          <Text className="text-yb-heading-sm text-yb-fg">
             {t("workout.result.noData")}
           </Text>
         </View>
       ) : (
         <ScrollView
           className="grow"
-          contentContainerStyle={{ paddingBottom: Math.max(insets.bottom, 18) + 32 }}
+          contentContainerStyle={{
+            paddingBottom: Math.max(insets.bottom, 18) + 32,
+          }}
           contentContainerClassName="px-yb-5"
           showsVerticalScrollIndicator={false}
         >
@@ -262,7 +269,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           </View>
 
           {/* 운동세부사항 */}
-          <Text className="text-yb-fg text-yb-heading-sm mt-yb-8 mb-yb-3">
+          <Text className="mb-yb-3 mt-yb-8 text-yb-heading-sm text-yb-fg">
             {t("workout.result.statsTitle")}
           </Text>
           <StatsGrid
@@ -270,10 +277,15 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
               hk?.duration != null
                 ? formatDuration(hk.duration)
                 : stored
-                  ? formatDuration(getStoredWorkoutSessionDurationSeconds(stored))
+                  ? formatDuration(
+                      getStoredWorkoutSessionDurationSeconds(stored),
+                    )
                   : null
             }
-            calories={hk?.activeKcal ?? stored?.activeKcal ?? null}
+            calories={getWorkoutSessionDetailActiveKcal({
+              healthKitDetail: hk,
+              storedSession: stored,
+            })}
             totalSets={totalSets}
             avgHeartRate={avgHeartRate}
           />
@@ -281,7 +293,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           {/* 심박수 */}
           {chartData.length > 0 && (
             <>
-              <Text className="text-yb-fg text-yb-heading-sm mt-yb-8 mb-yb-3">
+              <Text className="mb-yb-3 mt-yb-8 text-yb-heading-sm text-yb-fg">
                 {t("workout.result.heartRateChart")}
               </Text>
               <HeartRateChart
@@ -296,13 +308,16 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           {/* Map */}
           {stored?.location && (
             <>
-              <Text className="text-yb-fg text-yb-heading-sm mt-yb-8 mb-yb-3">
+              <Text className="mb-yb-3 mt-yb-8 text-yb-heading-sm text-yb-fg">
                 {t("workout.result.mapTitle")}
               </Text>
               <LocationMap
                 latitude={stored.location.lat}
                 longitude={stored.location.lng}
-                locationName={locationLabel ?? formatWorkoutLocationCoordinates(stored.location)}
+                locationName={
+                  locationLabel ??
+                  formatWorkoutLocationCoordinates(stored.location)
+                }
               />
             </>
           )}
@@ -310,7 +325,7 @@ export function ResultScreen({ sessionId, fromWorkout = false }: ResultScreenPro
           <View className="mt-yb-8 items-center">
             <Pressable
               disabled={isDeleting}
-              className="min-h-yb-btn-md w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error px-yb-7 py-yb-4 shadow-lg active:opacity-80"
+              className="min-h-yb-btn-md px-yb-7 w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error py-yb-4 shadow-lg active:opacity-80"
               onPress={handleDeletePress}
               accessibilityRole="button"
               accessibilityLabel={t("workout.result.deleteConfirm")}

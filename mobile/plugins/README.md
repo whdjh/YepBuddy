@@ -54,7 +54,7 @@ endWorkoutSession
 discardWorkoutSession
 readLiveWorkoutStats
 subscribeLiveWorkoutStats
-getWorkoutDetail
+getWorkoutSessionDetailData
 startWorkoutLiveActivity
 endWorkoutLiveActivity
 consumeWorkoutLiveActivityCommands

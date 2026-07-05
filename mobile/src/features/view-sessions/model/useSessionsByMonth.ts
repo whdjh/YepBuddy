@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react"
 import {
   getCardioDurationMinutes,
-  findWorkoutSummaryForSession,
-  getStoredWorkoutSessionsForMonth,
   getUniqueWorkoutBodyParts,
-  getWorkoutSessionKcal,
-  getWorkoutSummariesForMonth,
+  getWorkoutSessionKcalFromSummaries,
+  getWorkoutSessionSummaryDataForMonth,
   type BodyPart,
   type StoredWorkoutSession,
 } from "@/entities/workout-session"
@@ -20,15 +18,10 @@ function getSessionTotalSets(session: StoredWorkoutSession) {
 }
 
 export async function loadSessionsByMonth(year: number, month: number) {
-  // 로컬에 저장한 세션 정보와 HealthKit 요약 정보를 동시에 조회
-  const [storedSessions, hkWorkouts] = await Promise.all([
-    getStoredWorkoutSessionsForMonth(year, month),
-    getWorkoutSummariesForMonth(year, month),
-  ])
+  const { storedSessions, workouts } =
+    await getWorkoutSessionSummaryDataForMonth(year, month)
 
   return storedSessions.map<SessionListItem>((session) => {
-    const workout = findWorkoutSummaryForSession(session, hkWorkouts)
-
     return {
       sessionId: session.sessionId,
       startedAt: session.startedAt,
@@ -42,10 +35,7 @@ export async function loadSessionsByMonth(year: number, month: number) {
         : null,
       isDeload: session.isDeload === true,
       totalSets: getSessionTotalSets(session),
-      kcal: getWorkoutSessionKcal({
-        healthKitKcal: workout?.kcal,
-        storedActiveKcal: session.activeKcal,
-      }),
+      kcal: getWorkoutSessionKcalFromSummaries(session, workouts),
       date: new Date(session.startedAt),
     }
   })

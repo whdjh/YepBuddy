@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import {
-  getStoredWorkoutSession,
-  getWorkoutDetail,
+  getWorkoutSessionDetailData,
   type StoredWorkoutSession,
   type WorkoutHealthKitDetail,
 } from "@/entities/workout-session"
@@ -34,16 +33,16 @@ export function useSessionDetail(sessionId: string) {
       }
 
       try {
-        const [stored, hk] = await Promise.all([
-          getStoredWorkoutSession(sessionId),
-          getWorkoutDetail(sessionId),
-        ])
+        const detailData = await getWorkoutSessionDetailData(sessionId)
 
         if (!active) {
           return
         }
 
-        setData({ hk, stored })
+        setData({
+          hk: detailData.healthKitDetail,
+          stored: detailData.storedSession,
+        })
       } catch {
         if (!active) {
           return
