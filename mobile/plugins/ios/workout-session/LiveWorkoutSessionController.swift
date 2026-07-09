@@ -49,6 +49,55 @@ final class LiveWorkoutSessionController: NSObject {
     startLiveWorkout(resolve: resolve, reject: reject)
   }
 
+  /// 활성 라이브 운동 복구
+  func recover(
+    resolve: @escaping Resolve,
+    reject: @escaping Reject
+  ) {
+    guard HKHealthStore.isHealthDataAvailable() else {
+      resolve(false)
+      return
+    }
+
+    guard #available(iOS 26.0, *) else {
+      resolve(false)
+      return
+    }
+
+    log("WorkoutSession.recover requested")
+    healthStore.recoverActiveWorkoutSession { [weak self] session, error in
+      guard let self else {
+        reject("workout_session_released", "Workout session module was released.", nil)
+        return
+      }
+
+      if let error {
+        self.log("WorkoutSession.recover failed", details: error.localizedDescription)
+        resolve(false)
+        return
+      }
+
+      guard let session else {
+        self.log("WorkoutSession.recover found no active session")
+        resolve(false)
+        return
+      }
+
+      self.attachLiveWorkout(session: session)
+      self.emitSessionState("recovered")
+
+      if let builder = self.liveBuilder as? HKLiveWorkoutBuilder {
+        self.emitStats(
+          from: builder,
+          status: "waitingSensor",
+          errorCode: "heart_rate_not_available"
+        )
+      }
+
+      resolve(WorkoutSessionPayload.makeStartResult(status: "waitingSensor"))
+    }
+  }
+
   /// 라이브 운동 일시정지
   func pause() -> Bool {
     guard #available(iOS 26.0, *) else {
@@ -172,13 +221,8 @@ final class LiveWorkoutSessionController: NSObject {
     healthStore.execute(query)
   }
 
-  /// 앱 종료 시 라이브 운동 폐기
-  func discardLiveWorkoutForShutdown() {
-    if #available(iOS 26.0, *) {
-      (liveSession as? HKWorkoutSession)?.end()
-      (liveBuilder as? HKLiveWorkoutBuilder)?.discardWorkout()
-    }
-
+  /// 앱 종료 시 라이브 운동 참조 해제
+  func releaseLiveWorkoutForShutdown() {
     pendingEndResolve = nil
     pendingEndReject = nil
     pendingFinishMode = .save
@@ -282,6 +326,28 @@ final class LiveWorkoutSessionController: NSObject {
   }
 
   @available(iOS 26.0, *)
+  private func attachLiveWorkout(session: HKWorkoutSession) {
+    let builder = session.associatedWorkoutBuilder()
+    let dataSource = HKLiveWorkoutDataSource(
+      healthStore: healthStore,
+      workoutConfiguration: session.workoutConfiguration
+    )
+
+    session.delegate = self
+    builder.delegate = self
+
+    HealthKitWorkoutAuthorization.liveQuantityTypes.forEach {
+      dataSource.enableCollection(for: $0, predicate: nil)
+    }
+
+    builder.shouldCollectWorkoutEvents = true
+    builder.dataSource = dataSource
+
+    liveSession = session
+    liveBuilder = builder
+  }
+
+  @available(iOS 26.0, *)
   private func startLiveWorkout(
     resolve: @escaping Resolve,
     reject: @escaping Reject
@@ -331,23 +397,8 @@ final class LiveWorkoutSessionController: NSObject {
           configuration: configuration
         )
         let builder = session.associatedWorkoutBuilder()
-        let dataSource = HKLiveWorkoutDataSource(
-          healthStore: self.healthStore,
-          workoutConfiguration: configuration
-        )
 
-        session.delegate = self
-        builder.delegate = self
-
-        HealthKitWorkoutAuthorization.liveQuantityTypes.forEach {
-          dataSource.enableCollection(for: $0, predicate: nil)
-        }
-
-        builder.shouldCollectWorkoutEvents = true
-        builder.dataSource = dataSource
-
-        self.liveSession = session
-        self.liveBuilder = builder
+        self.attachLiveWorkout(session: session)
 
         let startDate = Date()
         session.prepare()

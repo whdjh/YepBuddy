@@ -33,6 +33,7 @@ React Native 네이티브 모듈명은 `WorkoutSession`이다. Objective-C bridg
 NativeModules.WorkoutSession
 
 start
+recover
 pause
 resume
 end

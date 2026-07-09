@@ -27,7 +27,7 @@ final class WorkoutSessionModule: RCTEventEmitter {
 
   deinit {
     NotificationCenter.default.removeObserver(self)
-    controller.discardLiveWorkoutForShutdown()
+    controller.releaseLiveWorkoutForShutdown()
   }
 
   /// React Native 메인 큐 요구 여부
@@ -57,7 +57,7 @@ final class WorkoutSessionModule: RCTEventEmitter {
   /// 앱 종료 정리
   @objc
   private func handleAppWillTerminate() {
-    controller.discardLiveWorkoutForShutdown()
+    controller.releaseLiveWorkoutForShutdown()
   }
 
   /// 라이브 운동 시작
@@ -67,6 +67,18 @@ final class WorkoutSessionModule: RCTEventEmitter {
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     controller.start(
+      resolve: { resolve($0) },
+      reject: { code, message, error in reject(code, message, error) }
+    )
+  }
+
+  /// 활성 라이브 운동 복구
+  @objc(recover:rejecter:)
+  func recover(
+    _ resolve: @escaping RCTPromiseResolveBlock,
+    rejecter reject: @escaping RCTPromiseRejectBlock
+  ) {
+    controller.recover(
       resolve: { resolve($0) },
       reject: { code, message, error in reject(code, message, error) }
     )
