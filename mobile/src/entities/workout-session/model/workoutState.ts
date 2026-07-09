@@ -158,13 +158,15 @@ export function workoutReducer(
         Number.isFinite(action.payload.heartRate)
           ? Math.max(0, Math.round(action.payload.heartRate))
           : null
+      const activeKcal = normalizeMetricCount(action.payload.activeKcal)
+      const totalKcal = normalizeMetricCount(action.payload.totalKcal)
 
       return {
         // Apple HealthKit 같은 외부 소스에서 들어온 실시간 수치를 반영
         ...state,
-        heartRate,
-        activeKcal: normalizeMetricCount(action.payload.activeKcal),
-        totalKcal: normalizeMetricCount(action.payload.totalKcal),
+        heartRate: heartRate ?? state.heartRate,
+        activeKcal: Math.max(state.activeKcal, activeKcal),
+        totalKcal: Math.max(state.totalKcal, totalKcal),
         liveMetricSource: action.payload.source,
         liveMetricStatus: action.payload.status,
         liveMetricUpdatedAt: action.payload.updatedAt,

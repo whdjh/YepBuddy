@@ -36,6 +36,7 @@ interface NativeWorkoutSessionModule {
   end: () => Promise<NativeWorkoutEndResult | boolean>
   pause: () => Promise<boolean>
   readLiveStats: () => Promise<Partial<WorkoutLiveStats>>
+  recover: () => Promise<NativeWorkoutStartResult | boolean>
   resume: () => Promise<boolean>
   start: () => Promise<NativeWorkoutStartResult | boolean>
 }
@@ -150,6 +151,28 @@ export async function discardIphoneLiveWorkout() {
 
   // 네이티브 discard 결과 표준 payload 변환
   return fromStatus(discarded.ended ? "ended" : "error")
+}
+
+// 종료/크래시 후 남아 있는 iPhone live workout 세션 복구
+export async function recoverIphoneLiveWorkout() {
+  if (!nativeModule) {
+    return fromStatus("error", "native_module_unavailable")
+  }
+
+  try {
+    const result = await nativeModule.recover()
+    if (typeof result === "boolean") {
+      return fromStatus(result ? "starting" : "idle")
+    }
+
+    return normalizeWorkoutLiveStats({
+      source: "iphoneLiveWorkout",
+      status: result.status,
+      errorCode: result.started ? null : "recover_failed",
+    })
+  } catch {
+    return fromStatus("error", "recover_failed")
+  }
 }
 
 // iPhone live workout metric provider

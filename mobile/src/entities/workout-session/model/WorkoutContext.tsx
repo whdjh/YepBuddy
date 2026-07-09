@@ -7,6 +7,7 @@ import {
   useEffect,
   useMemo,
   useReducer,
+  useRef,
   useState,
   type PropsWithChildren,
 } from "react"
@@ -114,6 +115,22 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
   const [state, dispatch] = useReducer(workoutReducer, initialWorkoutState)
   // 저장소 복구가 끝났는지 표시
   const [isHydrated, setIsHydrated] = useState(false)
+  const stateRef = useRef(state)
+
+  useEffect(() => {
+    stateRef.current = state
+  }, [state])
+
+  const saveRecoverableWorkoutSnapshot = useCallback(() => {
+    const nextState = stateRef.current
+
+    if (nextState.phase === "idle" || nextState.phase === "completed") {
+      void clearCurrentWorkoutSnapshot()
+      return
+    }
+
+    void saveCurrentWorkoutSnapshot(nextState)
+  }, [])
 
   useEffect(() => {
     let mounted = true
@@ -135,23 +152,34 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isHydrated) {
+      return
+    }
+
+    saveRecoverableWorkoutSnapshot()
+  }, [
+    isHydrated,
+    saveRecoverableWorkoutSnapshot,
+    state.bodyParts,
+    state.cardioStartedAt,
+    state.completedAt,
+    state.location,
+    state.pausedAt,
+    state.pausedDuration,
+    state.phase,
+    state.sessionId,
+    state.startedAt,
+  ])
+
   useDebouncedEffect(
     () => {
-      if (!isHydrated) {
-        return
+      if (isHydrated) {
+        saveRecoverableWorkoutSnapshot()
       }
-
-      // idle/completed 상태는 복구 대상이 아니므로 진행 중 스냅샷 삭제
-      if (state.phase === "idle" || state.phase === "completed") {
-        void clearCurrentWorkoutSnapshot()
-        return
-      }
-
-      // 메모 입력 등으로 state가 연속 변경될 수 있으므로 마지막 상태만 저장
-      void saveCurrentWorkoutSnapshot(state)
     },
     1000,
-    [isHydrated, state],
+    [isHydrated, saveRecoverableWorkoutSnapshot, state.memo],
   )
 
   useEffect(() => {

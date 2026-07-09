@@ -137,7 +137,9 @@ features/
 
 - `ActiveWorkoutScreen`은 hydration 전이나 `idle/countdown` phase에서 실제 운동 UI를 렌더링하지 않고 올바른 route로 보낸다.
 - `useWorkoutTimer`가 기록 중일 때만 timer를 갱신하고, pause 상태에서는 표시를 고정한다.
-- `useHealthKitWorkout`이 recording 상태에서 HealthKit 세션 시작과 live stats polling을 맡는다.
+- `useHealthKitWorkout`이 recording 상태에서 HealthKit live workout 시작 또는 기존 활성 세션 복구를 시도하고 live stats 이벤트/폴링 동기화를 맡는다.
+- 저장된 진행 중 운동의 `startedAt`이 있는 복구 흐름에서는 iOS 26 이상에서 새 iPhone live workout session 시작 전에 네이티브 활성 세션 복구를 먼저 시도한다.
+- native live stats 이벤트가 없거나 센서 대기/오류 상태가 이어지면 HealthKit 샘플 polling fallback으로 지표를 보강한다.
 - `BodyPartSelector`, `RoutineSessionPicker`, `SetCountList`, `MemoSection`이 운동 입력 UI를 구성한다.
 - `useWorkoutHistoryPrefill`이 완료된 운동 기록을 읽고, 현재 선택한 운동 구성이 과거 세션과 완전히 같을 때만 이전 세트 수를 자동 적용한다.
 - 이전 메모는 실제 입력값으로 저장하지 않고 `MemoSection` placeholder로만 보여준다.

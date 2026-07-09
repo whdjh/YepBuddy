@@ -17,6 +17,7 @@ import {
   discardIphoneLiveWorkout,
   endIphoneLiveWorkout,
   iphoneLiveWorkoutProvider,
+  recoverIphoneLiveWorkout,
 } from "./iphoneLiveWorkoutProvider"
 
 const HEALTH_PERMISSIONS = {
@@ -271,8 +272,19 @@ export async function requestHealthKitAccess() {
 }
 
 /** 운동 시작 시점에 HealthKit 권한/세션 사용 준비 */
-export async function startWorkoutSession() {
+export async function startWorkoutSession(recover = false) {
   if (iphoneLiveWorkoutProvider.isAvailable()) {
+    if (recover) {
+      const recoveredStats = await recoverIphoneLiveWorkout()
+      if (
+        recoveredStats.status !== "idle" &&
+        recoveredStats.status !== "error"
+      ) {
+        await saveHealthKitAccessState("enabled").catch(() => undefined)
+        return recoveredStats
+      }
+    }
+
     const stats = await iphoneLiveWorkoutProvider.start()
     if (stats.status !== "error") {
       await saveHealthKitAccessState("enabled").catch(() => undefined)
@@ -347,7 +359,10 @@ export async function readLiveWorkoutStats(params?: {
   startDate?: string
 }): Promise<WorkoutLiveStats> {
   const nativeStats = await iphoneLiveWorkoutProvider.read(params)
-  if (nativeStats.status === "live" || nativeStats.status === "paused") {
+  if (
+    !params?.startDate &&
+    (nativeStats.status === "live" || nativeStats.status === "paused")
+  ) {
     return nativeStats
   }
 
@@ -357,6 +372,17 @@ export async function readLiveWorkoutStats(params?: {
   }
 
   const sampledStats = await healthKitFallbackProvider.read(params)
+  if (nativeStats.status === "live" || nativeStats.status === "paused") {
+    return {
+      ...nativeStats,
+      heartRate: nativeStats.heartRate ?? sampledStats.heartRate,
+      activeKcal: Math.max(nativeStats.activeKcal, sampledStats.activeKcal),
+      totalKcal: Math.max(nativeStats.totalKcal, sampledStats.totalKcal),
+      updatedAt: nativeStats.updatedAt ?? sampledStats.updatedAt,
+      errorCode: nativeStats.errorCode ?? sampledStats.errorCode,
+    }
+  }
+
   if (nativeStats.heartRate != null || nativeStats.activeKcal > 0) {
     return nativeStats
   }
