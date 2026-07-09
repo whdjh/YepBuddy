@@ -119,6 +119,13 @@ export const initialWorkoutState: WorkoutState = {
   liveMetricErrorCode: EMPTY_WORKOUT_LIVE_STATS.errorCode ?? null,
 }
 
+/* 심박 샘플이 없으면 null로 유지하고, 유효한 값만 0 이상의 정수 bpm으로 정규화 */
+function normalizeHeartRate(value: number | null) {
+  return value != null && Number.isFinite(value)
+    ? Math.max(0, Math.round(value))
+    : null
+}
+
 export function workoutReducer(
   state: WorkoutState,
   action: WorkoutAction,
@@ -153,18 +160,16 @@ export function workoutReducer(
       }
     // 실시간 운동 수치 반영 액션 처리
     case "SET_LIVE_STATS": {
-      const heartRate =
-        action.payload.heartRate != null &&
-        Number.isFinite(action.payload.heartRate)
-          ? Math.max(0, Math.round(action.payload.heartRate))
-          : null
+      const heartRate = normalizeHeartRate(action.payload.heartRate)
+      const activeKcal = normalizeMetricCount(action.payload.activeKcal)
+      const totalKcal = normalizeMetricCount(action.payload.totalKcal)
 
       return {
         // Apple HealthKit 같은 외부 소스에서 들어온 실시간 수치를 반영
         ...state,
-        heartRate,
-        activeKcal: normalizeMetricCount(action.payload.activeKcal),
-        totalKcal: normalizeMetricCount(action.payload.totalKcal),
+        heartRate: heartRate ?? state.heartRate,
+        activeKcal: Math.max(state.activeKcal, activeKcal),
+        totalKcal: Math.max(state.totalKcal, totalKcal),
         liveMetricSource: action.payload.source,
         liveMetricStatus: action.payload.status,
         liveMetricUpdatedAt: action.payload.updatedAt,
