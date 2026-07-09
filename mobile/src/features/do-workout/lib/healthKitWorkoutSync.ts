@@ -13,7 +13,7 @@ interface HealthKitWorkoutSyncOptions<TimerHandle> {
   readLiveWorkoutStats: (params?: { startDate?: string }) => Promise<WorkoutLiveStats>
   setLiveStats: (stats: WorkoutLiveStats) => void
   setTimeout?: (callback: () => void, delay: number) => TimerHandle
-  startWorkoutSession: (options?: { recover?: boolean }) => Promise<unknown>
+  startWorkoutSession: (recover?: boolean) => Promise<unknown>
   subscribeLiveWorkoutStats?: (
     listener: (stats: WorkoutLiveStats) => void,
   ) => () => void
@@ -163,9 +163,9 @@ export function startHealthKitWorkoutSync<
       scheduleFallbackPolling()
     }
 
-    const startStats = await startWorkoutSession({
-      recover: Boolean(workoutStartedAt),
-    }).catch(() => null)
+    const startStats = await startWorkoutSession(Boolean(workoutStartedAt)).catch(
+      () => null,
+    )
     if (cancelled) {
       return
     }

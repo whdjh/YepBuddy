@@ -13,7 +13,6 @@ export type WorkoutSensorPreference = "auto" | "airpods" | "appleWatch"
 export interface WorkoutMetricProvider {
   source: WorkoutMetricSource
   isAvailable: () => boolean
-  recover: () => Promise<WorkoutLiveStats>
   start: () => Promise<WorkoutLiveStats>
   pause: () => Promise<WorkoutLiveStats>
   resume: () => Promise<WorkoutLiveStats>

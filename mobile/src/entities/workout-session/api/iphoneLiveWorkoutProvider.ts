@@ -182,8 +182,6 @@ export const iphoneLiveWorkoutProvider: WorkoutMetricProvider = {
   // provider 사용 가능 조건
   isAvailable: () => Platform.OS === "ios" && Boolean(nativeModule),
 
-  recover: recoverIphoneLiveWorkout,
-
   async start() {
     if (!nativeModule) {
       // 네이티브 모듈 부재 error payload

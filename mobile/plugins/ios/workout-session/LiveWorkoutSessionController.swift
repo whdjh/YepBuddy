@@ -83,16 +83,14 @@ final class LiveWorkoutSessionController: NSObject {
         return
       }
 
-      self.attachLiveWorkout(session: session)
+      let builder = self.attachLiveWorkout(session: session)
       self.emitSessionState("recovered")
 
-      if let builder = self.liveBuilder as? HKLiveWorkoutBuilder {
-        self.emitStats(
-          from: builder,
-          status: "waitingSensor",
-          errorCode: "heart_rate_not_available"
-        )
-      }
+      self.emitStats(
+        from: builder,
+        status: "waitingSensor",
+        errorCode: "heart_rate_not_available"
+      )
 
       resolve(WorkoutSessionPayload.makeStartResult(status: "waitingSensor"))
     }
@@ -326,7 +324,7 @@ final class LiveWorkoutSessionController: NSObject {
   }
 
   @available(iOS 26.0, *)
-  private func attachLiveWorkout(session: HKWorkoutSession) {
+  private func attachLiveWorkout(session: HKWorkoutSession) -> HKLiveWorkoutBuilder {
     let builder = session.associatedWorkoutBuilder()
     let dataSource = HKLiveWorkoutDataSource(
       healthStore: healthStore,
@@ -345,6 +343,7 @@ final class LiveWorkoutSessionController: NSObject {
 
     liveSession = session
     liveBuilder = builder
+    return builder
   }
 
   @available(iOS 26.0, *)
@@ -396,9 +395,8 @@ final class LiveWorkoutSessionController: NSObject {
           healthStore: self.healthStore,
           configuration: configuration
         )
-        let builder = session.associatedWorkoutBuilder()
 
-        self.attachLiveWorkout(session: session)
+        let builder = self.attachLiveWorkout(session: session)
 
         let startDate = Date()
         session.prepare()

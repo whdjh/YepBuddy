@@ -272,9 +272,9 @@ export async function requestHealthKitAccess() {
 }
 
 /** 운동 시작 시점에 HealthKit 권한/세션 사용 준비 */
-export async function startWorkoutSession(options?: { recover?: boolean }) {
+export async function startWorkoutSession(recover = false) {
   if (iphoneLiveWorkoutProvider.isAvailable()) {
-    if (options?.recover) {
+    if (recover) {
       const recoveredStats = await recoverIphoneLiveWorkout()
       if (
         recoveredStats.status !== "idle" &&

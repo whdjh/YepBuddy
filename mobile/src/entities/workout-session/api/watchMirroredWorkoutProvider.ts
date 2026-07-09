@@ -16,7 +16,6 @@ function unavailable(): WorkoutLiveStats {
 export const watchMirroredWorkoutProvider: WorkoutMetricProvider = {
   source: "watchMirroredWorkout",
   isAvailable: () => false,
-  recover: async () => unavailable(),
   start: async () => unavailable(),
   pause: async () => unavailable(),
   resume: async () => unavailable(),
