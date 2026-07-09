@@ -82,7 +82,7 @@ src/entities
 - `model/WorkoutContext.tsx`: 현재 운동 상태, 운동 시작/일시정지/완료 action, 진행 중 스냅샷 저장
 - `model/workoutState.ts`: reducer와 상태 전이
 - `model/sessionStorage.ts`: 진행 중/완료 세션 저장소
-- `api/healthKit.ts`: HealthKit 권한, 운동 저장, 심박/운동 요약 조회
+- `api/healthKit.ts`: HealthKit 권한, iPhone live workout 시작/복구/종료, 심박/운동 요약 조회
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
 - `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 장소 알림
@@ -102,6 +102,21 @@ src/entities
 - 세션 표시 UI: `BodyPartIcon`, `BodyPartIconHost`
 - 루틴 사이클: 기본 설정, normalize/resize, 저장소 load/save, progress/cycle 계산
 - 타입: `BodyPart`, `WorkoutBodyPartSet`, `StoredWorkoutSession`, `WorkoutState`, 루틴 사이클 타입들
+
+진행 중 운동 복구 계약:
+
+- `WorkoutContext`는 저장소 hydration 후 복구 가능한 상태(`countdown`, `recording`, `paused`)를 진행 중 스냅샷으로 저장한다.
+- `phase`, `sessionId`, `startedAt`, `pausedAt`, `pausedDuration`, `bodyParts`, `cardioStartedAt`, `location`처럼 복구에 필요한 필드는 변경 시 즉시 저장한다.
+- `memo`는 입력 중 저장 빈도를 줄이기 위해 `useDebouncedEffect`로 1초 디바운스 저장한다.
+- `idle` 또는 `completed` 상태는 복구 대상이 아니므로 진행 중 스냅샷을 삭제한다.
+- live metric 변화만으로는 진행 중 스냅샷 저장을 새로 트리거하지 않는다.
+
+HealthKit live metric 계약:
+
+- 저장된 진행 중 운동의 `startedAt`이 있는 상태에서 `startWorkoutSession(true)`가 호출되면 iOS 26 이상에서 새 iPhone live workout session 시작 전에 네이티브 활성 세션 복구를 먼저 시도한다.
+- 복구 실패 또는 활성 세션 없음은 운동 흐름을 막지 않고 기존 시작 흐름이나 HealthKit 샘플 polling fallback으로 이어진다.
+- reducer는 심박수 `null`로 기존 심박수를 지우지 않고, 활동/총 칼로리는 이전 값보다 작은 값을 반영하지 않는다.
+- native live metric 값이 부족하면 HealthKit 샘플 fallback 값을 병합해 표시 지표를 보강한다.
 
 Feature 사용처:
 
@@ -164,7 +179,7 @@ Feature 사용처:
 
 Workout session이 사용하는 shared API:
 
-- `shared/hooks/useDebouncedEffect`: 현재 운동 스냅샷 저장 debounce
+- `shared/hooks/useDebouncedEffect`: 현재 운동 메모 스냅샷 저장 debounce
 - `shared/lib/date`: 로컬 날짜 키, 주차 계산, ISO 시간 계산
 - `shared/i18n/i18n`: 캘린더/알림 문구
 
