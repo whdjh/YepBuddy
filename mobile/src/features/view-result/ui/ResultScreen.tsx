@@ -1,18 +1,12 @@
 import { useEffect, useRef, useState } from "react"
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  Text,
-  View,
-} from "react-native"
+import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
   appendCardioDurationToTitle,
   deleteStoredWorkoutSession,
+  deleteWorkoutCalendarEvent,
   formatWorkoutLocationCoordinates,
   formatWorkoutLocationLabel,
   getAllStoredWorkoutSessions,
@@ -23,8 +17,13 @@ import {
   rebuildWorkoutPlaceReminderPlacesFromSessions,
   syncWorkoutPlaceArrivalReminder,
   updateStoredWorkoutMemo,
+  updateStoredWorkoutSetCounts,
+  updateWorkoutCalendarEvent,
+  type WorkoutSetCountUpdate,
 } from "@/entities/workout-session"
 import { useCardColors } from "@/shared/hooks/useCardColors"
+import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
+import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { SymbolView } from "@/shared/ui/SymbolView"
 import { Main } from "@/shared/ui/Main"
 import { GlassTextarea } from "@/shared/ui/GlassTextarea"
@@ -33,6 +32,7 @@ import { SessionHeader } from "./SessionHeader"
 import { StatsGrid } from "./StatsGrid"
 import { HeartRateChart } from "./HeartRateChart"
 import { LocationMap } from "./LocationMap"
+import { SetCountEditSheet } from "./SetCountEditSheet"
 import { resolveResultAverageHeartRate } from "../model/averageHeartRate"
 import {
   bodyPartLabel,
@@ -55,14 +55,20 @@ export function ResultScreen({
   const router = useRouter()
   const { t } = useTranslation()
   const insets = useSafeAreaInsets()
-  const { fg: fgColor } = useCardColors()
-  const { data, isLoading } = useSessionDetail(sessionId)
+  const { accent: accentColor, fg: fgColor } = useCardColors()
+  const deleteColor = useResolvedColorToken(semanticColorTokens.statusError)
+  const { data, isLoading, reload } = useSessionDetail(sessionId)
   const stored = data?.stored
   const hk = data?.hk
   const [memo, setMemo] = useState(stored?.memo ?? "")
   const [locationLabel, setLocationLabel] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isSetCountSheetVisible, setIsSetCountSheetVisible] = useState(false)
+  const [isSavingSetCounts, setIsSavingSetCounts] = useState(false)
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const memoSavePromiseRef = useRef<
+    ReturnType<typeof updateStoredWorkoutMemo> | null
+  >(null)
 
   useEffect(() => {
     setMemo(stored?.memo ?? "")
@@ -92,24 +98,32 @@ export function ResultScreen({
 
   useEffect(() => {
     const initialMemo = stored?.memo ?? ""
-    if (!sessionId || memo === initialMemo) {
-      return
-    }
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
+      saveTimeoutRef.current = null
+    }
+
+    if (isDeleting || !sessionId || memo === initialMemo) {
+      return
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      void updateStoredWorkoutMemo(sessionId, memo)
+      saveTimeoutRef.current = null
+      const savePromise = (memoSavePromiseRef.current ?? Promise.resolve())
+        .catch(() => undefined)
+        .then(() => updateStoredWorkoutMemo(sessionId, memo))
+      memoSavePromiseRef.current = savePromise
+      void savePromise.catch(() => undefined)
     }, 300)
 
     return () => {
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current)
+        saveTimeoutRef.current = null
       }
     }
-  }, [memo, sessionId, stored?.memo])
+  }, [isDeleting, memo, sessionId, stored?.memo])
 
   const dateLabel = stored?.startedAt
     ? formatDateWithDay(new Date(stored.startedAt))
@@ -160,12 +174,23 @@ export function ResultScreen({
       ? formatTime(hk.heartRateSamples[hk.heartRateSamples.length - 1].endDate)
       : endTime
 
-  const deleteSession = async () => {
+  const flushPendingMemo = async () => {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current)
       saveTimeoutRef.current = null
     }
+    if (!stored) {
+      return null
+    }
 
+    const savePromise = (memoSavePromiseRef.current ?? Promise.resolve())
+      .catch(() => undefined)
+      .then(() => updateStoredWorkoutMemo(sessionId, memo))
+    memoSavePromiseRef.current = savePromise
+    return savePromise
+  }
+
+  const deleteLocalSession = async () => {
     setIsDeleting(true)
 
     try {
@@ -186,8 +211,111 @@ export function ResultScreen({
     }
   }
 
+  const confirmLocalOnlyDelete = () => {
+    Alert.alert(
+      t("workout.result.calendarDeleteErrorTitle"),
+      t("workout.result.calendarDeleteErrorMessage"),
+      [
+        {
+          text: t("common.cancel"),
+          style: "cancel",
+          onPress: () => setIsDeleting(false),
+        },
+        {
+          text: t("workout.result.deleteAppOnly"),
+          style: "destructive",
+          onPress: () => void deleteLocalSession(),
+        },
+      ],
+      {
+        cancelable: true,
+        onDismiss: () => setIsDeleting(false),
+      },
+    )
+  }
+
+  const deleteSession = async () => {
+    if (!stored) {
+      return
+    }
+
+    setIsDeleting(true)
+    const sessionToDelete = await flushPendingMemo().catch(() => stored)
+
+    const calendarStatus = await deleteWorkoutCalendarEvent(
+      sessionToDelete ?? stored,
+    )
+
+    if (calendarStatus === "deleted" || calendarStatus === "notFound") {
+      await deleteLocalSession()
+      return
+    }
+
+    confirmLocalOnlyDelete()
+  }
+
+  const handleSetCountSave = async (updates: WorkoutSetCountUpdate[]) => {
+    if (!stored || isDeleting || isSavingSetCounts) {
+      return
+    }
+
+    setIsSavingSetCounts(true)
+
+    try {
+      const previousSession = await memoSavePromiseRef.current
+      if (!previousSession) {
+        throw new Error("Memo save must finish before set count update")
+      }
+      const nextSession = await updateStoredWorkoutSetCounts(sessionId, updates)
+
+      if (!nextSession) {
+        setIsSetCountSheetVisible(false)
+        await reload()
+        Alert.alert(
+          t("workout.result.editSetsErrorTitle"),
+          t("workout.result.editSetsErrorMessage"),
+        )
+        return
+      }
+
+      const calendarStatus = await updateWorkoutCalendarEvent(
+        nextSession,
+        previousSession,
+      )
+
+      await reload()
+      setIsSetCountSheetVisible(false)
+
+      if (
+        calendarStatus === "permissionDenied" ||
+        calendarStatus === "failed"
+      ) {
+        Alert.alert(
+          t("workout.result.calendarUpdateErrorTitle"),
+          t("workout.result.calendarUpdateErrorMessage"),
+        )
+      }
+    } catch {
+      Alert.alert(
+        t("workout.result.editSetsErrorTitle"),
+        t("workout.result.editSetsErrorMessage"),
+      )
+    } finally {
+      setIsSavingSetCounts(false)
+    }
+  }
+
+  const handleEditPress = () => {
+    if (!stored?.bodyParts.length || isDeleting || isSavingSetCounts) {
+      return
+    }
+
+    void flushPendingMemo().catch(() => undefined)
+    setIsSetCountSheetVisible(true)
+  }
+
   const handleDeletePress = () => {
-    if (!stored || isDeleting) {
+    if (!stored || isDeleting || isSavingSetCounts) {
       return
     }
 
@@ -226,7 +354,34 @@ export function ResultScreen({
         >
           {dateLabel}
         </Text>
-        <View className="w-yb-icon-btn" />
+        {stored ? (
+          <View className="flex-row gap-yb-2">
+            {stored.bodyParts.length > 0 && (
+              <IconButton
+                accessibilityLabel={t("workout.result.editSets")}
+                accessibilityState={{
+                  disabled: isDeleting || isSavingSetCounts,
+                }}
+                disabled={isDeleting || isSavingSetCounts}
+                variant="back-square"
+                onPress={handleEditPress}
+              >
+                <SymbolView name="pencil" size={18} tintColor={accentColor} />
+              </IconButton>
+            )}
+            <IconButton
+              accessibilityLabel={t("workout.result.deleteConfirm")}
+              accessibilityState={{ busy: isDeleting, disabled: isDeleting }}
+              disabled={isDeleting}
+              variant="back-square"
+              onPress={handleDeletePress}
+            >
+              <SymbolView name="trash" size={19} tintColor={deleteColor} />
+            </IconButton>
+          </View>
+        ) : (
+          <View className="w-yb-icon-btn" />
+        )}
       </View>
 
       {isLoading ? (
@@ -264,6 +419,7 @@ export function ResultScreen({
               key={sessionId}
               placeholder={t("workout.result.memoPlaceholder")}
               value={memo}
+              editable={!isDeleting}
               onChangeText={setMemo}
             />
           </View>
@@ -321,22 +477,17 @@ export function ResultScreen({
               />
             </>
           )}
-
-          <View className="mt-yb-8 items-center">
-            <Pressable
-              disabled={isDeleting}
-              className="min-h-yb-btn-md px-yb-7 w-[72%] max-w-[340px] items-center justify-center rounded-full bg-yb-status-error py-yb-4 shadow-lg active:opacity-80"
-              onPress={handleDeletePress}
-              accessibilityRole="button"
-              accessibilityLabel={t("workout.result.deleteConfirm")}
-              accessibilityState={{ disabled: isDeleting, busy: isDeleting }}
-            >
-              <Text className="text-yb-body-lg font-semibold text-yb-on-danger">
-                {t("workout.result.deleteConfirm")}
-              </Text>
-            </Pressable>
-          </View>
         </ScrollView>
+      )}
+
+      {stored && (
+        <SetCountEditSheet
+          bodyParts={stored.bodyParts}
+          isSaving={isSavingSetCounts}
+          visible={isSetCountSheetVisible}
+          onClose={() => setIsSetCountSheetVisible(false)}
+          onSave={(updates) => void handleSetCountSave(updates)}
+        />
       )}
     </Main>
   )
