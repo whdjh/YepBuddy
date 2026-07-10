@@ -18,9 +18,11 @@ export type SymbolViewName = Extract<
   | "gearshape.fill"
   | "heart.fill"
   | "pause.fill"
+  | "pencil"
   | "play.fill"
   | "plus"
   | "stop.fill"
+  | "trash"
   | "xmark"
 >
 
@@ -36,9 +38,11 @@ const androidNameBySymbolName = {
   "gearshape.fill": "settings",
   "heart.fill": "favorite",
   "pause.fill": "pause",
+  pencil: "edit",
   "play.fill": "play_arrow",
   plus: "add",
   "stop.fill": "stop",
+  trash: "delete",
   xmark: "close",
 } satisfies Record<SymbolViewName, AndroidSymbol>
 
