@@ -8,6 +8,7 @@ interface GlassTextareaProps {
   value?: string
   onChangeText?: (value: string) => void
   minHeight?: number
+  editable?: boolean
 }
 
 const GLASS_TEXTAREA_RADIUS = 16
@@ -18,6 +19,7 @@ export function GlassTextarea({
   value,
   onChangeText,
   minHeight = 140,
+  editable = true,
 }: GlassTextareaProps) {
   const { accent, fg, fgDisabled } = useCardColors()
 
@@ -33,6 +35,7 @@ export function GlassTextarea({
         defaultValue={value == null ? defaultValue : undefined}
         value={value}
         onChangeText={onChangeText}
+        editable={editable}
         placeholderTextColor={fgDisabled}
         selectionColor={accent}
         autoComplete="off"

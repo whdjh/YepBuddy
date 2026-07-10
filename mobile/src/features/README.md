@@ -11,7 +11,7 @@ features/
 ├── view-summary          # 홈/일지 탭, 요약 카드와 루틴 사이클 prompt
 ├── start-workout         # 운동 시작 countdown
 ├── do-workout            # 운동 중 화면, drawer, HealthKit/timer orchestration
-├── view-result           # 운동 결과 상세, 메모, 삭제
+├── view-result           # 운동 결과 상세, 메모/세트 수 수정, 캘린더 연동 삭제
 ├── view-sessions         # 운동 세션 목록
 ├── view-calendar         # 운동 캘린더
 ├── view-proteins         # 프로틴 목록
@@ -196,8 +196,20 @@ features/
 - `useSessionDetail`이 저장된 세션과 HealthKit 상세를 함께 조회한다.
 - 저장 세션이 없으면 no data 상태를 보여준다.
 - 메모는 `GlassTextarea`에서 debounce로 `updateStoredWorkoutMemo`에 저장한다.
-- 삭제는 확인 Alert 후 저장 세션 삭제, 장소 리마인더 후보 재빌드, 장소 리마인더 sync, 홈 이동 순서로 처리한다.
+- 상단 휴지통 옆의 연필 아이콘은 현재 메모 저장을 시작하고 세트 수 수정 바텀시트를 연다.
+- 바텀시트는 리퀴드 글래스 배경에서 현재 저장된 운동 부위/세부 부위를 읽기 전용으로 표시하고 기존 `Stepper`의 glass variant로 항목별 `setCount`만 최소 1까지 수정한다.
+- Stepper 변경은 draft에만 반영하며 `취소`는 버리고 `저장`은 완료 세션의 세트 수와 연결된 OS 이벤트 제목·메모를 갱신한다.
+- 상단 헤더 오른쪽의 휴지통 아이콘은 삭제 확인 흐름을 연다. 연결된 OS 이벤트를 먼저 삭제한 뒤 저장 세션 삭제, 장소 리마인더 후보 재빌드, 장소 리마인더 sync, 홈 이동 순서로 처리한다.
+- OS 이벤트가 이미 없으면 로컬 삭제를 계속하고, 연결 실패나 권한/기타 오류가 있으면 사용자가 `앱 기록만 삭제`를 명시적으로 선택한 경우에만 계속한다.
 - HealthKit 심박 샘플이 있으면 `HeartRateChart`, 위치가 있으면 `LocationMap`을 렌더링한다.
+
+편집 경계:
+
+- 결과 화면의 기본 조회 UI는 유지하고 편집 컨트롤은 바텀시트 안에서만 표시한다.
+- 연필과 휴지통 액션은 아이콘으로만 표시하며 접근성 라벨을 제공한다.
+- 세트 편집으로 운동 부위/세부 부위를 추가, 삭제, 변경하거나 순서를 바꾸지 않는다.
+- HealthKit 데이터, 운동 시작/종료 시각, 위치는 세트 저장의 변경 대상이 아니다. 현재 메모는 연필 아이콘을 누를 때 별도 저장한다.
+- 캘린더 자동 저장 선호값은 신규 생성만 제어하므로 이미 연결된 이벤트의 수정과 삭제를 건너뛰는 조건으로 사용하지 않는다.
 
 주요 컴포넌트:
 
@@ -212,6 +224,9 @@ features/
 - `getWorkoutSessionDetailData`
 - `getWorkoutSessionDetailActiveKcal`
 - `updateStoredWorkoutMemo`
+- `updateStoredWorkoutSetCounts`
+- `updateWorkoutCalendarEvent`
+- `deleteWorkoutCalendarEvent`
 - `deleteStoredWorkoutSession`
 - `getAllStoredWorkoutSessions`
 - `rebuildWorkoutPlaceReminderPlacesFromSessions`
@@ -221,7 +236,7 @@ features/
 
 사용하는 shared API:
 
-- `Main`, `GlassTextarea`, `IconButton`, `Card`, `StatCard`, `GlassSurface`, `BodyPartIconHost`
+- `Main`, `GlassTextarea`, `IconButton`, `Stepper`, `Card`, `StatCard`, `GlassSurface`, `BodyPartIconHost`
 - `useCardColors`
 - `formatDateWithDay`, `formatDuration`, `formatTime`, `bodyPartLabel`, `bodyPartDetailLabel`
 - `buildLinePath`, `buildAreaPath`
@@ -230,7 +245,8 @@ features/
 
 - stored session and HealthKit detail reads
 - memo save debounce
-- delete confirmation and deletion
+- set count draft/save and linked calendar title update
+- delete confirmation, linked calendar event deletion, explicit local-only fallback and stored session deletion
 - workout place reminder rebuild/sync
 - route back/replace
 

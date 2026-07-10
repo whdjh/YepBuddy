@@ -46,6 +46,7 @@ export function buildCompletedWorkoutSession(
     averageHeartRate: null,
     totalKcal: normalizeOptionalMetricCount(state.totalKcal),
     healthKitWorkoutUUID: null,
+    calendarEventId: null,
     isDeload,
     routineSubstitution,
     bodyParts: state.bodyParts,

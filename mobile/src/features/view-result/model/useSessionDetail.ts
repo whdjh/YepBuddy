@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import {
   getWorkoutSessionDetailData,
   type StoredWorkoutSession,
@@ -14,57 +14,78 @@ interface SessionDetailData {
 export function useSessionDetail(sessionId: string) {
   const [data, setData] = useState<SessionDetailData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const isMountedRef = useRef(false)
+  const requestIdRef = useRef(0)
+  const sessionIdRef = useRef(sessionId)
+  sessionIdRef.current = sessionId
 
-  useEffect(() => {
-    // sessionId가 바뀌거나 화면이 내려간 뒤 늦게 도착한 응답은 무시
-    let active = true
+  const load = useCallback(
+    async (showLoading: boolean) => {
+      if (!isMountedRef.current || sessionIdRef.current !== sessionId) {
+        return null
+      }
 
-    const load = async () => {
+      const requestId = ++requestIdRef.current
+      const isCurrentRequest = () =>
+        isMountedRef.current &&
+        sessionIdRef.current === sessionId &&
+        requestId === requestIdRef.current
+
       if (!sessionId) {
-        if (active) {
+        if (isCurrentRequest()) {
           setData(null)
           setIsLoading(false)
         }
-        return
+        return null
       }
 
-      if (active) {
+      if (showLoading && isMountedRef.current) {
         setIsLoading(true)
       }
 
       try {
         const detailData = await getWorkoutSessionDetailData(sessionId)
 
-        if (!active) {
-          return
+        if (!isCurrentRequest()) {
+          return null
         }
 
-        setData({
+        const nextData = {
           hk: detailData.healthKitDetail,
           stored: detailData.storedSession,
-        })
-      } catch {
-        if (!active) {
-          return
         }
-
-        setData(null)
+        setData(nextData)
+        return nextData
+      } catch {
+        if (showLoading && isCurrentRequest()) {
+          setData(null)
+        }
+        return null
       } finally {
-        if (active) {
+        if (showLoading && isCurrentRequest()) {
           setIsLoading(false)
         }
       }
-    }
+    },
+    [sessionId],
+  )
 
-    void load()
+  useEffect(() => {
+    isMountedRef.current = true
+    void load(true)
 
+    // sessionId가 바뀌거나 화면이 내려간 뒤 늦게 도착한 응답은 무시
     return () => {
-      active = false
+      isMountedRef.current = false
+      requestIdRef.current += 1
     }
-  }, [sessionId])
+  }, [load])
+
+  const reload = useCallback(() => load(false), [load])
 
   return {
     data,
     isLoading,
+    reload,
   }
 }

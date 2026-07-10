@@ -4,6 +4,7 @@ import i18n from "@/shared/i18n/i18n"
 import {
   getCalendarAutoAddPreference,
   setCalendarAutoAddPreference,
+  updateStoredWorkoutCalendarEventId,
 } from "../model/sessionStorage"
 import type {
   StoredWorkoutSession,
@@ -27,6 +28,33 @@ import {
 import { formatWorkoutLocationLabel } from "./locationLabel"
 import { formatWorkoutCalendarTitle } from "./calendarTitle"
 
+const LEGACY_EVENT_SEARCH_PADDING_MS = 24 * 60 * 60 * 1000
+const LEGACY_EVENT_TIMESTAMP_TOLERANCE_MS = 1000
+const CALENDAR_TITLE_LANGUAGES = ["ko", "en"] as const
+
+type WorkoutCalendarUpdateStatus =
+  | "updated"
+  | "notFound"
+  | "unlinked"
+  | "permissionDenied"
+  | "failed"
+
+type WorkoutCalendarDeleteStatus =
+  | "deleted"
+  | "notFound"
+  | "unlinked"
+  | "permissionDenied"
+  | "failed"
+
+type WorkoutCalendarLookupStatus = Exclude<
+  WorkoutCalendarUpdateStatus,
+  "updated"
+>
+
+type WorkoutCalendarEventLookup =
+  | { status: "found"; event: Calendar.Event }
+  | { status: WorkoutCalendarLookupStatus }
+
 const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   chest: "workout.bodyParts.chest",
   back: "workout.bodyParts.back",
@@ -34,6 +62,62 @@ const BODY_PART_LABEL_KEYS: Record<WorkoutBodyPartSet["part"], string> = {
   shoulders: "workout.bodyParts.shoulders",
   arms: "workout.bodyParts.arms",
   core: "workout.bodyParts.core",
+}
+
+/** 저장 세션을 현재 언어의 캘린더 제목으로 변환 */
+function getWorkoutCalendarTitle(
+  session: Pick<
+    StoredWorkoutSession,
+    "bodyParts" | "cardioStartedAt" | "completedAt" | "isDeload"
+  >,
+  language?: (typeof CALENDAR_TITLE_LANGUAGES)[number],
+) {
+  const translate = (key: string) =>
+    language ? i18n.t(key, { lng: language }) : i18n.t(key)
+
+  return formatWorkoutCalendarTitle(
+    session,
+    {
+      bodyPartLabel: (part) => translate(BODY_PART_LABEL_KEYS[part]),
+      bodyPartDetailLabel: (detail) =>
+        translate(`workout.bodyPartDetails.${detail}`),
+      cardioLabel: translate("workout.calendar.cardio"),
+      cardioMinuteUnit: translate("summary.minuteUnit"),
+      defaultTitle: translate("workout.calendar.defaultTitle"),
+      deloadLabel: translate("workout.routineCycle.status.deload"),
+    },
+  )
+}
+
+function getCalendarFailureStatus(error: unknown): WorkoutCalendarLookupStatus {
+  const calendarError = error as
+    | { code?: unknown; message?: unknown }
+    | null
+    | undefined
+  const code =
+    typeof calendarError?.code === "string"
+      ? calendarError.code.toUpperCase()
+      : ""
+  const message =
+    typeof calendarError?.message === "string"
+      ? calendarError.message.toLowerCase()
+      : ""
+
+  if (code.includes("PERMISSION") || message.includes("permission is required")) {
+    return "permissionDenied"
+  }
+
+  if (
+    code.includes("EVENT_NOT_FOUND") ||
+    code.includes("ITEM_NO_LONGER_EXISTS") ||
+    (message.includes("event with id") &&
+      message.includes("could not be found")) ||
+    message.includes("calendar item no longer exists")
+  ) {
+    return "notFound"
+  }
+
+  return "failed"
 }
 
 /** 새 캘린더를 만들 때 사용할 기기 기본 캘린더 소스를 가져옴 */
@@ -113,6 +197,98 @@ export async function requestCalendarEventWritePermission() {
   return permission.status === "granted"
 }
 
+async function getCalendarEventById(
+  calendarEventId: string,
+): Promise<WorkoutCalendarEventLookup> {
+  try {
+    return {
+      status: "found",
+      event: await Calendar.getEventAsync(calendarEventId),
+    }
+  } catch (error) {
+    return { status: getCalendarFailureStatus(error) }
+  }
+}
+
+async function findLegacyWorkoutCalendarEvent(
+  session: StoredWorkoutSession,
+): Promise<WorkoutCalendarEventLookup> {
+  const startedAtMs = new Date(session.startedAt).getTime()
+  const completedAtMs = new Date(session.completedAt).getTime()
+  if (
+    !Number.isFinite(startedAtMs) ||
+    !Number.isFinite(completedAtMs) ||
+    completedAtMs < startedAtMs
+  ) {
+    return { status: "failed" }
+  }
+
+  try {
+    const calendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT)
+    const calendarId = findYepBuddyCalendarId(calendars)
+    if (!calendarId) {
+      return { status: "unlinked" }
+    }
+
+    const events = await Calendar.getEventsAsync(
+      [calendarId],
+      new Date(startedAtMs - LEGACY_EVENT_SEARCH_PADDING_MS),
+      new Date(completedAtMs + LEGACY_EVENT_SEARCH_PADDING_MS),
+    )
+    const expectedTitles = new Set(
+      CALENDAR_TITLE_LANGUAGES.map((language) =>
+        getWorkoutCalendarTitle(session, language),
+      ),
+    )
+    const matches = events.filter(
+      (event) =>
+        expectedTitles.has(event.title) &&
+        Math.abs(new Date(event.startDate).getTime() - startedAtMs) <=
+          LEGACY_EVENT_TIMESTAMP_TOLERANCE_MS &&
+        Math.abs(new Date(event.endDate).getTime() - completedAtMs) <=
+          LEGACY_EVENT_TIMESTAMP_TOLERANCE_MS,
+    )
+
+    if (matches.length !== 1) {
+      return { status: "unlinked" }
+    }
+
+    const [event] = matches
+    const linkedSession = await updateStoredWorkoutCalendarEventId(
+      session.sessionId,
+      event.id,
+    )
+    return linkedSession ? { status: "found", event } : { status: "failed" }
+  } catch (error) {
+    return { status: getCalendarFailureStatus(error) }
+  }
+}
+
+async function resolveWorkoutCalendarEvent(
+  session: StoredWorkoutSession,
+  legacyMatchSession = session,
+): Promise<WorkoutCalendarEventLookup> {
+  try {
+    if (!(await hasCalendarEventWritePermission())) {
+      return { status: "permissionDenied" }
+    }
+  } catch {
+    return { status: "failed" }
+  }
+
+  if (!session.calendarEventId) {
+    return findLegacyWorkoutCalendarEvent(legacyMatchSession)
+  }
+
+  const linkedEvent = await getCalendarEventById(session.calendarEventId)
+  if (linkedEvent.status !== "notFound") {
+    return linkedEvent
+  }
+
+  const legacyEvent = await findLegacyWorkoutCalendarEvent(legacyMatchSession)
+  return legacyEvent.status === "unlinked" ? linkedEvent : legacyEvent
+}
+
 /** 캘린더 자동 저장 선호값을 묻는 기본 Alert를 표시한다. */
 function showCalendarAutoAddPreferencePrompt(
   handlers: CalendarAutoAddPromptHandlers,
@@ -155,6 +331,7 @@ export async function promptCalendarAutoAddPreferenceIfUnknown() {
 /** 완료된 운동 세션을 기기 캘린더 이벤트로 등록 */
 export async function registerWorkoutToCalendar(
   params: {
+    sessionId: string
     startedAt: string
     completedAt: string
     cardioStartedAt?: string | null
@@ -203,31 +380,33 @@ export async function registerWorkoutToCalendar(
     ? await formatWorkoutLocationLabel(params.location)
     : undefined
 
+  let calendarEventId: string
   try {
-    await Calendar.createEventAsync(calendarId, {
-      title: formatWorkoutCalendarTitle(
-        {
-          bodyParts: params.bodyParts,
-          cardioStartedAt: params.cardioStartedAt,
-          completedAt: params.completedAt,
-          isDeload: params.isDeload,
-        },
-        {
-          bodyPartLabel: (part) => i18n.t(BODY_PART_LABEL_KEYS[part]),
-          bodyPartDetailLabel: (detail) =>
-            i18n.t(`workout.bodyPartDetails.${detail}`),
-          cardioLabel: i18n.t("workout.calendar.cardio"),
-          cardioMinuteUnit: i18n.t("summary.minuteUnit"),
-          defaultTitle: i18n.t("workout.calendar.defaultTitle"),
-          deloadLabel: i18n.t("workout.routineCycle.status.deload"),
-        },
-      ),
+    calendarEventId = await Calendar.createEventAsync(calendarId, {
+      title: getWorkoutCalendarTitle({
+        bodyParts: params.bodyParts,
+        cardioStartedAt: params.cardioStartedAt ?? null,
+        completedAt: params.completedAt,
+        isDeload: params.isDeload ?? false,
+      }),
       startDate,
       endDate,
       notes: params.memo || undefined,
       location: eventLocation,
     })
   } catch {
+    if (showAlerts) {
+      showCalendarRegistrationFailureAlert()
+    }
+    return false
+  }
+
+  const linkedSession = await updateStoredWorkoutCalendarEventId(
+    params.sessionId,
+    calendarEventId,
+  ).catch(() => null)
+  if (!linkedSession) {
+    await Calendar.deleteEventAsync(calendarEventId).catch(() => undefined)
     if (showAlerts) {
       showCalendarRegistrationFailureAlert()
     }
@@ -241,6 +420,61 @@ export async function registerWorkoutToCalendar(
     )
   }
   return true
+}
+
+/** 연결된 캘린더 이벤트의 제목과 메모를 현재 세션으로 갱신 */
+export async function updateWorkoutCalendarEvent(
+  session: StoredWorkoutSession,
+  legacyMatchSession = session,
+): Promise<WorkoutCalendarUpdateStatus> {
+  const lookup = await resolveWorkoutCalendarEvent(session, legacyMatchSession)
+  if (lookup.status !== "found") {
+    return lookup.status
+  }
+
+  const details: Omit<Partial<Calendar.Event>, "id"> = {
+    title: getWorkoutCalendarTitle(session),
+    alarms: lookup.event.alarms ?? [],
+    allDay: lookup.event.allDay,
+    availability: lookup.event.availability,
+    location: lookup.event.location ?? "",
+    notes: session.memo || "",
+  }
+  if (Platform.OS === "android") {
+    details.timeZone = lookup.event.timeZone
+    details.endTimeZone = lookup.event.endTimeZone
+  }
+
+  try {
+    const updatedEventId = await Calendar.updateEventAsync(
+      lookup.event.id,
+      details,
+    )
+    const linkedSession = await updateStoredWorkoutCalendarEventId(
+      session.sessionId,
+      updatedEventId,
+    )
+    return linkedSession ? "updated" : "failed"
+  } catch (error) {
+    return getCalendarFailureStatus(error)
+  }
+}
+
+/** 연결되었거나 안전하게 복구된 캘린더 이벤트를 삭제 */
+export async function deleteWorkoutCalendarEvent(
+  session: StoredWorkoutSession,
+): Promise<WorkoutCalendarDeleteStatus> {
+  const lookup = await resolveWorkoutCalendarEvent(session)
+  if (lookup.status !== "found") {
+    return lookup.status
+  }
+
+  try {
+    await Calendar.deleteEventAsync(lookup.event.id)
+    return "deleted"
+  } catch (error) {
+    return getCalendarFailureStatus(error)
+  }
 }
 
 /** 완료 세션의 캘린더 자동 추가 정책 실행 */
@@ -259,6 +493,7 @@ export async function processCompletedWorkoutCalendarAutoAdd(
   if (decision.shouldRegister) {
     return registerWorkoutToCalendar(
       {
+        sessionId: session.sessionId,
         startedAt: session.startedAt,
         completedAt: session.completedAt,
         cardioStartedAt: session.cardioStartedAt,
@@ -288,6 +523,7 @@ export async function processCompletedWorkoutCalendarAutoAdd(
 
   return registerWorkoutToCalendar(
     {
+      sessionId: session.sessionId,
       startedAt: session.startedAt,
       completedAt: session.completedAt,
       cardioStartedAt: session.cardioStartedAt,

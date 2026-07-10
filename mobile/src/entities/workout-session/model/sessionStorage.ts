@@ -3,6 +3,7 @@ import { getLocalDateKeyFromIso, getTimestampMsFromIso } from "@/shared/lib/date
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
 import type { CalendarAutoAddPreference } from "../lib/calendarAutoAdd"
+import { getWorkoutBodyPartSetKey } from "./bodyPartSet"
 import { normalizeOptionalMetricCount } from "./metricNormalization"
 import {
   BODY_PART_DETAILS,
@@ -12,6 +13,7 @@ import {
   type StoredWorkoutSession,
   type WorkoutBodyPartSet,
   type WorkoutLocation,
+  type WorkoutSetCountUpdate,
 } from "./types"
 import type { RoutinePart } from "./routineCycle"
 
@@ -43,6 +45,7 @@ type PersistedWorkoutSession = Omit<
   StoredWorkoutSession,
   | "activeKcal"
   | "averageHeartRate"
+  | "calendarEventId"
   | "cardioStartedAt"
   | "healthKitWorkoutUUID"
   | "isDeload"
@@ -54,6 +57,7 @@ type PersistedWorkoutSession = Omit<
       StoredWorkoutSession,
       | "activeKcal"
       | "averageHeartRate"
+      | "calendarEventId"
       | "cardioStartedAt"
       | "healthKitWorkoutUUID"
       | "isDeload"
@@ -478,6 +482,11 @@ function parseStoredWorkoutSession(value: string) {
       session.healthKitWorkoutUUID.length > 0
         ? session.healthKitWorkoutUUID
         : null,
+    calendarEventId:
+      typeof session.calendarEventId === "string" &&
+      session.calendarEventId.length > 0
+        ? session.calendarEventId
+        : null,
     isDeload: session.isDeload === true,
     routineSubstitution: normalizeRoutineSubstitution(
       session.routineSubstitution,
@@ -537,6 +546,74 @@ export async function updateStoredWorkoutMemo(sessionId: string, memo: string) {
   }
 
   const nextSession = { ...session, memo }
+  await saveCompletedWorkoutSession(nextSession)
+  return nextSession
+}
+
+/** 현재 저장된 운동 항목 구조를 유지한 채 세트 수만 수정 */
+export async function updateStoredWorkoutSetCounts(
+  sessionId: string,
+  updates: WorkoutSetCountUpdate[],
+) {
+  const session = await getStoredWorkoutSession(sessionId)
+  if (!session || !Array.isArray(updates)) {
+    return null
+  }
+
+  const currentKeys = session.bodyParts.map(getWorkoutBodyPartSetKey)
+  const updateKeys = updates.map((update) => update?.key)
+  const hasInvalidUpdate = updates.some(
+    (update) =>
+      !update ||
+      typeof update.key !== "string" ||
+      typeof update.setCount !== "number" ||
+      !Number.isFinite(update.setCount),
+  )
+
+  if (
+    hasInvalidUpdate ||
+    new Set(currentKeys).size !== currentKeys.length ||
+    new Set(updateKeys).size !== updateKeys.length ||
+    currentKeys.length !== updateKeys.length ||
+    currentKeys.some((key) => !updateKeys.includes(key))
+  ) {
+    return null
+  }
+
+  const setCountByKey = new Map(
+    updates.map((update) => [
+      update.key,
+      Math.max(1, Math.round(update.setCount)),
+    ]),
+  )
+  const nextSession = {
+    ...session,
+    bodyParts: session.bodyParts.map((item) => ({
+      ...item,
+      setCount:
+        setCountByKey.get(getWorkoutBodyPartSetKey(item)) ?? item.setCount,
+    })),
+  }
+
+  await saveCompletedWorkoutSession(nextSession)
+  return nextSession
+}
+
+/** 캘린더 등록 뒤 최신 완료 세션에 네이티브 이벤트 ID만 병합 */
+export async function updateStoredWorkoutCalendarEventId(
+  sessionId: string,
+  calendarEventId: string,
+) {
+  if (!calendarEventId) {
+    return null
+  }
+
+  const session = await getStoredWorkoutSession(sessionId)
+  if (!session) {
+    return null
+  }
+
+  const nextSession = { ...session, calendarEventId }
   await saveCompletedWorkoutSession(nextSession)
   return nextSession
 }

@@ -93,10 +93,10 @@ src/entities
 - Context: `WorkoutProvider`, `useWorkout`
 - HealthKit 세션 제어: `startWorkoutSession`, `pauseWorkoutSession`, `resumeWorkoutSession`, `endWorkoutSession`, `readLiveWorkoutStats`
 - 저장 세션/HealthKit 조회 조합: `getWorkoutSessionDetailData`, `getWorkoutSessionSummaryDataForDate`, `getWorkoutSessionSummaryDataForMonth`, `getWorkoutSummariesForSessions`, `getWorkoutSessionKcalFromSummaries`, `getWorkoutSessionDetailActiveKcal`
-- 위치/캘린더: `getWorkoutLocationOnce`, `registerWorkoutToCalendar`
+- 위치/캘린더: `getWorkoutLocationOnce`, `registerWorkoutToCalendar`, `updateWorkoutCalendarEvent`, `deleteWorkoutCalendarEvent`
 - 운동 리마인더: `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`, `cancelScheduledWorkoutReminder`
 - 장소 도착/이탈 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceNotificationHandler`, pending prompt API
-- 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `deleteStoredWorkoutSession`
+- 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `updateStoredWorkoutSetCounts`, `deleteStoredWorkoutSession`
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
 - 이전 기록 프리필: `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
 - 세션 표시 UI: `BodyPartIcon`, `BodyPartIconHost`
@@ -118,12 +118,22 @@ HealthKit live metric 계약:
 - reducer는 심박수 `null`로 기존 심박수를 지우지 않고, 활동/총 칼로리는 이전 값보다 작은 값을 반영하지 않는다.
 - native live metric 값이 부족하면 HealthKit 샘플 fallback 값을 병합해 표시 지표를 보강한다.
 
+완료 세션 세트 수/캘린더 연결 계약:
+
+- `StoredWorkoutSession.calendarEventId`는 nullable이며, 필드가 없거나 잘못된 기존 저장값은 `null`로 정규화한다.
+- 세트 수 수정은 기존 운동 항목의 `setCount`만 바꾼다. 운동 부위/세부 부위의 추가, 삭제, 변경, 순서 변경과 HealthKit, 시간, 메모, 위치 수정은 허용하지 않는다.
+- 신규 OS 캘린더 이벤트 생성에 성공하면 반환된 이벤트 ID를 해당 완료 세션의 `calendarEventId`로 저장한다.
+- 세트 수 저장 후 연결된 동일 이벤트의 제목과 메모를 현재 세션 값으로 갱신하고 시간과 위치는 유지한다.
+- `calendarEventId`가 `null`인 과거 세션은 YepBuddy 캘린더에서 기존 제목, 시작 시각, 종료 시각이 모두 일치하는 후보가 정확히 1건일 때만 연결한다.
+- 운동 기록 삭제 시 연결된 OS 이벤트를 먼저 삭제한다. 이벤트가 이미 없으면 삭제 완료로 간주하고, 권한/기타 오류나 연결 실패는 feature가 사용자에게 `앱 기록만 삭제` 선택을 요청할 수 있도록 구분한다.
+- 캘린더 자동 저장 선호값은 신규 이벤트 생성만 제어하고, 이미 연결된 이벤트의 수정과 삭제는 막지 않는다.
+
 Feature 사용처:
 
 - `app/_layout.tsx`: `WorkoutProvider`, 앱 시작 시 운동 리마인더/장소 리마인더 sync, 장소 알림 handler 등록
 - `features/do-workout`: `useWorkout`, 이전 운동 기록 기반 세트 수/메모 placeholder 프리필, HealthKit 세션 제어, timer 타입, body part selector/list, 루틴 추천, 캘린더 등록, 완료 후 리마인더 sync
 - `features/start-workout`: 운동 시작 countdown에서 현재 위치를 한 번 가져오고 기존 운동 리마인더를 취소
-- `features/view-result`: 저장 세션/HealthKit 상세 조회, 메모 수정, 세션 삭제, 삭제 후 장소 리마인더 재빌드
+- `features/view-result`: 저장 세션/HealthKit 상세 조회, 메모/세트 수 수정, 연결된 캘린더 이벤트 갱신, 캘린더 이벤트와 세션 삭제, 삭제 후 장소 리마인더 재빌드
 - `features/view-sessions`: 월별 저장 세션과 HealthKit 요약 조회
 - `features/view-calendar`: 날짜 범위별 저장 세션 조회
 - `features/view-summary`: 오늘/이번 주/최근 세션, 루틴 사이클 진행률과 사이클, 장소 알림 pending prompt 처리
@@ -198,7 +208,7 @@ Workout session:
 
 - `@react-native-async-storage/async-storage`: 운동 세션, 루틴, 리마인더 설정 저장
 - `react-native-health`: HealthKit 권한, workout 저장, heart rate/workout sample 조회
-- `expo-calendar`: 캘린더 권한, YepBuddy 캘린더 생성, 운동 이벤트 생성
+- `expo-calendar`: 캘린더 권한, YepBuddy 캘린더 생성, 운동 이벤트 생성/조회/수정/삭제
 - `expo-location`: 현재 위치, reverse geocode, foreground/background location 권한, geofence
 - `expo-notifications`: 리마인더 예약/취소, Android notification channel, 알림 응답 listener
 - `expo-task-manager`: 장소 도착 geofence background task 등록
@@ -217,7 +227,7 @@ Workout session AsyncStorage:
 
 - `yb:healthkit:access`: `"enabled"` 또는 `"denied"`. HealthKit을 사용자가 명시적으로 허용했는지 캐시한다.
 - `yb:workout:current`: 진행 중 운동의 `WorkoutState` JSON. 앱 재시작 후 복구용이다.
-- `yb:workout:session:${sessionId}`: 완료된 `StoredWorkoutSession` JSON.
+- `yb:workout:session:${sessionId}`: 완료된 `StoredWorkoutSession` JSON. nullable `calendarEventId`로 생성된 OS 캘린더 이벤트를 연결한다.
 - `yb:workout:sessions`: 완료 세션 `sessionId` 배열 JSON. 없거나 깨지면 실제 `yb:workout:session:*` 키를 스캔해 재생성한다.
 - `yb:workout:date:${YYYY-MM-DD}`: 해당 날짜 대표 `sessionId`.
 - `yb:workout:dates`: 완료 세션이 있는 날짜 키 배열 JSON. 없거나 깨지면 실제 `yb:workout:date:*` 키를 스캔해 재생성한다.
@@ -245,7 +255,9 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `startWorkoutSession`은 사용자 운동 시작 흐름에서만 HealthKit 권한/초기화를 요청한다.
 - HealthKit 조회 함수는 권한 캐시가 `"enabled"`일 때만 조용히 시도한다.
 - `getWorkoutLocationOnce`는 foreground location 권한을 요청하고 현재 위치를 한 번 읽는다.
-- `registerWorkoutToCalendar`는 캘린더 권한 요청, YepBuddy 캘린더 생성, 이벤트 생성, 권한 거부 시 설정 안내 Alert를 수행한다.
+- `registerWorkoutToCalendar`는 캘린더 권한 요청, YepBuddy 캘린더 생성, 이벤트 생성을 수행하고, 생성 이벤트 ID를 해당 완료 세션에 연결한다. 권한 거부 시 설정 안내 Alert를 수행한다.
+- 캘린더 이벤트 갱신은 저장된 `calendarEventId` 또는 과거 세션의 유일 일치 후보를 대상으로 제목과 메모를 수정한다.
+- 캘린더 이벤트 삭제는 앱 기록 삭제보다 먼저 실행되며, 이미 없는 이벤트와 권한/기타 실패를 구분해 feature에 전달한다.
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
 - `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 반복 장소 후보에 맞춰 geofence를 등록/중지하고 동기화 상태를 저장한다.
 - `registerWorkoutPlaceNotificationHandler`는 장소 알림 탭을 pending prompt 저장 또는 active workout 복귀 콜백으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
@@ -257,7 +269,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - 저장소의 JSON은 깨질 수 있으므로 `JSON.parse`는 작은 helper 안에서만 잡고 `null`, `[]`, 기본 상태로 돌린다.
 - 저장된 운동 세션은 읽을 때 날짜, body part, set count, 좌표를 최소 정규화한다. 잘못된 세션은 조회 결과에서 제외한다.
 - HealthKit, location, calendar, notification, geofence, Supabase처럼 외부 세계와 만나는 함수에서만 실패를 명확한 반환값으로 바꾼다.
-- `false`: 요청한 외부 side effect를 수행하지 못했거나 권한이 없을 때.
+- `false`: 요청한 외부 side effect를 수행하지 못했거나 권한이 없을 때. 캘린더 삭제처럼 이미 존재하지 않는 상태와 실제 실패를 구분해야 하는 작업은 별도 결과로 표현한다.
 - `null`: 단건 데이터가 없거나 입력이 잘못됐을 때.
 - `[]`: 목록 조회가 불가능하거나 결과가 없을 때.
 - Supabase 조회 실패는 feature가 에러 UI를 낼 수 있도록 throw한다.
