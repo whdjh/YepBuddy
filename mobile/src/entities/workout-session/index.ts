@@ -70,11 +70,13 @@ export {
 } from "./lib/reminder"
 export { ensureWorkoutSessionNotificationChannels } from "./lib/notificationChannels"
 export {
+  deleteWorkoutCalendarEvent,
   hasCalendarEventWritePermission,
   promptCalendarAutoAddPreferenceIfUnknown,
   processCompletedWorkoutCalendarAutoAdd,
   registerWorkoutToCalendar,
   requestCalendarEventWritePermission,
+  updateWorkoutCalendarEvent,
 } from "./lib/calendar"
 export type {
   CalendarAutoAddPreference,
@@ -92,6 +94,7 @@ export {
   getStoredWorkoutSessionIdByDate,
   setCalendarAutoAddPreference,
   setWorkoutReminderEnabled,
+  updateStoredWorkoutSetCounts,
   updateStoredWorkoutHealthKitMetrics,
   updateStoredWorkoutMemo,
 } from "./model/sessionStorage"
@@ -127,6 +130,7 @@ export type {
   WorkoutMetricSource,
   WorkoutMetricStatus,
   WorkoutRoutineSubstitution,
+  WorkoutSetCountUpdate,
 } from "./model/types"
 export type { WorkoutState } from "./model/workoutState"
 export { BODY_PART_DETAILS, EMPTY_WORKOUT_LIVE_STATS } from "./model/types"

@@ -42,6 +42,11 @@ export interface WorkoutBodyPartSet {
   setCount: number
 }
 
+export interface WorkoutSetCountUpdate {
+  key: string
+  setCount: number
+}
+
 export interface WorkoutLocation {
   lat: number
   lng: number
@@ -63,6 +68,7 @@ export interface StoredWorkoutSession {
   averageHeartRate: number | null
   totalKcal: number | null
   healthKitWorkoutUUID: string | null
+  calendarEventId: string | null
   isDeload: boolean
   routineSubstitution: WorkoutRoutineSubstitution | null
   bodyParts: WorkoutBodyPartSet[]
