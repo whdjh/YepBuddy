@@ -293,8 +293,9 @@ features/
 
 주요 흐름:
 
-- `useCalendarRefreshSignal`이 오늘 기준 날짜와 refresh key를 관리한다.
-- `useInfiniteMonths`가 현재 월부터 여러 달을 렌더링 대상으로 만든다.
+- `useCalendarRefreshSignal`이 화면 focus, 앱 active, 자정 경계에서 오늘 기준 날짜와 refresh key를 갱신한다.
+- `useCalendarYearSelection`이 첫 완료 운동 월부터 현재 월까지의 연도 목록과 선택 연도의 월 목록을 만든다.
+- `CalendarScreen`은 현재 연도를 기본 선택하고 연도 `Chip`을 가로 목록으로 제공한다.
 - `MonthGrid`가 월별 날짜 grid를 만들고, `useMonthWorkoutDates`가 해당 월 저장 세션을 조회한다.
 - `DayCell`은 대표 body part/cardio badge를 보여주고, 여러 badge는 long press tooltip으로 보여준다.
 - 운동이 있는 날짜 press 시 `/workout/[id]`로 이동한다.
@@ -309,19 +310,20 @@ features/
 사용하는 `entities/workout-session` API:
 
 - `getStoredWorkoutSessionsInRange`
+- `getAllStoredWorkoutSessions`
 - `getUniqueWorkoutBodyParts`
 - `BodyPart` type
 
 사용하는 shared API:
 
-- `Main`, `IconButton`, `BodyPartIcon`
+- `Main`, `IconButton`, `Chip`, `BodyPartIcon`
 - `useCardColors`
-- `getFirstDayOfWeek`, `getDaysInMonth`, `getLocalDateKeyFromIso`
+- `getFirstDayOfWeek`, `getDaysInMonth`, `getLocalDateKeyFromIso`, `getYearMonthFromIso`
 
 주요 side effect:
 
 - month range stored session reads
-- AppState/자정 refresh
+- screen focus/AppState/자정 refresh
 - route push to workout result
 
 ### `view-proteins`
