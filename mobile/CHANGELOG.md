@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0](https://github.com/whdjh/yepbuddy/compare/v1.4.0...v1.5.0) (2026-07-13)
+
+
+### Features
+
+* **result:** 결과 페이지에서 운동 세트수와 메모 수정하고 캘린더 반영 ([#75](https://github.com/whdjh/yepbuddy/issues/75)) ([4f1d4cb](https://github.com/whdjh/yepbuddy/commit/4f1d4cb09478f63589df11c05953141eda11d2c8))
+
+
+### Bug Fixes
+
+* **calendar:** 첫 운동 월부터 연도별 캘린더 표시 ([#76](https://github.com/whdjh/yepbuddy/issues/76)) ([86dd1ac](https://github.com/whdjh/yepbuddy/commit/86dd1ac8cd5f3d58acd51de1ea5ebd44e30e9836))
+* **working-session:** 운동중 화면 강제 종료시 초기화 개선 ([#74](https://github.com/whdjh/yepbuddy/issues/74)) ([7e35222](https://github.com/whdjh/yepbuddy/commit/7e352224616349970da757e9f65be530bda6a2b3))
+
 ## [1.4.0](https://github.com/whdjh/yepbuddy/compare/v1.3.1...v1.4.0) (2026-07-02)
 
 
