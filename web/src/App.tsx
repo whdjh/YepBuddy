@@ -1,4 +1,4 @@
-const supportEmail = "support@yepbuddy.app"
+const supportEmail = "wngns9807@gmail.com"
 
 function App() {
   const path = window.location.pathname
