@@ -345,7 +345,7 @@ function getAlignItemsClass(
     case "firstTextBaseline":
       return "items-baseline"
     default:
-      return ""
+      return "items-center"
   }
 }
 
