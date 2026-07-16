@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { Pressable, Text, View } from "react-native"
+import { Platform, Pressable, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import { Gesture, GestureDetector } from "react-native-gesture-handler"
 import type { WorkoutState } from "@/entities/workout-session"
@@ -72,7 +72,8 @@ export function WorkoutDrawer({
   const cardioColor = useResolvedColorToken(semanticColorTokens.statusSuccess)
   const onDangerColor = useResolvedColorToken(semanticColorTokens.onAccent)
 
-  const collapseHeight = BUTTONS_HEIGHT + bottomPadding
+  const collapseHeight =
+    BUTTONS_HEIGHT + (Platform.OS === "android" ? 0 : bottomPadding)
   const isDrawerOpen = useSharedValue(false)
   const translateY = useSharedValue(collapseHeight)
   const cardioPulseProgress = useSharedValue(0)
