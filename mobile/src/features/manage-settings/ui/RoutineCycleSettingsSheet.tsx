@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react"
-import { Modal, ScrollView, StyleSheet, Text, View } from "react-native"
+import {
+  Modal,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native"
 import {
   GestureHandlerRootView,
   Pressable as GesturePressable,
 } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
+import { SafeAreaView } from "react-native-safe-area-context"
 import {
   createDefaultRoutineCycleSettings,
   MAX_ROUTINE_CYCLE_SPLIT_COUNT,
@@ -168,7 +176,10 @@ export function RoutineCycleSettingsSheet({
             accessibilityRole="button"
             accessibilityLabel={t("common.close")}
           />
-          <View className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
+          <SafeAreaView
+            className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg"
+            edges={Platform.OS === "android" ? ["bottom"] : []}
+          >
             <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
             <ScrollView
               className="shrink"
@@ -222,7 +233,7 @@ export function RoutineCycleSettingsSheet({
               disabled={isSaving}
               onPress={handleSave}
             />
-          </View>
+          </SafeAreaView>
         </View>
       </GestureHandlerRootView>
     </Modal>

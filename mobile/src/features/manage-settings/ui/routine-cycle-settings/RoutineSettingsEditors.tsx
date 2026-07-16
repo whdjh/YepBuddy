@@ -1,5 +1,5 @@
 import { cssInterop } from "nativewind"
-import { ScrollView, Text, View } from "react-native"
+import { Platform, ScrollView, Text, View } from "react-native"
 import { Pressable as GesturePressable } from "react-native-gesture-handler"
 import {
   BODY_PART_DETAILS,
@@ -134,7 +134,7 @@ export function RoutineSettingsSaveButton({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityState={{ disabled }}
-      className={`mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full px-yb-6 shadow-yb-md ${
+      className={`${Platform.OS === "android" ? "mb-yb-3" : "mb-yb-10"} mt-yb-3 h-yb-btn-md items-center justify-center rounded-full px-yb-6 shadow-yb-md ${
         disabled
           ? "bg-yb-accent/50"
           : "bg-yb-accent active:opacity-90"

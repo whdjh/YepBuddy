@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import {
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,6 +13,7 @@ import {
   Pressable as GesturePressable,
 } from "react-native-gesture-handler"
 import { useTranslation } from "react-i18next"
+import { SafeAreaView } from "react-native-safe-area-context"
 import {
   buildSummaryCardRows,
   getSummaryCardWidth,
@@ -45,7 +47,10 @@ export function SummaryCardEditModal({
       <GestureHandlerRootView style={StyleSheet.absoluteFill}>
         <View className="absolute inset-0 justify-end bg-yb-result-delete-overlay">
           <GesturePressable style={StyleSheet.absoluteFill} onPress={onClose} />
-          <View className="z-10 rounded-t-yb-drawer border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg">
+          <SafeAreaView
+            className="z-10 rounded-t-yb-drawer border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg"
+            edges={Platform.OS === "android" ? ["bottom"] : []}
+          >
             <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
             <Text className="mb-yb-5 text-yb-heading-sm text-yb-fg">
               {t("summary.editSummary")}
@@ -99,14 +104,14 @@ export function SummaryCardEditModal({
 
             <Pressable
               accessibilityLabel={t("summary.done")}
-              className="mb-yb-10 mt-yb-3 h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90"
+              className={`${Platform.OS === "android" ? "mb-yb-3" : "mb-yb-10"} mt-yb-3 h-yb-btn-md items-center justify-center rounded-full bg-yb-accent px-yb-6 shadow-yb-md active:opacity-90`}
               onPress={onClose}
             >
               <Text className="text-yb-body-lg text-yb-on-accent">
                 {t("summary.done")}
               </Text>
             </Pressable>
-          </View>
+          </SafeAreaView>
         </View>
       </GestureHandlerRootView>
     </Modal>
