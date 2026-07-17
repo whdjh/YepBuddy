@@ -141,6 +141,10 @@ export {
   getWorkoutBodyPartSetLabel,
 } from "./model/bodyPartSet"
 export {
+  getNextBodyPartsAfterDetailToggle,
+  getNextBodyPartsAfterPartToggle,
+} from "./model/bodyPartSelection"
+export {
   createDefaultRoutineCycleSettings,
   DEFAULT_ROUTINE_CYCLE_DELOAD_CYCLES,
   DEFAULT_ROUTINE_CYCLE_PROMPT_STATE,

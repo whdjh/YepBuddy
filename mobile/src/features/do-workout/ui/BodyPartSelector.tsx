@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 import { ScrollView, Text, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
@@ -25,27 +25,27 @@ interface BodyPartSelectorProps {
   selectedParts: WorkoutBodyPartSet[]
   onToggle: (key: BodyPart) => void
   onToggleDetail?: (part: BodyPart, detail: BodyPartDetail) => void
-  expandedPart?: BodyPart | null
+  expandedPart: BodyPart | null
+  onExpandedPartChange: (part: BodyPart | null) => void
 }
 
-export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expandedPart }: BodyPartSelectorProps) {
+export function BodyPartSelector({
+  selectedParts,
+  onToggle,
+  onToggleDetail,
+  expandedPart,
+  onExpandedPartChange,
+}: BodyPartSelectorProps) {
   const { t } = useTranslation()
-  const [detailPart, setDetailPart] = useState<BodyPart | null>(null)
   const suppressNextPressRef = useRef<BodyPart | null>(null)
-
-  useEffect(() => {
-    if (expandedPart !== undefined) {
-      setDetailPart(expandedPart ?? null)
-    }
-  }, [expandedPart])
 
   const handleLongPress = (key: BodyPart) => {
     suppressNextPressRef.current = key
-    setDetailPart((current) => (current === key ? null : key))
+    onExpandedPartChange(expandedPart === key ? null : key)
   }
 
-  const selectedDetailPartDetails = detailPart
-    ? getWorkoutBodyPartDetails(selectedParts, detailPart)
+  const selectedDetailPartDetails = expandedPart
+    ? getWorkoutBodyPartDetails(selectedParts, expandedPart)
     : []
 
   return (
@@ -76,23 +76,26 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
                   return
                 }
 
-                setDetailPart(null)
                 onToggle(key)
               }}
-              onLongPress={hasDetailOptions ? () => handleLongPress(key) : undefined}
+              onLongPress={
+                active && hasDetailOptions
+                  ? () => handleLongPress(key)
+                  : undefined
+              }
               delayLongPress={400}
             />
           )
         })}
       </ScrollView>
 
-      {detailPart && (
+      {expandedPart && BODY_PART_DETAILS[expandedPart].length > 0 && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerClassName="flex-row gap-2 pt-yb-3 pl-1"
         >
-          {BODY_PART_DETAILS[detailPart].map((detail) => {
+          {BODY_PART_DETAILS[expandedPart].map((detail) => {
             const active = selectedDetailPartDetails.includes(detail)
             const label = bodyPartDetailLabel(detail)
 
@@ -102,7 +105,7 @@ export function BodyPartSelector({ selectedParts, onToggle, onToggleDetail, expa
                 label={label}
                 selected={active}
                 accessibilityRole="button"
-                onPress={() => onToggleDetail?.(detailPart, detail)}
+                onPress={() => onToggleDetail?.(expandedPart, detail)}
               />
             )
           })}

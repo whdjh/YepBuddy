@@ -4,7 +4,9 @@ import { router } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
 import {
-  getWorkoutBodyPartSetKey,
+  BODY_PART_DETAILS,
+  getNextBodyPartsAfterDetailToggle,
+  getNextBodyPartsAfterPartToggle,
   processCompletedWorkoutCalendarAutoAdd,
   syncWorkoutReminderAtNight,
   updateStoredWorkoutHealthKitMetrics,
@@ -34,30 +36,6 @@ type WorkoutLiveMetricsState = Pick<
   WorkoutState,
   "heartRate" | "activeKcal" | "totalKcal"
 >
-
-// 상위 운동 부위 토글 후의 다음 선택 목록 계산
-function getNextBodyPartsAfterPartToggle(
-  current: WorkoutBodyPartSet[],
-  part: BodyPart,
-): WorkoutBodyPartSet[] {
-  const exists = current.some((item) => item.part === part)
-  return exists
-    ? current.filter((item) => item.part !== part)
-    : [...current, { part, setCount: 10 }]
-}
-
-// 세부 운동 부위 토글 후의 다음 선택 목록 계산
-function getNextBodyPartsAfterDetailToggle(
-  current: WorkoutBodyPartSet[],
-  part: BodyPart,
-  detail: BodyPartDetail,
-): WorkoutBodyPartSet[] {
-  const key = getWorkoutBodyPartSetKey({ part, detail, setCount: 10 })
-  const exists = current.some((item) => getWorkoutBodyPartSetKey(item) === key)
-  return exists
-    ? current.filter((item) => getWorkoutBodyPartSetKey(item) !== key)
-    : [...current, { part, detail, setCount: 10 }]
-}
 
 export function ActiveWorkoutContent() {
   const { t } = useTranslation()
@@ -104,14 +82,24 @@ export function ActiveWorkoutContent() {
 
   // 수동 상위 부위 선택 변경 시 동일 구성의 이전 기록 프리필 적용
   const handleToggleBodyPart = (part: BodyPart) => {
+    const isSelected = state.bodyParts.some((item) => item.part === part)
     const nextBodyParts = getNextBodyPartsAfterPartToggle(state.bodyParts, part)
     const prefill = historyPrefill.getPrefill(nextBodyParts)
     applyPrefill(prefill.bodyParts, prefill.memoPlaceholder)
-    setExpandedBodyPart(null)
+    setExpandedBodyPart((current) => {
+      if (isSelected) {
+        return current === part ? null : current
+      }
+
+      return BODY_PART_DETAILS[part].length > 0 ? part : null
+    })
   }
 
   // 수동 세부 부위 선택 변경 시 동일 구성의 이전 기록 프리필 적용
-  const handleToggleBodyPartDetail = (part: BodyPart, detail: BodyPartDetail) => {
+  const handleToggleBodyPartDetail = (
+    part: BodyPart,
+    detail: BodyPartDetail,
+  ) => {
     const nextBodyParts = getNextBodyPartsAfterDetailToggle(
       state.bodyParts,
       part,
@@ -251,6 +239,7 @@ export function ActiveWorkoutContent() {
           onToggle={handleToggleBodyPart}
           onToggleDetail={handleToggleBodyPartDetail}
           expandedPart={expandedBodyPart}
+          onExpandedPartChange={setExpandedBodyPart}
         />
         <SetCountList
           selectedParts={state.bodyParts}

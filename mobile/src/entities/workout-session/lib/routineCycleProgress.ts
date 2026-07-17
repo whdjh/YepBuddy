@@ -1,4 +1,5 @@
 import type { StoredWorkoutSession, WorkoutBodyPartSet } from "../model/types"
+import { getWorkoutBodyPartDetails } from "../model/bodyPartSet"
 import type {
   RoutinePart,
   RoutineCycleSession,
@@ -37,19 +38,26 @@ function getTotalRoutineCycleCount(settings: RoutineCycleSettings) {
   return Math.max(1, settings.trainingCycles) + Math.max(0, settings.deloadCycles)
 }
 
-/** 루틴 파트에 required details가 있을 때, 완료된 세트가 모두 포함하는지 확인 */
-function detailsMatch(required: RoutinePart, completed: WorkoutBodyPartSet) {
+/** 루틴 파트의 세부 부위가 개별/묶음 저장 형식 모두에서 충족되는지 확인 */
+function partMatches(
+  required: RoutinePart,
+  completedBodyParts: WorkoutBodyPartSet[],
+) {
+  const hasCompletedPart = completedBodyParts.some(
+    (item) => item.part === required.part,
+  )
+  if (!hasCompletedPart) {
+    return false
+  }
+
   if (!required.details || required.details.length === 0) {
     return true
   }
 
-  const completedDetails = completed.details ?? []
-  return required.details.every((detail) => completedDetails.includes(detail))
-}
-
-/** 루틴 파트(part + details)가 완료된 세트와 일치하는지 확인 */
-function partMatches(required: RoutinePart, completed: WorkoutBodyPartSet) {
-  return required.part === completed.part && detailsMatch(required, completed)
+  const completedDetails = new Set(
+    getWorkoutBodyPartDetails(completedBodyParts, required.part),
+  )
+  return required.details.every((detail) => completedDetails.has(detail))
 }
 
 /** details 무시하고 part만 겹치는지 확인 (partial 판정용) */
@@ -63,7 +71,7 @@ export function areBodyPartsMatchingRoutineSession(
   routineSession: RoutineCycleSession,
 ) {
   return routineSession.parts.every((required) =>
-    bodyParts.some((completed) => partMatches(required, completed)),
+    partMatches(required, bodyParts),
   )
 }
 
