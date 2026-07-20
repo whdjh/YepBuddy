@@ -408,7 +408,7 @@ useDebouncedEffect(
 | --- | --- |
 | `isValidCoordinates(latitude, longitude)` | 위도/경도 범위와 finite number 검증 |
 
-운동 위치 저장소와 반복 장소 계산처럼 도메인 저장 형식은 각 entity에 두고, 좌표 자체의 순수 검증만 shared에 둡니다.
+운동 장소 저장소와 도착 판정처럼 도메인 저장 형식과 정책은 각 entity에 두고, 좌표 자체의 순수 검증만 shared에 둡니다.
 
 ### group.ts
 
