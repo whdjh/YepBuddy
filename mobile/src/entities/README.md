@@ -85,7 +85,7 @@ src/entities
 - `api/healthKit.ts`: HealthKit 권한, iPhone live workout 시작/복구/종료, 심박/운동 요약 조회
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
-- `lib/workoutPlaceArrivalReminder.ts`: 반복 운동 장소 geofence와 장소 알림
+- `lib/workoutPlaceArrivalReminder.ts`: 사용자가 등록한 단일 운동 장소의 geofence와 도착 알림
 - `model/routineCycle.ts`, `model/routineCycleStorage.ts`, `lib/routineCycleProgress.ts`, `lib/routineCycleProgressSnapshot.ts`, `lib/routineCycleState.ts`: 루틴 사이클 설정/진행/상태
 
 공개 API는 `workout-session/index.ts`에서만 export한다. 주요 그룹은 다음과 같다.
@@ -95,7 +95,7 @@ src/entities
 - 저장 세션/HealthKit 조회 조합: `getWorkoutSessionDetailData`, `getWorkoutSessionSummaryDataForDate`, `getWorkoutSessionSummaryDataForMonth`, `getWorkoutSummariesForSessions`, `getWorkoutSessionKcalFromSummaries`, `getWorkoutSessionDetailActiveKcal`
 - 위치/캘린더: `getWorkoutLocationOnce`, `registerWorkoutToCalendar`, `updateWorkoutCalendarEvent`, `deleteWorkoutCalendarEvent`
 - 운동 리마인더: `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`, `cancelScheduledWorkoutReminder`
-- 장소 도착/이탈 리마인더: `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceNotificationHandler`, pending prompt API
+- 장소 도착 알림: 현재 위치 등록/해제, `syncWorkoutPlaceArrivalReminder`, `disableWorkoutPlaceArrivalReminder`, `registerWorkoutPlaceNotificationHandler`, pending prompt API
 - 완료 세션 저장소: `getStoredWorkoutSession`, `getStoredWorkoutSessionsInRange`, `getStoredWorkoutSessionsForMonth`, `getAllStoredWorkoutSessions`, `getLatestStoredWorkoutSession`, `updateStoredWorkoutMemo`, `updateStoredWorkoutSetCounts`, `deleteStoredWorkoutSession`
 - 세션 표시 유틸: `getWorkoutBodyPartSetLabel`, `getWorkoutBodyPartSetKey`, `getWorkoutBodyPartDetails`, `getUniqueWorkoutBodyParts`, duration/set count metric
 - 이전 기록 프리필: `buildWorkoutHistoryPrefill`, `buildRoutinePartHistoryPrefill`
@@ -237,9 +237,10 @@ Workout session AsyncStorage:
 - `yb:workout:weekly-routine-feature-status`: `"unasked"`, `"enabled"`, `"disabled"`.
 - `yb:workout:weekly-routine-prompt`: `RoutineCyclePromptState` JSON. 사이클 종료 Alert를 dismiss한 앵커 날짜 키를 저장한다.
 - `yb:workout-place-reminder:enabled`: `"true"` 또는 `"false"`.
-- `yb:workout-place-reminder:places`: `WorkoutPlaceReminderPlace[]` JSON. 반복 운동 장소 후보다.
+- `yb:workout-place-reminder:confirmed-place`: 사용자가 직접 등록한 단일 운동 장소 좌표와 등록 시각 JSON.
+- `yb:workout-place-reminder:cooldown-started-at`: 등록/재등록, 운동 완료, 알림 성공 중 가장 최근 시각.
 - `yb:workout-place-reminder:pending-prompt`: `PendingWorkoutPlaceReminderPrompt` JSON. 장소 도착 알림을 탭한 뒤 요약 화면에서 운동 시작 확인을 띄우기 위한 값이다.
-- `yb:workout-place-reminder:sync-status`: `WorkoutPlaceReminderSyncStatus` JSON. 토글 enabled 값과 실제 geofence 등록 가능 상태를 분리해 저장한다.
+- `yb:workout-place-reminder:sync-status`: geofence 동작 가능 여부와 실패 이유 JSON.
 
 Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사용한다.
 
@@ -251,7 +252,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 ## 주요 Side Effect
 
 - `WorkoutProvider`는 앱 시작 시 진행 중 운동 스냅샷을 읽고, 운동 상태가 바뀌면 debounce로 저장한다.
-- `completeWorkout`은 완료 세션 저장, 반복 장소 upsert, 장소 리마인더 sync, 진행 중 스냅샷 삭제를 수행한다.
+- `completeWorkout`은 완료 세션 저장, 등록된 운동 장소 알림의 cooldown 갱신, 진행 중 스냅샷 삭제를 수행한다.
 - `startWorkoutSession`은 사용자 운동 시작 흐름에서만 HealthKit 권한/초기화를 요청한다.
 - HealthKit 조회 함수는 권한 캐시가 `"enabled"`일 때만 조용히 시도한다.
 - `getWorkoutLocationOnce`는 foreground location 권한을 요청하고 현재 위치를 한 번 읽는다.
@@ -259,9 +260,9 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - 캘린더 이벤트 갱신은 저장된 `calendarEventId` 또는 과거 세션의 유일 일치 후보를 대상으로 제목과 메모를 수정한다.
 - 캘린더 이벤트 삭제는 앱 기록 삭제보다 먼저 실행되며, 이미 없는 이벤트와 권한/기타 실패를 구분해 feature에 전달한다.
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
-- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 반복 장소 후보에 맞춰 geofence를 등록/중지하고 동기화 상태를 저장한다.
+- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 사용자가 등록한 단일 장소에 맞춰 50m Enter geofence를 등록/중지하고 동기화 상태를 저장한다.
 - `registerWorkoutPlaceNotificationHandler`는 장소 알림 탭을 pending prompt 저장 또는 active workout 복귀 콜백으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
-- `TaskManager.defineTask`는 장소 Enter 이벤트에서 하루 1회 알림을 예약하고 Enter/Exit 이벤트 상태를 저장한다.
+- `TaskManager.defineTask`는 장소 Enter 이벤트에서 현재 위치 정확도와 20m 거리를 재확인하고, 운동 상태와 12시간 cooldown을 통과하면 알림을 예약한다.
 - `fetch*Protein*` 함수는 Supabase network 요청을 수행하고 실패 시 `Error`를 throw한다.
 
 ## 에러 처리 기준
@@ -294,7 +295,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 ## 하드코딩 값 처리 기준
 
 - storage key, notification kind/channel/task name, Supabase table/RPC 이름은 의미 있는 상수로 둔다.
-- geofence 반경, 반복 장소 최대 개수, 운동 리마인더 시간처럼 도메인 정책인 값은 entity 내부 상수로 둔다.
+- geofence 반경, 위치 정확도, cooldown, 운동 리마인더 시간처럼 도메인 정책인 값은 entity 내부 상수로 둔다.
 - route 문자열은 entity에 두지 않는다. 현재 route 이동은 `app` 또는 `features`에서 처리한다.
 - 색상 hex가 entity UI에 필요하면 먼저 `shared` token/hook으로 표현 가능한지 본다. iOS calendar color처럼 외부 API가 실제 hex를 요구하는 단일 값은 상수로 유지한다.
 - `primitive.json`은 `shared/lib/designTokens`에서만 직접 읽고, entity/ui에서는 semantic token이나 hook을 통해 사용한다.

@@ -58,10 +58,12 @@ export {
   type WorkoutHistoryPrefill,
 } from "./lib/workoutHistoryPrefill"
 export {
+  clearWorkoutPlaceRegistration,
   disableWorkoutPlaceArrivalReminder,
+  registerCurrentWorkoutPlace,
   registerWorkoutPlaceNotificationHandler,
-  syncWorkoutPlaceExitReminderOnAppActive,
   syncWorkoutPlaceArrivalReminder,
+  type RegisterCurrentWorkoutPlaceResult,
 } from "./lib/workoutPlaceArrivalReminder"
 export {
   cancelScheduledWorkoutReminder,
@@ -100,20 +102,15 @@ export {
 } from "./model/sessionStorage"
 export {
   clearPendingWorkoutPlaceReminderPrompt,
+  getConfirmedWorkoutPlace,
   getPendingWorkoutPlaceReminderPrompt,
   getWorkoutPlaceReminderEnabled,
-  getWorkoutPlaceReminderPlaces,
   getWorkoutPlaceReminderSyncStatus,
-  rebuildWorkoutPlaceReminderPlacesFromSessions,
-  savePendingWorkoutPlaceReminderPrompt,
-  saveWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
-  upsertWorkoutPlaceReminderPlaceFromSession,
 } from "./model/workoutPlaceReminderStorage"
 export type {
+  ConfirmedWorkoutPlace,
   PendingWorkoutPlaceReminderPrompt,
-  WorkoutPlaceReminderPlace,
-  WorkoutPlaceReminderSyncEventType,
   WorkoutPlaceReminderSyncStatus,
   WorkoutPlaceReminderSyncStatusReason,
 } from "./model/workoutPlaceReminderStorage"

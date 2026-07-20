@@ -9,13 +9,10 @@ import {
   deleteWorkoutCalendarEvent,
   formatWorkoutLocationCoordinates,
   formatWorkoutLocationLabel,
-  getAllStoredWorkoutSessions,
   getCardioDurationMinutes,
   getStoredWorkoutSessionDurationSeconds,
   getWorkoutSessionDetailActiveKcal,
   getWorkoutBodyPartSetLabel,
-  rebuildWorkoutPlaceReminderPlacesFromSessions,
-  syncWorkoutPlaceArrivalReminder,
   updateStoredWorkoutMemo,
   updateStoredWorkoutSetCounts,
   updateWorkoutCalendarEvent,
@@ -195,12 +192,6 @@ export function ResultScreen({
 
     try {
       await deleteStoredWorkoutSession(sessionId)
-      await getAllStoredWorkoutSessions()
-        .then(rebuildWorkoutPlaceReminderPlacesFromSessions)
-        .catch(() => undefined)
-      await syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
-        () => undefined,
-      )
       router.replace("/")
     } catch {
       Alert.alert(
