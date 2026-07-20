@@ -3,12 +3,18 @@ import { Text, View } from "react-native"
 import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 interface SettingsRowProps {
+  /** 설정 항목 제목 */
   title: string
+  /** 설정 항목 설명 */
   body: string
+  /** 우측 제어 UI */
   control: ReactNode
+  /** 기본 행 아래에 표시할 추가 UI */
+  footer?: ReactNode
 }
 
-export function SettingsRow({ title, body, control }: SettingsRowProps) {
+/** 제목, 설명, 제어 UI를 공통 카드 형태로 표시 */
+export function SettingsRow({ title, body, control, footer }: SettingsRowProps) {
   return (
     <GlassSurface
       className="border border-yb-glass-border"
@@ -27,6 +33,7 @@ export function SettingsRow({ title, body, control }: SettingsRowProps) {
         </View>
         {control}
       </View>
+      {footer}
     </GlassSurface>
   )
 }

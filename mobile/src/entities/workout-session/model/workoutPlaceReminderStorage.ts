@@ -1,113 +1,103 @@
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import { getLocalDateKey } from "@/shared/lib/date"
-import { getDistanceMeters, isValidCoordinates } from "@/shared/lib/geo"
+import { getTimestampMsFromIso } from "@/shared/lib/date"
+import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
-import type { StoredWorkoutSession } from "./types"
 
 export const WORKOUT_PLACE_REMINDER_ENABLED_STORAGE_KEY =
   "yb:workout-place-reminder:enabled"
-export const WORKOUT_PLACE_REMINDER_PLACES_STORAGE_KEY =
-  "yb:workout-place-reminder:places"
+export const WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_STORAGE_KEY =
+  "yb:workout-place-reminder:confirmed-place"
+export const WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY =
+  "yb:workout-place-reminder:cooldown-started-at"
 export const WORKOUT_PLACE_REMINDER_PENDING_PROMPT_STORAGE_KEY =
   "yb:workout-place-reminder:pending-prompt"
 export const WORKOUT_PLACE_REMINDER_SYNC_STATUS_STORAGE_KEY =
   "yb:workout-place-reminder:sync-status"
+export const WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID =
+  "confirmed-workout-place"
 
-const PLACE_MATCH_RADIUS_METERS = 120
-export const WORKOUT_PLACE_REMINDER_MAX_GEOFENCE_PLACES = 20
-
-export interface WorkoutPlaceReminderPlace {
-  id: string
+/** 사용자가 확정한 단일 운동 장소 */
+export interface ConfirmedWorkoutPlace {
+  /** 단일 등록 장소의 고정 식별자 */
+  id: typeof WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID
+  /** 등록 장소 위도 */
   latitude: number
+  /** 등록 장소 경도 */
   longitude: number
-  workoutCount: number
-  latestWorkoutAt: string
-  lastNotifiedDateKey: string | null
+  /** 현재 위치로 등록한 시각 */
+  confirmedAt: string
 }
 
+/** 운동 장소 알림 탭 후 표시할 prompt 상태 */
 export interface PendingWorkoutPlaceReminderPrompt {
+  /** 알림을 발생시킨 장소 식별자 */
   placeId: string
+  /** 알림 탭 처리 시각 */
   createdAt: string
 }
 
+/** geofence 동기화 결과 사유 */
 export type WorkoutPlaceReminderSyncStatusReason =
   | "disabled"
   | "permission-denied"
-  | "no-places"
+  | "no-place"
   | "registered"
   | "registration-failed"
 
-export type WorkoutPlaceReminderSyncEventType = "enter" | "exit"
-
+/** geofence 동기화 상태 */
 export interface WorkoutPlaceReminderSyncStatus {
-  enabled: boolean
+  /** geofence가 현재 동작 가능한지 여부 */
   operational: boolean
+  /** 마지막 동기화 결과 */
   reason: WorkoutPlaceReminderSyncStatusReason
-  notificationGranted: boolean
-  foregroundLocationGranted: boolean
-  backgroundLocationGranted: boolean
-  geofencePlaceCount: number
-  registeredRegionIds: string[]
-  lastSyncedAt: string
-  lastErrorMessage: string | null
-  lastEventType: WorkoutPlaceReminderSyncEventType | null
-  lastEventPlaceId: string | null
-  lastEventAt: string | null
 }
 
-/** 저장된 장소 후보를 현재 알림 장소 타입으로 정규화 */
-function normalizeWorkoutPlaceReminderPlace(
+/** ISO 시각 문자열인지 확인한다. */
+function isValidIso(value: unknown): value is string {
+  return typeof value === "string" && getTimestampMsFromIso(value) !== null
+}
+
+/** 저장값을 단일 등록 장소 타입으로 정규화 */
+function normalizeConfirmedWorkoutPlace(
   value: unknown,
-): WorkoutPlaceReminderPlace | null {
+): ConfirmedWorkoutPlace | null {
   if (!value || typeof value !== "object") {
     return null
   }
 
-  const place = value as Partial<WorkoutPlaceReminderPlace>
+  const place = value as Partial<ConfirmedWorkoutPlace>
   if (
-    typeof place.id !== "string" ||
+    place.id !== WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID ||
     typeof place.latitude !== "number" ||
     typeof place.longitude !== "number" ||
     !isValidCoordinates(place.latitude, place.longitude) ||
-    typeof place.workoutCount !== "number" ||
-    !Number.isFinite(place.workoutCount) ||
-    typeof place.latestWorkoutAt !== "string"
+    !isValidIso(place.confirmedAt)
   ) {
     return null
   }
 
   return {
-    id: place.id,
+    id: WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID,
     latitude: place.latitude,
     longitude: place.longitude,
-    workoutCount: Math.max(0, Math.floor(place.workoutCount)),
-    latestWorkoutAt: place.latestWorkoutAt,
-    lastNotifiedDateKey:
-      typeof place.lastNotifiedDateKey === "string"
-        ? place.lastNotifiedDateKey
-        : null,
+    confirmedAt: place.confirmedAt,
   }
 }
 
+/** 저장 가능한 동기화 사유인지 확인 */
 function isSyncStatusReason(
   value: unknown,
 ): value is WorkoutPlaceReminderSyncStatusReason {
   return (
     value === "disabled" ||
     value === "permission-denied" ||
-    value === "no-places" ||
+    value === "no-place" ||
     value === "registered" ||
     value === "registration-failed"
   )
 }
 
-function isSyncEventType(
-  value: unknown,
-): value is WorkoutPlaceReminderSyncEventType {
-  return value === "enter" || value === "exit"
-}
-
-/** 저장된 동기화 상태 정규화 */
+/** 저장값을 geofence 동기화 상태로 정규화 */
 function normalizeWorkoutPlaceReminderSyncStatus(
   value: unknown,
 ): WorkoutPlaceReminderSyncStatus | null {
@@ -117,50 +107,19 @@ function normalizeWorkoutPlaceReminderSyncStatus(
 
   const status = value as Partial<WorkoutPlaceReminderSyncStatus>
   if (
-    typeof status.enabled !== "boolean" ||
     typeof status.operational !== "boolean" ||
-    !isSyncStatusReason(status.reason) ||
-    typeof status.notificationGranted !== "boolean" ||
-    typeof status.foregroundLocationGranted !== "boolean" ||
-    typeof status.backgroundLocationGranted !== "boolean" ||
-    typeof status.geofencePlaceCount !== "number" ||
-    !Number.isFinite(status.geofencePlaceCount) ||
-    typeof status.lastSyncedAt !== "string"
+    !isSyncStatusReason(status.reason)
   ) {
     return null
   }
 
   return {
-    enabled: status.enabled,
     operational: status.operational,
     reason: status.reason,
-    notificationGranted: status.notificationGranted,
-    foregroundLocationGranted: status.foregroundLocationGranted,
-    backgroundLocationGranted: status.backgroundLocationGranted,
-    geofencePlaceCount: Math.max(0, Math.floor(status.geofencePlaceCount)),
-    registeredRegionIds: Array.isArray(status.registeredRegionIds)
-      ? status.registeredRegionIds.filter(
-          (regionId): regionId is string => typeof regionId === "string",
-        )
-      : [],
-    lastSyncedAt: status.lastSyncedAt,
-    lastErrorMessage:
-      typeof status.lastErrorMessage === "string"
-        ? status.lastErrorMessage
-        : null,
-    lastEventType: isSyncEventType(status.lastEventType)
-      ? status.lastEventType
-      : null,
-    lastEventPlaceId:
-      typeof status.lastEventPlaceId === "string"
-        ? status.lastEventPlaceId
-        : null,
-    lastEventAt:
-      typeof status.lastEventAt === "string" ? status.lastEventAt : null,
   }
 }
 
-/** 운동 장소 도착 알림 활성화 저장값을 조회한다. */
+/** 운동 장소 알림 활성화 여부를 조회 */
 export async function getWorkoutPlaceReminderEnabled() {
   return (
     (await AsyncStorage.getItem(
@@ -169,7 +128,7 @@ export async function getWorkoutPlaceReminderEnabled() {
   )
 }
 
-/** 운동 장소 도착 알림 활성화 저장값을 저장한다. */
+/** 운동 장소 알림 활성화 여부를 저장 */
 export async function setWorkoutPlaceReminderEnabled(enabled: boolean) {
   await AsyncStorage.setItem(
     WORKOUT_PLACE_REMINDER_ENABLED_STORAGE_KEY,
@@ -177,20 +136,88 @@ export async function setWorkoutPlaceReminderEnabled(enabled: boolean) {
   )
 }
 
-/** 운동 장소 도착 알림 동기화 상태 조회 */
+/** 사용자가 등록한 단일 운동 장소를 조회 */
+export async function getConfirmedWorkoutPlace() {
+  const value = await AsyncStorage.getItem(
+    WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_STORAGE_KEY,
+  )
+  return value
+    ? normalizeConfirmedWorkoutPlace(parseJsonOrNull<unknown>(value))
+    : null
+}
+
+/** 등록 장소와 등록 시점 cooldown을 함께 저장 */
+export async function saveConfirmedWorkoutPlace(
+  place: ConfirmedWorkoutPlace,
+  cooldownStartedAt: string,
+) {
+  const normalized = normalizeConfirmedWorkoutPlace(place)
+  if (!normalized || !isValidIso(cooldownStartedAt)) {
+    throw new Error("Invalid confirmed workout place")
+  }
+
+  await AsyncStorage.multiSet([
+    [
+      WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_STORAGE_KEY,
+      JSON.stringify(normalized),
+    ],
+    [WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY, cooldownStartedAt],
+  ])
+}
+
+/** 등록 장소와 연결된 cooldown을 삭제 */
+export async function clearConfirmedWorkoutPlace() {
+  await AsyncStorage.multiRemove([
+    WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_STORAGE_KEY,
+    WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY,
+  ])
+}
+
+let cooldownUpdate = Promise.resolve()
+
+/** 기존 값보다 늦은 시각으로 cooldown을 갱신 */
+export function markWorkoutPlaceReminderCooldown(at: string) {
+  if (!isValidIso(at)) {
+    return Promise.resolve()
+  }
+
+  cooldownUpdate = cooldownUpdate.catch(() => undefined).then(async () => {
+    const current = await AsyncStorage.getItem(
+      WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY,
+    )
+    const currentCooldownMs = current ? getTimestampMsFromIso(current) : null
+    const nextCooldownMs = getTimestampMsFromIso(at)
+    if (
+      currentCooldownMs !== null &&
+      nextCooldownMs !== null &&
+      currentCooldownMs >= nextCooldownMs
+    ) {
+      return
+    }
+    await AsyncStorage.setItem(WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY, at)
+  })
+  return cooldownUpdate
+}
+
+/** 현재 cooldown 시작 시각을 조회 */
+export async function getWorkoutPlaceReminderCooldownStartedAt() {
+  const value = await AsyncStorage.getItem(
+    WORKOUT_PLACE_REMINDER_COOLDOWN_STORAGE_KEY,
+  )
+  return isValidIso(value) ? value : null
+}
+
+/** 마지막 geofence 동기화 상태를 조회 */
 export async function getWorkoutPlaceReminderSyncStatus() {
   const value = await AsyncStorage.getItem(
     WORKOUT_PLACE_REMINDER_SYNC_STATUS_STORAGE_KEY,
   )
-
-  if (!value) {
-    return null
-  }
-
-  return normalizeWorkoutPlaceReminderSyncStatus(parseJsonOrNull<unknown>(value))
+  return value
+    ? normalizeWorkoutPlaceReminderSyncStatus(parseJsonOrNull<unknown>(value))
+    : null
 }
 
-/** 운동 장소 도착 알림 동기화 상태 저장 */
+/** geofence 동기화 상태를 저장 */
 export async function saveWorkoutPlaceReminderSyncStatus(
   status: WorkoutPlaceReminderSyncStatus,
 ) {
@@ -200,136 +227,23 @@ export async function saveWorkoutPlaceReminderSyncStatus(
   )
 }
 
-/** 운동 장소 도착 알림 geofence 이벤트 상태 저장 */
-export async function saveWorkoutPlaceReminderSyncEvent(
-  event: {
-    eventType: WorkoutPlaceReminderSyncEventType
-    placeId: string
-    occurredAt: string
-  },
-) {
-  const currentStatus = await getWorkoutPlaceReminderSyncStatus()
-  const enabled =
-    currentStatus?.enabled ?? (await getWorkoutPlaceReminderEnabled())
-
-  await saveWorkoutPlaceReminderSyncStatus({
-    backgroundLocationGranted:
-      currentStatus?.backgroundLocationGranted ?? false,
-    enabled,
-    foregroundLocationGranted:
-      currentStatus?.foregroundLocationGranted ?? false,
-    geofencePlaceCount: currentStatus?.geofencePlaceCount ?? 0,
-    lastErrorMessage: currentStatus?.lastErrorMessage ?? null,
-    lastEventAt: event.occurredAt,
-    lastEventPlaceId: event.placeId,
-    lastEventType: event.eventType,
-    lastSyncedAt: currentStatus?.lastSyncedAt ?? event.occurredAt,
-    notificationGranted: currentStatus?.notificationGranted ?? false,
-    operational: currentStatus?.operational ?? false,
-    reason: currentStatus?.reason ?? "disabled",
-    registeredRegionIds: currentStatus?.registeredRegionIds ?? [],
-  })
-}
-
-/** 저장된 반복 운동 장소 목록을 조회한다. */
-export async function getWorkoutPlaceReminderPlaces() {
-  const value = await AsyncStorage.getItem(
-    WORKOUT_PLACE_REMINDER_PLACES_STORAGE_KEY,
-  )
-
-  if (!value) {
-    return []
-  }
-
-  const parsed = parseJsonOrNull<unknown>(value)
-  if (!Array.isArray(parsed)) {
-    return []
-  }
-
-  return parsed
-    .map(normalizeWorkoutPlaceReminderPlace)
-    .filter((place): place is WorkoutPlaceReminderPlace => place !== null)
-}
-
-/** 반복 운동 장소 목록을 최신 후보 우선순위로 정렬해 저장한다. */
-export async function saveWorkoutPlaceReminderPlaces(
-  places: WorkoutPlaceReminderPlace[],
-) {
-  const normalizedPlaces = places
-    .map(normalizeWorkoutPlaceReminderPlace)
-    .filter((place): place is WorkoutPlaceReminderPlace => place !== null)
-
-  await AsyncStorage.setItem(
-    WORKOUT_PLACE_REMINDER_PLACES_STORAGE_KEY,
-    JSON.stringify(sortWorkoutPlaceReminderPlaces(normalizedPlaces)),
-  )
-}
-
-/** 완료 세션 위치를 기존 반복 장소 목록에 반영한다. */
-export async function upsertWorkoutPlaceReminderPlaceFromSession(
-  session: StoredWorkoutSession,
-) {
-  if (!session.location) {
-    return
-  }
-
-  const places = await getWorkoutPlaceReminderPlaces()
-  await saveWorkoutPlaceReminderPlaces(
-    upsertWorkoutPlaceReminderPlace(places, session),
-  )
-}
-
-/** 완료 세션 전체를 기준으로 반복 장소 히스토리를 다시 만든다. */
-export async function rebuildWorkoutPlaceReminderPlacesFromSessions(
-  sessions: StoredWorkoutSession[],
-) {
-  const places = sessions
-    .filter((session) => session.location)
-    .sort((a, b) => a.completedAt.localeCompare(b.completedAt))
-    .reduce<WorkoutPlaceReminderPlace[]>(
-      (currentPlaces, session) =>
-        upsertWorkoutPlaceReminderPlace(currentPlaces, session),
-      [],
-    )
-
-  await saveWorkoutPlaceReminderPlaces(places)
-  return places
-}
-
-/** OS geofence에 등록할 장소 후보만 반환한다. */
-export async function getWorkoutPlaceReminderGeofencePlaces() {
-  return selectWorkoutPlaceReminderGeofencePlaces(
-    await getWorkoutPlaceReminderPlaces(),
-  )
-}
-
-/** 알림 탭 후 운동 시작 확인 Alert를 띄우기 위한 pending prompt를 조회한다. */
+/** 알림 탭 후 표시할 운동 시작 prompt를 조회 */
 export async function getPendingWorkoutPlaceReminderPrompt() {
   const value = await AsyncStorage.getItem(
     WORKOUT_PLACE_REMINDER_PENDING_PROMPT_STORAGE_KEY,
   )
-
   if (!value) {
     return null
   }
 
   const parsed =
     parseJsonOrNull<Partial<PendingWorkoutPlaceReminderPrompt>>(value)
-  if (
-    !parsed ||
-    typeof parsed.placeId !== "string" ||
-    typeof parsed.createdAt !== "string"
-  ) {
-    return null
-  }
-
-  return {
-    placeId: parsed.placeId,
-    createdAt: parsed.createdAt,
-  }
+  return parsed && typeof parsed.placeId === "string" && isValidIso(parsed.createdAt)
+    ? { placeId: parsed.placeId, createdAt: parsed.createdAt }
+    : null
 }
 
-/** 알림 탭 후 운동 시작 확인 Alert를 띄우기 위한 pending prompt를 저장한다. */
+/** 알림 탭 후 표시할 운동 시작 prompt를 저장 */
 export async function savePendingWorkoutPlaceReminderPrompt(
   prompt: PendingWorkoutPlaceReminderPrompt,
 ) {
@@ -339,105 +253,7 @@ export async function savePendingWorkoutPlaceReminderPrompt(
   )
 }
 
-/** 처리한 pending prompt를 삭제한다. */
+/** 처리한 운동 시작 prompt를 삭제 */
 export async function clearPendingWorkoutPlaceReminderPrompt() {
   await AsyncStorage.removeItem(WORKOUT_PLACE_REMINDER_PENDING_PROMPT_STORAGE_KEY)
-}
-
-/** 같은 장소 하루 1회 알림 쿨다운을 기록한다. */
-export async function markWorkoutPlaceReminderNotified(
-  placeId: string,
-  dateKey: string,
-) {
-  const places = await getWorkoutPlaceReminderPlaces()
-  await saveWorkoutPlaceReminderPlaces(
-    places.map((place) =>
-      place.id === placeId
-        ? { ...place, lastNotifiedDateKey: dateKey }
-        : place,
-    ),
-  )
-}
-
-/** 완료 세션 위치를 반복 장소 후보에 추가하거나 가까운 기존 장소에 병합 */
-function upsertWorkoutPlaceReminderPlace(
-  places: WorkoutPlaceReminderPlace[],
-  session: StoredWorkoutSession,
-) {
-  const location = session.location
-  if (!location || !isValidCoordinates(location.lat, location.lng)) {
-    return places
-  }
-
-  const placeIndex = places.findIndex(
-    (place) =>
-      getDistanceMeters(
-        { lat: place.latitude, lng: place.longitude },
-        location,
-      ) <= PLACE_MATCH_RADIUS_METERS,
-  )
-
-  if (placeIndex === -1) {
-    return [
-      ...places,
-      {
-        id: session.sessionId,
-        latitude: location.lat,
-        longitude: location.lng,
-        workoutCount: 1,
-        latestWorkoutAt: session.completedAt,
-        lastNotifiedDateKey: null,
-      },
-    ]
-  }
-
-  return places.map((place, index) => {
-    if (index !== placeIndex) {
-      return place
-    }
-
-    const nextWorkoutCount = place.workoutCount + 1
-    return {
-      ...place,
-      latitude:
-        (place.latitude * place.workoutCount + location.lat) / nextWorkoutCount,
-      longitude:
-        (place.longitude * place.workoutCount + location.lng) /
-        nextWorkoutCount,
-      workoutCount: nextWorkoutCount,
-      latestWorkoutAt:
-        session.completedAt > place.latestWorkoutAt
-          ? session.completedAt
-          : place.latestWorkoutAt,
-    }
-  })
-}
-
-/** 충분히 반복 방문한 장소만 geofence 등록 후보로 고른다. */
-function selectWorkoutPlaceReminderGeofencePlaces(
-  places: WorkoutPlaceReminderPlace[],
-) {
-  return sortWorkoutPlaceReminderPlaces(
-    places.filter((place) => place.workoutCount >= 2),
-  ).slice(0, WORKOUT_PLACE_REMINDER_MAX_GEOFENCE_PLACES)
-}
-
-/** 최근 운동일 우선, 같은 날이면 방문 횟수 우선으로 정렬 */
-function sortWorkoutPlaceReminderPlaces(places: WorkoutPlaceReminderPlace[]) {
-  return [...places].sort((a, b) => {
-    const latestWorkoutComparison = b.latestWorkoutAt.localeCompare(
-      a.latestWorkoutAt,
-    )
-
-    if (latestWorkoutComparison !== 0) {
-      return latestWorkoutComparison
-    }
-
-    return b.workoutCount - a.workoutCount
-  })
-}
-
-/** 오늘 날짜를 운동 장소 알림 쿨다운 키 형식으로 반환 */
-export function getWorkoutPlaceReminderTodayDateKey() {
-  return getLocalDateKey(new Date())
 }

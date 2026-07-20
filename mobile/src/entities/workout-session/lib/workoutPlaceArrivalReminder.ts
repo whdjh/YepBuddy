@@ -5,35 +5,26 @@ import { Alert, Platform } from "react-native"
 import i18n from "@/shared/i18n/i18n"
 import { getDistanceMeters, isValidCoordinates } from "@/shared/lib/geo"
 import {
-  evaluateGymArrivalPolicy,
-  evaluateGymExitPolicy,
-  type GymLocationSample,
-  type GymPlaceContext,
-  type GymPolicyInput,
-} from "./gymLocationPolicy"
+  shouldNotifyWorkoutPlaceArrival,
+  WORKOUT_PLACE_ARRIVAL_MAX_ACCURACY_METERS,
+} from "./workoutPlaceArrivalPolicy"
 import {
   ensureWorkoutPlaceArrivalNotificationChannel,
   WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID,
 } from "./notificationChannels"
-import {
-  appendGymLocationPolicySample,
-  getGymLocationPolicyContexts,
-  getGymLocationPolicyCooldowns,
-  getGymLocationPolicySamples,
-  refreshGymLocationPolicyContexts,
-  saveGymLocationPolicyCooldowns,
-} from "../model/gymLocationPolicyStorage"
 import { loadCurrentWorkoutSnapshot } from "../model/sessionStorage"
 import {
+  clearConfirmedWorkoutPlace,
+  clearPendingWorkoutPlaceReminderPrompt,
+  getConfirmedWorkoutPlace,
+  getWorkoutPlaceReminderCooldownStartedAt,
   getWorkoutPlaceReminderEnabled,
-  getWorkoutPlaceReminderGeofencePlaces,
-  getWorkoutPlaceReminderPlaces,
-  getWorkoutPlaceReminderSyncStatus,
+  markWorkoutPlaceReminderCooldown,
+  saveConfirmedWorkoutPlace,
   savePendingWorkoutPlaceReminderPrompt,
-  saveWorkoutPlaceReminderSyncEvent,
   saveWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
-  type WorkoutPlaceReminderPlace,
+  WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID,
   type WorkoutPlaceReminderSyncStatusReason,
 } from "../model/workoutPlaceReminderStorage"
 import type { WorkoutState } from "../model/workoutState"
@@ -42,46 +33,47 @@ export const WORKOUT_PLACE_ARRIVAL_TASK_NAME =
   "yb-workout-place-arrival-reminder"
 export const WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE =
   "workout-place-arrival"
-export const WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE =
-  "workout-place-exit-reminder"
 
-const GEOFENCE_RADIUS_METERS = 150
-const POLICY_SAMPLE_MAX_NEAREST_DISTANCE_M = 300
-const POLICY_SAMPLE_AMBIGUOUS_DISTANCE_DELTA_M = 35
-const POLICY_SAMPLE_AMBIGUOUS_DISTANCE_RATIO = 1.25
 const handledResponseIds = new Set<string>()
+/** OS를 깨우기 위한 geofence 반경 */
+const WORKOUT_PLACE_GEOFENCE_RADIUS_METERS = 50
+let geofenceLifecycle = Promise.resolve()
 
-/** 동기화 옵션 */
+/** geofence 등록, 중지, 교체 작업을 호출 순서대로 실행 */
+function runGeofenceLifecycle<T>(operation: () => Promise<T>) {
+  const result = geofenceLifecycle.catch(() => undefined).then(operation)
+  geofenceLifecycle = result.then(
+    () => undefined,
+    () => undefined,
+  )
+  return result
+}
+
+/** geofence 동기화 호출 옵션 */
 type SyncWorkoutPlaceArrivalReminderOptions = {
+  /** 사용자 액션에 따른 권한 요청 허용 여부 */
   allowPrompt: boolean
 }
 
-/** Geofence task 데이터 */
+/** 현재 위치 등록 결과 */
+export type RegisterCurrentWorkoutPlaceResult =
+  | "registered"
+  | "permission-denied"
+  | "location-unavailable"
+  | "low-accuracy"
+
+/** TaskManager가 전달하는 geofence 이벤트 데이터 */
 interface GeofencingTaskData {
+  /** OS가 전달한 geofence 이벤트 종류 */
   eventType: Location.GeofencingEventType
+  /** 이벤트가 발생한 geofence 영역 */
   region: Location.LocationRegion
 }
 
-/** 장소 알림 권한 상태 */
-interface WorkoutPlaceArrivalPermissionState {
-  granted: boolean
-  notificationGranted: boolean
-  foregroundLocationGranted: boolean
-  backgroundLocationGranted: boolean
-}
-
-/** 권한 거부 기본값 */
-const deniedPermissions: WorkoutPlaceArrivalPermissionState = {
-  backgroundLocationGranted: false,
-  foregroundLocationGranted: false,
-  granted: false,
-  notificationGranted: false,
-}
-
-/** policy 평가에서 쓰는 active workout 스냅샷 phase인지 확인 */
-function isGymPolicyWorkoutPhase(
+/** 저장된 값이 지원하는 운동 상태인지 확인 */
+function isWorkoutPhase(
   value: unknown,
-): value is GymPolicyInput["activeWorkout"]["phase"] {
+): value is "idle" | "countdown" | "recording" | "paused" | "completed" {
   return (
     value === "idle" ||
     value === "countdown" ||
@@ -91,12 +83,12 @@ function isGymPolicyWorkoutPhase(
   )
 }
 
-/** 위치 권한 허용 여부 */
+/** Expo 위치 권한이 허용 상태인지 확인 */
 function isPermissionGranted(status: { status: string; granted?: boolean }) {
   return status.granted === true || status.status === "granted"
 }
 
-/** 알림 권한 허용 여부 */
+/** Expo 알림 권한이 알림 표시 가능한 상태인지 확인 */
 function isNotificationPermissionGranted(
   permissions: Notifications.NotificationPermissionsStatus,
 ) {
@@ -106,7 +98,7 @@ function isNotificationPermissionGranted(
   )
 }
 
-/** 자동 geofence 경로에서는 권한 프롬프트 없이 현재 권한으로만 위치를 1회 조회 */
+/** 권한 프롬프트 없이 고정밀 현재 위치를 한 번 조회 */
 async function getCurrentLocationWithoutPrompt() {
   const foregroundPermission = await Location.getForegroundPermissionsAsync()
   if (!isPermissionGranted(foregroundPermission)) {
@@ -114,162 +106,21 @@ async function getCurrentLocationWithoutPrompt() {
   }
 
   try {
-    return await Location.getCurrentPositionAsync({})
+    return await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    })
   } catch {
     return null
   }
 }
 
-/** 저장된 운동 스냅샷을 policy 입력에 필요한 최소 형태로 정규화 */
-async function getGymPolicyActiveWorkout(): Promise<
-  GymPolicyInput["activeWorkout"]
-> {
+/** 저장된 운동 스냅샷에서 현재 운동 상태를 조회 */
+async function getCurrentWorkoutPhase() {
   const snapshot = await loadCurrentWorkoutSnapshot<Partial<WorkoutState>>()
-  const phase = isGymPolicyWorkoutPhase(snapshot?.phase)
-    ? snapshot.phase
-    : "idle"
-  const location =
-    snapshot?.location &&
-    isValidCoordinates(snapshot.location.lat, snapshot.location.lng)
-      ? snapshot.location
-      : null
-
-  return {
-    location,
-    phase,
-    sessionId:
-      typeof snapshot?.sessionId === "string" ? snapshot.sessionId : null,
-    startedAt:
-      typeof snapshot?.startedAt === "string" ? snapshot.startedAt : null,
-  }
+  return isWorkoutPhase(snapshot?.phase) ? snapshot.phase : "idle"
 }
 
-/** 장소 context가 아직 계산되지 않았을 때 쓰는 보수적 기본값 */
-function getDefaultGymPlaceContext(
-  placeId: string,
-  now: string,
-): GymPlaceContext {
-  return {
-    confidence: 0,
-    context: "UNKNOWN",
-    frequentPlaceLocation: null,
-    highNoiseScore: 0,
-    placeId,
-    updatedAt: now,
-  }
-}
-
-/** 현재 좌표가 어느 반복 장소 샘플인지 계산하고, 가까운 장소가 애매하면 ambiguous로 표시 */
-function buildGymLocationSampleFromCurrentLocation({
-  location,
-  now,
-  places,
-  source,
-}: {
-  location: Location.LocationObject
-  now: string
-  places: WorkoutPlaceReminderPlace[]
-  source: GymLocationSample["source"]
-}): GymLocationSample | null {
-  const currentCoordinate = {
-    lat: location.coords.latitude,
-    lng: location.coords.longitude,
-  }
-
-  if (!isValidCoordinates(currentCoordinate.lat, currentCoordinate.lng)) {
-    return null
-  }
-
-  const placeDistances = places
-    .filter((place) => isValidCoordinates(place.latitude, place.longitude))
-    .map((place) => ({
-      distanceToGymM: getDistanceMeters(
-        { lat: place.latitude, lng: place.longitude },
-        currentCoordinate,
-      ),
-      place,
-    }))
-    .sort((left, right) => left.distanceToGymM - right.distanceToGymM)
-
-  const nearest = placeDistances[0]
-  if (!nearest) {
-    return null
-  }
-
-  const second = placeDistances[1]
-  const isTooFar =
-    nearest.distanceToGymM > POLICY_SAMPLE_MAX_NEAREST_DISTANCE_M
-  const isTooCloseToSecondPlace =
-    second !== undefined &&
-    (second.distanceToGymM - nearest.distanceToGymM <
-      POLICY_SAMPLE_AMBIGUOUS_DISTANCE_DELTA_M ||
-      second.distanceToGymM / Math.max(nearest.distanceToGymM, 1) <
-        POLICY_SAMPLE_AMBIGUOUS_DISTANCE_RATIO)
-  const accuracyM =
-    typeof location.coords.accuracy === "number" &&
-    Number.isFinite(location.coords.accuracy) &&
-    location.coords.accuracy >= 0
-      ? location.coords.accuracy
-      : null
-
-  return {
-    accuracyM,
-    distanceToGymM: nearest.distanceToGymM,
-    id: `${source}:${nearest.place.id}:${now}`,
-    lat: currentCoordinate.lat,
-    lng: currentCoordinate.lng,
-    placeId: nearest.place.id,
-    recordedAt: now,
-    source,
-    ...(isTooFar || isTooCloseToSecondPlace ? { ambiguous: true } : {}),
-  }
-}
-
-/** 알림 예약 성공 후에만 도착 cooldown을 기록 */
-async function markGymArrivalPolicyNotified(placeId: string, now: string) {
-  const cooldowns = await getGymLocationPolicyCooldowns()
-
-  await saveGymLocationPolicyCooldowns({
-    ...cooldowns,
-    arrivalGlobalLastNotifiedAt: now,
-    arrivalLastNotifiedAtByPlaceId: {
-      ...cooldowns.arrivalLastNotifiedAtByPlaceId,
-      [placeId]: now,
-    },
-  })
-}
-
-/** 알림 예약 성공 후에만 종료 cooldown을 기록 */
-async function markGymExitPolicyNotified(sessionId: string, now: string) {
-  const cooldowns = await getGymLocationPolicyCooldowns()
-
-  await saveGymLocationPolicyCooldowns({
-    ...cooldowns,
-    exitGlobalLastNotifiedAt: now,
-    exitLastNotifiedAtBySessionId: {
-      ...cooldowns.exitLastNotifiedAtBySessionId,
-      [sessionId]: now,
-    },
-  })
-}
-
-/** 위치 샘플을 저장하고 장소 context를 갱신 */
-async function appendGymLocationPolicySampleAndRefreshContext(
-  sample: GymLocationSample | null,
-  places: WorkoutPlaceReminderPlace[],
-  now: string,
-) {
-  if (!sample) {
-    return
-  }
-
-  const didAppend = await appendGymLocationPolicySample(sample, now)
-  if (didAppend) {
-    await refreshGymLocationPolicyContexts(places, now)
-  }
-}
-
-/** Android 백그라운드 위치 권한 안내 */
+/** Android 백그라운드 위치 권한 요청 전에 사용 목적을 안내 */
 async function confirmAndroidBackgroundLocationRequest(): Promise<boolean> {
   if (Platform.OS !== "android") {
     return true
@@ -278,11 +129,10 @@ async function confirmAndroidBackgroundLocationRequest(): Promise<boolean> {
   return new Promise((resolve) => {
     let settled = false
     const settle = (value: boolean) => {
-      if (settled) {
-        return
+      if (!settled) {
+        settled = true
+        resolve(value)
       }
-      settled = true
-      resolve(value)
     }
 
     Alert.alert(
@@ -301,23 +151,18 @@ async function confirmAndroidBackgroundLocationRequest(): Promise<boolean> {
           onPress: () => settle(true),
         },
       ],
-      {
-        cancelable: true,
-        onDismiss: () => settle(false),
-      },
+      { cancelable: true, onDismiss: () => settle(false) },
     )
   })
 }
 
-/** 자동 경로에서는 현재 권한만 확인하고, 명시적 ON 경로에서만 권한을 요청한다. */
+/** 자동 경로는 권한을 확인하고 사용자 경로는 필요한 권한을 요청 */
 async function getWorkoutPlaceArrivalPermissions({
   allowPrompt,
 }: SyncWorkoutPlaceArrivalReminderOptions) {
-  const notificationPermission = await Notifications.getPermissionsAsync()
   let notificationGranted = isNotificationPermissionGranted(
-    notificationPermission,
+    await Notifications.getPermissionsAsync(),
   )
-
   if (!notificationGranted && allowPrompt) {
     await ensureWorkoutPlaceArrivalNotificationChannel()
     notificationGranted = isNotificationPermissionGranted(
@@ -332,110 +177,160 @@ async function getWorkoutPlaceArrivalPermissions({
     )
   }
 
-  const foregroundPermission = await Location.getForegroundPermissionsAsync()
-  let foregroundGranted = isPermissionGranted(foregroundPermission)
-
+  let foregroundGranted = isPermissionGranted(
+    await Location.getForegroundPermissionsAsync(),
+  )
   if (!foregroundGranted && allowPrompt) {
     foregroundGranted = isPermissionGranted(
       await Location.requestForegroundPermissionsAsync(),
     )
   }
 
-  const backgroundPermission = await Location.getBackgroundPermissionsAsync()
-  let backgroundGranted = isPermissionGranted(backgroundPermission)
-
+  let backgroundGranted = isPermissionGranted(
+    await Location.getBackgroundPermissionsAsync(),
+  )
   if (!backgroundGranted && allowPrompt && foregroundGranted) {
-    const shouldRequestBackgroundPermission =
-      await confirmAndroidBackgroundLocationRequest()
-
-    if (shouldRequestBackgroundPermission) {
+    const shouldRequest = await confirmAndroidBackgroundLocationRequest()
+    if (shouldRequest) {
       backgroundGranted = isPermissionGranted(
         await Location.requestBackgroundPermissionsAsync(),
       )
     }
   }
 
-  return {
-    backgroundLocationGranted: backgroundGranted,
-    foregroundLocationGranted: foregroundGranted,
-    granted: notificationGranted && foregroundGranted && backgroundGranted,
-    notificationGranted,
-  }
+  return notificationGranted && foregroundGranted && backgroundGranted
 }
 
-/** 오류 메시지 */
-function getErrorMessage(error: unknown) {
-  return error instanceof Error ? error.message : String(error)
-}
-
-/** 동기화 상태 스냅샷 */
+/** 마지막 geofence 동기화 결과를 저장 */
 async function saveSyncStatusSnapshot({
-  enabled,
-  errorMessage = null,
   operational,
-  permissions = deniedPermissions,
-  places = [],
   reason,
 }: {
-  enabled: boolean
-  errorMessage?: string | null
   operational: boolean
-  permissions?: WorkoutPlaceArrivalPermissionState
-  places?: WorkoutPlaceReminderPlace[]
   reason: WorkoutPlaceReminderSyncStatusReason
 }) {
-  const currentStatus = await getWorkoutPlaceReminderSyncStatus()
-  const now = new Date().toISOString()
-
   await saveWorkoutPlaceReminderSyncStatus({
-    backgroundLocationGranted: permissions.backgroundLocationGranted,
-    enabled,
-    foregroundLocationGranted: permissions.foregroundLocationGranted,
-    geofencePlaceCount: places.length,
-    lastErrorMessage: errorMessage,
-    lastEventAt: currentStatus?.lastEventAt ?? null,
-    lastEventPlaceId: currentStatus?.lastEventPlaceId ?? null,
-    lastEventType: currentStatus?.lastEventType ?? null,
-    lastSyncedAt: now,
-    notificationGranted: permissions.notificationGranted,
     operational,
     reason,
-    registeredRegionIds: operational ? places.map((place) => place.id) : [],
   })
 }
 
-/** 운동 장소 도착 알림을 완전히 끄고 geofence 등록을 중지한다. */
-export async function disableWorkoutPlaceArrivalReminder() {
+/** 현재 위치가 정확도 기준을 통과하면 단일 운동 장소로 저장 */
+async function registerCurrentWorkoutPlaceInternal(): Promise<RegisterCurrentWorkoutPlaceResult> {
+  let foregroundGranted = isPermissionGranted(
+    await Location.getForegroundPermissionsAsync(),
+  )
+  if (!foregroundGranted) {
+    foregroundGranted = isPermissionGranted(
+      await Location.requestForegroundPermissionsAsync(),
+    )
+  }
+  if (!foregroundGranted) {
+    return "permission-denied"
+  }
+
+  let location: Location.LocationObject
+  try {
+    location = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    })
+  } catch {
+    return "location-unavailable"
+  }
+
+  const latitude = location.coords.latitude
+  const longitude = location.coords.longitude
+  const accuracy = location.coords.accuracy
+  if (!isValidCoordinates(latitude, longitude)) {
+    return "location-unavailable"
+  }
+  if (
+    accuracy === null ||
+    !Number.isFinite(accuracy) ||
+    accuracy < 0 ||
+    accuracy > WORKOUT_PLACE_ARRIVAL_MAX_ACCURACY_METERS
+  ) {
+    return "low-accuracy"
+  }
+
+  const now = new Date().toISOString()
+  await saveConfirmedWorkoutPlace(
+    {
+      confirmedAt: now,
+      id: WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID,
+      latitude,
+      longitude,
+    },
+    now,
+  )
+  return "registered"
+}
+
+/** 현재 위치 등록 작업을 geofence 생명주기 큐에서 실행 */
+export function registerCurrentWorkoutPlace() {
+  return runGeofenceLifecycle(registerCurrentWorkoutPlaceInternal)
+}
+
+/** 운동 장소 알림을 끄고 등록된 geofence를 중지 */
+async function disableWorkoutPlaceArrivalReminderInternal() {
   await setWorkoutPlaceReminderEnabled(false)
   await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
     () => undefined,
   )
   await saveSyncStatusSnapshot({
-    enabled: false,
     operational: false,
     reason: "disabled",
   })
 }
 
-/** enabled, 권한, 반복 장소 상태를 기준으로 OS geofence 등록을 맞춘다. */
-export async function syncWorkoutPlaceArrivalReminder(
+/** 운동 장소 알림 중지 작업을 호출 순서대로 실행 */
+export function disableWorkoutPlaceArrivalReminder() {
+  return runGeofenceLifecycle(disableWorkoutPlaceArrivalReminderInternal)
+}
+
+/** 등록 장소, pending prompt, geofence를 함께 정리 */
+export function clearWorkoutPlaceRegistration() {
+  return runGeofenceLifecycle(async () => {
+    await disableWorkoutPlaceArrivalReminderInternal()
+    await Promise.all([
+      clearConfirmedWorkoutPlace(),
+      clearPendingWorkoutPlaceReminderPrompt(),
+    ])
+  })
+}
+
+/** 저장 상태와 권한에 맞춰 단일 50m geofence를 동기화 */
+async function syncWorkoutPlaceArrivalReminderInternal(
   options: SyncWorkoutPlaceArrivalReminderOptions,
 ) {
-  if (!options.allowPrompt && !(await getWorkoutPlaceReminderEnabled())) {
+  const enabled = await getWorkoutPlaceReminderEnabled()
+  if (!options.allowPrompt && !enabled) {
     await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
       () => undefined,
     )
     await saveSyncStatusSnapshot({
-      enabled: false,
       operational: false,
       reason: "disabled",
     })
     return false
   }
 
-  const permissions = await getWorkoutPlaceArrivalPermissions(options)
+  const place = await getConfirmedWorkoutPlace()
+  if (!place) {
+    await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
+      () => undefined,
+    )
+    await setWorkoutPlaceReminderEnabled(false)
+    await clearPendingWorkoutPlaceReminderPrompt()
+    await saveSyncStatusSnapshot({
+      operational: false,
+      reason: "no-place",
+    })
+    return false
+  }
 
-  if (!permissions.granted) {
+  const permissions = await getWorkoutPlaceArrivalPermissions(options)
+  if (!permissions) {
     await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
       () => undefined,
     )
@@ -443,9 +338,7 @@ export async function syncWorkoutPlaceArrivalReminder(
       await setWorkoutPlaceReminderEnabled(false)
     }
     await saveSyncStatusSnapshot({
-      enabled: !options.allowPrompt,
       operational: false,
-      permissions,
       reason: "permission-denied",
     })
     return false
@@ -453,35 +346,18 @@ export async function syncWorkoutPlaceArrivalReminder(
 
   await ensureWorkoutPlaceArrivalNotificationChannel()
 
-  const places = await getWorkoutPlaceReminderGeofencePlaces()
-
-  if (places.length === 0) {
-    await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
-      () => undefined,
-    )
-    await setWorkoutPlaceReminderEnabled(true)
-    await saveSyncStatusSnapshot({
-      enabled: true,
-      operational: false,
-      permissions,
-      reason: "no-places",
-    })
-    return true
-  }
-
   try {
-    await Location.startGeofencingAsync(
-      WORKOUT_PLACE_ARRIVAL_TASK_NAME,
-      places.map((place) => ({
+    await Location.startGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME, [
+      {
         identifier: place.id,
         latitude: place.latitude,
         longitude: place.longitude,
         notifyOnEnter: true,
-        notifyOnExit: true,
-        radius: GEOFENCE_RADIUS_METERS,
-      })),
-    )
-  } catch (error) {
+        notifyOnExit: false,
+        radius: WORKOUT_PLACE_GEOFENCE_RADIUS_METERS,
+      },
+    ])
+  } catch {
     await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
       () => undefined,
     )
@@ -489,11 +365,7 @@ export async function syncWorkoutPlaceArrivalReminder(
       await setWorkoutPlaceReminderEnabled(false)
     }
     await saveSyncStatusSnapshot({
-      enabled: !options.allowPrompt,
-      errorMessage: getErrorMessage(error),
       operational: false,
-      permissions,
-      places,
       reason: "registration-failed",
     })
     return false
@@ -501,34 +373,24 @@ export async function syncWorkoutPlaceArrivalReminder(
 
   await setWorkoutPlaceReminderEnabled(true)
   await saveSyncStatusSnapshot({
-    enabled: true,
     operational: true,
-    permissions,
-    places,
     reason: "registered",
   })
   return true
 }
 
-/** 종료 리마인더 탭이 현재 운동 세션과 맞는지 확인 */
-async function handleWorkoutPlaceExitReminderResponse(
-  sessionId: string,
-  onExitReminderReady?: () => void,
+/** geofence 동기화 작업을 호출 순서대로 실행 */
+export function syncWorkoutPlaceArrivalReminder(
+  options: SyncWorkoutPlaceArrivalReminderOptions,
 ) {
-  const activeWorkout = await getGymPolicyActiveWorkout()
-  if (
-    (activeWorkout.phase === "recording" ||
-      activeWorkout.phase === "paused") &&
-    activeWorkout.sessionId === sessionId
-  ) {
-    onExitReminderReady?.()
-  }
+  return runGeofenceLifecycle(() =>
+    syncWorkoutPlaceArrivalReminderInternal(options),
+  )
 }
 
-/** 운동 장소 알림 탭 응답을 처리 */
+/** 운동 장소 알림 탭 응답을 pending prompt로 변환 */
 export function registerWorkoutPlaceNotificationHandler(
   onPromptReady?: () => void,
-  onExitReminderReady?: () => void,
 ) {
   const handleResponse = (
     response: Notifications.NotificationResponse | null | undefined,
@@ -540,92 +402,77 @@ export function registerWorkoutPlaceNotificationHandler(
 
     const data = response?.notification.request.content.data
     const placeId = data?.placeId
-
-    if (data?.type === WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE) {
-      if (typeof placeId !== "string") {
-        return
-      }
-
-      handledResponseIds.add(requestId)
-
-      void savePendingWorkoutPlaceReminderPrompt({
-        placeId,
-        createdAt: new Date().toISOString(),
-      }).then(() => {
-        onPromptReady?.()
-      })
-
-      Notifications.clearLastNotificationResponse()
+    if (
+      data?.type !== WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE ||
+      placeId !== WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID
+    ) {
       return
     }
 
-    if (data?.type === WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE) {
-      const sessionId = data.sessionId
-      if (typeof placeId !== "string" || typeof sessionId !== "string") {
-        return
-      }
-
-      handledResponseIds.add(requestId)
-
-      void handleWorkoutPlaceExitReminderResponse(
-        sessionId,
-        onExitReminderReady,
-      ).finally(() => {
-        Notifications.clearLastNotificationResponse()
-      })
-    }
+    handledResponseIds.add(requestId)
+    void savePendingWorkoutPlaceReminderPrompt({
+      placeId,
+      createdAt: new Date().toISOString(),
+    }).then(() => onPromptReady?.())
+    Notifications.clearLastNotificationResponse()
   }
 
   handleResponse(Notifications.getLastNotificationResponse())
-
   const subscription =
     Notifications.addNotificationResponseReceivedListener(handleResponse)
-
   return () => subscription.remove()
 }
 
+/** Enter 신호를 현재 위치, 운동 상태, cooldown으로 재검증 */
 async function handleWorkoutPlaceArrivalEnter(placeId: string) {
-  const places = await getWorkoutPlaceReminderPlaces()
-  const place = places.find((item) => item.id === placeId)
-
-  if (!place) {
+  if (
+    placeId !== WORKOUT_PLACE_REMINDER_CONFIRMED_PLACE_ID ||
+    !(await getWorkoutPlaceReminderEnabled())
+  ) {
     return
   }
 
-  const now = new Date().toISOString()
-  const currentLocation = await getCurrentLocationWithoutPrompt()
-  const currentSample = currentLocation
-    ? buildGymLocationSampleFromCurrentLocation({
-        location: currentLocation,
-        now,
-        places,
-        source: "geofence-enter",
-      })
-    : null
-
-  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
-
-  const [activeWorkout, contexts, cooldowns, sampleRecord] = await Promise.all([
-    getGymPolicyActiveWorkout(),
-    getGymLocationPolicyContexts(),
-    getGymLocationPolicyCooldowns(),
-    getGymLocationPolicySamples(now),
-  ])
-  const decision = evaluateGymArrivalPolicy({
-    activeWorkout,
-    context: contexts[place.id] ?? getDefaultGymPlaceContext(place.id, now),
-    cooldowns,
-    currentLocation: currentSample,
-    now,
-    place,
-    recentSamples: sampleRecord[place.id] ?? [],
-  })
-
-  if (!decision.shouldNotify) {
+  const place = await getConfirmedWorkoutPlace()
+  const location = await getCurrentLocationWithoutPrompt()
+  if (!place || !location) {
     return
   }
 
   await ensureWorkoutPlaceArrivalNotificationChannel()
+
+  const [latestEnabled, latestPlace, cooldownStartedAt, phase] =
+    await Promise.all([
+      getWorkoutPlaceReminderEnabled(),
+      getConfirmedWorkoutPlace(),
+      getWorkoutPlaceReminderCooldownStartedAt(),
+      getCurrentWorkoutPhase(),
+    ])
+  if (
+    !latestEnabled ||
+    !latestPlace ||
+    latestPlace.confirmedAt !== place.confirmedAt ||
+    latestPlace.latitude !== place.latitude ||
+    latestPlace.longitude !== place.longitude
+  ) {
+    return
+  }
+
+  const now = new Date().toISOString()
+  const distanceMeters = getDistanceMeters(
+    { lat: latestPlace.latitude, lng: latestPlace.longitude },
+    { lat: location.coords.latitude, lng: location.coords.longitude },
+  )
+  if (
+    !shouldNotifyWorkoutPlaceArrival({
+      accuracyMeters: location.coords.accuracy,
+      cooldownStartedAt,
+      distanceMeters,
+      now,
+      phase,
+    })
+  ) {
+    return
+  }
 
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -641,127 +488,10 @@ async function handleWorkoutPlaceArrivalEnter(placeId: string) {
         ? { channelId: WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID }
         : null,
   })
-  await markGymArrivalPolicyNotified(placeId, now)
+  await markWorkoutPlaceReminderCooldown(now)
 }
 
-async function handleWorkoutPlaceExit(placeId: string) {
-  const places = await getWorkoutPlaceReminderPlaces()
-  const place = places.find((item) => item.id === placeId)
-
-  if (!place) {
-    return
-  }
-
-  const now = new Date().toISOString()
-  const currentLocation = await getCurrentLocationWithoutPrompt()
-  const currentSample = currentLocation
-    ? buildGymLocationSampleFromCurrentLocation({
-        location: currentLocation,
-        now,
-        places,
-        source: "geofence-exit",
-      })
-    : null
-
-  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
-
-  await evaluateAndScheduleGymExitReminder({
-    activeWorkout: await getGymPolicyActiveWorkout(),
-    currentSample,
-    now,
-    place,
-  })
-}
-
-/** 종료 누락 리마인더를 보낼지 확인하고 알림을 예약 */
-async function evaluateAndScheduleGymExitReminder({
-  activeWorkout,
-  currentSample,
-  now,
-  place,
-}: {
-  activeWorkout: GymPolicyInput["activeWorkout"]
-  currentSample: GymLocationSample | null
-  now: string
-  place: WorkoutPlaceReminderPlace
-}) {
-  const [contexts, cooldowns, sampleRecord] = await Promise.all([
-    getGymLocationPolicyContexts(),
-    getGymLocationPolicyCooldowns(),
-    getGymLocationPolicySamples(now),
-  ])
-
-  const decision = evaluateGymExitPolicy({
-    activeWorkout,
-    context: contexts[place.id] ?? getDefaultGymPlaceContext(place.id, now),
-    cooldowns,
-    currentLocation: currentSample,
-    now,
-    place,
-    recentSamples: sampleRecord[place.id] ?? [],
-  })
-
-  if (!decision.shouldNotify || !activeWorkout.sessionId) {
-    return false
-  }
-
-  await ensureWorkoutPlaceArrivalNotificationChannel()
-
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title: i18n.t("workoutPlaceReminder.exitNotification.title"),
-      body: i18n.t("workoutPlaceReminder.exitNotification.body"),
-      data: {
-        type: WORKOUT_PLACE_EXIT_REMINDER_NOTIFICATION_TYPE,
-        placeId: place.id,
-        sessionId: activeWorkout.sessionId,
-      },
-    },
-    trigger:
-      Platform.OS === "android"
-        ? { channelId: WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID }
-        : null,
-  })
-  await markGymExitPolicyNotified(activeWorkout.sessionId, now)
-  return true
-}
-
-/** 앱이 active로 돌아왔을 때 진행 중 운동의 종료 누락 가능성을 한 번 확인 */
-export async function syncWorkoutPlaceExitReminderOnAppActive() {
-  const activeWorkout = await getGymPolicyActiveWorkout()
-  if (
-    activeWorkout.phase !== "recording" &&
-    activeWorkout.phase !== "paused"
-  ) {
-    return false
-  }
-
-  const places = await getWorkoutPlaceReminderPlaces()
-  const now = new Date().toISOString()
-  const currentLocation = await getCurrentLocationWithoutPrompt()
-  const currentSample = currentLocation
-    ? buildGymLocationSampleFromCurrentLocation({
-        location: currentLocation,
-        now,
-        places,
-        source: "workout-active-check",
-      })
-    : null
-
-  await appendGymLocationPolicySampleAndRefreshContext(currentSample, places, now)
-
-  const place = places.find((item) => item.id === currentSample?.placeId)
-  if (!place) {
-    return false
-  }
-
-  return evaluateAndScheduleGymExitReminder({
-    activeWorkout,
-    currentSample,
-    now,
-    place,
-  })
-}
+let arrivalHandling = Promise.resolve()
 
 if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
   TaskManager.defineTask<GeofencingTaskData>(
@@ -769,18 +499,13 @@ if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
     async ({ data, error }) => {
       if (error) {
         await saveSyncStatusSnapshot({
-          enabled: await getWorkoutPlaceReminderEnabled(),
-          errorMessage: error.message,
           operational: false,
           reason: "registration-failed",
         }).catch(() => undefined)
         return
       }
 
-      if (
-        data?.eventType !== Location.GeofencingEventType.Enter &&
-        data?.eventType !== Location.GeofencingEventType.Exit
-      ) {
+      if (data?.eventType !== Location.GeofencingEventType.Enter) {
         return
       }
 
@@ -789,21 +514,10 @@ if (!TaskManager.isTaskDefined(WORKOUT_PLACE_ARRIVAL_TASK_NAME)) {
         return
       }
 
-      await saveWorkoutPlaceReminderSyncEvent({
-        eventType:
-          data.eventType === Location.GeofencingEventType.Enter
-            ? "enter"
-            : "exit",
-        occurredAt: new Date().toISOString(),
-        placeId,
-      }).catch(() => undefined)
-
-      if (data.eventType === Location.GeofencingEventType.Enter) {
-        await handleWorkoutPlaceArrivalEnter(placeId).catch(() => undefined)
-        return
-      }
-
-      await handleWorkoutPlaceExit(placeId).catch(() => undefined)
+      arrivalHandling = arrivalHandling
+        .catch(() => undefined)
+        .then(() => handleWorkoutPlaceArrivalEnter(placeId))
+      await arrivalHandling.catch(() => undefined)
     },
   )
 }

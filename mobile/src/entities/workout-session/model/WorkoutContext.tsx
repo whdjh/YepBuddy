@@ -18,8 +18,7 @@ import {
   saveCurrentWorkoutSnapshot,
   updateStoredWorkoutHealthKitMetrics,
 } from "./sessionStorage"
-import { upsertWorkoutPlaceReminderPlaceFromSession } from "./workoutPlaceReminderStorage"
-import { syncWorkoutPlaceArrivalReminder } from "../lib/workoutPlaceArrivalReminder"
+import { markWorkoutPlaceReminderCooldown } from "./workoutPlaceReminderStorage"
 import {
   consumeWorkoutLiveActivityCommands,
   endWorkoutLiveActivity,
@@ -110,12 +109,15 @@ function getWorkoutLiveActivityStatusText(params: {
   return params.cardioStartedAt ? "유산소 기록 중" : "운동 기록 중"
 }
 
+/** 현재 운동 상태와 세션 제어 액션을 앱 전체에 제공 */
 export function WorkoutProvider({ children }: PropsWithChildren) {
   // 실제 운동 세션 상태 관리
   const [state, dispatch] = useReducer(workoutReducer, initialWorkoutState)
   // 저장소 복구가 끝났는지 표시
   const [isHydrated, setIsHydrated] = useState(false)
   const stateRef = useRef(state)
+  // 같은 세션의 동시·순차 완료 요청을 한 번만 처리
+  const completionSessionIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     stateRef.current = state
@@ -294,47 +296,60 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     routineSubstitution?: WorkoutRoutineSubstitution | null
     isDeload?: boolean
   } = {}) => {
-    if (!state.sessionId || !state.startedAt) {
+    if (
+      !state.sessionId ||
+      !state.startedAt ||
+      completionSessionIdRef.current === state.sessionId
+    ) {
       return null
     }
 
-    // 종료 시각을 reducer에 반영하고, 별도로 완료 세션 저장까지 수행한다.
-    const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
-    dispatch({ type: "COMPLETE", payload: { completedAt } })
-    const isDeload =
-      options.isDeload ??
-      (await loadRoutineCycleProgressSnapshot()
-        .then((snapshot) => snapshot.isDeloadCycle)
-        .catch(() => false))
+    const completingSessionId = state.sessionId
+    let sessionSaved = false
+    completionSessionIdRef.current = completingSessionId
+    try {
+      const completedAt = getWorkoutCompletedAt({ pausedAt: state.pausedAt })
+      const isDeload =
+        options.isDeload ??
+        (await loadRoutineCycleProgressSnapshot()
+          .then((snapshot) => snapshot.isDeloadCycle)
+          .catch(() => false))
 
-    const session = buildCompletedWorkoutSession(
-      {
-        activeKcal: state.activeKcal,
-        bodyParts: state.bodyParts,
-        cardioStartedAt: state.cardioStartedAt,
-        location: state.location,
-        memo: state.memo,
-        sessionId: state.sessionId,
-        startedAt: state.startedAt,
-        totalKcal: state.totalKcal,
-      },
-      completedAt,
-      options.routineSubstitution ?? null,
-      isDeload,
-    )
-    if (!session) {
-      return null
+      const session = buildCompletedWorkoutSession(
+        {
+          activeKcal: state.activeKcal,
+          bodyParts: state.bodyParts,
+          cardioStartedAt: state.cardioStartedAt,
+          location: state.location,
+          memo: state.memo,
+          sessionId: state.sessionId,
+          startedAt: state.startedAt,
+          totalKcal: state.totalKcal,
+        },
+        completedAt,
+        options.routineSubstitution ?? null,
+        isDeload,
+      )
+      if (!session) {
+        return null
+      }
+
+      await saveCompletedWorkoutSession(session)
+      sessionSaved = true
+      await markWorkoutPlaceReminderCooldown(completedAt).catch(
+        () => undefined,
+      )
+      dispatch({ type: "COMPLETE", payload: { completedAt } })
+      await clearCurrentWorkoutSnapshot()
+      return session
+    } finally {
+      if (
+        !sessionSaved &&
+        completionSessionIdRef.current === completingSessionId
+      ) {
+        completionSessionIdRef.current = null
+      }
     }
-
-    await saveCompletedWorkoutSession(session)
-    await upsertWorkoutPlaceReminderPlaceFromSession(session).catch(
-      () => undefined,
-    )
-    await syncWorkoutPlaceArrivalReminder({ allowPrompt: false }).catch(
-      () => undefined,
-    )
-    await clearCurrentWorkoutSnapshot()
-    return session
   }, [
     state.bodyParts,
     state.activeKcal,

@@ -1,18 +1,24 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Switch } from "react-native"
+import { ActivityIndicator, Alert, Switch, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
+  clearWorkoutPlaceRegistration,
   disableWorkoutPlaceArrivalReminder,
+  getConfirmedWorkoutPlace,
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderSyncStatus,
+  registerCurrentWorkoutPlace,
   setWorkoutPlaceReminderEnabled,
   syncWorkoutPlaceArrivalReminder,
+  type RegisterCurrentWorkoutPlaceResult,
   type WorkoutPlaceReminderSyncStatus,
 } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
+import { Button } from "@/shared/ui/Button"
 import { SettingsRow } from "./SettingsRow"
 
+/** 운동 장소 등록과 도착 알림 ON/OFF를 관리 */
 export function WorkoutPlaceArrivalReminderToggle() {
   const { t } = useTranslation()
   const accent = useResolvedColorToken(semanticColorTokens.accent)
@@ -20,6 +26,7 @@ export function WorkoutPlaceArrivalReminderToggle() {
   const surface = useResolvedColorToken(semanticColorTokens.surface)
 
   const [enabled, setEnabled] = useState(false)
+  const [hasPlace, setHasPlace] = useState(false)
   const [loading, setLoading] = useState(true)
   const [syncStatus, setSyncStatus] =
     useState<WorkoutPlaceReminderSyncStatus | null>(null)
@@ -31,11 +38,19 @@ export function WorkoutPlaceArrivalReminderToggle() {
     void Promise.all([
       getWorkoutPlaceReminderEnabled(),
       getWorkoutPlaceReminderSyncStatus(),
+      getConfirmedWorkoutPlace(),
     ])
-      .then(([storedEnabled, storedSyncStatus]) => {
-        if (!cancelled) {
-          setEnabled(storedEnabled)
-          setSyncStatus(storedSyncStatus)
+      .then(([storedEnabled, storedSyncStatus, place]) => {
+        if (cancelled) {
+          return
+        }
+
+        const placeExists = place !== null
+        setEnabled(storedEnabled && placeExists)
+        setHasPlace(placeExists)
+        setSyncStatus(storedSyncStatus)
+        if (storedEnabled && !placeExists) {
+          void disableWorkoutPlaceArrivalReminder()
         }
       })
       .catch(() => undefined)
@@ -50,8 +65,12 @@ export function WorkoutPlaceArrivalReminderToggle() {
     }
   }, [])
 
+  const refreshSyncStatus = async () => {
+    setSyncStatus(await getWorkoutPlaceReminderSyncStatus().catch(() => null))
+  }
+
   const handleToggle = async () => {
-    if (updating) {
+    if (updating || !hasPlace) {
       return
     }
 
@@ -65,23 +84,14 @@ export function WorkoutPlaceArrivalReminderToggle() {
         const synced = await syncWorkoutPlaceArrivalReminder({
           allowPrompt: true,
         })
-
-        if (!synced) {
-          await setWorkoutPlaceReminderEnabled(false).catch(() => undefined)
-        }
-
         setEnabled(synced)
-        setSyncStatus(
-          await getWorkoutPlaceReminderSyncStatus().catch(() => null),
-        )
+        await refreshSyncStatus()
         return
       }
 
       await disableWorkoutPlaceArrivalReminder()
       setEnabled(false)
-      setSyncStatus(
-        await getWorkoutPlaceReminderSyncStatus().catch(() => null),
-      )
+      await refreshSyncStatus()
     } catch {
       setEnabled(previousEnabled)
       await setWorkoutPlaceReminderEnabled(previousEnabled).catch(
@@ -92,16 +102,112 @@ export function WorkoutPlaceArrivalReminderToggle() {
     }
   }
 
-  const statusMessage =
-    enabled && syncStatus && !syncStatus.operational
+  const getRegistrationErrorKey = (result: RegisterCurrentWorkoutPlaceResult) => {
+    if (result === "permission-denied") {
+      return "settings.workoutPlaceReminder.registrationPermissionDenied"
+    }
+    if (result === "low-accuracy") {
+      return "settings.workoutPlaceReminder.registrationLowAccuracy"
+    }
+    return "settings.workoutPlaceReminder.registrationUnavailable"
+  }
+
+  const registerPlace = async () => {
+    setUpdating(true)
+    try {
+      const result = await registerCurrentWorkoutPlace()
+      if (result !== "registered") {
+        Alert.alert(
+          t("settings.workoutPlaceReminder.registrationErrorTitle"),
+          t(getRegistrationErrorKey(result)),
+        )
+        return
+      }
+
+      setHasPlace(true)
+      if (enabled) {
+        await syncWorkoutPlaceArrivalReminder({ allowPrompt: false })
+        await refreshSyncStatus()
+      }
+      Alert.alert(
+        t("settings.workoutPlaceReminder.registrationSuccessTitle"),
+        t("settings.workoutPlaceReminder.registrationSuccessBody"),
+      )
+    } catch {
+      Alert.alert(
+        t("settings.workoutPlaceReminder.registrationErrorTitle"),
+        t("settings.workoutPlaceReminder.registrationUnavailable"),
+      )
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const handleRegisterPress = () => {
+    if (updating) {
+      return
+    }
+
+    Alert.alert(
+      t("settings.workoutPlaceReminder.registrationConfirmTitle"),
+      t("settings.workoutPlaceReminder.registrationConfirmBody"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.workoutPlaceReminder.registrationConfirmAction"),
+          onPress: () => void registerPlace(),
+        },
+      ],
+      { cancelable: true },
+    )
+  }
+
+  const clearPlace = async () => {
+    setUpdating(true)
+    try {
+      await clearWorkoutPlaceRegistration()
+      setEnabled(false)
+      setHasPlace(false)
+      await refreshSyncStatus()
+    } catch {
+      Alert.alert(
+        t("settings.workoutPlaceReminder.registrationErrorTitle"),
+        t("settings.workoutPlaceReminder.registrationUnavailable"),
+      )
+    } finally {
+      setUpdating(false)
+    }
+  }
+
+  const handleClearPress = () => {
+    if (updating) {
+      return
+    }
+
+    Alert.alert(
+      t("settings.workoutPlaceReminder.clearConfirmTitle"),
+      t("settings.workoutPlaceReminder.clearConfirmBody"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("settings.workoutPlaceReminder.clearConfirmAction"),
+          style: "destructive",
+          onPress: () => void clearPlace(),
+        },
+      ],
+      { cancelable: true },
+    )
+  }
+
+  const statusMessage = !hasPlace
+    ? t("settings.workoutPlaceReminder.statusNoPlace")
+    : enabled && syncStatus && !syncStatus.operational
       ? syncStatus.reason === "permission-denied"
         ? t("settings.workoutPlaceReminder.statusPermissionDenied")
         : syncStatus.reason === "registration-failed"
           ? t("settings.workoutPlaceReminder.statusRegistrationFailed")
-          : syncStatus.reason === "no-places"
-            ? t("settings.workoutPlaceReminder.statusNoPlaces")
-            : null
-      : null
+          : null
+      : t("settings.workoutPlaceReminder.statusPlaceRegistered")
   const body = statusMessage
     ? `${t("settings.workoutPlaceReminder.body")}\n${statusMessage}`
     : t("settings.workoutPlaceReminder.body")
@@ -116,11 +222,14 @@ export function WorkoutPlaceArrivalReminderToggle() {
         ) : (
           <Switch
             value={enabled}
-            disabled={updating}
+            disabled={updating || !hasPlace}
             accessibilityRole="switch"
             accessibilityLabel={t("settings.workoutPlaceReminder.title")}
-            accessibilityHint={t("settings.workoutPlaceReminder.body")}
-            accessibilityState={{ checked: enabled, disabled: updating }}
+            accessibilityHint={body}
+            accessibilityState={{
+              checked: enabled,
+              disabled: updating || !hasPlace,
+            }}
             onValueChange={() => {
               void handleToggle()
             }}
@@ -128,6 +237,32 @@ export function WorkoutPlaceArrivalReminderToggle() {
             thumbColor={surface}
           />
         )
+      }
+      footer={
+        <View className="mt-yb-4 gap-yb-2">
+          <Button
+            variant="outline"
+            label={t(
+              hasPlace
+                ? "settings.workoutPlaceReminder.changePlace"
+                : "settings.workoutPlaceReminder.registerPlace",
+            )}
+            disabled={loading || updating}
+            accessibilityRole="button"
+            accessibilityState={{ busy: updating, disabled: loading || updating }}
+            onPress={handleRegisterPress}
+          />
+          {hasPlace && (
+            <Button
+              variant="ghost"
+              label={t("settings.workoutPlaceReminder.clearPlace")}
+              disabled={updating}
+              accessibilityRole="button"
+              accessibilityState={{ busy: updating, disabled: updating }}
+              onPress={handleClearPress}
+            />
+          )}
+        </View>
       }
     />
   )
