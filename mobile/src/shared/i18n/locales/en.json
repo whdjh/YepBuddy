@@ -53,13 +53,29 @@
     },
     "workoutPlaceReminder": {
       "title": "Workout Place Alerts",
-      "body": "At repeated workout places, we will suggest starting a workout and remind you to stop recording after you leave.",
+      "body": "Suggests starting a workout when you arrive within 20 m of your registered gym.",
       "backgroundPermissionTitle": "Background Location Permission Needed",
-      "backgroundPermissionBody": "To detect arrival and leaving near workout places when the app is not open, change location access to Always on the next screen.",
+      "backgroundPermissionBody": "To detect arrival at your gym when the app is not open, change location access to Always on the next screen.",
       "backgroundPermissionAction": "Open Permission Settings",
       "statusPermissionDenied": "Location or notification permissions need attention.",
       "statusRegistrationFailed": "Could not register workout place alerts.",
-      "statusNoPlaces": "Places will register after repeated workouts."
+      "statusNoPlace": "Register your current location while you are at the gym first.",
+      "statusPlaceRegistered": "Your gym location is registered.",
+      "registerPlace": "Register Current Location as Gym",
+      "changePlace": "Replace Gym with Current Location",
+      "clearPlace": "Remove Registered Gym",
+      "registrationConfirmTitle": "Register This Gym Location?",
+      "registrationConfirmBody": "Register while you are inside the gym for accurate alerts. The location is saved only when accuracy is within 20 m.",
+      "registrationConfirmAction": "Register Current Location",
+      "registrationSuccessTitle": "Gym Location Registered",
+      "registrationSuccessBody": "Turn on alerts to be notified when you arrive within 20 m of this location.",
+      "registrationErrorTitle": "Could Not Register Gym Location",
+      "registrationPermissionDenied": "Location permission is required to register your current location.",
+      "registrationLowAccuracy": "Current location accuracy is worse than 20 m. Try again inside or near the gym entrance.",
+      "registrationUnavailable": "Your current location is unavailable. Try again shortly.",
+      "clearConfirmTitle": "Remove the Registered Gym?",
+      "clearConfirmBody": "Workout place alerts will also be turned off.",
+      "clearConfirmAction": "Remove"
     },
     "calendarAutoAdd": {
       "title": "Calendar Auto Save",
@@ -73,10 +89,6 @@
     "notification": {
       "title": "You are near a workout place",
       "body": "Would you like to start a workout?"
-    },
-    "exitNotification": {
-      "title": "Your workout is still recording",
-      "body": "If you are done, return to end the workout."
     },
     "prompt": {
       "title": "You are near a workout place",

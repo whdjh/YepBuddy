@@ -53,13 +53,29 @@
     },
     "workoutPlaceReminder": {
       "title": "운동 장소 알림",
-      "body": "반복 운동 장소에서는 시작을 제안하고, 운동을 켜둔 채 떠나면 종료를 알려드릴게요.",
+      "body": "등록한 헬스장 20m 안에 도착하면 운동 시작을 제안해요.",
       "backgroundPermissionTitle": "백그라운드 위치 권한이 필요해요",
-      "backgroundPermissionBody": "앱을 열지 않아도 운동 장소 근처 도착과 이탈을 감지하려면 다음 화면에서 위치 권한을 항상 허용으로 바꿔주세요.",
+      "backgroundPermissionBody": "앱을 열지 않아도 헬스장 도착을 감지하려면 다음 화면에서 위치 권한을 항상 허용으로 바꿔주세요.",
       "backgroundPermissionAction": "권한 설정하기",
       "statusPermissionDenied": "위치 또는 알림 권한 확인이 필요해요.",
       "statusRegistrationFailed": "운동 장소 알림 등록에 실패했어요.",
-      "statusNoPlaces": "반복 운동 장소가 생기면 자동 등록됩니다."
+      "statusNoPlace": "헬스장에서 현재 위치를 먼저 등록해주세요.",
+      "statusPlaceRegistered": "헬스장 위치가 등록되어 있어요.",
+      "registerPlace": "현재 위치를 헬스장으로 등록",
+      "changePlace": "현재 위치로 헬스장 변경",
+      "clearPlace": "등록한 헬스장 삭제",
+      "registrationConfirmTitle": "헬스장 위치를 등록할까요?",
+      "registrationConfirmBody": "정확한 알림을 위해 헬스장 안에서 등록해주세요. 위치 정확도가 20m 이내일 때만 저장합니다.",
+      "registrationConfirmAction": "현재 위치 등록",
+      "registrationSuccessTitle": "헬스장 위치를 등록했어요",
+      "registrationSuccessBody": "알림을 켜면 이 위치 20m 안에 도착했을 때 알려드릴게요.",
+      "registrationErrorTitle": "헬스장 위치를 등록하지 못했어요",
+      "registrationPermissionDenied": "현재 위치를 등록하려면 위치 권한이 필요해요.",
+      "registrationLowAccuracy": "현재 위치 정확도가 20m보다 낮아요. 헬스장 안이나 출입구 근처에서 다시 시도해주세요.",
+      "registrationUnavailable": "현재 위치를 확인할 수 없어요. 잠시 후 다시 시도해주세요.",
+      "clearConfirmTitle": "등록한 헬스장을 삭제할까요?",
+      "clearConfirmBody": "운동 장소 알림도 함께 꺼집니다.",
+      "clearConfirmAction": "삭제"
     },
     "calendarAutoAdd": {
       "title": "캘린더 자동 저장",
@@ -73,10 +89,6 @@
     "notification": {
       "title": "운동 장소 근처에 도착했어요",
       "body": "운동을 시작하시겠어요?"
-    },
-    "exitNotification": {
-      "title": "운동을 아직 기록 중이에요",
-      "body": "운동을 마쳤다면 기록을 종료해주세요."
     },
     "prompt": {
       "title": "운동 장소 근처에 도착했어요",
