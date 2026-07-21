@@ -211,16 +211,16 @@
   },
 
   "map-card": {
-    "$description": "운동 상세 — 지도 플레이스홀더",
-    "light": { "bg": "{cream.200}" },
-    "dark":  { "bg": "{earth.350}" },
-    "height": 140,
+    "$description": "운동 상세 — 위치 지도",
+    "bg": "{surface-muted}",
+    "height": 200,
     "radius": "{radius-rule.card-outer}",
-    "dot-color": "{status.success}",
-    "dot-size": 12,
+    "marker-color": "{accent}",
+    "marker-size": 24,
+    "marker-center-color": "{on-accent}",
+    "marker-center-size": 8,
     "label-font": "{typography.caption}",
-    "label-bg-light": "rgba(255,255,255,0.8)",
-    "label-bg-dark":  "rgba(255,255,255,0.1)"
+    "label-bg": "{surface}"
   },
 
   "price-chart": {
