@@ -164,6 +164,7 @@
       "avgHeartRate": "평균 심박수",
       "heartRateChart": "심박수",
       "location": "운동 위치",
+      "mapAttributionLabel": "OpenStreetMap 저작권 정보 열기",
       "statsTitle": "운동 세부사항",
       "editSets": "세트 수 수정",
       "editSetsTitle": "세트 수 수정",

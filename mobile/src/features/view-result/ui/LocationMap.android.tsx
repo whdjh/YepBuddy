@@ -31,7 +31,7 @@ export function LocationMap({
     : []
 
   return (
-    <GlassSurface cornerRadius={20} paddingSize={0}>
+    <GlassSurface cornerRadius={16} paddingSize={0}>
       <View
         className="h-[200px] overflow-hidden bg-yb-surface-muted"
         onLayout={({ nativeEvent }) => setMapWidth(nativeEvent.layout.width)}
@@ -41,7 +41,7 @@ export function LocationMap({
             key={tile.uri}
             source={{ uri: tile.uri, headers: TILE_REQUEST_HEADERS }}
             cachePolicy="disk"
-            className="absolute left-0 top-0 h-64 w-64"
+            className="absolute left-0 top-0 h-[256px] w-[256px]"
             style={{
               transform: [
                 { translateX: tile.left },
@@ -57,11 +57,12 @@ export function LocationMap({
 
         <Pressable
           accessibilityRole="link"
-          accessibilityLabel="OpenStreetMap 저작권 정보"
-          className="absolute bottom-yb-1 right-yb-1 rounded-yb-xs bg-yb-surface/90 px-yb-1 py-yb-0.5"
+          accessibilityLabel={t("workout.result.mapAttributionLabel")}
+          className="absolute bottom-yb-1 right-yb-1 rounded-yb-xs bg-yb-surface px-yb-1 py-yb-0.5"
+          hitSlop={{ top: 24, bottom: 4, left: 12, right: 4 }}
           onPress={() => void openWebUrl(OSM_COPYRIGHT_URL)}
         >
-          <Text className="text-[10px] text-yb-fg-secondary">
+          <Text className="text-yb-caption text-yb-fg-secondary">
             © OpenStreetMap
           </Text>
         </Pressable>

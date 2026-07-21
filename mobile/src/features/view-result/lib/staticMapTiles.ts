@@ -1,7 +1,7 @@
 const TILE_SIZE = 256
 const MAX_MERCATOR_LATITUDE = 85.05112878
 
-const STATIC_MAP_ZOOM = 15
+const STATIC_MAP_ZOOM = 16
 
 export function getStaticMapTiles(
   latitude: number,

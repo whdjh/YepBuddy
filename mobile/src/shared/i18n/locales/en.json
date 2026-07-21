@@ -164,6 +164,7 @@
       "avgHeartRate": "Avg Heart Rate",
       "heartRateChart": "Heart Rate",
       "location": "Workout Location",
+      "mapAttributionLabel": "Open OpenStreetMap copyright information",
       "statsTitle": "Workout Details",
       "editSets": "Edit set counts",
       "editSetsTitle": "Edit Set Counts",
