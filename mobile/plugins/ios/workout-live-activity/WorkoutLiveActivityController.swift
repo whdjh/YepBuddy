@@ -7,6 +7,7 @@ enum WorkoutLiveActivityController {
   // Live Activity 표시 상태
   private static func activityContent(
     cardioStartedAt: Date?,
+    heartRate: Int?,
     statusText: String,
     timerStartAt: Date,
     timerPausedAt: Date?
@@ -14,6 +15,7 @@ enum WorkoutLiveActivityController {
     ActivityContent(
       state: WorkoutLiveActivityAttributes.ContentState(
         cardioStartedAt: cardioStartedAt,
+        heartRate: heartRate.flatMap { $0 > 0 ? $0 : nil },
         statusText: statusText,
         timerStartAt: timerStartAt,
         timerPausedAt: timerPausedAt
@@ -37,6 +39,7 @@ enum WorkoutLiveActivityController {
   static func start(
     sessionId: String,
     cardioStartedAt: String?,
+    heartRate: Int?,
     statusText: String,
     timerStartAt: String,
     timerPausedAt: String?
@@ -56,6 +59,7 @@ enum WorkoutLiveActivityController {
     let timerPausedDate = timerPausedAt.flatMap { date(from: $0) }
     let content = activityContent(
       cardioStartedAt: cardioStartedDate,
+      heartRate: heartRate,
       statusText: statusText,
       timerStartAt: timerStartDate,
       timerPausedAt: timerPausedDate
@@ -79,6 +83,23 @@ enum WorkoutLiveActivityController {
       return true
     } catch {
       return false
+    }
+  }
+
+  // 현재 심박수 갱신
+  static func updateHeartRate(_ heartRate: Int) async {
+    guard #available(iOS 16.2, *), heartRate > 0 else {
+      return
+    }
+
+    for activity in Activity<WorkoutLiveActivityAttributes>.activities {
+      var state = activity.content.state
+      guard state.heartRate != heartRate else {
+        continue
+      }
+
+      state.heartRate = heartRate
+      await activity.update(ActivityContent(state: state, staleDate: nil))
     }
   }
 

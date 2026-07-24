@@ -8,6 +8,7 @@ struct WorkoutLiveActivityAttributes: ActivityAttributes {
   // Live Activity 동적 상태
   public struct ContentState: Codable, Hashable {
     var cardioStartedAt: Date?
+    var heartRate: Int?
     var statusText: String
     var timerStartAt: Date
     var timerPausedAt: Date?

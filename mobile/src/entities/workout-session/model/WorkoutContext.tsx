@@ -206,6 +206,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
 
       void startWorkoutLiveActivity({
         cardioStartedAt: state.cardioStartedAt,
+        heartRate: state.heartRate,
         sessionId: state.sessionId,
         statusText: getWorkoutLiveActivityStatusText({
           cardioStartedAt: state.cardioStartedAt,
@@ -221,6 +222,7 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
   }, [
     isHydrated,
     state.cardioStartedAt,
+    state.heartRate,
     state.pausedAt,
     state.pausedDuration,
     state.phase,

@@ -9,6 +9,7 @@ interface NativeWorkoutSessionModule {
   startLiveActivity?: (
     sessionId: string,
     cardioStartedAt: string | null,
+    heartRate: number | null,
     statusText: string,
     timerStartAt: string,
     timerPausedAt: string | null,
@@ -69,6 +70,7 @@ function normalizeLiveActivityCommand(
 /** 운동 Live Activity 시작 */
 export async function startWorkoutLiveActivity(params: {
   cardioStartedAt: string | null
+  heartRate: number | null
   sessionId: string
   statusText: string
   timerPausedAt: string | null
@@ -82,6 +84,7 @@ export async function startWorkoutLiveActivity(params: {
     .startLiveActivity(
       params.sessionId,
       params.cardioStartedAt,
+      params.heartRate,
       params.statusText,
       params.timerStartAt,
       params.timerPausedAt,
