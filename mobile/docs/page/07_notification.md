@@ -170,18 +170,25 @@ iOS 운동 Live Activity는 현재 진행 중인 운동 세션에 대해서만 �
 - 앱 이름 `옙버디`
 - 상태 문구: `운동 기록 중`, `운동 일시정지`, `유산소 기록 중`, `유산소 일시정지`
 - 운동 중 화면과 같은 기준의 경과 시간
+- 현재 심박수가 `0`보다 클 때 `heart.fill`, 정수 심박수, `BPM`
 - 유산소 시작 이미지 버튼 `figure.run`
 - 일시정지/재개 이미지 버튼 `pause.fill` / `play.fill`
 - 운동 종료 이미지 버튼 `stop.fill`
 
 현재 Dynamic Island 표시:
 
-- Expanded leading: `옙버디`
-- Expanded trailing: 근력 운동 아이콘
-- Expanded bottom: 상태 문구와 경과 시간
-- Compact leading/minimal: 근력 운동 아이콘
-- Compact trailing: `운동`
-- Dynamic Island 제어 버튼은 다음 브랜치에서 확장한다.
+- Expanded leading: `옙버디`와 현재 상태 문구
+- Expanded trailing: 경과 시간, 유산소 기록 중 `figure.run`, 값이 있을 때 현재 심박수와 `BPM`
+- Expanded bottom: 유산소 시작, 일시정지/재개, 운동 종료 제어 버튼
+- Compact leading/minimal: 근력 운동 중 `figure.strengthtraining.traditional`, 유산소 기록 중 `figure.run`
+- Compact trailing: 값이 있을 때 `heart.fill`과 정수 심박수
+- 심박수가 없거나 `0`이면 `--` 없이 심박수 영역을 숨긴다.
+
+심박수 갱신:
+
+- 운동 화면 상태의 심박수는 foreground와 HealthKit 샘플 fallback 값을 Live Activity에 전달한다.
+- iPhone HealthKit live metric이 들어오면 네이티브 경로에서도 Live Activity를 갱신해 잠금 중 JS 중단 영향을 줄인다.
+- 일시적으로 빈 값이 들어오면 운동 화면과 같이 직전 정상 심박수를 유지한다.
 
 Live Activity action:
 
@@ -384,4 +391,4 @@ OS의 50m Enter 이벤트는 앱을 깨우는 후보 신호다. 실제 알림 �
 5. `syncWorkoutPlaceArrivalReminder`는 `allowPrompt: false`에서 권한이 없으면 geofence를 중지하고 `operational=false`를 저장하지만, 사용자의 enabled 의도는 보존한다.
 6. 프로틴 세일과 운동 장소 알림은 응답 핸들러가 있지만, 운동 리마인더의 `kind: workoutReminder`를 처리하는 별도 탭 라우팅은 현재 없다.
 7. iOS 운동 Live Activity는 ActivityKit 기능이며 Android 알림 채널을 사용하지 않는다.
-8. 현재 Dynamic Island는 기본 표시만 있고, 잠금화면과 같은 운동 제어 UX는 다음 단계에서 별도 확장한다.
+8. Dynamic Island 제어 버튼은 Expanded 표시에서만 제공하며 Compact와 Minimal 표시는 상태 아이콘과 심박수 정보만 제공한다.

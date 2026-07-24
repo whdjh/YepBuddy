@@ -18,6 +18,41 @@ const widgetPaths = [
     "WorkoutLiveActivityWidget.swift",
   ),
 ]
+const workoutContextPath = path.join(
+  __dirname,
+  "..",
+  "src",
+  "entities",
+  "workout-session",
+  "model",
+  "WorkoutContext.tsx",
+)
+const liveActivityApiPath = path.join(
+  __dirname,
+  "..",
+  "src",
+  "entities",
+  "workout-session",
+  "api",
+  "liveActivity.ts",
+)
+const workoutSessionModulePaths = [
+  path.join(
+    __dirname,
+    "..",
+    "plugins",
+    "ios",
+    "workout-session",
+    "WorkoutSessionModule.swift",
+  ),
+  path.join(
+    __dirname,
+    "..",
+    "ios",
+    "app",
+    "WorkoutSessionModule.swift",
+  ),
+]
 
 let currentLabel = ""
 let source = ""
@@ -95,13 +130,23 @@ for (const widgetPath of widgetPaths) {
   )
 
   requirePattern(
-    /compactLeading:\s*\{[\s\S]*figure\.strengthtraining\.traditional[\s\S]*\}\s*compactTrailing:/,
-    "compact leading must stay status-only with the strength icon",
+    /compactLeading:\s*\{[\s\S]*compactSystemName[\s\S]*cardioStartedAt[\s\S]*figure\.run[\s\S]*\}\s*compactTrailing:/,
+    "compact leading must switch between strength and cardio icons",
   )
 
   requirePattern(
-    /compactTrailing:\s*\{\s*EmptyView\(\)[\s\S]*\.accessibilityHidden\(true\)/,
-    "compact trailing must stay empty to avoid visually lengthening the island",
+    /compactTrailing:\s*\{[\s\S]*heartRate\s*>\s*0[\s\S]*WorkoutLiveActivityHeartRateText/,
+    "compact trailing must show a positive current heart rate",
+  )
+
+  requirePattern(
+    /struct\s+WorkoutLiveActivityHeartRateText:\s+View[\s\S]*heart\.fill[\s\S]*BPM/,
+    "shared heart rate view is missing",
+  )
+
+  requirePattern(
+    /WorkoutLiveActivityLockScreenView[\s\S]*heartRate\s*>\s*0[\s\S]*WorkoutLiveActivityHeartRateText/,
+    "Lock Screen Live Activity must show a positive current heart rate",
   )
 
   requirePattern(
@@ -150,6 +195,11 @@ for (const widgetPath of widgetPaths) {
     "expanded trailing section is missing",
   )
 
+  requirePattern(
+    /DynamicIslandExpandedRegion\(\.trailing\)[\s\S]*heartRate\s*>\s*0[\s\S]*WorkoutLiveActivityHeartRateText/,
+    "expanded Dynamic Island must show a positive current heart rate",
+  )
+
   rejectPatternInSection(
     compactLeadingSection,
     /Button\s*\(/,
@@ -169,6 +219,41 @@ for (const widgetPath of widgetPaths) {
     expandedTrailingSection,
     /figure\.strengthtraining\.traditional/,
     "expanded trailing should not show the redundant strength icon",
+  )
+}
+
+currentLabel = path.relative(path.join(__dirname, ".."), workoutContextPath)
+source = fs.readFileSync(workoutContextPath, "utf8")
+requirePattern(
+  /startWorkoutLiveActivity\(\{[\s\S]*heartRate:\s*state\.heartRate/,
+  "foreground Live Activity updates must pass the current heart rate",
+)
+requirePattern(
+  /state\.cardioStartedAt,\s*state\.heartRate,\s*state\.pausedAt/,
+  "heart rate must trigger foreground Live Activity updates",
+)
+
+currentLabel = path.relative(path.join(__dirname, ".."), liveActivityApiPath)
+source = fs.readFileSync(liveActivityApiPath, "utf8")
+requirePattern(
+  /startLiveActivity\?:\s*\([\s\S]*heartRate:\s*number\s*\|\s*null/,
+  "the React Native Live Activity bridge must accept heart rate",
+)
+requirePattern(
+  /\.startLiveActivity\([\s\S]*params\.cardioStartedAt,\s*params\.heartRate,/,
+  "the React Native Live Activity bridge must forward heart rate",
+)
+
+for (const modulePath of workoutSessionModulePaths) {
+  if (!fs.existsSync(modulePath)) {
+    continue
+  }
+
+  currentLabel = path.relative(path.join(__dirname, ".."), modulePath)
+  source = fs.readFileSync(modulePath, "utf8")
+  requirePattern(
+    /controller\.onStats\s*=\s*\{[\s\S]*stats\["heartRate"\][\s\S]*WorkoutLiveActivityController\.updateHeartRate/,
+    "native workout stats must update Live Activity heart rate while locked",
   )
 }
 

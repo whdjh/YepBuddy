@@ -30,6 +30,29 @@ private struct WorkoutLiveActivityTimerText: View {
   }
 }
 
+// 현재 심박수
+private struct WorkoutLiveActivityHeartRateText: View {
+  let heartRate: Int
+  let showsUnit: Bool
+
+  var body: some View {
+    HStack(alignment: .firstTextBaseline, spacing: 4) {
+      Image(systemName: "heart.fill")
+        .foregroundStyle(Color.workoutAccent)
+
+      Text("\(heartRate)")
+        .monospacedDigit()
+
+      if showsUnit {
+        Text("BPM")
+          .foregroundStyle(.white.opacity(0.62))
+      }
+    }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel("현재 심박수 \(heartRate) BPM")
+  }
+}
+
 // 운동 액션 이미지 버튼
 private struct WorkoutLiveActivityIconAction: View {
   let accessibilityLabel: String
@@ -190,6 +213,13 @@ private struct WorkoutLiveActivityLockScreenView: View {
             .font(.system(size: 34, weight: .semibold, design: .rounded))
             .monospacedDigit()
             .foregroundStyle(Color.workoutAccent)
+
+          if let heartRate = context.state.heartRate, heartRate > 0 {
+            WorkoutLiveActivityHeartRateText(heartRate: heartRate, showsUnit: true)
+              .font(.caption.weight(.semibold))
+              .foregroundStyle(.white)
+              .padding(.top, 4)
+          }
         }
       }
 
@@ -223,23 +253,31 @@ private func workoutLiveActivityExpandedContent(
   }
 
   DynamicIslandExpandedRegion(.trailing) {
-    HStack(spacing: 5) {
-      if context.state.cardioStartedAt != nil {
-        Image(systemName: "figure.run")
-          .font(.caption.weight(.semibold))
-          .foregroundStyle(Color.workoutAccent)
-          .accessibilityLabel("유산소 기록 중")
+    VStack(alignment: .trailing, spacing: 4) {
+      HStack(spacing: 5) {
+        if context.state.cardioStartedAt != nil {
+          Image(systemName: "figure.run")
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(Color.workoutAccent)
+            .accessibilityLabel("유산소 기록 중")
+        }
+
+        WorkoutLiveActivityTimerText(
+          timerStartAt: context.state.timerStartAt,
+          timerPausedAt: context.state.timerPausedAt
+        )
+        .font(.system(size: 18, weight: .semibold, design: .rounded))
+        .monospacedDigit()
+        .foregroundStyle(Color.workoutAccent)
+        .lineLimit(1)
+        .minimumScaleFactor(0.74)
       }
 
-      WorkoutLiveActivityTimerText(
-        timerStartAt: context.state.timerStartAt,
-        timerPausedAt: context.state.timerPausedAt
-      )
-      .font(.system(size: 18, weight: .semibold, design: .rounded))
-      .monospacedDigit()
-      .foregroundStyle(Color.workoutAccent)
-      .lineLimit(1)
-      .minimumScaleFactor(0.74)
+      if let heartRate = context.state.heartRate, heartRate > 0 {
+        WorkoutLiveActivityHeartRateText(heartRate: heartRate, showsUnit: true)
+          .font(.caption2.weight(.semibold))
+          .foregroundStyle(.white)
+      }
     }
     .padding(.trailing, 14)
   }
@@ -260,12 +298,20 @@ struct WorkoutLiveActivityWidget: Widget {
       DynamicIsland {
         workoutLiveActivityExpandedContent(context: context)
       } compactLeading: {
-        Image(systemName: "figure.strengthtraining.traditional")
-          .accessibilityLabel("근력 운동")
+        let compactSystemName =
+          context.state.cardioStartedAt == nil ? "figure.strengthtraining.traditional" : "figure.run"
+
+        Image(systemName: compactSystemName)
+          .accessibilityLabel(
+            context.state.cardioStartedAt == nil ? "근력 운동" : "유산소 기록 중"
+          )
           .foregroundStyle(Color.workoutAccent)
       } compactTrailing: {
-        EmptyView()
-          .accessibilityHidden(true)
+        if let heartRate = context.state.heartRate, heartRate > 0 {
+          WorkoutLiveActivityHeartRateText(heartRate: heartRate, showsUnit: false)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white)
+        }
       } minimal: {
         let minimalSystemName =
           context.state.cardioStartedAt == nil ? "figure.strengthtraining.traditional" : "figure.run"

@@ -12,6 +12,12 @@ final class WorkoutSessionModule: RCTEventEmitter {
 
     controller.onStats = { [weak self] stats in
       self?.emitEvent(WorkoutSessionPayload.statsEventName, body: stats)
+
+      if let heartRate = stats["heartRate"] as? NSNumber {
+        Task {
+          await WorkoutLiveActivityController.updateHeartRate(heartRate.intValue)
+        }
+      }
     }
     controller.onSessionState = { [weak self] state in
       self?.emitEvent(WorkoutSessionPayload.sessionStateEventName, body: state)
@@ -127,10 +133,11 @@ final class WorkoutSessionModule: RCTEventEmitter {
   }
 
   /// 운동 Live Activity 표시 시작
-  @objc(startLiveActivity:cardioStartedAt:statusText:timerStartAt:timerPausedAt:resolver:rejecter:)
+  @objc(startLiveActivity:cardioStartedAt:heartRate:statusText:timerStartAt:timerPausedAt:resolver:rejecter:)
   func startLiveActivity(
     _ sessionId: String,
     cardioStartedAt: String?,
+    heartRate: NSNumber?,
     statusText: String,
     timerStartAt: String,
     timerPausedAt: String?,
@@ -141,6 +148,7 @@ final class WorkoutSessionModule: RCTEventEmitter {
       let started = await WorkoutLiveActivityController.start(
         sessionId: sessionId,
         cardioStartedAt: cardioStartedAt,
+        heartRate: heartRate?.intValue,
         statusText: statusText,
         timerStartAt: timerStartAt,
         timerPausedAt: timerPausedAt

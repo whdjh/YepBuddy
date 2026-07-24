@@ -23,6 +23,7 @@ RCT_EXTERN_METHOD(discard:(RCTPromiseResolveBlock)resolve
 
 RCT_EXTERN_METHOD(startLiveActivity:(NSString *)sessionId
                   cardioStartedAt:(NSString *)cardioStartedAt
+                  heartRate:(NSNumber *)heartRate
                   statusText:(NSString *)statusText
                   timerStartAt:(NSString *)timerStartAt
                   timerPausedAt:(NSString *)timerPausedAt
