@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.6.0](https://github.com/whdjh/yepbuddy/compare/v1.5.0...v1.6.0) (2026-07-24)
+
+
+### Features
+
+* **dynamic-island:** 심박수 및 유산소 상태 변경 기능 추가 ([#84](https://github.com/whdjh/yepbuddy/issues/84)) ([8b5feee](https://github.com/whdjh/yepbuddy/commit/8b5feee1eaa290e03af5a79a07053575c2d4ed08))
+* **result-workout:** 안드로이드 OSM 맵 추가 ([#83](https://github.com/whdjh/yepbuddy/issues/83)) ([4a7c4f8](https://github.com/whdjh/yepbuddy/commit/4a7c4f8241476c52fa65cbc3feae0e93934ac73c))
+
+
+### Bug Fixes
+
+* **android:** 하단 내비게이션 바 겹침 및 카드 정렬 수정 ([#80](https://github.com/whdjh/yepbuddy/issues/80)) ([54db667](https://github.com/whdjh/yepbuddy/commit/54db667f7ba76d703d38ddc66f2810f58f2a3682))
+* **workout-place:** 단일 장소 도착 알림을 50m 감지와 20m 검증으로 로직 단순화 ([#82](https://github.com/whdjh/yepbuddy/issues/82)) ([b7536e0](https://github.com/whdjh/yepbuddy/commit/b7536e0b5e96637b4014992f2e94d6c4cacfda16))
+* **workout-session:** 세부 부위 선택 및 저장 방식 개선 ([#81](https://github.com/whdjh/yepbuddy/issues/81)) ([e31a987](https://github.com/whdjh/yepbuddy/commit/e31a987bc42483ceec9523b9d62ff1d49419da07))
+
 ## [1.5.0](https://github.com/whdjh/yepbuddy/compare/v1.4.0...v1.5.0) (2026-07-13)
 
 
