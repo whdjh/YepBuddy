@@ -256,6 +256,7 @@ iOS에서는 운동이 `recording` 또는 `paused` 상태일 때 ActivityKit Liv
 - 앱 이름 `옙버디`
 - 현재 상태 문구: `운동 기록 중`, `운동 일시정지`, `유산소 기록 중`, `유산소 일시정지`
 - 운동 중 화면과 같은 기준의 경과 시간 타이머
+- 현재 심박수가 `0`보다 클 때 `heart.fill`, 정수 심박수, `BPM`
 - 유산소 시작 버튼: `figure.run`
 - 일시정지/재개 버튼: `pause.fill` 또는 `play.fill`
 - 운동 종료 버튼: `stop.fill`
@@ -281,12 +282,13 @@ iOS에서는 운동이 `recording` 또는 `paused` 상태일 때 ActivityKit Liv
 
 현재 Dynamic Island 표시:
 
-- Expanded leading에는 `옙버디`를 표시한다.
-- Expanded trailing에는 근력 운동 아이콘을 표시한다.
-- Expanded bottom에는 상태 문구와 경과 시간을 표시한다.
-- Compact leading/minimal에는 근력 운동 아이콘을 표시한다.
-- Compact trailing에는 `운동` 텍스트를 표시한다.
-- Dynamic Island에서 잠금화면과 같은 제어 버튼을 제공하는 작업은 다음 브랜치 범위다.
+- Expanded leading에는 `옙버디`와 현재 상태 문구를 표시한다.
+- Expanded trailing에는 경과 시간을 표시하고, 유산소 기록 중이면 `figure.run`을 함께 표시한다.
+- Expanded trailing에서 현재 심박수가 `0`보다 크면 `heart.fill`, 정수 심박수, `BPM`을 추가로 표시한다.
+- Expanded bottom에는 유산소 시작, 일시정지/재개, 운동 종료 제어 버튼을 표시한다.
+- Compact leading과 minimal은 근력 운동 중 `figure.strengthtraining.traditional`, 유산소 기록 중 `figure.run`을 표시한다.
+- Compact trailing은 현재 심박수가 `0`보다 클 때만 `heart.fill`과 정수 심박수를 표시한다.
+- 심박수가 없거나 `0`이면 `--` 같은 대체 문구 없이 심박수 영역을 숨긴다.
 
 ### 5.5 저장하지 않고 종료하기
 
