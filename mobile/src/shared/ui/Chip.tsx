@@ -1,5 +1,5 @@
 import { Pressable, Text, type PressableProps } from "react-native"
-import { GlassSurface } from "./GlassSurface"
+import { GlassBackground } from "./GlassBackground"
 
 type ChipVariant = "default" | "active" | "glass"
 type FilterPillVariant = "default" | "active" | "glass"
@@ -8,6 +8,8 @@ interface ChipProps extends Omit<PressableProps, "children"> {
   variant?: ChipVariant
   label: string
   className?: string
+  labelClassName?: string
+  fallbackClassName?: string
 }
 
 interface FilterPillProps extends Omit<PressableProps, "children"> {
@@ -16,49 +18,15 @@ interface FilterPillProps extends Omit<PressableProps, "children"> {
   className?: string
 }
 
-/* GlassPill — 공통 글래스 알약 프리미티브 */
-
-interface GlassPillProps extends Omit<PressableProps, "children"> {
-  label: string
-  heightClass: string
-  paddingClass: string
-  labelClass: string
-  fallbackClassName?: string
-  className?: string
-}
-
-function GlassPill({
-  label,
-  heightClass,
-  paddingClass,
-  labelClass,
-  fallbackClassName,
-  className,
-  ...rest
-}: GlassPillProps) {
-  return (
-    <GlassSurface
-      className={heightClass}
-      cornerRadius={22}
-      fallbackClassName={fallbackClassName}
-    >
-      <Pressable
-        className={`${heightClass} ${paddingClass} items-center justify-center active:scale-[0.97]${className ? ` ${className}` : ""}`}
-        {...rest}
-      >
-        <Text className={labelClass}>{label}</Text>
-      </Pressable>
-    </GlassSurface>
-  )
-}
-
 /* Chip */
 
-const chipContainer: Record<Exclude<ChipVariant, "glass">, string> = {
+const chipContainer: Record<ChipVariant, string> = {
   default:
-    "h-yb-chip rounded-yb-chip border border-yb-border bg-yb-fill-pale px-yb-6 items-center justify-center",
+    "border border-yb-border bg-yb-fill-pale",
   active:
-    "h-yb-chip rounded-yb-chip border border-yb-accent bg-yb-accent px-yb-6 items-center justify-center",
+    "border border-yb-accent bg-yb-accent",
+  glass:
+    "border border-yb-glass-border",
 }
 
 const chipLabel: Record<ChipVariant, string> = {
@@ -67,37 +35,41 @@ const chipLabel: Record<ChipVariant, string> = {
   glass:   "text-yb-fg text-yb-body-sm font-medium",
 }
 
-export function Chip({ variant = "default", label, className, ...rest }: ChipProps) {
-  if (variant === "glass") {
-    return (
-      <GlassPill
-        label={label}
-        heightClass="h-yb-chip"
-        paddingClass="px-yb-6"
-        labelClass={chipLabel.glass}
-        className={className}
-        {...rest}
-      />
-    )
-  }
+export function Chip({
+  variant = "default",
+  label,
+  className,
+  labelClassName,
+  fallbackClassName,
+  ...rest
+}: ChipProps) {
+  const glass = variant === "glass"
 
   return (
     <Pressable
-      className={`${chipContainer[variant]}${className ? ` ${className}` : ""}`}
+      className={`h-yb-chip items-center justify-center overflow-hidden rounded-yb-chip px-yb-6 ${chipContainer[variant]}${className ? ` ${className}` : ""}`}
       {...rest}
     >
-      <Text className={chipLabel[variant]}>{label}</Text>
+      {glass ? (
+        <GlassBackground
+          cornerRadius={22}
+          fallbackClassName={fallbackClassName}
+        />
+      ) : null}
+      <Text className={labelClassName ?? chipLabel[variant]}>{label}</Text>
     </Pressable>
   )
 }
 
 /* FilterPill */
 
-const filterPillContainer: Record<Exclude<FilterPillVariant, "glass">, string> = {
+const filterPillContainer: Record<FilterPillVariant, string> = {
   default:
-    "h-yb-10 rounded-yb-chip bg-yb-fill-pale px-yb-5 items-center justify-center",
+    "bg-yb-fill-pale",
   active:
-    "h-yb-10 rounded-yb-chip bg-yb-accent px-yb-5 items-center justify-center",
+    "bg-yb-accent",
+  glass:
+    "border border-yb-glass-border",
 }
 
 const filterPillLabel: Record<FilterPillVariant, string> = {
@@ -106,25 +78,20 @@ const filterPillLabel: Record<FilterPillVariant, string> = {
   glass:   "text-yb-fg-secondary text-yb-body-sm font-semibold",
 }
 
-export function FilterPill({ variant = "default", label, className, ...rest }: FilterPillProps) {
-  if (variant === "glass") {
-    return (
-      <GlassPill
-        label={label}
-        heightClass="h-yb-10"
-        paddingClass="px-yb-5"
-        labelClass={filterPillLabel.glass}
-        className={className}
-        {...rest}
-      />
-    )
-  }
+export function FilterPill({
+  variant = "default",
+  label,
+  className,
+  ...rest
+}: FilterPillProps) {
+  const glass = variant === "glass"
 
   return (
     <Pressable
-      className={`${filterPillContainer[variant]}${className ? ` ${className}` : ""}`}
+      className={`h-yb-10 items-center justify-center overflow-hidden rounded-yb-chip px-yb-5 ${filterPillContainer[variant]}${glass ? " active:scale-[0.97]" : ""}${className ? ` ${className}` : ""}`}
       {...rest}
     >
+      {glass ? <GlassBackground cornerRadius={22} /> : null}
       <Text className={filterPillLabel[variant]}>{label}</Text>
     </Pressable>
   )
