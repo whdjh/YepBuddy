@@ -1,6 +1,5 @@
-import { Pressable, Text, type PressableProps } from "react-native"
+import type { PressableProps } from "react-native"
 import { Chip } from "@/shared/ui/Chip"
-import { GlassSurface } from "@/shared/ui/GlassSurface"
 
 interface BodyPartSelectionChipProps extends Omit<PressableProps, "children"> {
   label: string
@@ -20,6 +19,7 @@ export function BodyPartSelectionChip({
   selected,
   accessibilityRole = "button",
   accessibilityState,
+  className,
   ...rest
 }: BodyPartSelectionChipProps) {
   const resolvedAccessibilityState =
@@ -32,6 +32,7 @@ export function BodyPartSelectionChip({
     <Chip
       variant={selected ? "active" : "glass"}
       label={label}
+      className={`min-w-[80px] px-yb-3${selected ? "" : " active:scale-[0.97]"}${className ? ` ${className}` : ""}`}
       accessibilityRole={accessibilityRole}
       accessibilityLabel={label}
       accessibilityState={resolvedAccessibilityState}
@@ -54,33 +55,23 @@ export function BodyPartDetailSelectionChip({
       ? { checked: selected }
       : { selected })
 
-  if (selected) {
-    return (
-      <Pressable
-        accessibilityRole={accessibilityRole}
-        accessibilityLabel={label}
-        accessibilityState={resolvedAccessibilityState}
-        className={`rounded-full border border-yb-accent bg-yb-accent px-3 py-1.5 active:opacity-90${className ? ` ${className}` : ""}`}
-        {...rest}
-      >
-        <Text className="text-yb-body-sm font-medium text-yb-on-accent">
-          {label}
-        </Text>
-      </Pressable>
-    )
-  }
-
   return (
-    <GlassSurface cornerRadius={999} fallbackClassName="bg-yb-surface/70">
-      <Pressable
-        accessibilityRole={accessibilityRole}
-        accessibilityLabel={label}
-        accessibilityState={resolvedAccessibilityState}
-        className={`rounded-full px-3 py-1.5 active:opacity-80${className ? ` ${className}` : ""}`}
-        {...rest}
-      >
-        <Text className="text-yb-body-sm text-yb-fg-secondary">{label}</Text>
-      </Pressable>
-    </GlassSurface>
+    <Chip
+      variant={selected ? "active" : "glass"}
+      label={label}
+      className={`min-w-[64px] px-yb-2 ${
+        selected ? "active:opacity-90" : "active:opacity-80"
+      }${className ? ` ${className}` : ""}`}
+      labelClassName={
+        selected
+          ? "text-yb-body-sm font-medium text-yb-on-accent"
+          : "text-yb-body-sm text-yb-fg-secondary"
+      }
+      fallbackClassName="bg-yb-surface/70"
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={label}
+      accessibilityState={resolvedAccessibilityState}
+      {...rest}
+    />
   )
 }

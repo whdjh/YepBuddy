@@ -186,8 +186,8 @@ View(border/radius)
 
 렌더링:
 
-- 일반 variant: `Pressable + Text`
-- `glass`: `GlassSurface + Pressable + Text`
+- 모든 variant: 동일한 `Pressable frame + Text`
+- `glass`: 동일한 frame 안에 `GlassBackground`만 추가
 
 주요 사용처:
 
@@ -198,7 +198,7 @@ View(border/radius)
 
 가이드:
 
-- 외부 `className`은 내부 기본 크기/정렬 뒤에 붙습니다.
+- 외부 `className`은 Pressable frame의 기본 크기/정렬 뒤에 적용합니다.
 
 ### Card / StatCard
 
