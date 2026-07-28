@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YepBuddy Landing Components</title>
+    <style>
+      :root {
+        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-synthesis: none;
+        --cream-50: #faf7f2;
+        --cream-100: #f5efe6;
+        --cream-200: #ede4d6;
+        --cream-300: #e8dfd0;
+        --cream-400: #ddd2bf;
+        --sand-50: #f2ebdd;
+        --sand-100: #d4883a;
+        --sand-300: #c4a87e;
+        --khaki-300: #9b7e56;
+        --khaki-400: #876b45;
+        --olive-200: #7b6548;
+        --olive-300: #6b5638;
+        --olive-400: #5a472d;
+        --earth-200: #4a3a28;
+        --earth-250: #3c3c3e;
+        --earth-300: #3a2a1a;
+        --earth-350: #2c2c2e;
+        --earth-450: #1c1c1e;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: #3a2a1a; background: #e8e2d9; }
+      a { color: inherit; }
+      .sheet-head, .sheet { max-width: 1440px; margin: 0 auto; }
+      .sheet-head { padding: 70px 28px 44px; }
+      .sheet-head p { margin: 0 0 12px; color: #6b5638; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+      .sheet-head h1 { max-width: 900px; margin: 0; font-size: clamp(48px, 7vw, 92px); line-height: .98; letter-spacing: -.055em; }
+      .sheet-head small { display: block; margin-top: 22px; color: #6b5638; line-height: 1.6; }
+      .sheet { display: grid; gap: 24px; padding: 0 28px 80px; }
+
+      .board {
+        --bg: var(--cream-50);
+        --surface: #fff;
+        --subtle: var(--cream-100);
+        --muted: var(--cream-200);
+        --fg: var(--earth-300);
+        --fg-2: var(--khaki-400);
+        --accent: var(--khaki-300);
+        --accent-hover: var(--khaki-400);
+        --border: var(--cream-400);
+        --strong: var(--earth-300);
+        --on-strong: var(--cream-50);
+        padding: 28px;
+        color: var(--fg);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+      }
+      .board.dark {
+        --bg: var(--earth-450);
+        --surface: var(--earth-350);
+        --subtle: var(--earth-250);
+        --muted: var(--earth-200);
+        --fg: #fff;
+        --fg-2: var(--cream-200);
+        --accent: var(--sand-100);
+        --accent-hover: var(--sand-300);
+        --border: var(--olive-400);
+        --strong: var(--cream-200);
+        --on-strong: var(--earth-450);
+      }
+      .board-title { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 4px 0 24px; }
+      .board-title p { margin: 0 0 5px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+      .board-title h2 { margin: 0; font-size: 34px; letter-spacing: -.04em; }
+      .board-title code { color: var(--fg-2); font-size: 11px; }
+
+      .row { display: grid; grid-template-columns: 160px 1fr; gap: 26px; padding: 30px 0; border-top: 1px solid var(--border); }
+      .row-head h3 { margin: 0 0 7px; font-size: 14px; }
+      .row-head p { margin: 0; color: var(--fg-2); font-size: 11px; line-height: 1.55; }
+      .preview { min-width: 0; }
+
+      .swatches { display: grid; grid-template-columns: repeat(6, minmax(90px, 1fr)); gap: 10px; }
+      .swatch { min-height: 116px; display: flex; flex-direction: column; justify-content: end; padding: 12px; color: var(--label); background: var(--color); border: 1px solid var(--border); border-radius: 14px; }
+      .swatch strong, .swatch small { width: max-content; padding: 3px 6px; border-radius: 5px; background: var(--caption); }
+      .swatch strong { font-size: 10px; }
+      .swatch small { margin-top: 3px; font-size: 9px; }
+
+      .type-list { display: grid; gap: 20px; }
+      .type-item { display: grid; grid-template-columns: 94px 1fr; align-items: baseline; gap: 16px; }
+      .type-item code { color: var(--fg-2); font-size: 10px; }
+      .display { font-size: clamp(52px, 7vw, 96px); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+      .heading { font-size: 24px; font-weight: 700; line-height: 1.3; }
+      .body { font-size: 15px; line-height: 1.6; }
+      .caption { font-size: 12px; font-weight: 500; line-height: 1.3; }
+
+      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
+      .primary-action { min-height: 52px; display: inline-flex; align-items: center; justify-content: center; padding: 0 24px; color: var(--on-strong); background: var(--strong); border-radius: 14px; font-size: 16px; font-weight: 600; text-decoration: none; }
+      .text-action { color: var(--accent); font-size: 15px; font-weight: 600; text-underline-offset: 5px; }
+
+      .nav { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; }
+      .wordmark { font-weight: 700; letter-spacing: -.02em; }
+      .nav-links { display: flex; align-items: center; gap: 22px; }
+      .nav-links a { color: var(--fg-2); font-size: 13px; text-decoration: none; }
+      .nav-links .primary-action { min-height: 44px; padding-inline: 18px; color: var(--on-strong); }
+
+      .section-title { max-width: 800px; }
+      .eyebrow { margin: 0 0 14px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+      .section-title h3 { margin: 0 0 16px; font-size: clamp(38px, 5vw, 68px); line-height: 1.05; letter-spacing: -.045em; }
+      .section-title p:last-child { max-width: 620px; margin: 0; color: var(--fg-2); font-size: 16px; line-height: 1.7; }
+
+      .hero { min-height: 520px; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 54px; padding: clamp(32px, 5vw, 70px); background: var(--subtle); border-radius: 20px; overflow: hidden; }
+      .hero h3 { margin: 0 0 20px; font-size: clamp(48px, 6vw, 84px); line-height: 1; letter-spacing: -.05em; }
+      .hero-copy > p:not(.eyebrow) { max-width: 560px; margin: 0 0 28px; color: var(--fg-2); line-height: 1.7; }
+      .visual { min-height: 400px; display: grid; place-items: center; background: var(--muted); border-radius: 16px; }
+      .phone { width: 185px; aspect-ratio: 9 / 19.5; display: grid; place-items: center; padding: 20px; color: var(--fg-2); background: var(--surface); border: 7px solid var(--fg); border-radius: 34px; text-align: center; transform: rotate(4deg); }
+      .phone strong { display: block; margin-bottom: 7px; color: var(--accent); font-size: 12px; }
+      .phone span { font-size: 11px; line-height: 1.5; }
+
+      .feature-list { border-top: 1px solid var(--border); }
+      .feature { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 24px; padding: 30px 0; border-bottom: 1px solid var(--border); }
+      .feature > span { color: var(--accent); font-size: 12px; font-weight: 700; }
+      .feature h4 { margin: 0; font-size: 25px; letter-spacing: -.035em; }
+      .feature p { max-width: 480px; margin: 0; color: var(--fg-2); font-size: 14px; line-height: 1.65; }
+
+      .media-pair { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; }
+      .media { min-height: 360px; display: grid; place-items: center; padding: 30px; background: var(--muted); border-radius: 16px; text-align: center; }
+      .media:last-child { background: var(--subtle); }
+      .media strong { display: block; margin-bottom: 8px; font-size: 14px; }
+      .media span { color: var(--fg-2); font-size: 11px; line-height: 1.6; }
+
+      .story { min-height: 470px; display: grid; grid-template-columns: .8fr 1.2fr; gap: 16px; padding: 16px; color: var(--on-strong); background: var(--strong); border-radius: 20px; }
+      .story-copy { display: flex; flex-direction: column; justify-content: center; padding: 34px; }
+      .story-copy small { opacity: .6; font-weight: 700; }
+      .story-copy h4 { margin: 20px 0 14px; font-size: clamp(34px, 4vw, 58px); line-height: 1.08; letter-spacing: -.04em; }
+      .story-copy p { margin: 0; opacity: .68; font-size: 14px; line-height: 1.65; }
+      .story .visual { color: var(--fg); background: var(--surface); }
+
+      .cta { padding: clamp(48px, 7vw, 90px); color: var(--on-strong); background: var(--strong); border-radius: 20px; text-align: center; }
+      .cta h3 { max-width: 740px; margin: 0 auto 28px; font-size: clamp(42px, 5vw, 72px); line-height: 1.04; letter-spacing: -.05em; }
+      .cta .primary-action { color: var(--fg); background: var(--surface); }
+      .footer { display: flex; justify-content: space-between; gap: 20px; padding: 24px 4px 4px; color: var(--fg-2); font-size: 12px; }
+      .footer div { display: flex; gap: 18px; }
+
+      @media (max-width: 900px) {
+        .row { grid-template-columns: 1fr; }
+        .swatches { grid-template-columns: repeat(3, 1fr); }
+        .hero, .story, .media-pair { grid-template-columns: 1fr; }
+        .feature { grid-template-columns: 60px 1fr; }
+        .feature p { grid-column: 2; }
+      }
+      @media (max-width: 560px) {
+        .sheet-head { padding: 48px 18px 34px; }
+        .sheet { padding-inline: 12px; }
+        .board { padding: 18px; border-radius: 18px; }
+        .board-title { align-items: start; flex-direction: column; }
+        .swatches { grid-template-columns: repeat(2, 1fr); }
+        .type-item { grid-template-columns: 1fr; gap: 5px; }
+        .nav-links > a:not(.primary-action) { display: none; }
+        .hero { padding: 28px 20px; }
+        .feature { grid-template-columns: 1fr; }
+        .feature p { grid-column: auto; }
+        .footer { flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="sheet-head">
+      <p>YEPBUDDY LANDING SYSTEM</p>
+      <h1>웹 랜딩에 필요한 것만.</h1>
+      <small>모바일 토큰을 사용하되, 모바일 컴포넌트 전체를 옮기지 않습니다. 아이콘, 글래스, 필터 칩은 제외하고 CTA도 한 종류로 통일합니다.</small>
+    </header>
+
+    <main class="sheet">
+      <section class="board light" aria-labelledby="light-title">
+        <div class="board-title"><div><p>THEME 01</p><h2 id="light-title">Light mode</h2></div><code>semantic.light</code></div>
+
+        <section class="row"><header class="row-head"><h3>Colors</h3><p>모바일 semantic light</p></header><div class="preview swatches">
+          <div class="swatch" style="--color:#FAF7F2;--label:#3A2A1A;--caption:rgba(255,255,255,.72)"><strong>Background</strong><small>#FAF7F2</small></div>
+          <div class="swatch" style="--color:#FFFFFF;--label:#3A2A1A;--caption:rgba(245,239,230,.9)"><strong>Surface</strong><small>#FFFFFF</small></div>
+          <div class="swatch" style="--color:#F5EFE6;--label:#3A2A1A;--caption:rgba(255,255,255,.72)"><strong>Subtle</strong><small>#F5EFE6</small></div>
+          <div class="swatch" style="--color:#3A2A1A;--label:#FAF7F2;--caption:rgba(255,255,255,.1)"><strong>Foreground</strong><small>#3A2A1A</small></div>
+          <div class="swatch" style="--color:#9B7E56;--label:#FAF7F2;--caption:rgba(0,0,0,.12)"><strong>Accent</strong><small>#9B7E56</small></div>
+          <div class="swatch" style="--color:#DDD2BF;--label:#3A2A1A;--caption:rgba(255,255,255,.55)"><strong>Border</strong><small>#DDD2BF</small></div>
+        </div></section>
+
+        <section class="row"><header class="row-head"><h3>Typography</h3><p>Web display와 앱 본문 위계</p></header><div class="preview type-list">
+          <div class="type-item"><code>display / 96</code><div class="display">꾸준함을 기록하다.</div></div>
+          <div class="type-item"><code>heading / 24</code><div class="heading">운동의 모든 순간이 하나의 흐름으로 이어집니다.</div></div>
+          <div class="type-item"><code>body / 15</code><div class="body">운동을 시작하고 진행하고 돌아보는 과정을 자연스럽게 연결합니다.</div></div>
+          <div class="type-item"><code>caption / 12</code><div class="caption">2026년 7월 · YepBuddy</div></div>
+        </div></section>
+
+        <section class="row"><header class="row-head"><h3>Actions</h3><p>주요 CTA와 텍스트 링크만 사용</p></header><div class="preview actions"><a class="primary-action" href="#">앱 만나보기</a><a class="text-action" href="#">사용 흐름 살펴보기</a></div></section>
+        <section class="row"><header class="row-head"><h3>Navigation</h3><p>텍스트 워드마크와 CTA</p></header><div class="preview nav"><span class="wordmark">YepBuddy</span><div class="nav-links"><a href="#">기능</a><a href="#">사용 흐름</a><a href="#">지원</a><a class="primary-action" href="#">앱 만나보기</a></div></div></section>
+        <section class="row"><header class="row-head"><h3>Section title</h3><p>모든 설명 섹션의 공통 헤더</p></header><div class="preview section-title"><p class="eyebrow">한 번의 운동, 하나의 흐름</p><h3>운동에 집중하면 기록은 따라옵니다.</h3><p>기능 이름만 나열하지 않고 사용자가 어떤 상황에서 어떤 도움을 받는지 함께 설명합니다.</p></div></section>
+        <section class="row"><header class="row-head"><h3>Hero</h3><p>카피, CTA, 대표 이미지</p></header><div class="preview hero"><div class="hero-copy"><p class="eyebrow">나의 운동을 가장 나답게</p><h3>운동의 순간을 기록의 리듬으로.</h3><p>시작부터 결과까지 흩어진 운동 경험을 하나의 흐름으로 연결합니다.</p><div class="actions"><a class="primary-action" href="#">앱 만나보기</a><a class="text-action" href="#">사용 흐름 살펴보기</a></div></div><div class="visual"><div class="phone"><div><strong>IMAGE 01</strong><span>홈 화면<br />iPhone cover</span></div></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Feature list</h3><p>카드 대신 편집형 구분선 사용</p></header><div class="preview feature-list"><article class="feature"><span>01</span><h4>나만의 루틴</h4><p>반복하는 운동을 미리 구성해 고민 없이 바로 시작합니다.</p></article><article class="feature"><span>02</span><h4>운동 진행</h4><p>현재 세트와 다음 흐름을 확인하며 운동에 집중합니다.</p></article><article class="feature"><span>03</span><h4>운동 기록</h4><p>완료한 운동을 돌아보고 다음 운동을 준비합니다.</p></article></div></section>
+        <section class="row"><header class="row-head"><h3>Image frames</h3><p>원본과 AI cover 결과</p></header><div class="preview media-pair"><div class="media"><div><strong>Portrait source</strong><span>앱 원본 PNG<br />프레임 없음</span></div></div><div class="media"><div><strong>Composed source</strong><span>투명 배경 iPhone cover<br />CSS 배경과 조합</span></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Story scene</h3><p>Sticky 전환의 한 장면</p></header><div class="preview story"><div class="story-copy"><small>STEP 01 · 운동 진행</small><h4>운동에 집중하면 기록은 따라옵니다.</h4><p>스크롤에 맞춰 카피와 앱 화면이 한 단계씩 전환됩니다.</p></div><div class="visual"><div class="phone"><div><strong>IMAGE 02</strong><span>운동 진행 화면</span></div></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Final CTA</h3><p>마지막 행동 유도</p></header><div class="preview"><div class="cta"><h3>오늘의 운동을 내일의 기록으로.</h3><a class="primary-action" href="#">앱 만나보기</a></div><footer class="footer"><span>YepBuddy</span><div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div></footer></div></section>
+      </section>
+
+      <section class="board dark" aria-labelledby="dark-title">
+        <div class="board-title"><div><p>THEME 02</p><h2 id="dark-title">Dark mode</h2></div><code>semantic.dark</code></div>
+
+        <section class="row"><header class="row-head"><h3>Colors</h3><p>모바일 semantic dark</p></header><div class="preview swatches">
+          <div class="swatch" style="--color:#1C1C1E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Background</strong><small>#1C1C1E</small></div>
+          <div class="swatch" style="--color:#2C2C2E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Surface</strong><small>#2C2C2E</small></div>
+          <div class="swatch" style="--color:#3C3C3E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Subtle</strong><small>#3C3C3E</small></div>
+          <div class="swatch" style="--color:#FFFFFF;--label:#1C1C1E;--caption:rgba(237,228,214,.85)"><strong>Foreground</strong><small>#FFFFFF</small></div>
+          <div class="swatch" style="--color:#D4883A;--label:#1C1C1E;--caption:rgba(255,255,255,.35)"><strong>Accent</strong><small>#D4883A</small></div>
+          <div class="swatch" style="--color:#5A472D;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Border</strong><small>#5A472D</small></div>
+        </div></section>
+
+        <section class="row"><header class="row-head"><h3>Typography</h3><p>동일한 정보 위계 유지</p></header><div class="preview type-list">
+          <div class="type-item"><code>display / 96</code><div class="display">꾸준함을 기록하다.</div></div>
+          <div class="type-item"><code>heading / 24</code><div class="heading">운동의 모든 순간이 하나의 흐름으로 이어집니다.</div></div>
+          <div class="type-item"><code>body / 15</code><div class="body">운동을 시작하고 진행하고 돌아보는 과정을 자연스럽게 연결합니다.</div></div>
+          <div class="type-item"><code>caption / 12</code><div class="caption">2026년 7월 · YepBuddy</div></div>
+        </div></section>
+
+        <section class="row"><header class="row-head"><h3>Actions</h3><p>주요 CTA와 텍스트 링크만 사용</p></header><div class="preview actions"><a class="primary-action" href="#">앱 만나보기</a><a class="text-action" href="#">사용 흐름 살펴보기</a></div></section>
+        <section class="row"><header class="row-head"><h3>Navigation</h3><p>텍스트 워드마크와 CTA</p></header><div class="preview nav"><span class="wordmark">YepBuddy</span><div class="nav-links"><a href="#">기능</a><a href="#">사용 흐름</a><a href="#">지원</a><a class="primary-action" href="#">앱 만나보기</a></div></div></section>
+        <section class="row"><header class="row-head"><h3>Section title</h3><p>모든 설명 섹션의 공통 헤더</p></header><div class="preview section-title"><p class="eyebrow">한 번의 운동, 하나의 흐름</p><h3>운동에 집중하면 기록은 따라옵니다.</h3><p>기능 이름만 나열하지 않고 사용자가 어떤 상황에서 어떤 도움을 받는지 함께 설명합니다.</p></div></section>
+        <section class="row"><header class="row-head"><h3>Hero</h3><p>카피, CTA, 대표 이미지</p></header><div class="preview hero"><div class="hero-copy"><p class="eyebrow">나의 운동을 가장 나답게</p><h3>운동의 순간을 기록의 리듬으로.</h3><p>시작부터 결과까지 흩어진 운동 경험을 하나의 흐름으로 연결합니다.</p><div class="actions"><a class="primary-action" href="#">앱 만나보기</a><a class="text-action" href="#">사용 흐름 살펴보기</a></div></div><div class="visual"><div class="phone"><div><strong>IMAGE 01</strong><span>홈 화면<br />iPhone cover</span></div></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Feature list</h3><p>카드 대신 편집형 구분선 사용</p></header><div class="preview feature-list"><article class="feature"><span>01</span><h4>나만의 루틴</h4><p>반복하는 운동을 미리 구성해 고민 없이 바로 시작합니다.</p></article><article class="feature"><span>02</span><h4>운동 진행</h4><p>현재 세트와 다음 흐름을 확인하며 운동에 집중합니다.</p></article><article class="feature"><span>03</span><h4>운동 기록</h4><p>완료한 운동을 돌아보고 다음 운동을 준비합니다.</p></article></div></section>
+        <section class="row"><header class="row-head"><h3>Image frames</h3><p>원본과 AI cover 결과</p></header><div class="preview media-pair"><div class="media"><div><strong>Portrait source</strong><span>앱 원본 PNG<br />프레임 없음</span></div></div><div class="media"><div><strong>Composed source</strong><span>투명 배경 iPhone cover<br />CSS 배경과 조합</span></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Story scene</h3><p>Sticky 전환의 한 장면</p></header><div class="preview story"><div class="story-copy"><small>STEP 01 · 운동 진행</small><h4>운동에 집중하면 기록은 따라옵니다.</h4><p>스크롤에 맞춰 카피와 앱 화면이 한 단계씩 전환됩니다.</p></div><div class="visual"><div class="phone"><div><strong>IMAGE 02</strong><span>운동 진행 화면</span></div></div></div></div></section>
+        <section class="row"><header class="row-head"><h3>Final CTA</h3><p>마지막 행동 유도</p></header><div class="preview"><div class="cta"><h3>오늘의 운동을 내일의 기록으로.</h3><a class="primary-action" href="#">앱 만나보기</a></div><footer class="footer"><span>YepBuddy</span><div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div></footer></div></section>
+      </section>
+    </main>
+  </body>
+</html>
