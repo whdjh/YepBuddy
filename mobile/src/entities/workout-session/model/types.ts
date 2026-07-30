@@ -50,6 +50,8 @@ export interface WorkoutSetCountUpdate {
 export interface WorkoutLocation {
   lat: number
   lng: number
+  /** 위치를 얻었을 때의 수평 오차 반경(m) */
+  accuracyMeters?: number
 }
 
 export interface WorkoutRoutineSubstitution {
@@ -73,6 +75,7 @@ export interface StoredWorkoutSession {
   routineSubstitution: WorkoutRoutineSubstitution | null
   bodyParts: WorkoutBodyPartSet[]
   memo: string
+  /** 운동 결과 화면에 표시하는 운동 시작 위치 */
   location: WorkoutLocation | null
 }
 

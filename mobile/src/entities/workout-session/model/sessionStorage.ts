@@ -135,9 +135,16 @@ function normalizeWorkoutLocation(value: unknown): WorkoutLocation | null {
     return null
   }
 
+  const accuracyMeters =
+    typeof location.accuracyMeters === "number" &&
+    Number.isFinite(location.accuracyMeters) &&
+    location.accuracyMeters >= 0
+      ? location.accuracyMeters
+      : undefined
   return {
     lat: location.lat,
     lng: location.lng,
+    ...(accuracyMeters !== undefined ? { accuracyMeters } : {}),
   }
 }
 
