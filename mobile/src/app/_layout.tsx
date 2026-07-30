@@ -7,7 +7,7 @@ import {
   DefaultTheme,
 } from "@react-navigation/native"
 import { router, Stack } from "expo-router"
-import { useColorScheme, View } from "react-native"
+import { AppState, useColorScheme, View } from "react-native"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import {
   ensureProteinSaleNotificationChannel,
@@ -15,6 +15,7 @@ import {
 } from "@/entities/protein"
 import {
   ensureWorkoutSessionNotificationChannels,
+  rebuildAndSyncWorkoutPlaceArrivalReminder,
   registerWorkoutPlaceNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
   syncWorkoutReminderAtNight,
@@ -40,13 +41,22 @@ export default function RootLayout() {
       ])
 
       await Promise.all([
-        syncWorkoutPlaceArrivalReminder({ allowPrompt: false }),
+        rebuildAndSyncWorkoutPlaceArrivalReminder(),
         syncWorkoutReminderAtNight({ allowPrompt: false }),
         syncProteinSaleNotificationsIfEnabled(),
       ])
     })().catch(() => undefined)
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (status) => {
+        if (status === "active") {
+          void syncWorkoutPlaceArrivalReminder().catch(() => false)
+        }
+      },
+    )
 
     return () => {
+      appStateSubscription.remove()
       unsubscribeProteinSaleNotificationHandler()
       unsubscribeWorkoutPlaceNotificationHandler()
     }

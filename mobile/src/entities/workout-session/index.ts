@@ -58,13 +58,12 @@ export {
   type WorkoutHistoryPrefill,
 } from "./lib/workoutHistoryPrefill"
 export {
-  clearWorkoutPlaceRegistration,
+  deleteWorkoutPlace,
   disableWorkoutPlaceArrivalReminder,
-  registerCurrentWorkoutPlace,
   registerWorkoutPlaceNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
-  type RegisterCurrentWorkoutPlaceResult,
 } from "./lib/workoutPlaceArrivalReminder"
+export { rebuildAndSyncWorkoutPlaceArrivalReminder } from "./lib/workoutPlaceRebuild"
 export {
   cancelScheduledWorkoutReminder,
   scheduleWorkoutReminder22h,
@@ -102,18 +101,18 @@ export {
 } from "./model/sessionStorage"
 export {
   clearPendingWorkoutPlaceReminderPrompt,
-  getConfirmedWorkoutPlace,
   getPendingWorkoutPlaceReminderPrompt,
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
 } from "./model/workoutPlaceReminderStorage"
+export { getWorkoutPlaces } from "./model/workoutPlaceStorage"
 export type {
-  ConfirmedWorkoutPlace,
   PendingWorkoutPlaceReminderPrompt,
   WorkoutPlaceReminderSyncStatus,
   WorkoutPlaceReminderSyncStatusReason,
 } from "./model/workoutPlaceReminderStorage"
+export type { LearnedWorkoutPlace } from "./lib/workoutPlaceLearning"
 export type {
   BodyPart,
   BodyPartDetail,
