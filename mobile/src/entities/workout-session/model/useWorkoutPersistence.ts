@@ -10,7 +10,7 @@ import {
   clearCurrentWorkoutSnapshot,
   loadCurrentWorkoutSnapshot,
   saveCurrentWorkoutSnapshot,
-} from "./sessionStorage"
+} from "./currentWorkoutStorage"
 import type { WorkoutAction, WorkoutState } from "./workoutState"
 
 /** 진행 중 운동의 저장소 복구와 변경 상태 snapshot 저장 관리 */

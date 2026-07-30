@@ -85,7 +85,10 @@ src/entities
 - `model/useWorkoutCompletion.ts`: 완료 세션 저장과 HealthKit·캘린더·알림 후처리
 - `model/useWorkoutLiveActivity.ts`: Live Activity 표시와 외부 명령 동기화
 - `model/workoutState.ts`: reducer와 상태 전이
-- `model/sessionStorage.ts`: 진행 중/완료 세션 저장소
+- `model/currentWorkoutStorage.ts`: 진행 중 운동 snapshot 저장소
+- `model/workoutPreferenceStorage.ts`: 운동 리마인더·캘린더 자동 추가 선호값 저장소
+- `model/storedWorkoutSessionParser.ts`: 과거 저장 포맷 검증과 완료 세션 정규화
+- `model/storedWorkoutSessionStorage.ts`: 완료 세션 저장·수정·삭제·기간 조회
 - `api/healthKit.ts`: HealthKit 권한, iPhone live workout 시작/복구/종료, 심박/운동 요약 조회
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
@@ -238,9 +241,9 @@ Workout session AsyncStorage:
 - `yb:healthkit:access`: `"enabled"` 또는 `"denied"`. HealthKit을 사용자가 명시적으로 허용했는지 캐시한다.
 - `yb:workout:current`: 진행 중 운동의 `WorkoutState` JSON. 앱 재시작 후 복구용이다.
 - `yb:workout:session:${sessionId}`: 완료된 `StoredWorkoutSession` JSON. nullable `calendarEventId`로 생성된 OS 캘린더 이벤트를 연결한다.
-- `yb:workout:sessions`: 완료 세션 `sessionId` 배열 JSON. 없거나 깨지면 실제 `yb:workout:session:*` 키를 스캔해 재생성한다.
+- `yb:workout:sessions`: 과거 완료 세션 ID 인덱스. 현재 코드는 실제 `yb:workout:session:*` 키를 직접 스캔하며 이 legacy 값은 읽거나 갱신하지 않는다.
 - `yb:workout:date:${YYYY-MM-DD}`: 해당 날짜 대표 `sessionId`.
-- `yb:workout:dates`: 완료 세션이 있는 날짜 키 배열 JSON. 없거나 깨지면 실제 `yb:workout:date:*` 키를 스캔해 재생성한다.
+- `yb:workout:dates`: 과거 날짜 키 인덱스. 현재 조회에는 필요하지 않아 legacy 값은 읽거나 갱신하지 않는다.
 - `yb:workout:reminder`: 예약된 운동 리마인더 notification identifier.
 - `yb:workout:reminder:enabled`: `"true"` 또는 `"false"`.
 - `yb:workout:weekly-routine`: `RoutineCycleSettings` JSON. 같은 날짜에 새 사이클을 시작한 경우 이전 세션을 제외하기 위한 `cycleStartedAtIso`를 포함할 수 있다.

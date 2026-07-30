@@ -87,62 +87,16 @@ export function WorkoutProvider({ children }: PropsWithChildren) {
     state,
   })
 
-  const {
-    applyBodyPartSets,
-    applyBodyPartTemplate,
-    pauseWorkout,
-    resetWorkout,
-    resumeWorkout,
-    setLiveStats,
-    setLocation,
-    startCardio,
-    startCountdown,
-    startRecording,
-    toggleBodyPart,
-    toggleBodyPartDetail,
-    updateMemo,
-    updateSetCount,
-  } = useWorkoutActions(dispatch)
+  const actions = useWorkoutActions(dispatch)
 
   const value = useMemo<WorkoutContextValue>(
     () => ({
       state,
       isHydrated,
-      startCountdown,
-      startRecording,
-      setLocation,
-      setLiveStats,
-      toggleBodyPart,
-      toggleBodyPartDetail,
-      updateSetCount,
-      updateMemo,
-      startCardio,
-      pauseWorkout,
-      resumeWorkout,
       completeWorkout,
-      resetWorkout,
-      applyBodyPartTemplate,
-      applyBodyPartSets,
+      ...actions,
     }),
-    [
-      applyBodyPartSets,
-      applyBodyPartTemplate,
-      completeWorkout,
-      isHydrated,
-      pauseWorkout,
-      resetWorkout,
-      resumeWorkout,
-      setLiveStats,
-      setLocation,
-      startCardio,
-      startCountdown,
-      startRecording,
-      state,
-      toggleBodyPart,
-      toggleBodyPartDetail,
-      updateMemo,
-      updateSetCount,
-    ],
+    [actions, completeWorkout, isHydrated, state],
   )
 
   return (

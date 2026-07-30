@@ -9,7 +9,7 @@ import {
   ensureWorkoutPlaceArrivalNotificationChannel,
   WORKOUT_PLACE_ARRIVAL_NOTIFICATION_CHANNEL_ID,
 } from "./notificationChannels"
-import { loadCurrentWorkoutSnapshot } from "../model/sessionStorage"
+import { loadCurrentWorkoutSnapshot } from "../model/currentWorkoutStorage"
 import {
   getWorkoutPlaceReminderBlockedAt,
   getWorkoutPlaceReminderEnabled,

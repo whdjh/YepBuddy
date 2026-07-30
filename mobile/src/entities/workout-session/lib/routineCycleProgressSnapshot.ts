@@ -15,9 +15,7 @@ import {
   type RoutineCycleSession,
   type RoutineCycleSettings,
 } from "../model/routineCycle"
-import {
-  getAllStoredWorkoutSessions,
-} from "../model/sessionStorage"
+import { getAllStoredWorkoutSessions } from "../model/storedWorkoutSessionStorage"
 import {
   loadRoutineCycleProgressState,
   loadRoutineCycleFeatureStatus,

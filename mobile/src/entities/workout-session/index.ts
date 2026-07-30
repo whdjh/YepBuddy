@@ -86,19 +86,21 @@ export type {
 export {
   deleteStoredWorkoutSession,
   getAllStoredWorkoutSessions,
-  getCalendarAutoAddPreference,
-  getWorkoutReminderEnabled,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
   getStoredWorkoutSessionsForMonth,
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
-  setCalendarAutoAddPreference,
-  setWorkoutReminderEnabled,
   updateStoredWorkoutSetCounts,
   updateStoredWorkoutHealthKitMetrics,
   updateStoredWorkoutMemo,
-} from "./model/sessionStorage"
+} from "./model/storedWorkoutSessionStorage"
+export {
+  getCalendarAutoAddPreference,
+  getWorkoutReminderEnabled,
+  setCalendarAutoAddPreference,
+  setWorkoutReminderEnabled,
+} from "./model/workoutPreferenceStorage"
 export {
   clearPendingWorkoutPlaceReminderPrompt,
   getPendingWorkoutPlaceReminderPrompt,

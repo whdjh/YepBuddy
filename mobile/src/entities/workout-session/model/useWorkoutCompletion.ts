@@ -11,9 +11,11 @@ import {
 } from "../lib/workoutCompletion"
 import {
   clearCurrentWorkoutSnapshot,
+} from "./currentWorkoutStorage"
+import {
   saveCompletedWorkoutSession,
   updateStoredWorkoutHealthKitMetrics,
-} from "./sessionStorage"
+} from "./storedWorkoutSessionStorage"
 import { markWorkoutPlaceReminderBlockedAt } from "./workoutPlaceReminderStorage"
 import type { WorkoutRoutineSubstitution } from "./types"
 import type { WorkoutAction, WorkoutState } from "./workoutState"

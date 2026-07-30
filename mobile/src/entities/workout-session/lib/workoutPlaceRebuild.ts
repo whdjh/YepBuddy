@@ -4,7 +4,7 @@ import {
   syncWorkoutPlaceArrivalReminder,
 } from "./workoutPlaceArrivalReminder"
 import { rebuildWorkoutPlacesFromSessions } from "./workoutPlaceLearning"
-import { getAllStoredWorkoutSessions } from "../model/sessionStorage"
+import { getAllStoredWorkoutSessions } from "../model/storedWorkoutSessionStorage"
 import {
   getExcludedWorkoutPlaceSessionIds,
   getWorkoutPlaces,
