@@ -1,6 +1,8 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs"
 import { WorkoutNavigationGuard } from "@/features/do-workout/ui/WorkoutNavigationGuard"
 
+const PROTEIN_TAB_ENABLED = false
+
 export default function TabLayout() {
   return (
     <>
@@ -14,7 +16,10 @@ export default function TabLayout() {
           <NativeTabs.Trigger.Icon sf="timer" md="timer" />
           <NativeTabs.Trigger.Label>템포</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="protein">
+        <NativeTabs.Trigger
+          name="protein"
+          hidden={!PROTEIN_TAB_ENABLED}
+        >
           <NativeTabs.Trigger.Icon sf="waterbottle.fill" md="water_bottle" />
           <NativeTabs.Trigger.Label>프로틴</NativeTabs.Trigger.Label>
         </NativeTabs.Trigger>
