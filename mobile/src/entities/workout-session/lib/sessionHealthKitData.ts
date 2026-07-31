@@ -7,7 +7,7 @@ import {
   getStoredWorkoutSession,
   getStoredWorkoutSessionIdByDate,
   getStoredWorkoutSessionsForMonth,
-} from "../model/sessionStorage"
+} from "../model/storedWorkoutSessionStorage"
 import type {
   StoredWorkoutSession,
   WorkoutHealthKitDetail,

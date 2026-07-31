@@ -77,9 +77,9 @@
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "운동 시작 위치를 한 번 기록해 세션 결과에 표시합니다.",
-          "locationAlwaysPermission": "등록한 운동 장소의 20m 안에 도착했을 때 운동 시작 알림을 보내기 위해 백그라운드 위치를 사용합니다.",
-          "locationAlwaysAndWhenInUsePermission": "운동 시작 위치를 기록하고, 등록한 운동 장소의 20m 안에 도착했을 때 운동 시작 알림을 보내기 위해 위치를 사용합니다.",
+          "locationWhenInUsePermission": "운동 결과에 위치를 표시하고 자주 운동하는 장소를 자동으로 등록합니다.",
+          "locationAlwaysPermission": "자동 등록된 운동 장소 주변 진입 후 실제 도착 위치를 확인하고 운동 시작 알림을 보내기 위해 백그라운드 위치를 사용합니다.",
+          "locationAlwaysAndWhenInUsePermission": "운동 결과 위치로 운동 장소를 자동 등록하고, 해당 장소 도착 시 운동 시작 알림을 보내기 위해 위치를 사용합니다.",
           "isIosBackgroundLocationEnabled": true,
           "isAndroidBackgroundLocationEnabled": true
         }

@@ -53,29 +53,24 @@
     },
     "workoutPlaceReminder": {
       "title": "Workout Place Alerts",
-      "body": "Suggests starting a workout when you arrive within 20 m of your registered gym.",
+      "body": "Suggests starting a workout when you arrive within 20 m of a gym learned from your workouts.",
       "backgroundPermissionTitle": "Background Location Permission Needed",
       "backgroundPermissionBody": "To detect arrival at your gym when the app is not open, change location access to Always on the next screen.",
       "backgroundPermissionAction": "Open Permission Settings",
       "statusPermissionDenied": "Location or notification permissions need attention.",
       "statusRegistrationFailed": "Could not register workout place alerts.",
-      "statusNoPlace": "Register your current location while you are at the gym first.",
-      "statusPlaceRegistered": "Your gym location is registered.",
-      "registerPlace": "Register Current Location as Gym",
-      "changePlace": "Replace Gym with Current Location",
-      "clearPlace": "Remove Registered Gym",
-      "registrationConfirmTitle": "Register This Gym Location?",
-      "registrationConfirmBody": "Register while you are inside the gym for accurate alerts. The location is saved only when accuracy is within 20 m.",
-      "registrationConfirmAction": "Register Current Location",
-      "registrationSuccessTitle": "Gym Location Registered",
-      "registrationSuccessBody": "Turn on alerts to be notified when you arrive within 20 m of this location.",
-      "registrationErrorTitle": "Could Not Register Gym Location",
-      "registrationPermissionDenied": "Location permission is required to register your current location.",
-      "registrationLowAccuracy": "Current location accuracy is worse than 20 m. Try again inside or near the gym entrance.",
-      "registrationUnavailable": "Your current location is unavailable. Try again shortly.",
-      "clearConfirmTitle": "Remove the Registered Gym?",
-      "clearConfirmBody": "Workout place alerts will also be turned off.",
-      "clearConfirmAction": "Remove"
+      "statusNoPlace": "A place will be learned when a workout result includes a location.",
+      "statusPlaceCount": "{{count}} gym locations registered.",
+      "openPlaceList": "Registered Gym Locations ({{count}})",
+      "listTitle": "Registered Gym Locations",
+      "listBody": "Locations are added automatically from saved workout result locations.",
+      "listEmpty": "No locations yet. A workout result with a saved location will be added automatically.",
+      "placeFallback": "Workout Place {{number}}",
+      "placeMeta": "Last workout {{date}} · {{count}} visits",
+      "deletePlaceTitle": "Delete This Gym Location?",
+      "deletePlaceBody": "It may be learned again after a future workout at the same place.",
+      "deletePlaceErrorTitle": "Could Not Delete Location",
+      "deletePlaceErrorBody": "Please try again shortly."
     },
     "calendarAutoAdd": {
       "title": "Calendar Auto Save",
@@ -109,6 +104,12 @@
     },
     "countdown": {
       "label": "Strength Training"
+    },
+    "liveActivity": {
+      "workoutRecording": "Workout in progress",
+      "cardioRecording": "Cardio in progress",
+      "workoutPaused": "Workout paused",
+      "cardioPaused": "Cardio paused"
     },
     "calendar": {
       "defaultTitle": "Workout",

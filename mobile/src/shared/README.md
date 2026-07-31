@@ -353,7 +353,7 @@ useDebouncedEffect(
 주요 사용처:
 
 - 캘린더: `MonthGrid`, `useMonthWorkoutDates`
-- 세션 저장: `sessionStorage`
+- 세션 저장: `currentWorkoutStorage`, `storedWorkoutSessionStorage`
 - 요약: `useTodaySummary`, `useTodayCompleted`
 - 주간 루틴: `weeklyRoutineCycle`
 - HealthKit 매칭: `healthKit`

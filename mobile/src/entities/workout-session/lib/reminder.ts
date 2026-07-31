@@ -12,13 +12,13 @@ import {
 } from "./workoutReminderSchedule"
 import {
   clearWorkoutReminderId,
-  getStoredWorkoutSessionIdByDate,
   getWorkoutReminderEnabled,
   getWorkoutReminderId,
-  loadCurrentWorkoutSnapshot,
   saveWorkoutReminderId,
   setWorkoutReminderEnabled,
-} from "../model/sessionStorage"
+} from "../model/workoutPreferenceStorage"
+import { loadCurrentWorkoutSnapshot } from "../model/currentWorkoutStorage"
+import { getStoredWorkoutSessionIdByDate } from "../model/storedWorkoutSessionStorage"
 import type { WorkoutState } from "../model/workoutState"
 
 export const WORKOUT_REMINDER_NOTIFICATION_KIND = "workoutReminder"

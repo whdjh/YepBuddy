@@ -58,13 +58,12 @@ export {
   type WorkoutHistoryPrefill,
 } from "./lib/workoutHistoryPrefill"
 export {
-  clearWorkoutPlaceRegistration,
+  deleteWorkoutPlace,
   disableWorkoutPlaceArrivalReminder,
-  registerCurrentWorkoutPlace,
   registerWorkoutPlaceNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
-  type RegisterCurrentWorkoutPlaceResult,
 } from "./lib/workoutPlaceArrivalReminder"
+export { rebuildAndSyncWorkoutPlaceArrivalReminder } from "./lib/workoutPlaceRebuild"
 export {
   cancelScheduledWorkoutReminder,
   scheduleWorkoutReminder22h,
@@ -87,33 +86,35 @@ export type {
 export {
   deleteStoredWorkoutSession,
   getAllStoredWorkoutSessions,
-  getCalendarAutoAddPreference,
-  getWorkoutReminderEnabled,
   getLatestStoredWorkoutSession,
   getStoredWorkoutSession,
   getStoredWorkoutSessionsForMonth,
   getStoredWorkoutSessionsInRange,
   getStoredWorkoutSessionIdByDate,
-  setCalendarAutoAddPreference,
-  setWorkoutReminderEnabled,
   updateStoredWorkoutSetCounts,
   updateStoredWorkoutHealthKitMetrics,
   updateStoredWorkoutMemo,
-} from "./model/sessionStorage"
+} from "./model/storedWorkoutSessionStorage"
+export {
+  getCalendarAutoAddPreference,
+  getWorkoutReminderEnabled,
+  setCalendarAutoAddPreference,
+  setWorkoutReminderEnabled,
+} from "./model/workoutPreferenceStorage"
 export {
   clearPendingWorkoutPlaceReminderPrompt,
-  getConfirmedWorkoutPlace,
   getPendingWorkoutPlaceReminderPrompt,
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderSyncStatus,
   setWorkoutPlaceReminderEnabled,
 } from "./model/workoutPlaceReminderStorage"
+export { getWorkoutPlaces } from "./model/workoutPlaceStorage"
 export type {
-  ConfirmedWorkoutPlace,
   PendingWorkoutPlaceReminderPrompt,
   WorkoutPlaceReminderSyncStatus,
   WorkoutPlaceReminderSyncStatusReason,
 } from "./model/workoutPlaceReminderStorage"
+export type { LearnedWorkoutPlace } from "./lib/workoutPlaceLearning"
 export type {
   BodyPart,
   BodyPartDetail,

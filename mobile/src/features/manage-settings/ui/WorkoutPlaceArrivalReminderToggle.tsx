@@ -2,35 +2,51 @@ import { useEffect, useState } from "react"
 import { ActivityIndicator, Alert, Switch, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
-  clearWorkoutPlaceRegistration,
+  deleteWorkoutPlace,
   disableWorkoutPlaceArrivalReminder,
-  getConfirmedWorkoutPlace,
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderSyncStatus,
-  registerCurrentWorkoutPlace,
+  getWorkoutPlaces,
+  rebuildAndSyncWorkoutPlaceArrivalReminder,
   setWorkoutPlaceReminderEnabled,
-  syncWorkoutPlaceArrivalReminder,
-  type RegisterCurrentWorkoutPlaceResult,
+  type LearnedWorkoutPlace,
   type WorkoutPlaceReminderSyncStatus,
 } from "@/entities/workout-session"
 import { useResolvedColorToken } from "@/shared/hooks/useResolvedColorToken"
 import { semanticColorTokens } from "@/shared/lib/designTokens"
 import { Button } from "@/shared/ui/Button"
 import { SettingsRow } from "./SettingsRow"
+import { WorkoutPlaceListSheet } from "./WorkoutPlaceListSheet"
 
-/** 운동 장소 등록과 도착 알림 ON/OFF를 관리 */
+/** 자동 학습 장소 목록과 도착 알림 ON/OFF를 관리 */
 export function WorkoutPlaceArrivalReminderToggle() {
   const { t } = useTranslation()
   const accent = useResolvedColorToken(semanticColorTokens.accent)
   const muted = useResolvedColorToken(semanticColorTokens.surfaceMuted)
   const surface = useResolvedColorToken(semanticColorTokens.surface)
 
+  const [deletingPlaceId, setDeletingPlaceId] = useState<string | null>(null)
   const [enabled, setEnabled] = useState(false)
-  const [hasPlace, setHasPlace] = useState(false)
+  const [isSheetOpen, setIsSheetOpen] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [places, setPlaces] = useState<LearnedWorkoutPlace[]>([])
   const [syncStatus, setSyncStatus] =
     useState<WorkoutPlaceReminderSyncStatus | null>(null)
   const [updating, setUpdating] = useState(false)
+
+  const loadState = async () => {
+    const [storedEnabled, storedSyncStatus, storedPlaces] = await Promise.all([
+      getWorkoutPlaceReminderEnabled(),
+      getWorkoutPlaceReminderSyncStatus(),
+      getWorkoutPlaces(),
+    ])
+    setEnabled(storedEnabled && storedPlaces.length > 0)
+    setPlaces(storedPlaces)
+    setSyncStatus(storedSyncStatus)
+    if (storedEnabled && storedPlaces.length === 0) {
+      await disableWorkoutPlaceArrivalReminder()
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -38,21 +54,21 @@ export function WorkoutPlaceArrivalReminderToggle() {
     void Promise.all([
       getWorkoutPlaceReminderEnabled(),
       getWorkoutPlaceReminderSyncStatus(),
-      getConfirmedWorkoutPlace(),
+      getWorkoutPlaces(),
     ])
-      .then(([storedEnabled, storedSyncStatus, place]) => {
-        if (cancelled) {
-          return
-        }
-
-        const placeExists = place !== null
-        setEnabled(storedEnabled && placeExists)
-        setHasPlace(placeExists)
-        setSyncStatus(storedSyncStatus)
-        if (storedEnabled && !placeExists) {
-          void disableWorkoutPlaceArrivalReminder()
-        }
-      })
+      .then(
+        ([storedEnabled, storedSyncStatus, storedPlaces]) => {
+          if (cancelled) {
+            return
+          }
+          setEnabled(storedEnabled && storedPlaces.length > 0)
+          setPlaces(storedPlaces)
+          setSyncStatus(storedSyncStatus)
+          if (storedEnabled && storedPlaces.length === 0) {
+            void disableWorkoutPlaceArrivalReminder()
+          }
+        },
+      )
       .catch(() => undefined)
       .finally(() => {
         if (!cancelled) {
@@ -70,7 +86,7 @@ export function WorkoutPlaceArrivalReminderToggle() {
   }
 
   const handleToggle = async () => {
-    if (updating || !hasPlace) {
+    if (updating || places.length === 0) {
       return
     }
 
@@ -81,7 +97,7 @@ export function WorkoutPlaceArrivalReminderToggle() {
     try {
       if (nextEnabled) {
         await setWorkoutPlaceReminderEnabled(true)
-        const synced = await syncWorkoutPlaceArrivalReminder({
+        const synced = await rebuildAndSyncWorkoutPlaceArrivalReminder({
           allowPrompt: true,
         })
         setEnabled(synced)
@@ -102,104 +118,51 @@ export function WorkoutPlaceArrivalReminderToggle() {
     }
   }
 
-  const getRegistrationErrorKey = (result: RegisterCurrentWorkoutPlaceResult) => {
-    if (result === "permission-denied") {
-      return "settings.workoutPlaceReminder.registrationPermissionDenied"
-    }
-    if (result === "low-accuracy") {
-      return "settings.workoutPlaceReminder.registrationLowAccuracy"
-    }
-    return "settings.workoutPlaceReminder.registrationUnavailable"
-  }
-
-  const registerPlace = async () => {
-    setUpdating(true)
-    try {
-      const result = await registerCurrentWorkoutPlace()
-      if (result !== "registered") {
-        Alert.alert(
-          t("settings.workoutPlaceReminder.registrationErrorTitle"),
-          t(getRegistrationErrorKey(result)),
-        )
-        return
-      }
-
-      setHasPlace(true)
-      if (enabled) {
-        await syncWorkoutPlaceArrivalReminder({ allowPrompt: false })
-        await refreshSyncStatus()
-      }
-      Alert.alert(
-        t("settings.workoutPlaceReminder.registrationSuccessTitle"),
-        t("settings.workoutPlaceReminder.registrationSuccessBody"),
-      )
-    } catch {
-      Alert.alert(
-        t("settings.workoutPlaceReminder.registrationErrorTitle"),
-        t("settings.workoutPlaceReminder.registrationUnavailable"),
-      )
-    } finally {
-      setUpdating(false)
-    }
-  }
-
-  const handleRegisterPress = () => {
-    if (updating) {
+  const openPlaces = async () => {
+    if (loading || updating) {
       return
     }
+    await loadState().catch(() => undefined)
+    setIsSheetOpen(true)
+  }
 
+  const confirmDeletePlace = (place: LearnedWorkoutPlace) => {
     Alert.alert(
-      t("settings.workoutPlaceReminder.registrationConfirmTitle"),
-      t("settings.workoutPlaceReminder.registrationConfirmBody"),
+      t("settings.workoutPlaceReminder.deletePlaceTitle"),
+      t("settings.workoutPlaceReminder.deletePlaceBody"),
       [
         { text: t("common.cancel"), style: "cancel" },
         {
-          text: t("settings.workoutPlaceReminder.registrationConfirmAction"),
-          onPress: () => void registerPlace(),
-        },
-      ],
-      { cancelable: true },
-    )
-  }
-
-  const clearPlace = async () => {
-    setUpdating(true)
-    try {
-      await clearWorkoutPlaceRegistration()
-      setEnabled(false)
-      setHasPlace(false)
-      await refreshSyncStatus()
-    } catch {
-      Alert.alert(
-        t("settings.workoutPlaceReminder.registrationErrorTitle"),
-        t("settings.workoutPlaceReminder.registrationUnavailable"),
-      )
-    } finally {
-      setUpdating(false)
-    }
-  }
-
-  const handleClearPress = () => {
-    if (updating) {
-      return
-    }
-
-    Alert.alert(
-      t("settings.workoutPlaceReminder.clearConfirmTitle"),
-      t("settings.workoutPlaceReminder.clearConfirmBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("settings.workoutPlaceReminder.clearConfirmAction"),
+          text: t("common.delete"),
           style: "destructive",
-          onPress: () => void clearPlace(),
+          onPress: () => {
+            void (async () => {
+              setDeletingPlaceId(place.id)
+              try {
+                const nextPlaces = await deleteWorkoutPlace(place.id)
+                setPlaces(nextPlaces)
+                if (nextPlaces.length === 0) {
+                  setEnabled(false)
+                }
+                await refreshSyncStatus()
+              } catch {
+                Alert.alert(
+                  t("settings.workoutPlaceReminder.deletePlaceErrorTitle"),
+                  t("settings.workoutPlaceReminder.deletePlaceErrorBody"),
+                )
+              } finally {
+                setDeletingPlaceId(null)
+              }
+            })()
+          },
         },
       ],
       { cancelable: true },
     )
   }
 
-  const statusMessage = !hasPlace
+  const hasPlaces = places.length > 0
+  const statusMessage = !hasPlaces
     ? t("settings.workoutPlaceReminder.statusNoPlace")
     : enabled && syncStatus && !syncStatus.operational
       ? syncStatus.reason === "permission-denied"
@@ -207,63 +170,71 @@ export function WorkoutPlaceArrivalReminderToggle() {
         : syncStatus.reason === "registration-failed"
           ? t("settings.workoutPlaceReminder.statusRegistrationFailed")
           : null
-      : t("settings.workoutPlaceReminder.statusPlaceRegistered")
+      : t("settings.workoutPlaceReminder.statusPlaceCount", {
+          count: places.length,
+        })
   const body = statusMessage
     ? `${t("settings.workoutPlaceReminder.body")}\n${statusMessage}`
     : t("settings.workoutPlaceReminder.body")
 
   return (
-    <SettingsRow
-      title={t("settings.workoutPlaceReminder.title")}
-      body={body}
-      control={
-        loading ? (
-          <ActivityIndicator color={accent} />
-        ) : (
-          <Switch
-            value={enabled}
-            disabled={updating || !hasPlace}
-            accessibilityRole="switch"
-            accessibilityLabel={t("settings.workoutPlaceReminder.title")}
-            accessibilityHint={body}
-            accessibilityState={{
-              checked: enabled,
-              disabled: updating || !hasPlace,
-            }}
-            onValueChange={() => {
-              void handleToggle()
-            }}
-            trackColor={{ false: muted, true: accent }}
-            thumbColor={surface}
-          />
-        )
-      }
-      footer={
-        <View className="mt-yb-4 gap-yb-2">
-          <Button
-            variant="outline"
-            label={t(
-              hasPlace
-                ? "settings.workoutPlaceReminder.changePlace"
-                : "settings.workoutPlaceReminder.registerPlace",
-            )}
-            disabled={loading || updating}
-            accessibilityRole="button"
-            accessibilityState={{ busy: updating, disabled: loading || updating }}
-            onPress={handleRegisterPress}
-          />
-          {hasPlace && (
-            <Button
-              variant="ghost"
-              label={t("settings.workoutPlaceReminder.clearPlace")}
-              disabled={updating}
-              accessibilityRole="button"
-              accessibilityState={{ busy: updating, disabled: updating }}
-              onPress={handleClearPress}
+    <>
+      <SettingsRow
+        title={t("settings.workoutPlaceReminder.title")}
+        body={body}
+        control={
+          loading ? (
+            <ActivityIndicator color={accent} />
+          ) : (
+            <Switch
+              value={enabled}
+              disabled={updating || !hasPlaces}
+              accessibilityRole="switch"
+              accessibilityLabel={t("settings.workoutPlaceReminder.title")}
+              accessibilityHint={body}
+              accessibilityState={{
+                checked: enabled,
+                disabled: updating || !hasPlaces,
+              }}
+              onValueChange={() => {
+                void handleToggle()
+              }}
+              trackColor={{ false: muted, true: accent }}
+              thumbColor={surface}
             />
-          )}
-        </View>
-      }
-    />
+          )
+        }
+        footer={
+          <View className="mt-yb-4">
+            <Button
+              variant="outline"
+              label={t("settings.workoutPlaceReminder.openPlaceList", {
+                count: places.length,
+              })}
+              disabled={loading || updating}
+              accessibilityRole="button"
+              accessibilityState={{
+                busy: updating,
+                disabled: loading || updating,
+              }}
+              onPress={() => {
+                void openPlaces()
+              }}
+            />
+          </View>
+        }
+      />
+      <WorkoutPlaceListSheet
+        deletingPlaceId={deletingPlaceId}
+        places={places}
+        visible={isSheetOpen}
+        onClose={() => {
+          if (deletingPlaceId === null) {
+            setIsSheetOpen(false)
+          }
+        }}
+        onDelete={confirmDeletePlace}
+      />
+    </>
   )
 }

@@ -4,8 +4,10 @@ import i18n from "@/shared/i18n/i18n"
 import {
   getCalendarAutoAddPreference,
   setCalendarAutoAddPreference,
+} from "../model/workoutPreferenceStorage"
+import {
   updateStoredWorkoutCalendarEventId,
-} from "../model/sessionStorage"
+} from "../model/storedWorkoutSessionStorage"
 import type {
   StoredWorkoutSession,
   WorkoutBodyPartSet,

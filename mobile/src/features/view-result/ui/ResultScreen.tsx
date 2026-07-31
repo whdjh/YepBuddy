@@ -13,6 +13,7 @@ import {
   getStoredWorkoutSessionDurationSeconds,
   getWorkoutSessionDetailActiveKcal,
   getWorkoutBodyPartSetLabel,
+  rebuildAndSyncWorkoutPlaceArrivalReminder,
   updateStoredWorkoutMemo,
   updateStoredWorkoutSetCounts,
   updateWorkoutCalendarEvent,
@@ -192,6 +193,7 @@ export function ResultScreen({
 
     try {
       await deleteStoredWorkoutSession(sessionId)
+      await rebuildAndSyncWorkoutPlaceArrivalReminder()
       router.replace("/")
     } catch {
       Alert.alert(

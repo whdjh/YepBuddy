@@ -228,6 +228,7 @@ features/
 - `updateWorkoutCalendarEvent`
 - `deleteWorkoutCalendarEvent`
 - `deleteStoredWorkoutSession`
+- `rebuildAndSyncWorkoutPlaceArrivalReminder`
 - `getStoredWorkoutSessionDurationSeconds`
 - body part label helpers
 
@@ -406,7 +407,7 @@ features/
 
 - `SettingsScreen`이 운동/프로틴 섹션을 나누고 각 row를 렌더링한다.
 - `WorkoutReminderToggle`은 매일 운동 리마인더 enabled 값과 notification sync를 관리한다.
-- `WorkoutPlaceArrivalReminderToggle`은 현재 위치를 단일 운동 장소로 등록/교체/해제하고 장소 알림 enabled 값과 geofence 동기화를 관리한다.
+- `WorkoutPlaceArrivalReminderToggle`은 자동 학습된 운동 장소 목록 하단시트, 개별 삭제, 장소 알림 enabled 값과 geofence 동기화를 관리한다.
 - `ProteinSaleNotificationToggle`은 프로틴 세일 알림 예약/해제를 관리한다.
 - `RoutineCycleToggle`은 `useRoutineCyclePlan`을 사용하고, `routineSetup=1` param이면 설정 sheet를 연다.
 - `RoutineCycleSettingsSheet`와 `RoutineSettingsEditors`가 루틴 사이클 split/cycle/body part 설정을 편집한다.
@@ -420,12 +421,14 @@ features/
 - `RoutineSettingsEditors`
 - `WorkoutReminderToggle`
 - `WorkoutPlaceArrivalReminderToggle`
+- `WorkoutPlaceListSheet`
 - `ProteinSaleNotificationToggle`
 
 사용하는 `entities/workout-session` API:
 
 - `getWorkoutReminderEnabled`, `setWorkoutReminderEnabled`, `syncWorkoutReminderAtNight`
-- `getWorkoutPlaceReminderEnabled`, `setWorkoutPlaceReminderEnabled`, `disableWorkoutPlaceArrivalReminder`, `syncWorkoutPlaceArrivalReminder`
+- `getWorkoutPlaces`, `deleteWorkoutPlace`
+- `getWorkoutPlaceReminderEnabled`, `setWorkoutPlaceReminderEnabled`, `disableWorkoutPlaceArrivalReminder`, `rebuildAndSyncWorkoutPlaceArrivalReminder`
 - routine cycle defaults/types/constants/session resize API
 
 사용하는 `entities/protein` API:
