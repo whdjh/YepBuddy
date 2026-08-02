@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.1](https://github.com/whdjh/yepbuddy/compare/v1.6.0...v1.6.1) (2026-08-02)
+
+
+### Bug Fixes
+
+* **setting:** 세부 운동 부위 선택 pill 렌더링 구조 통일 ([#86](https://github.com/whdjh/yepbuddy/issues/86)) ([2872867](https://github.com/whdjh/yepbuddy/commit/287286790122b876ddef8a1641ca94096f6d3a5a))
+* **workout-place:** 운동 장소 학습과 다중 장소 도착 알림 개선 ([#88](https://github.com/whdjh/yepbuddy/issues/88)) ([fa5b532](https://github.com/whdjh/yepbuddy/commit/fa5b532b0a5f977d1937600a890db597e382637a))
+
 ## [1.6.0](https://github.com/whdjh/yepbuddy/compare/v1.5.0...v1.6.0) (2026-07-24)
 
 
