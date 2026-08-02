@@ -2,7 +2,7 @@
   "expo": {
     "name": "옙버디",
     "slug": "yepbuddy",
-    "version": "1.6.0",
+    "version": "1.6.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "yepbuddy",
@@ -10,7 +10,7 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.juhun.yepbuddy.app",
-      "buildNumber": "1",
+      "buildNumber": "1.6.1",
       "infoPlist": {
         "CFBundleDisplayName": "옙버디",
         "ITSAppUsesNonExemptEncryption": false,
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "com.juhun.yepbuddy.app",
-      "versionCode": 550010600,
+      "versionCode": 550010601,
       "blockedPermissions": [
         "android.permission.SYSTEM_ALERT_WINDOW",
         "android.permission.READ_EXTERNAL_STORAGE",
