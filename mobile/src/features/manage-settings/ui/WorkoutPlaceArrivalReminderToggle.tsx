@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ActivityIndicator, Alert, Switch, View } from "react-native"
+import { ActivityIndicator, Switch, View } from "react-native"
 import { useTranslation } from "react-i18next"
 import {
   deleteWorkoutPlace,
@@ -7,6 +7,7 @@ import {
   getWorkoutPlaceReminderEnabled,
   getWorkoutPlaceReminderSyncStatus,
   getWorkoutPlaces,
+  refreshWorkoutPlaceLabels,
   rebuildAndSyncWorkoutPlaceArrivalReminder,
   setWorkoutPlaceReminderEnabled,
   type LearnedWorkoutPlace,
@@ -38,7 +39,7 @@ export function WorkoutPlaceArrivalReminderToggle() {
     const [storedEnabled, storedSyncStatus, storedPlaces] = await Promise.all([
       getWorkoutPlaceReminderEnabled(),
       getWorkoutPlaceReminderSyncStatus(),
-      getWorkoutPlaces(),
+      refreshWorkoutPlaceLabels(),
     ])
     setEnabled(storedEnabled && storedPlaces.length > 0)
     setPlaces(storedPlaces)
@@ -56,19 +57,17 @@ export function WorkoutPlaceArrivalReminderToggle() {
       getWorkoutPlaceReminderSyncStatus(),
       getWorkoutPlaces(),
     ])
-      .then(
-        ([storedEnabled, storedSyncStatus, storedPlaces]) => {
-          if (cancelled) {
-            return
-          }
-          setEnabled(storedEnabled && storedPlaces.length > 0)
-          setPlaces(storedPlaces)
-          setSyncStatus(storedSyncStatus)
-          if (storedEnabled && storedPlaces.length === 0) {
-            void disableWorkoutPlaceArrivalReminder()
-          }
-        },
-      )
+      .then(([storedEnabled, storedSyncStatus, storedPlaces]) => {
+        if (cancelled) {
+          return
+        }
+        setEnabled(storedEnabled && storedPlaces.length > 0)
+        setPlaces(storedPlaces)
+        setSyncStatus(storedSyncStatus)
+        if (storedEnabled && storedPlaces.length === 0) {
+          void disableWorkoutPlaceArrivalReminder()
+        }
+      })
       .catch(() => undefined)
       .finally(() => {
         if (!cancelled) {
@@ -118,47 +117,29 @@ export function WorkoutPlaceArrivalReminderToggle() {
     }
   }
 
-  const openPlaces = async () => {
+  const openPlaces = () => {
     if (loading || updating) {
       return
     }
-    await loadState().catch(() => undefined)
     setIsSheetOpen(true)
+    setUpdating(true)
+    void loadState()
+      .catch(() => undefined)
+      .finally(() => setUpdating(false))
   }
 
-  const confirmDeletePlace = (place: LearnedWorkoutPlace) => {
-    Alert.alert(
-      t("settings.workoutPlaceReminder.deletePlaceTitle"),
-      t("settings.workoutPlaceReminder.deletePlaceBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: () => {
-            void (async () => {
-              setDeletingPlaceId(place.id)
-              try {
-                const nextPlaces = await deleteWorkoutPlace(place.id)
-                setPlaces(nextPlaces)
-                if (nextPlaces.length === 0) {
-                  setEnabled(false)
-                }
-                await refreshSyncStatus()
-              } catch {
-                Alert.alert(
-                  t("settings.workoutPlaceReminder.deletePlaceErrorTitle"),
-                  t("settings.workoutPlaceReminder.deletePlaceErrorBody"),
-                )
-              } finally {
-                setDeletingPlaceId(null)
-              }
-            })()
-          },
-        },
-      ],
-      { cancelable: true },
-    )
+  const deletePlace = async (place: LearnedWorkoutPlace) => {
+    setDeletingPlaceId(place.id)
+    try {
+      const nextPlaces = await deleteWorkoutPlace(place.id)
+      setPlaces(nextPlaces)
+      if (nextPlaces.length === 0) {
+        setEnabled(false)
+      }
+      await refreshSyncStatus()
+    } finally {
+      setDeletingPlaceId(null)
+    }
   }
 
   const hasPlaces = places.length > 0
@@ -217,9 +198,7 @@ export function WorkoutPlaceArrivalReminderToggle() {
                 busy: updating,
                 disabled: loading || updating,
               }}
-              onPress={() => {
-                void openPlaces()
-              }}
+              onPress={openPlaces}
             />
           </View>
         }
@@ -228,12 +207,8 @@ export function WorkoutPlaceArrivalReminderToggle() {
         deletingPlaceId={deletingPlaceId}
         places={places}
         visible={isSheetOpen}
-        onClose={() => {
-          if (deletingPlaceId === null) {
-            setIsSheetOpen(false)
-          }
-        }}
-        onDelete={confirmDeletePlace}
+        onClose={() => setIsSheetOpen(false)}
+        onDelete={deletePlace}
       />
     </>
   )
