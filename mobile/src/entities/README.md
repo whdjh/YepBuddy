@@ -250,7 +250,7 @@ Workout session AsyncStorage:
 - `yb:workout:weekly-routine-feature-status`: `"unasked"`, `"enabled"`, `"disabled"`.
 - `yb:workout:weekly-routine-prompt`: `RoutineCyclePromptState` JSON. 사이클 종료 Alert를 dismiss한 앵커 날짜 키를 저장한다.
 - `yb:workout-place-reminder:enabled`: `"true"` 또는 `"false"`.
-- `yb:workout-place-reminder:places`: 자동 학습 장소 최대 20개의 좌표, 라벨, 방문 시각/횟수, source session ID 배열 JSON.
+- `yb:workout-place-reminder:places`: 자동 학습 장소 최대 20개의 좌표, 주소 라벨과 포맷 버전, 방문 시각/횟수, source session ID 배열 JSON. 이전 포맷 라벨은 현재 버전으로 다시 생성한다.
 - `yb:workout-place-reminder:cooldown-started-at`: 운동 완료 또는 알림 성공 중 가장 최근 시각. key는 호환성을 유지하고 현재 정책은 로컬 날짜 단위 당일 차단이다.
 - `yb:workout-place-reminder:pending-prompt`: `PendingWorkoutPlaceReminderPrompt` JSON. 장소 도착 알림을 탭한 뒤 요약 화면에서 운동 시작 확인을 띄우기 위한 값이다.
 - `yb:workout-place-reminder:sync-status`: geofence 동작 가능 여부와 실패 이유 JSON.
