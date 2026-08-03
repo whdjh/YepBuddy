@@ -63,7 +63,10 @@ export {
   registerWorkoutPlaceNotificationHandler,
   syncWorkoutPlaceArrivalReminder,
 } from "./lib/workoutPlaceArrivalReminder"
-export { rebuildAndSyncWorkoutPlaceArrivalReminder } from "./lib/workoutPlaceRebuild"
+export {
+  rebuildAndSyncWorkoutPlaceArrivalReminder,
+  refreshWorkoutPlaceLabels,
+} from "./lib/workoutPlaceRebuild"
 export {
   cancelScheduledWorkoutReminder,
   scheduleWorkoutReminder22h,

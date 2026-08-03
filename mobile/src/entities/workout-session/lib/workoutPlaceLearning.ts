@@ -8,6 +8,7 @@ export interface LearnedWorkoutPlace {
   latitude: number
   longitude: number
   label: string | null
+  labelFormatVersion: number
   lastVisitedAt: string
   sourceSessionIds: string[]
 }
@@ -93,6 +94,7 @@ export function learnWorkoutPlaceFromSession({
         id: `workout-place-${sessionId}`,
         ...sample,
         label: null,
+        labelFormatVersion: 0,
         lastVisitedAt: completedAt,
         sourceSessionIds: [sessionId],
       },
@@ -125,7 +127,13 @@ export function rebuildWorkoutPlacesFromSessions({
   >[]
 }) {
   const previousLabels = new Map(
-    previousPlaces.map((place) => [place.id, place.label]),
+    previousPlaces.map((place) => [
+      place.id,
+      {
+        label: place.label,
+        labelFormatVersion: place.labelFormatVersion,
+      },
+    ]),
   )
 
   return [...sessions]
@@ -140,8 +148,12 @@ export function rebuildWorkoutPlacesFromSessions({
         }),
       [] as LearnedWorkoutPlace[],
     )
-    .map((place) => ({
-      ...place,
-      label: previousLabels.get(place.id) ?? null,
-    }))
+    .map((place) => {
+      const previousLabel = previousLabels.get(place.id)
+      return {
+        ...place,
+        label: previousLabel?.label ?? null,
+        labelFormatVersion: previousLabel?.labelFormatVersion ?? 0,
+      }
+    })
 }

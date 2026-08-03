@@ -66,7 +66,6 @@
       "listBody": "Locations are added automatically from saved workout result locations.",
       "listEmpty": "No locations yet. A workout result with a saved location will be added automatically.",
       "placeFallback": "Workout Place {{number}}",
-      "placeMeta": "Last workout {{date}} · {{count}} visits",
       "deletePlaceTitle": "Delete This Gym Location?",
       "deletePlaceBody": "It may be learned again after a future workout at the same place.",
       "deletePlaceErrorTitle": "Could Not Delete Location",
