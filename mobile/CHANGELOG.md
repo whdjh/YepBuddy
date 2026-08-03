@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/whdjh/yepbuddy/compare/v1.6.1...v1.6.2) (2026-08-03)
+
+
+### Bug Fixes
+
+* **workout-place:** 헬스장 위치 주소 표시 및 삭제 흐름 UX 개선 ([#91](https://github.com/whdjh/yepbuddy/issues/91)) ([b047e86](https://github.com/whdjh/yepbuddy/commit/b047e86d88848b87d94e9c274d741193ad8a6dd8))
+
 ## [1.6.1](https://github.com/whdjh/yepbuddy/compare/v1.6.0...v1.6.1) (2026-08-02)
 
 
