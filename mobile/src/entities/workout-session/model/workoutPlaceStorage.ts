@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getTimestampMsFromIso } from "@/shared/lib/date"
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
+import { WORKOUT_LOCATION_LABEL_FORMAT_VERSION } from "../lib/locationAddress"
 import {
   WORKOUT_PLACE_MAX_COUNT,
   type LearnedWorkoutPlace,
@@ -35,11 +36,20 @@ function normalizeWorkoutPlace(value: unknown): LearnedWorkoutPlace | null {
     return null
   }
 
+  const hasCurrentLabelFormat =
+    place.labelFormatVersion === WORKOUT_LOCATION_LABEL_FORMAT_VERSION
+
   return {
     id: place.id,
     latitude: place.latitude,
     longitude: place.longitude,
-    label: typeof place.label === "string" && place.label ? place.label : null,
+    label:
+      hasCurrentLabelFormat && typeof place.label === "string" && place.label
+        ? place.label
+        : null,
+    labelFormatVersion: hasCurrentLabelFormat
+      ? WORKOUT_LOCATION_LABEL_FORMAT_VERSION
+      : 0,
     lastVisitedAt: place.lastVisitedAt,
     sourceSessionIds: Array.isArray(place.sourceSessionIds)
       ? Array.from(
@@ -81,9 +91,7 @@ export async function getWorkoutPlaces() {
   const value = await AsyncStorage.getItem(
     WORKOUT_PLACE_REMINDER_PLACES_STORAGE_KEY,
   )
-  return value
-    ? normalizeWorkoutPlaces(parseJsonOrNull<unknown>(value))
-    : []
+  return value ? normalizeWorkoutPlaces(parseJsonOrNull<unknown>(value)) : []
 }
 
 /** 운동 장소 목록을 정규화해 저장하고 실제 저장된 목록 반환 */

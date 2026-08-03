@@ -1,9 +1,13 @@
-import { formatWorkoutLocationLabel } from "./locationLabel"
+import { WORKOUT_LOCATION_LABEL_FORMAT_VERSION } from "./locationAddress"
+import { getWorkoutLocationAddressLabel } from "./locationLabel"
 import {
   disableWorkoutPlaceArrivalReminder,
   syncWorkoutPlaceArrivalReminder,
 } from "./workoutPlaceArrivalReminder"
-import { rebuildWorkoutPlacesFromSessions } from "./workoutPlaceLearning"
+import {
+  rebuildWorkoutPlacesFromSessions,
+  type LearnedWorkoutPlace,
+} from "./workoutPlaceLearning"
 import { getAllStoredWorkoutSessions } from "../model/storedWorkoutSessionStorage"
 import {
   getExcludedWorkoutPlaceSessionIds,
@@ -11,31 +15,77 @@ import {
   updateWorkoutPlaces,
 } from "../model/workoutPlaceStorage"
 
-/** 역지오코딩으로 라벨이 없는 학습 장소의 표시 이름을 보강 */
-async function fillMissingWorkoutPlaceLabels() {
+let workoutPlaceLabelRefresh: Promise<LearnedWorkoutPlace[]> | null = null
+let workoutPlaceLabelRefreshRequested = false
+
+/** 현재 주소 포맷이 아닌 학습 장소 라벨을 순차적으로 다시 생성 */
+async function refreshWorkoutPlaceLabelsInternal() {
   const places = await getWorkoutPlaces()
-  const missingLabels = places.filter((place) => !place.label)
-  if (missingLabels.length === 0) {
-    return
+  const staleLabels = places.filter(
+    (place) =>
+      place.labelFormatVersion !== WORKOUT_LOCATION_LABEL_FORMAT_VERSION,
+  )
+  if (staleLabels.length === 0) {
+    return places
   }
 
-  const labels = await Promise.all(
-    missingLabels.map(async (place) => ({
-      id: place.id,
-      label: await formatWorkoutLocationLabel({
-        lat: place.latitude,
-        lng: place.longitude,
-      }),
-    })),
-  )
-  const labelsById = new Map(labels.map(({ id, label }) => [id, label]))
+  const labelsById = new Map<
+    string,
+    { label: string; latitude: number; longitude: number }
+  >()
+  for (const place of staleLabels) {
+    const label = await getWorkoutLocationAddressLabel({
+      lat: place.latitude,
+      lng: place.longitude,
+    })
+    if (label) {
+      labelsById.set(place.id, {
+        label,
+        latitude: place.latitude,
+        longitude: place.longitude,
+      })
+    }
+  }
 
-  await updateWorkoutPlaces((currentPlaces) =>
-    currentPlaces.map((place) => ({
-      ...place,
-      label: place.label ?? labelsById.get(place.id) ?? null,
-    })),
+  return updateWorkoutPlaces((currentPlaces) =>
+    currentPlaces.map((place) => {
+      const resolved = labelsById.get(place.id)
+      if (
+        !resolved ||
+        place.labelFormatVersion === WORKOUT_LOCATION_LABEL_FORMAT_VERSION ||
+        place.latitude !== resolved.latitude ||
+        place.longitude !== resolved.longitude
+      ) {
+        return place
+      }
+
+      return {
+        ...place,
+        label: resolved.label,
+        labelFormatVersion: WORKOUT_LOCATION_LABEL_FORMAT_VERSION,
+      }
+    }),
   )
+}
+
+/** 동시에 요청된 장소 라벨 갱신을 한 번만 실행 */
+export function refreshWorkoutPlaceLabels() {
+  workoutPlaceLabelRefreshRequested = true
+  if (workoutPlaceLabelRefresh) {
+    return workoutPlaceLabelRefresh
+  }
+
+  workoutPlaceLabelRefresh = (async () => {
+    let places: LearnedWorkoutPlace[] = []
+    do {
+      workoutPlaceLabelRefreshRequested = false
+      places = await refreshWorkoutPlaceLabelsInternal()
+    } while (workoutPlaceLabelRefreshRequested)
+    return places
+  })().finally(() => {
+    workoutPlaceLabelRefresh = null
+  })
+  return workoutPlaceLabelRefresh
 }
 
 /** 기존 완료 세션의 결과 위치로 자동 학습 장소를 다시 구성 */
@@ -52,7 +102,7 @@ export async function rebuildWorkoutPlacesFromStoredSessions() {
     return rebuildWorkoutPlacesFromSessions({ previousPlaces, sessions })
   })
 
-  void fillMissingWorkoutPlaceLabels().catch(() => undefined)
+  void refreshWorkoutPlaceLabels().catch(() => undefined)
   return places
 }
 
