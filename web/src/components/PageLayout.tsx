@@ -8,9 +8,9 @@ type PageLayoutProps = Pick<PageProps, "locale" | "switchTo" | "text"> & {
 
 export function PageLayout({ locale, switchTo, text, children }: PageLayoutProps) {
   return (
-    <div className="lp-page">
+    <>
       <SiteHeader locale={locale} text={text} switchTo={switchTo} />
       <main>{children}</main>
-    </div>
+    </>
   )
 }
