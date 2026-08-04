@@ -7,9 +7,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "test:live-activity-widget": "node scripts/check_dynamic_island_widget.js",
-    "test:workout-session-plugin": "node scripts/check_workout_session_plugin.cjs"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@expo/ui": "^55.0.5",
