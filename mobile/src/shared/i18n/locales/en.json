@@ -53,7 +53,7 @@
     },
     "workoutPlaceReminder": {
       "title": "Workout Place Alerts",
-      "body": "Suggests starting a workout when you arrive within 20 m of a gym learned from your workouts.",
+      "body": "Suggests starting a workout when you arrive within 50 m of a gym learned from your workouts.",
       "backgroundPermissionTitle": "Background Location Permission Needed",
       "backgroundPermissionBody": "To detect arrival at your gym when the app is not open, change location access to Always on the next screen.",
       "backgroundPermissionAction": "Open Permission Settings",
