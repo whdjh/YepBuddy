@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/whdjh/yepbuddy/compare/v1.6.2...v1.6.3) (2026-08-04)
+
+
+### Bug Fixes
+
+* **workout-place:** 좌표 변경 시 라벨을 재생성하고 도착 거리를 50m로 조정 ([#93](https://github.com/whdjh/yepbuddy/issues/93)) ([081bf56](https://github.com/whdjh/yepbuddy/commit/081bf569f4d6b5111f015f61efd5d0b83309e5d2))
+
 ## [1.6.2](https://github.com/whdjh/yepbuddy/compare/v1.6.1...v1.6.2) (2026-08-03)
 
 
