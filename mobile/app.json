@@ -10,7 +10,7 @@
     "ios": {
       "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.juhun.yepbuddy.app",
-      "buildNumber": "1.6.3",
+      "buildNumber": "4",
       "infoPlist": {
         "CFBundleDisplayName": "옙버디",
         "ITSAppUsesNonExemptEncryption": false,
