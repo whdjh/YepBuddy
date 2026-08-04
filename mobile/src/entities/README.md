@@ -92,7 +92,7 @@ src/entities
 - `api/healthKit.ts`: HealthKit 권한, iPhone live workout 시작/복구/종료, 심박/운동 요약 조회
 - `lib/workoutHistoryPrefill.ts`: 이전 완료 세션과 현재 운동 구성이 완전히 같을 때 세트 수와 메모 placeholder 계산
 - `lib/reminder.ts`: 매일 22시 운동 리마인더
-- `lib/workoutPlaceLearning.ts`: 결과 화면에 저장된 운동 위치를 한 세션 표본으로 만들고 30m 기준으로 장소를 병합하는 순수 정책
+- `lib/workoutPlaceLearning.ts`: 결과 화면에 저장된 운동 위치를 한 세션 표본으로 만들고 50m 기준으로 장소를 병합하는 순수 정책
 - `lib/workoutPlaceRebuild.ts`: 기존 완료 세션의 결과 위치로 자동 학습 장소를 재구성하고 누락된 위치 라벨을 보강
 - `lib/workoutPlaceArrivalPermissions.ts`: 장소 알림과 foreground/background 위치 권한 확인·요청
 - `lib/workoutPlaceArrivalTask.ts`: geofence 진입 시 실제 거리 재검증과 도착 알림을 수행하는 백그라운드 Task
@@ -276,7 +276,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
 - `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 자동 학습된 최근 장소 최대 20개에 맞춰 50m Enter geofence를 등록/중지하고 동기화 상태를 저장한다.
 - `registerWorkoutPlaceNotificationHandler`는 장소 알림 탭을 pending prompt 저장 또는 active workout 복귀 콜백으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
-- geofence `TaskManager.defineTask`는 Enter 이벤트에서 현재 위치를 한 번 조회한다. 정확도와 20m 거리, 운동 상태, 로컬 날짜 당일 제한을 통과하면 알림을 예약한다.
+- geofence `TaskManager.defineTask`는 Enter 이벤트에서 현재 위치를 한 번 조회한다. 20m 정확도와 50m 거리, 운동 상태, 로컬 날짜 당일 제한을 통과하면 알림을 예약한다.
 - `fetch*Protein*` 함수는 Supabase network 요청을 수행하고 실패 시 `Error`를 throw한다.
 
 ## 에러 처리 기준
