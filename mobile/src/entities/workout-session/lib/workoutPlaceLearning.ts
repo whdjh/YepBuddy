@@ -15,8 +15,8 @@ export interface LearnedWorkoutPlace {
 
 /** 장소 학습에 사용할 수 있는 위치의 최대 수평 오차 */
 export const WORKOUT_PLACE_LEARNING_MAX_ACCURACY_METERS = 50
-/** 새 표본을 기존 장소에 합칠 최대 거리 */
-export const WORKOUT_PLACE_MERGE_DISTANCE_METERS = 30
+/** 새 표본을 기존 장소의 최신 좌표에 합칠 최대 거리 */
+export const WORKOUT_PLACE_MERGE_DISTANCE_METERS = 50
 /** iOS geofence 등록 한도에 맞춘 최대 학습 장소 수 */
 export const WORKOUT_PLACE_MAX_COUNT = 20
 
@@ -102,16 +102,25 @@ export function learnWorkoutPlaceFromSession({
   }
 
   return sortByMostRecentVisit(
-    places.map((place) =>
-      place.id === matchingPlace.id
-        ? {
-            ...place,
-            ...sample,
-            lastVisitedAt: completedAt,
-            sourceSessionIds: [...place.sourceSessionIds, sessionId],
-          }
-        : place,
-    ),
+    places.map((place) => {
+      if (place.id !== matchingPlace.id) {
+        return place
+      }
+
+      const coordinatesUnchanged =
+        place.latitude === sample.latitude &&
+        place.longitude === sample.longitude
+      return {
+        ...place,
+        ...sample,
+        label: coordinatesUnchanged ? place.label : null,
+        labelFormatVersion: coordinatesUnchanged
+          ? place.labelFormatVersion
+          : 0,
+        lastVisitedAt: completedAt,
+        sourceSessionIds: [...place.sourceSessionIds, sessionId],
+      }
+    }),
   )
 }
 
@@ -126,10 +135,12 @@ export function rebuildWorkoutPlacesFromSessions({
     "completedAt" | "location" | "sessionId"
   >[]
 }) {
-  const previousLabels = new Map(
+  const previousPlaceMetadata = new Map(
     previousPlaces.map((place) => [
       place.id,
       {
+        latitude: place.latitude,
+        longitude: place.longitude,
         label: place.label,
         labelFormatVersion: place.labelFormatVersion,
       },
@@ -149,11 +160,16 @@ export function rebuildWorkoutPlacesFromSessions({
       [] as LearnedWorkoutPlace[],
     )
     .map((place) => {
-      const previousLabel = previousLabels.get(place.id)
+      const previous = previousPlaceMetadata.get(place.id)
+      const coordinatesUnchanged =
+        previous?.latitude === place.latitude &&
+        previous.longitude === place.longitude
       return {
         ...place,
-        label: previousLabel?.label ?? null,
-        labelFormatVersion: previousLabel?.labelFormatVersion ?? 0,
+        label: coordinatesUnchanged ? (previous?.label ?? null) : null,
+        labelFormatVersion: coordinatesUnchanged
+          ? (previous?.labelFormatVersion ?? 0)
+          : 0,
       }
     })
 }

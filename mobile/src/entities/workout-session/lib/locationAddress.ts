@@ -1,6 +1,7 @@
 import type { LocationGeocodedAddress } from "expo-location"
 
-export const WORKOUT_LOCATION_LABEL_FORMAT_VERSION = 1
+/** 좌표가 바뀐 뒤에도 남아 있던 이전 장소 라벨을 한 번 다시 생성 */
+export const WORKOUT_LOCATION_LABEL_FORMAT_VERSION = 2
 
 type WorkoutLocationAddress = Pick<
   LocationGeocodedAddress,

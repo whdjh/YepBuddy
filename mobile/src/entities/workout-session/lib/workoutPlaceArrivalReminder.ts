@@ -1,6 +1,7 @@
 import * as Location from "expo-location"
 import * as Notifications from "expo-notifications"
 import { ensureWorkoutPlaceArrivalNotificationChannel } from "./notificationChannels"
+import { WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS } from "./workoutPlaceArrivalPolicy"
 import { getWorkoutPlaceArrivalPermissions } from "./workoutPlaceArrivalPermissions"
 import {
   WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE,
@@ -19,7 +20,6 @@ import {
   removeWorkoutPlace,
 } from "../model/workoutPlaceStorage"
 
-const WORKOUT_PLACE_GEOFENCE_RADIUS_METERS = 50
 /** 중복된 알림 응답을 한 번만 처리하기 위한 요청 ID 집합 */
 const handledResponseIds = new Set<string>()
 /** geofence 등록·중지 요청의 경합을 방지하는 lifecycle 큐 */
@@ -116,7 +116,7 @@ async function syncWorkoutPlaceArrivalReminderInternal({
         longitude: place.longitude,
         notifyOnEnter: true,
         notifyOnExit: false,
-        radius: WORKOUT_PLACE_GEOFENCE_RADIUS_METERS,
+        radius: WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS,
       })),
     )
   } catch {
