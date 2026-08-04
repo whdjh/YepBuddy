@@ -3,8 +3,8 @@ import {
   getTimestampMsFromIso,
 } from "@/shared/lib/date"
 
-/** 알림을 허용하는 최대 실제 거리 */
-export const WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS = 20
+/** Enter geofence 반경과 알림 직전 검증에 함께 사용하는 도착 거리 */
+export const WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS = 50
 /** 알림을 허용하는 최대 위치 오차 */
 export const WORKOUT_PLACE_ARRIVAL_MAX_ACCURACY_METERS = 20
 /** 운동 장소 도착 알림 판정 입력 */

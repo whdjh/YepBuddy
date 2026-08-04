@@ -53,7 +53,7 @@
     },
     "workoutPlaceReminder": {
       "title": "운동 장소 알림",
-      "body": "운동 위치로 학습한 헬스장 20m 안에 도착하면 운동 시작을 제안해요.",
+      "body": "운동 위치로 학습한 헬스장 50m 안에 도착하면 운동 시작을 제안해요.",
       "backgroundPermissionTitle": "백그라운드 위치 권한이 필요해요",
       "backgroundPermissionBody": "앱을 열지 않아도 헬스장 도착을 감지하려면 다음 화면에서 위치 권한을 항상 허용으로 바꿔주세요.",
       "backgroundPermissionAction": "권한 설정하기",
