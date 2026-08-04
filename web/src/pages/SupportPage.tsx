@@ -1,55 +1,45 @@
 import { SiteHeader } from "../components/SiteHeader"
+import type { PageProps } from "../types/landing"
+import { pathWithLocale } from "../i18n"
 
-type SupportPageProps = {
-  supportEmail: string
-}
+export function SupportPage({ locale, switchTo, text }: PageProps) {
+  const strings = text.support
 
-export function SupportPage({ supportEmail }: SupportPageProps) {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader locale={locale} text={text} switchTo={switchTo} />
       <main>
-        <p className="date">Support</p>
-        <h1>YepBuddy Support</h1>
+        <p className="date">{text.header.support}</p>
+        <h1>{strings.title}</h1>
 
         <section>
-          <h2>Contact</h2>
+          <h2>{strings.contactEmailLabel}</h2>
+          <p>{strings.contactIntro}</p>
           <p>
-            For support, feedback, or privacy questions, email{" "}
-            <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+            <a href={`mailto:${strings.contactEmail}`}>{strings.contactEmail}</a>
           </p>
         </section>
 
-        <section>
-          <h2>Accounts</h2>
-          <p>
-            YepBuddy does not have account creation or login. There is no
-            account deletion flow because no account is created. Device-stored
-            data can be deleted as described in the{" "}
-            <a href="/privacy">Privacy Policy</a>.
-          </p>
-        </section>
+        {strings.sections.map((section) => (
+          <section key={section.title}>
+            <h2>{section.title}</h2>
+            {section.content?.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+            {section.items ? (
+              <ul>
+                {section.items.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : null}
+          </section>
+        ))}
 
         <section>
-          <h2>Permissions</h2>
-          <ul>
-            <li>HealthKit is requested when recording workouts.</li>
-            <li>
-              Foreground location is requested when starting a workout.
-              Background location is requested only when the user enables
-              workout place arrival reminders.
-            </li>
-            <li>Calendar is requested only after choosing Add to Calendar.</li>
-            <li>Notifications are requested only after enabling alerts.</li>
-          </ul>
-        </section>
-
-        <section>
-          <h2>Purchases</h2>
+          <h2>{text.header.privacy}</h2>
           <p>
-            YepBuddy may open external merchant pages for physical goods. The
-            app does not sell digital goods, subscriptions, or in-app
-            purchases.
+            <a href={pathWithLocale(locale, "/privacy")}>{text.header.privacy}</a>
           </p>
         </section>
       </main>
