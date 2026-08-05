@@ -5,72 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YepBuddy Landing Components</title>
     <style>
+      @import "../mobile/src/global.css";
+
       :root {
         font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
         font-synthesis: none;
-        --cream-50: #faf7f2;
-        --cream-100: #f5efe6;
-        --cream-200: #ede4d6;
-        --cream-300: #e8dfd0;
-        --cream-400: #ddd2bf;
-        --sand-50: #f2ebdd;
-        --sand-100: #d4883a;
-        --sand-300: #c4a87e;
-        --khaki-300: #9b7e56;
-        --khaki-400: #876b45;
-        --olive-200: #7b6548;
-        --olive-300: #6b5638;
-        --olive-400: #5a472d;
-        --earth-200: #4a3a28;
-        --earth-250: #3c3c3e;
-        --earth-300: #3a2a1a;
-        --earth-350: #2c2c2e;
-        --earth-450: #1c1c1e;
+        --cream-50: var(--yb-bg);
+        --cream-100: var(--yb-surface-subtle);
+        --cream-200: var(--yb-surface-muted);
+        --cream-300: var(--yb-border-subtle);
+        --cream-400: var(--yb-border);
+        --sand-50: var(--yb-fill-pale);
+        --sand-100: var(--yb-accent-hover);
+        --sand-300: var(--yb-accent);
+        --khaki-300: var(--yb-accent);
+        --khaki-400: var(--yb-fg-secondary);
+        --olive-200: var(--yb-fg-tertiary);
+        --olive-300: var(--yb-fg-tertiary);
+        --olive-400: var(--yb-border-subtle);
+        --earth-200: var(--yb-accent-hover);
+        --earth-250: var(--yb-surface-muted);
+        --earth-300: var(--yb-fg);
+        --earth-350: var(--yb-surface);
+        --earth-450: var(--yb-bg);
       }
+
       * { box-sizing: border-box; }
-      body { margin: 0; color: #3a2a1a; background: #e8e2d9; }
-      a { color: inherit; }
+      body { margin: 0; color: var(--yb-fg); background: var(--yb-bg); }
+      a { color: var(--yb-accent); }
       .sheet-head, .sheet { max-width: 1440px; margin: 0 auto; }
       .sheet-head { padding: 70px 28px 44px; }
-      .sheet-head p { margin: 0 0 12px; color: #6b5638; font-size: 12px; font-weight: 700; letter-spacing: .1em; }
-      .sheet-head h1 { max-width: 900px; margin: 0; font-size: clamp(48px, 7vw, 92px); line-height: .98; letter-spacing: -.055em; }
-      .sheet-head small { display: block; margin-top: 22px; color: #6b5638; line-height: 1.6; }
+      .sheet-head p { margin: 0 0 12px; color: var(--yb-fg-secondary); font-size: 12px; font-weight: 700; letter-spacing: .1em; }
+      .sheet-head h1 { max-width: 900px; margin: 0; font-size: clamp(40px, 7vw, 96px); line-height: .98; letter-spacing: -.055em; }
+      .sheet-head small { display: block; margin-top: 22px; color: var(--yb-fg-secondary); line-height: 1.6; }
       .sheet { display: grid; gap: 24px; padding: 0 28px 80px; }
 
       .board {
-        --bg: var(--cream-50);
-        --surface: #fff;
+        --bg: var(--yb-bg);
+        --surface: var(--yb-surface);
         --subtle: var(--cream-100);
-        --muted: var(--cream-200);
-        --fg: var(--earth-300);
-        --fg-2: var(--khaki-400);
-        --accent: var(--khaki-300);
-        --accent-hover: var(--khaki-400);
-        --border: var(--cream-400);
-        --strong: var(--earth-300);
-        --on-strong: var(--cream-50);
+        --muted: var(--yb-surface-muted);
+        --fg: var(--yb-fg);
+        --fg-2: var(--yb-fg-secondary);
+        --accent: var(--yb-accent);
+        --accent-hover: var(--yb-accent-hover);
+        --border: var(--yb-border);
+        --strong: var(--yb-fg);
+        --on-strong: var(--yb-bg);
         padding: 28px;
         color: var(--fg);
         background: var(--bg);
         border: 1px solid var(--border);
         border-radius: 24px;
       }
-      .board.dark {
-        --bg: var(--earth-450);
-        --surface: var(--earth-350);
-        --subtle: var(--earth-250);
-        --muted: var(--earth-200);
-        --fg: #fff;
-        --fg-2: var(--cream-200);
-        --accent: var(--sand-100);
-        --accent-hover: var(--sand-300);
-        --border: var(--olive-400);
-        --strong: var(--cream-200);
-        --on-strong: var(--earth-450);
-      }
       .board-title { display: flex; align-items: end; justify-content: space-between; gap: 20px; padding: 4px 0 24px; }
       .board-title p { margin: 0 0 5px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
-      .board-title h2 { margin: 0; font-size: 34px; letter-spacing: -.04em; }
+      .board-title h2 { margin: 0; font-size: clamp(24px, 4vw, 32px); letter-spacing: -.04em; }
       .board-title code { color: var(--fg-2); font-size: 11px; }
 
       .row { display: grid; grid-template-columns: 160px 1fr; gap: 26px; padding: 30px 0; border-top: 1px solid var(--border); }
@@ -87,7 +77,7 @@
       .type-list { display: grid; gap: 20px; }
       .type-item { display: grid; grid-template-columns: 94px 1fr; align-items: baseline; gap: 16px; }
       .type-item code { color: var(--fg-2); font-size: 10px; }
-      .display { font-size: clamp(52px, 7vw, 96px); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+      .display { font-size: clamp(40px, 7vw, 96px); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
       .heading { font-size: 24px; font-weight: 700; line-height: 1.3; }
       .body { font-size: 15px; line-height: 1.6; }
       .caption { font-size: 12px; font-weight: 500; line-height: 1.3; }
@@ -104,11 +94,11 @@
 
       .section-title { max-width: 800px; }
       .eyebrow { margin: 0 0 14px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; }
-      .section-title h3 { margin: 0 0 16px; font-size: clamp(38px, 5vw, 68px); line-height: 1.05; letter-spacing: -.045em; }
+      .section-title h3 { margin: 0 0 16px; font-size: clamp(34px, 4.8vw, 58px); line-height: 1.08; letter-spacing: -.04em; }
       .section-title p:last-child { max-width: 620px; margin: 0; color: var(--fg-2); font-size: 16px; line-height: 1.7; }
 
       .hero { min-height: 520px; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 54px; padding: clamp(32px, 5vw, 70px); background: var(--subtle); border-radius: 20px; overflow: hidden; }
-      .hero h3 { margin: 0 0 20px; font-size: clamp(48px, 6vw, 84px); line-height: 1; letter-spacing: -.05em; }
+      .hero h3 { margin: 0 0 20px; font-size: clamp(40px, 5.5vw, 72px); line-height: 1.02; letter-spacing: -.05em; }
       .hero-copy > p:not(.eyebrow) { max-width: 560px; margin: 0 0 28px; color: var(--fg-2); line-height: 1.7; }
       .visual { min-height: 400px; display: grid; place-items: center; background: var(--muted); border-radius: 16px; }
       .phone { width: 185px; aspect-ratio: 9 / 19.5; display: grid; place-items: center; padding: 20px; color: var(--fg-2); background: var(--surface); border: 7px solid var(--fg); border-radius: 34px; text-align: center; transform: rotate(4deg); }
@@ -118,7 +108,7 @@
       .feature-list { border-top: 1px solid var(--border); }
       .feature { display: grid; grid-template-columns: 80px 1fr 1fr; gap: 24px; padding: 30px 0; border-bottom: 1px solid var(--border); }
       .feature > span { color: var(--accent); font-size: 12px; font-weight: 700; }
-      .feature h4 { margin: 0; font-size: 25px; letter-spacing: -.035em; }
+      .feature h4 { margin: 0; font-size: 24px; letter-spacing: -.035em; }
       .feature p { max-width: 480px; margin: 0; color: var(--fg-2); font-size: 14px; line-height: 1.65; }
 
       .media-pair { display: grid; grid-template-columns: .8fr 1.2fr; gap: 14px; }
@@ -130,12 +120,12 @@
       .story { min-height: 470px; display: grid; grid-template-columns: .8fr 1.2fr; gap: 16px; padding: 16px; color: var(--on-strong); background: var(--strong); border-radius: 20px; }
       .story-copy { display: flex; flex-direction: column; justify-content: center; padding: 34px; }
       .story-copy small { opacity: .6; font-weight: 700; }
-      .story-copy h4 { margin: 20px 0 14px; font-size: clamp(34px, 4vw, 58px); line-height: 1.08; letter-spacing: -.04em; }
+      .story-copy h4 { margin: 20px 0 14px; font-size: clamp(30px, 4.2vw, 44px); line-height: 1.08; letter-spacing: -.04em; }
       .story-copy p { margin: 0; opacity: .68; font-size: 14px; line-height: 1.65; }
       .story .visual { color: var(--fg); background: var(--surface); }
 
       .cta { padding: clamp(48px, 7vw, 90px); color: var(--on-strong); background: var(--strong); border-radius: 20px; text-align: center; }
-      .cta h3 { max-width: 740px; margin: 0 auto 28px; font-size: clamp(42px, 5vw, 72px); line-height: 1.04; letter-spacing: -.05em; }
+      .cta h3 { max-width: 740px; margin: 0 auto 28px; font-size: clamp(36px, 5vw, 68px); line-height: 1.05; letter-spacing: -.05em; }
       .cta .primary-action { color: var(--fg); background: var(--surface); }
       .footer { display: flex; justify-content: space-between; gap: 20px; padding: 24px 4px 4px; color: var(--fg-2); font-size: 12px; }
       .footer div { display: flex; gap: 18px; }
@@ -174,12 +164,12 @@
         <div class="board-title"><div><p>THEME 01</p><h2 id="light-title">Light mode</h2></div><code>semantic.light</code></div>
 
         <section class="row"><header class="row-head"><h3>Colors</h3><p>모바일 semantic light</p></header><div class="preview swatches">
-          <div class="swatch" style="--color:#FAF7F2;--label:#3A2A1A;--caption:rgba(255,255,255,.72)"><strong>Background</strong><small>#FAF7F2</small></div>
-          <div class="swatch" style="--color:#FFFFFF;--label:#3A2A1A;--caption:rgba(245,239,230,.9)"><strong>Surface</strong><small>#FFFFFF</small></div>
-          <div class="swatch" style="--color:#F5EFE6;--label:#3A2A1A;--caption:rgba(255,255,255,.72)"><strong>Subtle</strong><small>#F5EFE6</small></div>
-          <div class="swatch" style="--color:#3A2A1A;--label:#FAF7F2;--caption:rgba(255,255,255,.1)"><strong>Foreground</strong><small>#3A2A1A</small></div>
-          <div class="swatch" style="--color:#9B7E56;--label:#FAF7F2;--caption:rgba(0,0,0,.12)"><strong>Accent</strong><small>#9B7E56</small></div>
-          <div class="swatch" style="--color:#DDD2BF;--label:#3A2A1A;--caption:rgba(255,255,255,.55)"><strong>Border</strong><small>#DDD2BF</small></div>
+          <div class="swatch" style="--color:var(--yb-bg);--label:var(--yb-fg);--caption:rgba(255,255,255,.72)"><strong>Background</strong><small>#FAF7F2</small></div>
+          <div class="swatch" style="--color:var(--yb-surface);--label:var(--yb-fg);--caption:rgba(245,239,230,.9)"><strong>Surface</strong><small>#FFFFFF</small></div>
+          <div class="swatch" style="--color:var(--yb-surface-subtle);--label:var(--yb-fg);--caption:rgba(255,255,255,.72)"><strong>Subtle</strong><small>#F5EFE6</small></div>
+          <div class="swatch" style="--color:var(--yb-fg);--label:var(--yb-bg);--caption:rgba(255,255,255,.1)"><strong>Foreground</strong><small>#3A2A1A</small></div>
+          <div class="swatch" style="--color:var(--yb-accent);--label:var(--yb-bg);--caption:rgba(0,0,0,.12)"><strong>Accent</strong><small>#9B7E56</small></div>
+          <div class="swatch" style="--color:var(--yb-border);--label:var(--yb-fg);--caption:rgba(255,255,255,.55)"><strong>Border</strong><small>#DDD2BF</small></div>
         </div></section>
 
         <section class="row"><header class="row-head"><h3>Typography</h3><p>Web display와 앱 본문 위계</p></header><div class="preview type-list">
@@ -203,12 +193,12 @@
         <div class="board-title"><div><p>THEME 02</p><h2 id="dark-title">Dark mode</h2></div><code>semantic.dark</code></div>
 
         <section class="row"><header class="row-head"><h3>Colors</h3><p>모바일 semantic dark</p></header><div class="preview swatches">
-          <div class="swatch" style="--color:#1C1C1E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Background</strong><small>#1C1C1E</small></div>
-          <div class="swatch" style="--color:#2C2C2E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Surface</strong><small>#2C2C2E</small></div>
-          <div class="swatch" style="--color:#3C3C3E;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Subtle</strong><small>#3C3C3E</small></div>
-          <div class="swatch" style="--color:#FFFFFF;--label:#1C1C1E;--caption:rgba(237,228,214,.85)"><strong>Foreground</strong><small>#FFFFFF</small></div>
-          <div class="swatch" style="--color:#D4883A;--label:#1C1C1E;--caption:rgba(255,255,255,.35)"><strong>Accent</strong><small>#D4883A</small></div>
-          <div class="swatch" style="--color:#5A472D;--label:#FFFFFF;--caption:rgba(255,255,255,.12)"><strong>Border</strong><small>#5A472D</small></div>
+          <div class="swatch" style="--color:var(--yb-bg);--label:var(--yb-fg);--caption:rgba(255,255,255,.12)"><strong>Background</strong><small>#1C1C1E</small></div>
+          <div class="swatch" style="--color:var(--yb-surface);--label:var(--yb-fg);--caption:rgba(255,255,255,.12)"><strong>Surface</strong><small>#2C2C2E</small></div>
+          <div class="swatch" style="--color:var(--yb-surface-subtle);--label:var(--yb-fg);--caption:rgba(255,255,255,.12)"><strong>Subtle</strong><small>#3C3C3E</small></div>
+          <div class="swatch" style="--color:var(--yb-fg);--label:var(--yb-bg);--caption:rgba(237,228,214,.85)"><strong>Foreground</strong><small>#FFFFFF</small></div>
+          <div class="swatch" style="--color:var(--yb-accent);--label:var(--yb-bg);--caption:rgba(255,255,255,.35)"><strong>Accent</strong><small>#D4883A</small></div>
+          <div class="swatch" style="--color:var(--yb-border);--label:var(--yb-fg);--caption:rgba(255,255,255,.12)"><strong>Border</strong><small>#5A472D</small></div>
         </div></section>
 
         <section class="row"><header class="row-head"><h3>Typography</h3><p>동일한 정보 위계 유지</p></header><div class="preview type-list">

@@ -1,22 +1,28 @@
 @import "tailwindcss";
+@import "../../mobile/src/global.css";
 
 :root {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111111;
-  background: #ffffff;
+  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: var(--yb-fg);
 }
 
 body {
   margin: 0;
-  background: #ffffff;
+  background: var(--yb-bg);
+  color: var(--yb-fg);
 }
 
 a {
-  color: #0645ad;
+  color: var(--yb-accent);
+  text-decoration-color: color-mix(in oklab, var(--yb-accent), transparent 40%);
+}
+
+a:hover {
+  color: var(--yb-accent-hover);
 }
 
 header {
@@ -31,12 +37,16 @@ header {
 header > a {
   font-weight: 700;
   text-decoration: none;
-  color: #111111;
+  color: var(--yb-fg);
 }
 
 nav {
   display: flex;
   gap: 14px;
+}
+
+nav a {
+  color: var(--yb-fg-secondary);
 }
 
 main {
@@ -47,14 +57,16 @@ main {
 
 h1 {
   margin: 0 0 24px;
-  font-size: 32px;
+  font-size: clamp(36px, 7vw, 64px);
+  letter-spacing: -0.04em;
   line-height: 1.2;
 }
 
 h2 {
   margin: 0 0 10px;
-  font-size: 20px;
-  line-height: 1.3;
+  font-size: clamp(24px, 4vw, 36px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
 }
 
 p,
@@ -78,11 +90,19 @@ li + li {
 
 section {
   margin-top: 28px;
+  border-top: 1px solid var(--yb-border);
+  padding-top: 24px;
+}
+
+section:first-of-type {
+  border-top: 0;
+  padding-top: 0;
 }
 
 .date {
-  color: #666666;
-  font-size: 14px;
+  color: var(--yb-fg-secondary);
+  font-size: 12px;
+  letter-spacing: 0.06em;
 }
 
 @media (max-width: 520px) {

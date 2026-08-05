@@ -1,0 +1,147 @@
+{
+  "header": {
+    "home": "YepBuddy",
+    "privacy": "Privacy Policy",
+    "support": "Support",
+    "lang": {
+      "ko": "Korean",
+      "en": "English",
+      "switchAriaToKo": "Switch to Korean",
+      "switchAriaToEn": "Switch to English"
+    }
+  },
+  "home": {
+    "title": "YepBuddy",
+    "description": "Support site for the YepBuddy iOS and Android app.",
+    "hero": {
+      "eyebrow": "One rhythm for your workout",
+      "title": "Record, train, and review your workouts with less friction.",
+      "lead": "Start an exercise, follow the flow, and keep your routine consistent.",
+      "ctaPrimary": "Try the app",
+      "ctaSecondary": "Explore support flow"
+    },
+    "features": [
+      {
+        "title": "Build routines",
+        "detail": "Prepare routines in advance and start without hesitation."
+      },
+      {
+        "title": "During training",
+        "detail": "Track current sets and the next step while you focus on movement."
+      },
+      {
+        "title": "Review logs",
+        "detail": "Check your completed sessions and plan the next workout."
+      }
+    ],
+    "final": {
+      "text": "Turn your workout into a daily rhythm.",
+      "cta": "View app"
+    },
+    "privacy": "Privacy Policy",
+    "support": "Support"
+  },
+  "support": {
+    "title": "YepBuddy Support",
+    "contactIntro": "For support, feedback, or privacy questions, email:",
+    "contactEmailLabel": "Email",
+    "contactEmail": "wngns9807@gmail.com",
+    "sections": [
+      {
+        "title": "Accounts",
+        "content": [
+          "YepBuddy does not have account creation or login. There is no account deletion flow because no account is created.",
+          "Device-stored data can be deleted as described in the privacy policy."
+        ]
+      },
+      {
+        "title": "Permissions",
+        "items": [
+          "HealthKit is requested when recording workouts.",
+          "Foreground location is requested when starting a workout. Background location is requested only when the user enables workout place arrival reminders.",
+          "Calendar is requested only after choosing Add to Calendar.",
+          "Notifications are requested only after enabling alerts."
+        ]
+      },
+      {
+        "title": "Purchases",
+        "content": [
+          "YepBuddy may open external merchant pages for physical goods. The app does not sell digital goods, subscriptions, or in-app purchases."
+        ]
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "updatedLabel": "Last updated",
+    "updatedAt": "July 15, 2026",
+    "contactEmail": "wngns9807@gmail.com",
+    "sections": [
+      {
+        "title": "Overview",
+        "content": [
+          "YepBuddy is a workout logging app. The app does not require an account, does not include social features, and does not sell personal data."
+        ]
+      },
+      {
+        "title": "Data We Use",
+        "items": [
+          "Workout records, routine settings, workout notes, and workout location are stored on the device for workout history, summaries, and reminders. This information is not sent to developer servers.",
+          "HealthKit data is used only after the user grants Apple Health permission. YepBuddy reads workout and heart-rate related data for summaries and saves completed workouts to Apple Health.",
+          "Foreground location is requested during workout start to save one workout location for the result screen. If workout place arrival reminders are enabled, background location is used for arrival and departure detection and local reminders. Device-stored arrival samples are used to improve reminders; the app does not record a continuous route.",
+          "Calendar access is requested only when the user manually adds a completed workout or enables automatic calendar saving.",
+          "Notifications are requested only when the user enables a notification feature.",
+          "Protein reference data is loaded from Supabase. A search term, selected product ID, and query parameters may be sent to Supabase to return results.",
+          "If a user contacts the developer, the user's email and message are received through the developer's email provider and used only to respond."
+        ]
+      },
+      {
+        "title": "Data Sharing and Security",
+        "content": [
+          "YepBuddy does not sell personal data or use it for advertising or tracking.",
+          "Device-stored workout, location, HealthKit, calendar, and notification data is not uploaded to developer servers or Supabase.",
+          "Apple Health, the device calendar, and OS-level location/geocoding services may process data only when relevant permissions are enabled."
+        ]
+      },
+      {
+        "title": "Third Parties",
+        "items": [
+          "YepBuddy uses Supabase to host protein reference data.",
+          "Product links may open Coupang or other merchant pages outside the app.",
+          "The developer's email provider and Netlify (web hosting) may process standard request information under their own privacy practices."
+        ]
+      },
+      {
+        "title": "Health Data",
+        "content": [
+          "HealthKit data is used only for health and fitness features in the app."
+        ]
+      },
+      {
+        "title": "Data Retention",
+        "items": [
+          "Completed workout records, notes, and saved workout locations stay on the device until the related workout is deleted, app data is cleared, or the app is uninstalled.",
+          "An in-progress workout snapshot is removed after completion, discard, app data clear, or app uninstall.",
+          "Location samples older than 14 days are excluded from use and removed from the stored sample set.",
+          "HealthKit workouts and device calendar events are stored by Apple Health and the device calendar."
+        ]
+      },
+      {
+        "title": "Data Deletion",
+        "items": [
+          "To delete one workout, open that workout's result screen in YepBuddy and use the trash button.",
+          "To delete all device-stored data, clear YepBuddy data in the device settings or uninstall the app.",
+          "HealthKit data and calendar events can be removed in Apple Health and the device calendar."
+        ],
+        "note": "Because YepBuddy has no user accounts and holds no server-side personal data, there is no remote account-deletion flow."
+      },
+      {
+        "title": "Contact",
+        "content": [
+          "For privacy questions, email the developer."
+        ]
+      }
+    ],
+    "contactEmailLabel": "Email"
+  }
+}
