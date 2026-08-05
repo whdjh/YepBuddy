@@ -5,7 +5,9 @@
     "support": "지원",
     "lang": {
       "ko": "한국어",
-      "en": "English"
+      "en": "English",
+      "switchAriaToKo": "한국어로 전환",
+      "switchAriaToEn": "영어로 전환"
     }
   },
   "home": {
