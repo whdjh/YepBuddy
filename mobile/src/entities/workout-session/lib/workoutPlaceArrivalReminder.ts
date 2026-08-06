@@ -1,11 +1,17 @@
 import * as Location from "expo-location"
 import * as Notifications from "expo-notifications"
 import { ensureWorkoutPlaceArrivalNotificationChannel } from "./notificationChannels"
-import { WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS } from "./workoutPlaceArrivalPolicy"
+import {
+  WORKOUT_PLACE_GEOFENCED_MAX_COUNT,
+  WORKOUT_PLACE_INNER_GEOFENCE_RADIUS_METERS,
+  WORKOUT_PLACE_OUTER_GEOFENCE_RADIUS_METERS,
+} from "./workoutPlaceArrivalPolicy"
 import { getWorkoutPlaceArrivalPermissions } from "./workoutPlaceArrivalPermissions"
 import {
   WORKOUT_PLACE_ARRIVAL_NOTIFICATION_TYPE,
   WORKOUT_PLACE_ARRIVAL_TASK_NAME,
+  getWorkoutPlaceGeofenceIdentifier,
+  stopWorkoutPlaceArrivalTracking,
 } from "./workoutPlaceArrivalTask"
 import {
   clearPendingWorkoutPlaceReminderPrompt,
@@ -48,6 +54,7 @@ async function stopGeofencing() {
   await Location.stopGeofencingAsync(WORKOUT_PLACE_ARRIVAL_TASK_NAME).catch(
     () => undefined,
   )
+  await stopWorkoutPlaceArrivalTracking()
 }
 
 /** 알림 설정과 geofence를 함께 비활성화 */
@@ -110,14 +117,25 @@ async function syncWorkoutPlaceArrivalReminderInternal({
   try {
     await Location.startGeofencingAsync(
       WORKOUT_PLACE_ARRIVAL_TASK_NAME,
-      places.map((place) => ({
-        identifier: place.id,
-        latitude: place.latitude,
-        longitude: place.longitude,
-        notifyOnEnter: true,
-        notifyOnExit: false,
-        radius: WORKOUT_PLACE_ARRIVAL_MAX_DISTANCE_METERS,
-      })),
+      places.slice(0, WORKOUT_PLACE_GEOFENCED_MAX_COUNT).flatMap((place) =>
+        [
+          {
+            identifier: getWorkoutPlaceGeofenceIdentifier(place.id, "outer"),
+            radius: WORKOUT_PLACE_OUTER_GEOFENCE_RADIUS_METERS,
+          },
+          {
+            identifier: getWorkoutPlaceGeofenceIdentifier(place.id, "inner"),
+            radius: WORKOUT_PLACE_INNER_GEOFENCE_RADIUS_METERS,
+          },
+        ].map(({ identifier, radius }) => ({
+          identifier,
+          latitude: place.latitude,
+          longitude: place.longitude,
+          notifyOnEnter: true,
+          notifyOnExit: false,
+          radius,
+        })),
+      ),
     )
   } catch {
     await stopGeofencing()
