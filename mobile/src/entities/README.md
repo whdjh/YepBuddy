@@ -95,7 +95,7 @@ src/entities
 - `lib/workoutPlaceLearning.ts`: 결과 화면에 저장된 운동 위치를 한 세션 표본으로 만들고 50m 기준으로 장소를 병합하는 순수 정책
 - `lib/workoutPlaceRebuild.ts`: 기존 완료 세션의 결과 위치로 자동 학습 장소를 재구성하고 누락된 위치 라벨을 보강
 - `lib/workoutPlaceArrivalPermissions.ts`: 장소 알림과 foreground/background 위치 권한 확인·요청
-- `lib/workoutPlaceArrivalTask.ts`: geofence 진입 시 실제 거리 재검증과 도착 알림을 수행하는 백그라운드 Task
+- `lib/workoutPlaceArrivalTask.ts`: 이중 geofence 진입 후 단기 위치 추적으로 실제 도착을 확인하고 알림을 수행하는 백그라운드 Task
 - `lib/workoutPlaceArrivalReminder.ts`: 자동 학습 장소의 geofence lifecycle 동기화와 알림 응답 처리
 - `model/workoutPlaceStorage.ts`: 자동 학습 장소 목록과 재학습 제외 세션 저장소
 - `model/workoutPlaceReminderStorage.ts`: 장소 알림 활성화·차단·동기화·pending prompt 저장소
@@ -274,9 +274,9 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - 캘린더 이벤트 갱신은 저장된 `calendarEventId` 또는 과거 세션의 유일 일치 후보를 대상으로 제목과 메모를 수정한다.
 - 캘린더 이벤트 삭제는 앱 기록 삭제보다 먼저 실행되며, 이미 없는 이벤트와 권한/기타 실패를 구분해 feature에 전달한다.
 - `syncWorkoutReminderAtNight`은 권한 상태와 enabled 저장값에 맞춰 매일 22시 리마인더를 예약/취소한다.
-- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 자동 학습된 최근 장소 최대 20개에 맞춰 50m Enter geofence를 등록/중지하고 동기화 상태를 저장한다.
+- `syncWorkoutPlaceArrivalReminder`는 알림/location 권한과 자동 학습된 최근 장소 최대 10개에 맞춰 150m/50m Enter geofence를 등록/중지하고 동기화 상태를 저장한다.
 - `registerWorkoutPlaceNotificationHandler`는 장소 알림 탭을 pending prompt 저장 또는 active workout 복귀 콜백으로 바꾸고, 화면 이동은 app에서 받은 콜백에 맡긴다.
-- geofence `TaskManager.defineTask`는 Enter 이벤트에서 현재 위치를 한 번 조회한다. 20m 정확도와 50m 거리, 운동 상태, 로컬 날짜 당일 제한을 통과하면 알림을 예약한다.
+- geofence `TaskManager.defineTask`는 Enter 이벤트에서 최대 5분의 background 위치 추적을 시작한다. 20m 정확도와 20m 거리를 2회 연속 만족하고 운동 상태와 로컬 날짜 당일 제한을 통과하면 알림을 예약하고 추적을 중지한다.
 - `fetch*Protein*` 함수는 Supabase network 요청을 수행하고 실패 시 `Error`를 throw한다.
 
 ## 에러 처리 기준
