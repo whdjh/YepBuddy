@@ -1,287 +1,598 @@
 <!doctype html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
     <title>YepBuddy Landing Mockup</title>
     <style>
       :root {
         font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
         font-synthesis: none;
-        --bg: #faf7f2;
-        --surface: #ffffff;
-        --subtle: #f5efe6;
-        --muted: #ede4d6;
-        --fg: #3a2a1a;
-        --fg-2: #876b45;
-        --fg-3: #6b5638;
+        color-scheme: light;
+        --bg: #ffffff;
+        --surface: #f7f8fa;
+        --surface-strong: #f2f4f6;
+        --warm: #f7f3ed;
+        --warm-strong: #ede4d6;
+        --fg: #191f28;
+        --fg-secondary: #4e5968;
+        --fg-tertiary: #8b95a1;
         --accent: #9b7e56;
         --accent-hover: #876b45;
-        --border: #ddd2bf;
         --strong: #3a2a1a;
-        --on-strong: #faf7f2;
-        --on-accent: #faf7f2;
-        --story-bg: #231e17;
-        --story-surface: #3c372d;
-        --story-accent: #c4a87e;
-        --story-fg: #ffffff;
-        color-scheme: light;
-      }
-      :root[data-theme="dark"] {
-        --bg: #1c1c1e;
-        --surface: #2c2c2e;
-        --subtle: #3c3c3e;
-        --muted: #4a3a28;
-        --fg: #ffffff;
-        --fg-2: #ede4d6;
-        --fg-3: #ddd2bf;
-        --accent: #d4883a;
-        --accent-hover: #c4a87e;
-        --border: #5a472d;
-        --strong: #ede4d6;
-        --on-strong: #1c1c1e;
-        --on-accent: #1c1c1e;
-        --story-bg: #231e17;
-        --story-surface: #3c372d;
-        --story-accent: #c4a87e;
-        --story-fg: #ffffff;
-        color-scheme: dark;
+        --on-strong: #ffffff;
       }
 
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
-      body { margin: 0; color: var(--fg); background: var(--bg); transition: color 180ms ease, background 180ms ease; }
+      body { margin: 0; color: var(--fg); background: var(--bg); }
       a { color: inherit; }
       button { font: inherit; }
-      ::selection { color: var(--on-accent); background: var(--accent); }
+      ::selection { color: var(--on-strong); background: var(--accent); }
 
-      .concept-note { padding: 8px 20px; color: var(--on-strong); background: var(--strong); text-align: center; font-size: 11px; letter-spacing: .05em; }
-      .nav {
+      .site-header {
         position: sticky;
         top: 0;
-        z-index: 10;
-        min-height: 68px;
+        z-index: 20;
+        min-height: 64px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 0 max(22px, calc((100vw - 1180px) / 2));
-        background: var(--bg);
-        border-bottom: 1px solid var(--border);
+        padding: 0 max(24px, calc((100vw - 1120px) / 2));
+        background: rgba(255, 255, 255, .92);
+        backdrop-filter: blur(16px);
       }
-      .wordmark { font-size: 17px; font-weight: 700; letter-spacing: -.025em; text-decoration: none; }
-      .nav-right, .nav-links { display: flex; align-items: center; }
-      .nav-right { gap: 26px; }
-      .nav-links { gap: 24px; }
-      .nav-links a { color: var(--fg-2); font-size: 13px; text-decoration: none; }
-      .theme-toggle { padding: 0; color: var(--fg-2); background: transparent; border: 0; font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; cursor: pointer; }
-      .primary-action { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; padding: 0 23px; color: var(--on-strong); background: var(--strong); border-radius: 14px; font-size: 15px; font-weight: 600; text-decoration: none; }
-      .text-action { color: var(--accent); font-size: 14px; font-weight: 600; text-underline-offset: 5px; }
+      .wordmark { font-size: 18px; font-weight: 800; letter-spacing: -.035em; text-decoration: none; }
+
+      .language-switch {
+        position: fixed;
+        right: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom));
+        z-index: 30;
+        width: 48px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: var(--fg);
+        background: var(--bg);
+        border: 0;
+        border-radius: 999px;
+        box-shadow: 0 8px 30px rgba(25, 31, 40, .12);
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
 
       .hero {
-        min-height: calc(100svh - 100px);
-        display: grid;
-        grid-template-columns: 1.08fr .92fr;
-        align-items: center;
-        gap: 76px;
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 90px 22px 110px;
+        position: relative;
+        min-height: calc(100svh - 64px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 112px 24px 0;
+        background:
+          radial-gradient(circle at 50% 72%, rgba(155, 126, 86, .22), transparent 34%),
+          linear-gradient(180deg, #f8fbfd 0%, #e7f0f2 58%, #dbe8e9 100%);
+        overflow: hidden;
+        text-align: center;
       }
-      .eyebrow { margin: 0 0 18px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
-      .hero h1 { max-width: 750px; margin: 0 0 25px; font-size: clamp(60px, 7.8vw, 108px); line-height: .92; letter-spacing: -.065em; }
-      .hero-copy > p:not(.eyebrow) { max-width: 580px; margin: 0 0 34px; color: var(--fg-2); font-size: 18px; line-height: 1.7; }
-      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
-      .hero-visual { position: relative; min-height: 650px; display: grid; place-items: center; }
-      .hero-visual::before { content: ""; position: absolute; width: min(36vw, 480px); aspect-ratio: 1; border: 1px solid var(--border); border-radius: 50%; }
-      .hero-visual::after { content: ""; position: absolute; width: min(31vw, 410px); aspect-ratio: 1; border-radius: 50%; background: var(--muted); }
-      .phone { position: relative; z-index: 2; width: 270px; aspect-ratio: 9 / 19.5; display: grid; place-items: center; padding: 24px; color: var(--fg-2); background: var(--surface); border: 9px solid var(--fg); border-radius: 47px; box-shadow: 0 28px 60px rgba(58,42,26,.16); text-align: center; transform: rotate(4deg); transition: transform 400ms ease; }
-      [data-theme="dark"] .phone { box-shadow: 0 28px 60px rgba(0,0,0,.35); }
-      .phone:hover { transform: rotate(0) translateY(-7px); }
-      .phone::before { content: ""; position: absolute; top: 13px; left: 50%; width: 82px; height: 22px; border-radius: 999px; background: var(--fg); transform: translateX(-50%); }
-      .phone strong { display: block; margin-bottom: 9px; color: var(--accent); font-size: 13px; letter-spacing: .05em; }
+      .hero-copy { position: relative; z-index: 5; max-width: 880px; margin: 0 auto; }
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(50px, 6vw, 72px);
+        line-height: 1.18;
+        letter-spacing: -.06em;
+        word-break: keep-all;
+      }
+      .hero-store-actions { display: flex; justify-content: center; gap: 10px; margin-top: 38px; }
+      .hero-store-button {
+        min-width: 150px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 20px;
+        color: #ffffff;
+        background: rgba(25, 31, 40, .9);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(25, 31, 40, .14);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        backdrop-filter: blur(12px);
+      }
+      .hero-store-button:hover { background: var(--fg); }
+      .store-icon { width: 20px; height: 20px; display: block; object-fit: contain; }
+      .store-icon--apple { filter: brightness(0) invert(1); }
+      .store-icon--google { width: 19px; height: 19px; }
+      .hero-store-button:focus-visible { outline-color: var(--fg); }
+
+      .hero-stage {
+        position: relative;
+        z-index: 1;
+        flex: 1 0 520px;
+        width: calc(100% + 48px);
+        min-height: 520px;
+        display: grid;
+        place-items: center;
+        margin: 48px -24px 0;
+        overflow: hidden;
+      }
+      .hero-stage::before {
+        content: "";
+        position: absolute;
+        bottom: -340px;
+        left: 50%;
+        width: min(1100px, 90vw);
+        height: 820px;
+        background: rgba(255, 255, 255, .42);
+        border-radius: 50%;
+        transform: translateX(-50%);
+      }
+
+      .phone {
+        position: relative;
+        z-index: 2;
+        width: 265px;
+        aspect-ratio: 9 / 19.5;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        color: var(--fg-tertiary);
+        background: var(--bg);
+        border: 9px solid var(--fg);
+        border-radius: 48px;
+        box-shadow: 0 30px 70px rgba(25, 31, 40, .18);
+        text-align: center;
+      }
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 13px;
+        left: 50%;
+        width: 82px;
+        height: 22px;
+        background: var(--fg);
+        border-radius: 999px;
+        transform: translateX(-50%);
+      }
+      .phone strong { display: block; margin-bottom: 8px; color: var(--accent); font-size: 13px; }
       .phone span { font-size: 12px; line-height: 1.6; }
-      .metric { position: absolute; z-index: 3; padding: 14px 0; color: var(--fg-2); border-block: 1px solid var(--border); font-size: 11px; line-height: 1.4; }
-      .metric strong { display: block; margin-bottom: 2px; color: var(--fg); font-size: 26px; letter-spacing: -.04em; }
-      .metric.a { top: 140px; left: 0; }
-      .metric.b { right: -10px; bottom: 140px; }
+      .phone--screen { aspect-ratio: auto; padding: 0; background: #231e17; overflow: hidden; }
+      .phone--screen::before { display: none; }
+      .phone__screen-image { width: 100%; height: auto; display: block; }
 
-      .journey { color: var(--on-strong); background: var(--strong); }
-      .journey-inner { max-width: 1180px; display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 auto; padding: 0 22px; }
-      .journey-item { padding: 24px 0; border-right: 1px solid color-mix(in srgb, var(--on-strong) 18%, transparent); }
-      .journey-item + .journey-item { padding-left: 26px; }
-      .journey-item:last-child { border-right: 0; }
-      .journey-item span { display: block; margin-bottom: 7px; opacity: .48; font-size: 10px; font-weight: 700; }
-      .journey-item strong { font-size: 15px; }
+      .hero-stage .phone { width: 235px; transform: translateY(70px) rotate(-3deg); }
+      .hero-object {
+        position: absolute;
+        z-index: 2;
+        width: 170px;
+        height: 124px;
+        display: grid;
+        place-items: center;
+        color: var(--fg-secondary);
+        background: rgba(255, 255, 255, .68);
+        border-radius: 28px;
+        box-shadow: 18px 28px 50px rgba(62, 91, 111, .16);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: .08em;
+        backdrop-filter: blur(10px);
+      }
+      .hero-object--journal { top: 170px; left: 9%; width: 190px; transform: rotate(-8deg); }
+      .hero-object--tempo { top: 75px; right: 14%; width: 145px; height: 175px; transform: rotate(6deg); }
+      .hero-object--protein { right: 27%; bottom: 20px; width: 136px; height: 136px; border-radius: 50%; transform: rotate(-7deg); }
 
-      .section { padding: 140px 22px; }
-      .section-inner { max-width: 1120px; margin: 0 auto; }
-      .section-head { max-width: 820px; margin-bottom: 74px; }
-      .section-head h2 { margin: 0 0 20px; font-size: clamp(46px, 6vw, 80px); line-height: 1.02; letter-spacing: -.055em; }
-      .section-head > p:not(.eyebrow) { max-width: 650px; margin: 0; color: var(--fg-2); font-size: 17px; line-height: 1.7; }
+      .feature-section { padding: 170px 24px; }
+      .feature-head { max-width: 1120px; margin: 0 auto 80px; }
+      .feature-head p { margin: 0 0 18px; color: var(--accent); font-size: 16px; font-weight: 700; }
+      .feature-head h2 {
+        max-width: 860px;
+        margin: 0;
+        font-size: clamp(48px, 6vw, 76px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
 
-      .story { color: var(--story-fg); background: var(--story-bg); }
-      .story-grid { display: grid; grid-template-columns: .82fr 1.18fr; align-items: start; gap: 90px; }
-      .story-copy { position: sticky; top: 120px; min-height: 520px; display: flex; flex-direction: column; justify-content: center; }
-      .story .eyebrow { color: var(--story-accent); }
-      .story-copy h2 { margin: 0 0 22px; font-size: clamp(46px, 5vw, 72px); line-height: 1.03; letter-spacing: -.055em; }
-      .story-copy > p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.62); font-size: 16px; line-height: 1.7; }
-      .scene-list { border-top: 1px solid rgba(255,255,255,.14); }
-      .scene { min-height: 650px; display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 38px; padding: 58px 0; border-bottom: 1px solid rgba(255,255,255,.14); }
-      .scene-copy span { color: var(--story-accent); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
-      .scene-copy h3 { margin: 18px 0 13px; font-size: 30px; line-height: 1.2; letter-spacing: -.04em; }
-      .scene-copy p { margin: 0; color: rgba(255,255,255,.58); font-size: 14px; line-height: 1.65; }
-      .scene-visual { min-height: 500px; display: grid; place-items: center; background: var(--story-surface); border-radius: 16px; }
-      .scene .phone { width: 200px; color: #876b45; background: #faf7f2; border-color: #1c1c1e; box-shadow: 0 24px 54px rgba(0,0,0,.3); }
-      .scene .phone::before { background: #1c1c1e; }
-      .scene .phone strong { color: #9b7e56; }
+      .journal-section { background: var(--bg); }
+      .journal-flow { max-width: 1280px; margin: 0 auto; }
+      .journal-step {
+        max-width: 1280px;
+        min-height: 760px;
+        display: grid;
+        grid-template-columns: .78fr 1.22fr;
+        align-items: center;
+        gap: 80px;
+        margin: 0 auto;
+        padding: 90px 0;
+      }
+      .journal-step--reverse .journal-step__copy { order: 2; }
+      .journal-step--reverse .journal-step__visual { order: 1; }
+      .journal-step--active { min-height: 1520px; align-items: start; padding-block: 0; }
+      .journal-step--active .journal-step__visual { position: sticky; top: 92px; margin-block: 90px; }
+      .workout-copy-sequence { align-self: stretch; }
+      .workout-copy-stage { min-height: 760px; display: flex; flex-direction: column; justify-content: center; }
+      .journal-step__copy small { color: var(--accent); font-size: 14px; font-weight: 700; }
+      .journal-step__copy h3 {
+        margin: 18px 0 24px;
+        font-size: clamp(42px, 5vw, 64px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .journal-step__copy p {
+        max-width: 470px;
+        margin: 0;
+        color: var(--fg-secondary);
+        font-size: 18px;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+      .journal-step__visual {
+        min-height: 640px;
+        display: grid;
+        place-items: center;
+        background: var(--surface);
+        border-radius: 44px;
+        overflow: hidden;
+      }
+      .journal-step--reverse .journal-step__visual { background: var(--warm); }
+      .journal-step__visual .phone { width: 225px; }
+      .journal-step__visual--pair {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        padding: 44px;
+      }
+      .journal-step__visual--pair .phone { width: 190px; }
+      .journal-step__visual--pair .phone:first-child { transform: translateY(32px) rotate(-3deg); }
+      .journal-step__visual--pair .phone:last-child { transform: translateY(-28px) rotate(4deg); }
+      .journal-step__visual--active { position: relative; }
+      .live-activity-showcase {
+        position: relative;
+        width: min(100%, 620px);
+        height: 590px;
+      }
+      .live-activity-showcase .phone {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 225px;
+        transform: rotate(-3deg);
+      }
+      .live-activity-asset {
+        position: absolute;
+        z-index: 4;
+        width: min(300px, 48%);
+        height: auto;
+      }
+      .live-activity-image {
+        width: 100%;
+        height: auto;
+        display: block;
+        filter: drop-shadow(0 20px 28px rgba(25, 31, 40, .2));
+      }
+      .live-activity-asset--island {
+        top: 72px;
+        right: 0;
+      }
+      .live-activity-asset--lock {
+        right: 0;
+        bottom: 66px;
+      }
+      .cardio-hotspot {
+        position: absolute;
+        z-index: 6;
+        aspect-ratio: 1;
+        border: 3px solid #e85854;
+        border-radius: 50%;
+        box-shadow: 0 0 0 5px rgba(232, 88, 84, .18);
+        opacity: 0;
+        transition: opacity 360ms ease;
+        pointer-events: none;
+      }
+      .cardio-hotspot--screen { left: 18.2%; top: 92.8%; width: 13.5%; }
+      .cardio-hotspot--island { left: 29%; top: 54%; width: 12%; }
+      .cardio-hotspot--lock { left: 82.5%; top: 14.5%; width: 12%; }
+      .cardio-hotspot::after {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border: 2px solid rgba(232, 88, 84, .62);
+        border-radius: inherit;
+        animation: cardio-pulse 1.8s ease-out infinite;
+      }
+      .cardio-callout {
+        position: absolute;
+        top: 246px;
+        right: 18px;
+        z-index: 5;
+        width: 264px;
+        padding: 18px 20px;
+        background: rgba(255, 255, 255, .94);
+        border-radius: 20px;
+        box-shadow: 0 16px 40px rgba(25, 31, 40, .12);
+        backdrop-filter: blur(12px);
+        opacity: 0;
+        transition: opacity 360ms ease;
+      }
+      .cardio-callout strong { display: block; color: #e85854; font-size: 14px; }
+      .cardio-callout span { display: block; margin-top: 7px; color: var(--fg-secondary); font-size: 12px; line-height: 1.55; }
+      .journal-step--active.is-cardio-visible .cardio-hotspot,
+      .journal-step--active.is-cardio-visible .cardio-callout { opacity: 1; }
 
-      .feature-list { border-top: 1px solid var(--border); }
-      .feature { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 32px; padding: 42px 0; border-bottom: 1px solid var(--border); }
-      .feature > span { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
-      .feature h3 { margin: 0; font-size: clamp(28px, 3vw, 40px); line-height: 1.15; letter-spacing: -.045em; }
-      .feature p { max-width: 480px; margin: 0; color: var(--fg-2); font-size: 15px; line-height: 1.7; }
+      @keyframes cardio-pulse {
+        0% { opacity: .8; transform: scale(.82); }
+        75%, 100% { opacity: 0; transform: scale(1.35); }
+      }
 
-      .product-section { background: var(--subtle); }
-      .product-layout { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 80px; }
-      .product-copy h2 { margin: 0 0 20px; font-size: clamp(46px, 5vw, 72px); line-height: 1.02; letter-spacing: -.055em; }
-      .product-copy > p:not(.eyebrow) { max-width: 520px; margin: 0; color: var(--fg-2); font-size: 16px; line-height: 1.7; }
-      .product-visual { min-height: 650px; display: grid; grid-template-columns: repeat(2, 1fr); align-items: center; gap: 24px; }
-      .product-visual .phone { width: 220px; justify-self: end; transform: rotate(-4deg); }
-      .product-visual .phone:last-child { justify-self: start; transform: rotate(5deg) translateY(48px); }
+      .tempo-section { background: var(--surface); }
+      .protein-section { background: var(--warm); }
+      .feature-spotlight {
+        max-width: 1120px;
+        min-height: 720px;
+        display: grid;
+        grid-template-columns: .9fr 1.1fr;
+        align-items: center;
+        gap: 100px;
+        margin: 0 auto;
+      }
+      .feature-spotlight--reverse .feature-spotlight__copy { order: 2; }
+      .feature-spotlight--reverse .feature-screens { order: 1; }
+      .feature-spotlight__copy small { color: var(--accent); font-size: 16px; font-weight: 700; }
+      .feature-spotlight__copy h2 {
+        margin: 18px 0 24px;
+        font-size: clamp(46px, 5vw, 68px);
+        line-height: 1.1;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .feature-spotlight__copy p { max-width: 500px; margin: 0; color: var(--fg-secondary); font-size: 18px; line-height: 1.75; word-break: keep-all; }
+      .feature-screens { position: relative; min-height: 680px; display: grid; place-items: center; }
+      .feature-screens .phone { width: 215px; }
+      .feature-screens .phone:first-child { transform: translate(-95px, 45px) rotate(-4deg); }
+      .feature-screens .phone:last-child { position: absolute; transform: translate(95px, -45px) rotate(4deg); }
 
-      .final { padding: 170px 22px; color: var(--on-accent); background: var(--accent); text-align: center; }
-      .final h2 { max-width: 900px; margin: 0 auto 24px; font-size: clamp(54px, 7vw, 96px); line-height: .98; letter-spacing: -.06em; }
-      .final p { margin: 0 auto 32px; opacity: .72; font-size: 16px; }
-      .final .primary-action { color: var(--fg); background: var(--surface); }
-      footer { display: flex; justify-content: space-between; gap: 20px; max-width: 1120px; margin: 0 auto; padding: 32px 22px 44px; color: var(--fg-2); border-top: 1px solid var(--border); font-size: 12px; }
+      footer {
+        max-width: 1120px;
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin: 0 auto;
+        padding: 38px 24px 52px;
+        color: var(--fg-tertiary);
+        font-size: 12px;
+      }
       footer div { display: flex; gap: 20px; }
 
-      @media (max-width: 900px) {
-        .nav-links a:not(.primary-action) { display: none; }
-        .hero { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-        .hero-copy > p:not(.eyebrow) { margin-inline: auto; }
-        .hero .actions { justify-content: center; }
-        .hero-visual { min-height: 570px; }
-        .metric.a { left: 10%; }
-        .metric.b { right: 8%; }
-        .story-grid { grid-template-columns: 1fr; }
-        .story-copy { position: static; min-height: auto; }
-        .scene { grid-template-columns: 1fr 1fr; }
-        .feature { grid-template-columns: 70px 1fr; }
-        .feature p { grid-column: 2; }
-        .product-layout { grid-template-columns: 1fr; }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+      @media (max-width: 1100px) {
+        .hero { padding-top: 90px; }
+        .hero h1 { font-size: clamp(48px, 8vw, 64px); }
+        .hero-stage { min-height: 540px; margin-top: 42px; }
+        .hero-object--journal { left: 3%; }
+        .hero-object--tempo { right: 3%; }
+        .journal-step, .feature-spotlight { grid-template-columns: 1fr; gap: 54px; }
+        .journal-step { min-height: auto; padding-block: 90px; }
+        .journal-step__copy, .journal-step--reverse .journal-step__copy,
+        .feature-spotlight__copy, .feature-spotlight--reverse .feature-spotlight__copy { order: 1; }
+        .journal-step__visual, .journal-step--reverse .journal-step__visual,
+        .feature-screens, .feature-spotlight--reverse .feature-screens { order: 2; }
+        .journal-step__copy p, .feature-spotlight__copy p { max-width: 620px; }
       }
+
+      @media (min-width: 901px) and (max-width: 1100px) {
+        .journal-step--active { grid-template-columns: .78fr 1.22fr; gap: 40px; }
+        .journal-step--active .journal-step__copy { order: 2; }
+        .journal-step--active .journal-step__visual { order: 1; }
+      }
+
       @media (max-width: 600px) {
-        .concept-note { font-size: 10px; }
-        .nav { min-height: 62px; padding-inline: 18px; }
-        .nav-right { gap: 14px; }
-        .nav-links .primary-action { min-height: 42px; padding-inline: 15px; }
-        .hero { min-height: auto; padding: 74px 18px 90px; }
-        .hero h1 { font-size: 59px; }
-        .hero-copy > p:not(.eyebrow) { font-size: 16px; }
-        .hero-visual { min-height: 500px; }
-        .hero-visual::before { width: 350px; }
-        .hero-visual::after { width: 300px; }
-        .hero-visual .phone { width: 220px; }
-        .metric.a { top: 75px; left: 0; }
-        .metric.b { right: 0; bottom: 80px; }
-        .journey-inner { grid-template-columns: repeat(2, 1fr); padding-inline: 18px; }
-        .journey-item:nth-child(2) { border-right: 0; }
-        .journey-item:nth-child(3), .journey-item:nth-child(4) { border-top: 1px solid color-mix(in srgb, var(--on-strong) 18%, transparent); }
-        .journey-item:nth-child(3) { padding-left: 0; }
-        .section { padding: 96px 18px; }
-        .section-head { margin-bottom: 50px; }
-        .story-grid { gap: 46px; }
-        .scene { grid-template-columns: 1fr; min-height: auto; padding-block: 48px; }
-        .scene-visual { min-height: 480px; }
-        .feature { grid-template-columns: 1fr; gap: 14px; padding-block: 32px; }
-        .feature p { grid-column: auto; }
-        .product-visual { min-height: 520px; gap: 8px; }
-        .product-visual .phone { width: 165px; }
-        .final { padding: 110px 18px; }
-        footer { flex-direction: column; padding-inline: 18px; }
+        .site-header { min-height: 60px; padding-inline: 18px; }
+        .hero { min-height: auto; padding: 74px 18px 0; }
+        .hero h1 { font-size: clamp(42px, 12vw, 52px); line-height: 1.2; }
+        .hero-store-actions { gap: 8px; margin-top: 30px; }
+        .hero-store-button { min-width: 0; min-height: 48px; padding-inline: 15px; font-size: 14px; }
+        .hero-stage { flex-basis: 500px; width: calc(100% + 36px); min-height: 500px; margin: 40px -18px 0; }
+        .hero-stage::before { bottom: -260px; width: 680px; height: 610px; }
+        .hero-stage .phone { width: 190px; transform: translateY(58px) rotate(-3deg); }
+        .hero-object { width: 112px; height: 88px; border-radius: 20px; font-size: 10px; }
+        .hero-object--journal { top: 170px; left: -28px; }
+        .hero-object--tempo { top: 62px; right: -24px; width: 92px; height: 112px; }
+        .hero-object--protein { display: none; }
+        .feature-section { padding: 110px 18px; }
+        .feature-head { margin-bottom: 42px; }
+        .journal-step { gap: 40px; padding-block: 70px; }
+        .journal-step__copy h3, .feature-spotlight__copy h2 { font-size: 42px; }
+        .journal-step__copy p, .feature-spotlight__copy p { font-size: 16px; }
+        .journal-step__visual { min-height: 550px; border-radius: 30px; }
+        .journal-step__visual .phone { width: 190px; }
+        .journal-step__visual--pair { gap: 8px; padding: 22px 12px; }
+        .journal-step__visual--pair .phone { width: min(41vw, 165px); }
+        .journal-step__visual--active { min-height: 760px; }
+        .journal-step--active { min-height: auto; }
+        .journal-step--active .journal-step__visual { position: relative; top: auto; margin-block: 0; }
+        .workout-copy-stage { min-height: auto; padding-block: 52px; }
+        .live-activity-showcase { width: 100%; height: 710px; }
+        .live-activity-showcase .phone { top: 0; left: 50%; width: 165px; transform: translateX(-50%) rotate(-3deg); }
+        .live-activity-asset { left: 50%; width: min(80vw, 280px); transform: translateX(-50%); }
+        .cardio-callout { top: 374px; right: auto; left: 50%; width: min(80vw, 280px); transform: translateX(-50%); }
+        .live-activity-asset--island { top: 474px; right: auto; }
+        .live-activity-asset--lock { right: auto; bottom: 8px; }
+        .feature-spotlight { min-height: auto; gap: 44px; }
+        .feature-screens { min-height: 550px; }
+        .feature-screens .phone { width: min(43vw, 175px); }
+        .feature-screens .phone:first-child { transform: translate(-20%, 40px) rotate(-4deg); }
+        .feature-screens .phone:last-child { transform: translate(20%, -35px) rotate(4deg); }
+        footer { align-items: flex-start; flex-direction: column; padding-inline: 18px; }
       }
+
       @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
-        *, *::before, *::after { transition-duration: .01ms !important; }
+        .cardio-hotspot::after { animation: none; opacity: .55; }
       }
     </style>
   </head>
   <body>
-    <div class="concept-note">HTML CONCEPT · 실제 앱 스크린샷으로 교체 예정</div>
-    <nav class="nav" aria-label="주요 메뉴">
+    <header class="site-header">
       <a class="wordmark" href="#top">YepBuddy</a>
-      <div class="nav-right">
-        <div class="nav-links"><a href="#flow">사용 흐름</a><a href="#features">기능</a><a href="/support">지원</a><a class="primary-action" href="#download">앱 만나보기</a></div>
-        <button class="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
-      </div>
-    </nav>
+    </header>
 
     <main id="top">
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">나의 운동을 가장 나답게</p>
-          <h1>운동의 순간을 기록의 리듬으로.</h1>
-          <p>시작부터 결과까지 흩어진 운동 경험을 하나의 흐름으로 연결합니다. YepBuddy와 함께 오늘의 운동을 분명하게 남겨보세요.</p>
-          <div class="actions"><a class="primary-action" href="#download">앱 만나보기</a><a class="text-action" href="#flow">사용 흐름 살펴보기</a></div>
+          <h1>운동의 모든 순간<br />YepBuddy에서 쉽고 꾸준하게</h1>
+          <div class="hero-store-actions">
+            <a class="hero-store-button" href="https://apps.apple.com/tt/app/%EC%98%99%EB%B2%84%EB%94%94/id6768154123" target="_blank" rel="noopener noreferrer"><img class="store-icon store-icon--apple" src="../assets/landing/apple-icon.png" alt="" aria-hidden="true" />App Store</a>
+            <a class="hero-store-button" href="https://play.google.com/store/apps/details?id=com.juhun.yepbuddy.app&amp;hl=ko" target="_blank" rel="noopener noreferrer"><img class="store-icon store-icon--google" src="../assets/landing/google-play-icon.png" alt="" aria-hidden="true" />Google Play</a>
+          </div>
         </div>
-        <div class="hero-visual" aria-label="홈 화면 이미지 자리">
-          <div class="metric a"><strong>03회</strong>이번 주 운동</div>
-          <div class="phone"><div><strong>IMAGE S01</strong><span>홈 화면<br />AI iPhone cover</span></div></div>
-          <div class="metric b"><strong>2h 46m</strong>누적 운동 시간</div>
+        <div class="hero-stage" aria-label="YepBuddy 홈 화면 이미지 자리">
+          <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/journal-main.png" alt="YepBuddy 운동일지 메인 화면" /></div>
+          <div class="hero-object hero-object--journal">운동일지</div>
+          <div class="hero-object hero-object--tempo">템포</div>
+          <div class="hero-object hero-object--protein">프로틴</div>
         </div>
       </section>
 
-      <div class="journey" aria-label="앱 사용 흐름">
-        <div class="journey-inner"><div class="journey-item"><span>01</span><strong>루틴을 준비하고</strong></div><div class="journey-item"><span>02</span><strong>운동에 집중하고</strong></div><div class="journey-item"><span>03</span><strong>결과를 확인하고</strong></div><div class="journey-item"><span>04</span><strong>기록을 이어갑니다</strong></div></div>
-      </div>
+      <section class="feature-section journal-section" aria-labelledby="journal-title">
+        <header class="feature-head">
+          <p>운동일지</p>
+          <h2 id="journal-title">운동 전부터 종료까지, 한 번의 운동을 온전히 기록하게.</h2>
+        </header>
 
-      <section class="section story" id="flow">
-        <div class="section-inner story-grid">
-          <div class="story-copy"><p class="eyebrow">한 번의 운동, 하나의 흐름</p><h2>운동에 집중하면 기록은 따라옵니다.</h2><p>실제 구현에서는 왼쪽 설명을 고정하고 스크롤에 따라 오른쪽 앱 화면이 자연스럽게 교체됩니다.</p></div>
-          <div class="scene-list">
-            <article class="scene"><div class="scene-copy"><span>STEP 01 · S02</span><h3>세트와 휴식을 놓치지 않게</h3><p>현재 운동과 다음 흐름을 확인하며 운동에 집중합니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S02</strong><span>운동 진행 화면</span></div></div></div></article>
-            <article class="scene"><div class="scene-copy"><span>STEP 02 · S03</span><h3>끝난 순간 성취를 확인하게</h3><p>완료한 운동의 시간과 종목, 세트 기록을 한눈에 돌아봅니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S03</strong><span>운동 결과 화면</span></div></div></div></article>
-            <article class="scene"><div class="scene-copy"><span>STEP 03 · S04</span><h3>쌓인 기록이 다음 운동으로</h3><p>주간과 월간 기록을 보며 나만의 운동 리듬을 이어갑니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S04</strong><span>기록 또는 캘린더</span></div></div></div></article>
+        <div class="journal-flow">
+          <article class="journal-step">
+            <div class="journal-step__copy">
+              <small>운동 전</small>
+              <h3>오늘의 기록을 보고, 다음 루틴까지 준비하세요.</h3>
+              <p>운동일지 메인에서 오늘 요약과 최근 세션, 분할 루틴 진행을 확인하고 바텀시트에서 훈련 분할과 운동 부위를 구성할 수 있어요.</p>
+            </div>
+            <div class="journal-step__visual journal-step__visual--pair">
+              <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/journal-overview.png" alt="YepBuddy 운동일지 기록과 분할 루틴 화면" /></div>
+              <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/routine-cycle-sheet.png" alt="YepBuddy 루틴 사이클 설정 바텀시트" /></div>
+            </div>
+          </article>
+
+          <article class="journal-step journal-step--reverse journal-step--active">
+            <div class="journal-step__copy workout-copy-sequence">
+              <div class="workout-copy-stage">
+                <small>운동 중</small>
+                <h3>기록은 맡기고, 운동 자체에만 집중하세요.</h3>
+                <p>루틴과 운동 부위를 빠르게 선택하고 세트와 메모를 바로 남길 수 있어요. 화면을 닫아도 다이나믹 아일랜드와 잠금화면에서 운동 시간과 심박수를 확인하고 일시정지와 종료를 제어할 수 있어요.</p>
+              </div>
+              <div class="workout-copy-stage workout-copy-stage--cardio" data-cardio-stage>
+                <small>운동 중 · 유산소</small>
+                <h3>운동 흐름은 그대로, 유산소까지 이어가세요.</h3>
+                <p>운동 중 화면의 러닝 버튼을 누르면 진행 중인 세션 안에서 유산소 기록을 바로 시작할 수 있어요.</p>
+              </div>
+            </div>
+            <div class="journal-step__visual journal-step__visual--active">
+              <div class="live-activity-showcase" aria-label="YepBuddy 운동 Live Activity 예시">
+                <div class="phone phone--screen">
+                  <img class="phone__screen-image" src="../assets/landing/active-workout.png" alt="YepBuddy 실제 운동 중 화면" />
+                  <span class="cardio-hotspot cardio-hotspot--screen" aria-hidden="true"></span>
+                </div>
+                <div class="live-activity-asset live-activity-asset--island">
+                  <img class="live-activity-image" src="../assets/landing/live-activity-island.png" alt="확장된 다이나믹 아일랜드의 YepBuddy 운동 기록" />
+                  <span class="cardio-hotspot cardio-hotspot--island" aria-hidden="true"></span>
+                </div>
+                <div class="cardio-callout"><strong>유산소도 바로 추가</strong><span>러닝 버튼을 누르면 현재 운동에 이어 간단하게 기록할 수 있어요.</span></div>
+                <div class="live-activity-asset live-activity-asset--lock">
+                  <img class="live-activity-image" src="../assets/landing/live-activity-lock.png" alt="잠금화면의 YepBuddy 운동 Live Activity" />
+                  <span class="cardio-hotspot cardio-hotspot--lock" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="journal-step">
+            <div class="journal-step__copy">
+              <small>운동 종료 · 결과</small>
+              <h3>끝난 운동을 숫자와 기록으로 돌아보세요.</h3>
+              <p>운동 시간과 활동 칼로리, 세트수, 평균 심박수부터 메모와 운동 위치까지 한 화면에서 자세히 확인할 수 있어요.</p>
+            </div>
+            <div class="journal-step__visual">
+              <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/workout-result.png" alt="YepBuddy 운동 결과 상세 화면" /></div>
+            </div>
+          </article>
+
+          <article class="journal-step journal-step--reverse">
+            <div class="journal-step__copy">
+              <small>운동 종료 · 기록</small>
+              <h3>운동한 날과 부위를 한눈에 확인하세요.</h3>
+              <p>YepBuddy 캘린더에서 날짜별 운동 부위 배지와 추가 기록 수를 확인해, 쌓여가는 운동 흐름을 빠르게 훑어볼 수 있어요.</p>
+            </div>
+            <div class="journal-step__visual">
+              <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/workout-calendar.png" alt="YepBuddy 앱 내부 운동 캘린더" /></div>
+            </div>
+          </article>
+
+          <article class="journal-step">
+            <div class="journal-step__copy">
+              <small>운동 종료 · 캘린더</small>
+              <h3>완료한 운동을 기기 캘린더에도 이어가세요.</h3>
+              <p>운동한 날짜와 부위 기록을 기기 기본 캘린더에 일정으로 남겨, 평소 사용하는 캘린더에서도 운동 계획과 기록을 함께 볼 수 있어요.</p>
+            </div>
+            <div class="journal-step__visual">
+              <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/device-calendar.png" alt="기기 기본 캘린더에 저장된 YepBuddy 운동 일정" /></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="feature-section tempo-section" aria-labelledby="tempo-title">
+        <div class="feature-spotlight">
+          <div class="feature-spotlight__copy">
+            <small>템포</small>
+            <h2 id="tempo-title">수축과 이완, 나만의 리듬을 놓치지 않게.</h2>
+            <p>진행 순서와 시간, 횟수, 세트, 휴식을 설정하면 준비 카운트다운부터 마지막 반복까지 자동으로 안내해줘요.</p>
+          </div>
+          <div class="feature-screens">
+            <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/tempo-settings.png" alt="YepBuddy 템포 설정 화면" /></div>
+            <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/tempo-active.png" alt="YepBuddy 템포 진행 화면" /></div>
           </div>
         </div>
       </section>
 
-      <section class="section" id="features">
-        <div class="section-inner">
-          <header class="section-head"><p class="eyebrow">운동 전후까지 연결</p><h2>기록 앱에서 끝나지 않도록.</h2><p>기능을 카드 안에 가두지 않고, 사용자가 겪는 상황과 해결되는 맥락을 함께 보여줍니다.</p></header>
-          <div class="feature-list">
-            <article class="feature"><span>01</span><h3>나만의 루틴</h3><p>반복하는 운동을 미리 구성해 헬스장에 도착한 순간 고민 없이 시작합니다.</p></article>
-            <article class="feature"><span>02</span><h3>운동 진행</h3><p>현재 세트와 다음 순서를 확인해 기록을 위해 운동 흐름을 끊지 않습니다.</p></article>
-            <article class="feature"><span>03</span><h3>운동 기록</h3><p>완료한 운동을 돌아보고 지난 기록을 다음 운동을 위한 기준으로 사용합니다.</p></article>
+      <section class="feature-section protein-section" aria-labelledby="protein-title">
+        <div class="feature-spotlight feature-spotlight--reverse">
+          <div class="feature-spotlight__copy">
+            <small>단백질</small>
+            <h2 id="protein-title">프로틴 가격, 지금이 저점인지 한눈에.</h2>
+            <p>가격 변동 추이를 확인하고, 현재 가격을 저점·중간·고점으로 판단해 구매 시점을 가늠할 수 있어요.</p>
+          </div>
+          <div class="feature-screens">
+            <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/protein-list.png" alt="프로틴 목록과 제품별 현재 가격대 화면" /></div>
+            <div class="phone phone--screen"><img class="phone__screen-image" src="../assets/landing/protein-detail.png" alt="프로틴 현재가와 가격 추이 상세 화면" /></div>
           </div>
         </div>
       </section>
-
-      <section class="section product-section">
-        <div class="section-inner product-layout">
-          <div class="product-copy"><p class="eyebrow">운동 이후의 선택까지</p><h2>루틴과 단백질 탐색도 한 흐름 안에서.</h2><p>직접 촬영한 루틴 화면과 단백질 탐색 화면을 AI iPhone cover로 만든 뒤 이 두 자리에 조합합니다.</p></div>
-          <div class="product-visual"><div class="phone"><div><strong>IMAGE S05</strong><span>루틴 구성 화면</span></div></div><div class="phone"><div><strong>IMAGE S06</strong><span>단백질 탐색 화면</span></div></div></div>
-        </div>
-      </section>
-
-      <section class="final" id="download"><h2>오늘의 운동을 내일의 기록으로.</h2><p>앱스토어 링크가 준비되면 실제 다운로드 CTA로 교체합니다.</p><a class="primary-action" href="mailto:wngns9807@gmail.com?subject=YepBuddy%20Launch">앱 만나보기</a></section>
     </main>
 
-    <footer><span>© 2026 YepBuddy</span><div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div></footer>
+    <footer>
+      <span>© 2026 YepBuddy</span>
+      <div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div>
+    </footer>
 
+    <a class="language-switch" href="/en" aria-label="영어로 전환">EN</a>
     <script>
-      const root = document.documentElement
-      const toggle = document.querySelector(".theme-toggle")
-      const setTheme = (theme) => {
-        root.dataset.theme = theme
-        toggle.textContent = theme === "light" ? "Dark mode" : "Light mode"
-        toggle.setAttribute("aria-pressed", String(theme === "dark"))
+      const cardioStage = document.querySelector("[data-cardio-stage]")
+      const activeWorkoutStep = cardioStage?.closest(".journal-step--active")
+
+      if (cardioStage && activeWorkoutStep && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (!entry.isIntersecting) return
+            activeWorkoutStep.classList.add("is-cardio-visible")
+            observer.disconnect()
+          },
+          { threshold: 0.35 },
+        )
+        observer.observe(cardioStage)
       }
-      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      toggle.addEventListener("click", () => setTheme(root.dataset.theme === "light" ? "dark" : "light"))
     </script>
   </body>
 </html>
