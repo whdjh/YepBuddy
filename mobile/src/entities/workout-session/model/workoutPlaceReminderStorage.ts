@@ -10,6 +10,8 @@ export const WORKOUT_PLACE_REMINDER_PENDING_PROMPT_STORAGE_KEY =
   "yb:workout-place-reminder:pending-prompt"
 export const WORKOUT_PLACE_REMINDER_SYNC_STATUS_STORAGE_KEY =
   "yb:workout-place-reminder:sync-status"
+export const WORKOUT_PLACE_ARRIVAL_TRACKING_STORAGE_KEY =
+  "yb:workout-place-reminder:arrival-tracking"
 
 /** 운동 장소 진입 후 사용자에게 표시할 대기 중 알림 정보 */
 export interface PendingWorkoutPlaceReminderPrompt {
@@ -29,6 +31,13 @@ export type WorkoutPlaceReminderSyncStatusReason =
 export interface WorkoutPlaceReminderSyncStatus {
   operational: boolean
   reason: WorkoutPlaceReminderSyncStatusReason
+}
+
+/** geofence 진입 후 짧게 유지하는 실제 도착 추적 상태 */
+export interface WorkoutPlaceArrivalTrackingState {
+  placeId: string
+  startedAt: string
+  consecutiveMatches: number
 }
 
 /** 값이 유효한 ISO 날짜 문자열인지 확인 */
@@ -134,6 +143,43 @@ export function saveWorkoutPlaceReminderSyncStatus(
     WORKOUT_PLACE_REMINDER_SYNC_STATUS_STORAGE_KEY,
     JSON.stringify(status),
   )
+}
+
+/** 저장된 실제 도착 추적 상태 조회 */
+export async function getWorkoutPlaceArrivalTrackingState() {
+  const value = await AsyncStorage.getItem(
+    WORKOUT_PLACE_ARRIVAL_TRACKING_STORAGE_KEY,
+  )
+  const parsed = value
+    ? parseJsonOrNull<Partial<WorkoutPlaceArrivalTrackingState>>(value)
+    : null
+  return parsed &&
+    typeof parsed.placeId === "string" &&
+    isValidIso(parsed.startedAt) &&
+    typeof parsed.consecutiveMatches === "number" &&
+    Number.isInteger(parsed.consecutiveMatches) &&
+    parsed.consecutiveMatches >= 0
+      ? {
+          placeId: parsed.placeId,
+          startedAt: parsed.startedAt,
+          consecutiveMatches: parsed.consecutiveMatches,
+        }
+    : null
+}
+
+/** 실제 도착 추적 상태 저장 */
+export function saveWorkoutPlaceArrivalTrackingState(
+  state: WorkoutPlaceArrivalTrackingState,
+) {
+  return AsyncStorage.setItem(
+    WORKOUT_PLACE_ARRIVAL_TRACKING_STORAGE_KEY,
+    JSON.stringify(state),
+  )
+}
+
+/** 실제 도착 추적 상태 삭제 */
+export function clearWorkoutPlaceArrivalTrackingState() {
+  return AsyncStorage.removeItem(WORKOUT_PLACE_ARRIVAL_TRACKING_STORAGE_KEY)
 }
 
 /** 사용자에게 아직 표시하지 않은 장소 알림 정보 조회 */
