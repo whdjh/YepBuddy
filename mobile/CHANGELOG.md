@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/whdjh/yepbuddy/compare/v1.6.3...v1.6.4) (2026-08-06)
+
+
+### Bug Fixes
+
+* **workout-place:** 이중 geofence와 연속 위치 확인으로 도착 감지 개선 ([#96](https://github.com/whdjh/yepbuddy/issues/96)) ([326aa3a](https://github.com/whdjh/yepbuddy/commit/326aa3ae7536daa7eff0df6d2db714b38933e465))
+
 ## [1.6.3](https://github.com/whdjh/yepbuddy/compare/v1.6.2...v1.6.3) (2026-08-04)
 
 
