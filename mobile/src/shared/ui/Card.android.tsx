@@ -258,9 +258,11 @@ function Metric({
       <Text className={getMetricValueClass(valueSize)} style={{ color: accent }}>
         {String(value)}
       </Text>
-      <Text className={getMetricUnitClass(unitSize)} style={{ color: fgSecondary }}>
-        {` ${unit}`}
-      </Text>
+      {unit ? (
+        <Text className={getMetricUnitClass(unitSize)} style={{ color: fgSecondary }}>
+          {` ${unit}`}
+        </Text>
+      ) : null}
     </Row>
   )
 }
@@ -394,15 +396,18 @@ function Column({
   children,
   spacing = 0,
   alignment,
+  fullWidth = false,
 }: {
   children: ReactNode
   spacing?: number
   alignment?: "leading" | "center" | "trailing"
+  fullWidth?: boolean
 }) {
   const classes = [
     "flex-col",
     getColumnAlignmentClass(alignment),
     spacingClassByValue[spacing],
+    fullWidth ? "w-full" : "",
   ]
     .filter(Boolean)
     .join(" ")

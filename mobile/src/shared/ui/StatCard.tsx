@@ -21,7 +21,7 @@ export function StatCard({
   onLongPress,
 }: StatCardProps) {
   const content = (
-    <Card.Column alignment="leading" spacing={4}>
+    <Card.Column alignment="center" fullWidth spacing={4}>
       <Card.Label>{label}</Card.Label>
       {subtitle && <Card.Caption size={11}>{subtitle}</Card.Caption>}
       <Card.Metric value={value} unit={unit} valueSize={valueSize} />
