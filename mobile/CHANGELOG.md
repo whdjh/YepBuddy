@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.5](https://github.com/whdjh/yepbuddy/compare/v1.6.4...v1.6.5) (2026-08-07)
+
+
+### Bug Fixes
+
+* **component:** statcard 중앙정렬 수정 ([#99](https://github.com/whdjh/yepbuddy/issues/99)) ([4d28495](https://github.com/whdjh/yepbuddy/commit/4d28495e0f501b6c31c0e3cb5a779ecf8fe24999))
+
 ## [1.6.4](https://github.com/whdjh/yepbuddy/compare/v1.6.3...v1.6.4) (2026-08-06)
 
 
