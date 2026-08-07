@@ -214,9 +214,11 @@ function Metric({ value, unit, valueSize = 36, unitSize = 14 }: {
       <SwiftText modifiers={[font({ size: valueSize, weight: "bold", design: "rounded" }), foregroundStyle(accent)]}>
         {String(value)}
       </SwiftText>
-      <SwiftText modifiers={[font({ size: unitSize, weight: "medium" }), foregroundStyle(fgSecondary)]}>
-        {` ${unit}`}
-      </SwiftText>
+      {unit ? (
+        <SwiftText modifiers={[font({ size: unitSize, weight: "medium" }), foregroundStyle(fgSecondary)]}>
+          {` ${unit}`}
+        </SwiftText>
+      ) : null}
     </HStack>
   )
 }
@@ -291,13 +293,15 @@ function Row({ children, spacing = 0, alignment, minHeight: mh, paddingVertical 
 }
 
 /** 세로 레이아웃 */
-function Column({ children, spacing, alignment }: {
+function Column({ children, spacing, alignment, fullWidth = false }: {
   children: ReactNode
   spacing?: number
   alignment?: "leading" | "center" | "trailing"
+  fullWidth?: boolean
 }) {
+  const modifiers = fullWidth ? [frame({ maxWidth: 9999 })] : undefined
   return (
-    <VStack alignment={alignment} spacing={spacing}>
+    <VStack alignment={alignment} spacing={spacing} modifiers={modifiers}>
       {children}
     </VStack>
   )
