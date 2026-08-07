@@ -1,287 +1,2242 @@
 <!doctype html>
-<html lang="ko" data-theme="light">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="color-scheme" content="light dark" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="../assets/landing/apple-icon.png" />
     <title>YepBuddy Landing Mockup</title>
     <style>
       :root {
         font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
         font-synthesis: none;
-        --bg: #faf7f2;
-        --surface: #ffffff;
-        --subtle: #f5efe6;
-        --muted: #ede4d6;
-        --fg: #3a2a1a;
-        --fg-2: #876b45;
-        --fg-3: #6b5638;
+        color-scheme: light;
+        --bg: #ffffff;
+        --surface: #f7f8fa;
+        --surface-strong: #f2f4f6;
+        --warm: #f7f3ed;
+        --warm-strong: #ede4d6;
+        --fg: #191f28;
+        --fg-secondary: #4e5968;
+        --fg-tertiary: #8b95a1;
         --accent: #9b7e56;
         --accent-hover: #876b45;
-        --border: #ddd2bf;
         --strong: #3a2a1a;
-        --on-strong: #faf7f2;
-        --on-accent: #faf7f2;
-        --story-bg: #231e17;
-        --story-surface: #3c372d;
-        --story-accent: #c4a87e;
-        --story-fg: #ffffff;
-        color-scheme: light;
-      }
-      :root[data-theme="dark"] {
-        --bg: #1c1c1e;
-        --surface: #2c2c2e;
-        --subtle: #3c3c3e;
-        --muted: #4a3a28;
-        --fg: #ffffff;
-        --fg-2: #ede4d6;
-        --fg-3: #ddd2bf;
-        --accent: #d4883a;
-        --accent-hover: #c4a87e;
-        --border: #5a472d;
-        --strong: #ede4d6;
-        --on-strong: #1c1c1e;
-        --on-accent: #1c1c1e;
-        --story-bg: #231e17;
-        --story-surface: #3c372d;
-        --story-accent: #c4a87e;
-        --story-fg: #ffffff;
-        color-scheme: dark;
+        --on-strong: #ffffff;
+        --device-stage: linear-gradient(145deg, #f8f9fa 0%, #eef1f3 54%, #e8ecef 100%);
+        --device-stage-border: rgba(139, 149, 161, .12);
       }
 
       * { box-sizing: border-box; }
       html { scroll-behavior: smooth; }
-      body { margin: 0; color: var(--fg); background: var(--bg); transition: color 180ms ease, background 180ms ease; }
+      body { margin: 0; color: var(--fg); background: var(--bg); }
       a { color: inherit; }
       button { font: inherit; }
-      ::selection { color: var(--on-accent); background: var(--accent); }
+      ::selection { color: var(--on-strong); background: var(--accent); }
 
-      .concept-note { padding: 8px 20px; color: var(--on-strong); background: var(--strong); text-align: center; font-size: 11px; letter-spacing: .05em; }
-      .nav {
+      #shared-device-canvas {
+        position: fixed;
+        inset: 0;
+        z-index: 8;
+        width: 100vw;
+        height: 100vh;
+        display: block;
+        pointer-events: none;
+      }
+
+      [data-device-3d] { isolation: isolate; }
+      [data-device-3d].is-device-3d-ready {
+        overflow: visible;
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+      }
+      [data-device-3d].is-device-3d-ready > * {
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+
+      .site-header {
         position: sticky;
         top: 0;
-        z-index: 10;
-        min-height: 68px;
+        z-index: 20;
+        min-height: 64px;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 24px;
-        padding: 0 max(22px, calc((100vw - 1180px) / 2));
-        background: var(--bg);
-        border-bottom: 1px solid var(--border);
+        padding: 0 max(24px, calc((100vw - 1120px) / 2));
+        background: rgba(255, 255, 255, .92);
+        backdrop-filter: blur(16px);
       }
-      .wordmark { font-size: 17px; font-weight: 700; letter-spacing: -.025em; text-decoration: none; }
-      .nav-right, .nav-links { display: flex; align-items: center; }
-      .nav-right { gap: 26px; }
-      .nav-links { gap: 24px; }
-      .nav-links a { color: var(--fg-2); font-size: 13px; text-decoration: none; }
-      .theme-toggle { padding: 0; color: var(--fg-2); background: transparent; border: 0; font-size: 12px; font-weight: 600; text-decoration: underline; text-underline-offset: 5px; cursor: pointer; }
-      .primary-action { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; padding: 0 23px; color: var(--on-strong); background: var(--strong); border-radius: 14px; font-size: 15px; font-weight: 600; text-decoration: none; }
-      .text-action { color: var(--accent); font-size: 14px; font-weight: 600; text-underline-offset: 5px; }
+      .wordmark { font-size: 18px; font-weight: 800; letter-spacing: -.035em; text-decoration: none; }
+
+      .language-switch {
+        position: fixed;
+        right: 18px;
+        bottom: calc(18px + env(safe-area-inset-bottom));
+        z-index: 30;
+        width: 48px;
+        height: 42px;
+        display: grid;
+        place-items: center;
+        color: var(--fg);
+        background: var(--bg);
+        border: 0;
+        border-radius: 999px;
+        box-shadow: 0 8px 30px rgba(25, 31, 40, .12);
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+      }
 
       .hero {
-        min-height: calc(100svh - 100px);
+        position: relative;
+        min-height: calc(100svh - 64px);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        padding: 96px 24px 0;
+        background:
+          radial-gradient(circle at 50% 76%, rgba(155, 126, 86, .16), transparent 30%),
+          linear-gradient(180deg, #fbfcfd 0%, #edf3f4 58%, #e1ebec 100%);
+        overflow: hidden;
+        text-align: center;
+      }
+      .hero-copy { position: relative; z-index: 5; max-width: 940px; margin: 0 auto; }
+      .hero-kicker {
+        margin: 0 0 18px;
+        color: var(--accent);
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: -.01em;
+      }
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(52px, 6.4vw, 78px);
+        line-height: 1.12;
+        letter-spacing: -.06em;
+        word-break: keep-all;
+      }
+      .hero-lead {
+        max-width: 650px;
+        margin: 24px auto 0;
+        color: var(--fg-secondary);
+        font-size: 18px;
+        line-height: 1.72;
+        word-break: keep-all;
+      }
+      .hero-flow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        margin: 20px 0 0;
+        color: var(--fg-tertiary);
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .hero-flow i { color: rgba(78, 89, 104, .36); font-style: normal; }
+      .hero-store-actions { display: flex; justify-content: center; gap: 10px; margin-top: 30px; }
+      .hero-store-button {
+        min-width: 150px;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 0 20px;
+        color: #ffffff;
+        background: rgba(25, 31, 40, .9);
+        border-radius: 12px;
+        box-shadow: 0 12px 30px rgba(25, 31, 40, .14);
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        backdrop-filter: blur(12px);
+      }
+      .hero-store-button:hover { background: var(--fg); }
+      .store-icon { width: 20px; height: 20px; display: block; object-fit: contain; }
+      .store-icon--apple { filter: brightness(0) invert(1); }
+      .store-icon--google { width: 19px; height: 19px; }
+      .hero-store-button:focus-visible { outline-color: var(--fg); }
+
+      .hero-stage {
+        position: relative;
+        z-index: 1;
+        flex: 1 0 500px;
+        width: calc(100% + 48px);
+        min-height: 500px;
+        display: grid;
+        place-items: center;
+        margin: 28px -24px 0;
+        overflow: hidden;
+      }
+      .hero-stage::before {
+        content: "";
+        position: absolute;
+        bottom: -350px;
+        left: 50%;
+        width: min(1100px, 90vw);
+        height: 820px;
+        background: rgba(255, 255, 255, .55);
+        border-radius: 50%;
+        transform: translateX(-50%);
+      }
+      .hero-stage::after {
+        content: "";
+        position: absolute;
+        bottom: -88px;
+        left: 50%;
+        width: min(620px, 68vw);
+        aspect-ratio: 1;
+        border: 1px solid rgba(155, 126, 86, .12);
+        border-radius: 50%;
+        transform: translateX(-50%);
+      }
+
+      .phone {
+        position: relative;
+        z-index: 2;
+        width: 265px;
+        aspect-ratio: 9 / 19.5;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        color: var(--fg-tertiary);
+        background: var(--bg);
+        border: 9px solid var(--fg);
+        border-radius: 48px;
+        box-shadow: 0 30px 70px rgba(25, 31, 40, .18);
+        text-align: center;
+      }
+      .phone::before {
+        content: "";
+        position: absolute;
+        top: 13px;
+        left: 50%;
+        width: 82px;
+        height: 22px;
+        background: var(--fg);
+        border-radius: 999px;
+        transform: translateX(-50%);
+      }
+      .phone strong { display: block; margin-bottom: 8px; color: var(--accent); font-size: 13px; }
+      .phone span { font-size: 12px; line-height: 1.6; }
+      .phone--screen { aspect-ratio: auto; padding: 0; background: #231e17; overflow: hidden; }
+      .phone--screen::before { display: none; }
+      .phone__screen-image { width: 100%; height: auto; display: block; }
+      .phone[data-static-texture] .phone__screen-image { position: relative; z-index: 1; transition: opacity 320ms ease; }
+      .static-3d-phone-canvas {
+        position: absolute;
+        inset: -5%;
+        z-index: 2;
+        width: 110%;
+        height: 110%;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 420ms ease;
+      }
+      .phone[data-static-texture].is-static-3d-ready {
+        overflow: visible;
+        background: transparent;
+        border-color: transparent;
+        box-shadow: none;
+      }
+      .phone[data-static-texture].is-static-3d-ready .static-3d-phone-canvas { opacity: 1; }
+      .phone[data-static-texture].is-static-3d-ready .phone__screen-image { opacity: 0; }
+
+      .hero-stage .phone { width: 255px; transform: translateY(52px); }
+
+      .feature-section { padding: 170px 24px; }
+      .feature-head { max-width: 1120px; margin: 0 auto 80px; }
+      .feature-head p { margin: 0 0 18px; color: var(--accent); font-size: 16px; font-weight: 700; }
+      .feature-head h2 {
+        max-width: 860px;
+        margin: 0;
+        font-size: clamp(48px, 6vw, 76px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+
+      .journal-section { background: var(--bg); }
+      .journal-flow { max-width: 1280px; margin: 0 auto; }
+      .journal-step {
+        max-width: 1280px;
+        min-height: 760px;
+        display: grid;
+        grid-template-columns: .78fr 1.22fr;
+        align-items: center;
+        gap: 80px;
+        margin: 0 auto;
+        padding: 90px 0;
+      }
+      .journal-step--reverse .journal-step__copy { order: 2; }
+      .journal-step--reverse .journal-step__visual { order: 1; }
+      .journal-step--active { min-height: 1520px; align-items: start; padding-block: 0; }
+      .journal-step--active .journal-step__visual { position: sticky; top: 92px; margin-block: 90px; }
+      .workout-copy-sequence { align-self: stretch; }
+      .workout-copy-stage { min-height: 760px; display: flex; flex-direction: column; justify-content: center; }
+      .journal-step__copy small { color: var(--accent); font-size: 14px; font-weight: 700; }
+      .journal-step__copy h3 {
+        margin: 18px 0 24px;
+        font-size: clamp(42px, 5vw, 64px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .journal-step__copy p {
+        max-width: 470px;
+        margin: 0;
+        color: var(--fg-secondary);
+        font-size: 18px;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+      .journal-step__visual {
+        min-height: 640px;
+        display: grid;
+        place-items: center;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+        border-radius: 44px;
+        overflow: hidden;
+      }
+      .journal-step--reverse .journal-step__visual { background: var(--device-stage); }
+      .journal-step__visual .phone { width: 225px; }
+      .journal-step__visual--pair {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+        padding: 44px;
+      }
+      .journal-step__visual--pair .phone { width: 190px; }
+      .journal-step__visual--pair .phone:first-child { transform: translateY(32px) rotate(-3deg); }
+      .journal-step__visual--pair .phone:last-child { transform: translateY(-28px) rotate(4deg); }
+      .journal-step__visual--active { position: relative; }
+      .live-activity-showcase {
+        position: relative;
+        width: min(100%, 620px);
+        height: 590px;
+      }
+      .live-activity-showcase .phone {
+        position: absolute;
+        top: 18px;
+        left: 0;
+        width: 225px;
+        transform: rotate(-3deg);
+      }
+      .live-activity-asset {
+        position: absolute;
+        z-index: 4;
+        width: min(300px, 48%);
+        overflow: hidden;
+        background: #111315;
+        border-radius: 20px;
+        box-shadow: 0 20px 38px rgba(25, 31, 40, .2);
+      }
+      .live-activity-image {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .live-activity-asset--island {
+        top: 72px;
+        right: 0;
+        aspect-ratio: 3.05 / 1;
+      }
+      .live-activity-asset--lock {
+        right: 0;
+        bottom: 66px;
+        aspect-ratio: 2.42 / 1;
+      }
+      .live-activity-asset--lock .live-activity-image { transform: translateY(-57%); }
+      .cardio-hotspot {
+        position: absolute;
+        z-index: 6;
+        aspect-ratio: 1;
+        border: 3px solid #e85854;
+        border-radius: 50%;
+        box-shadow: 0 0 0 5px rgba(232, 88, 84, .18);
+        opacity: 0;
+        transition: opacity 360ms ease;
+        pointer-events: none;
+      }
+      .cardio-hotspot--screen { left: 0; top: 0; width: 0; }
+      .cardio-hotspot--island { left: 29%; top: 54%; width: 12%; }
+      .cardio-hotspot--lock { left: 80.2%; top: 25%; width: 12%; }
+      .cardio-hotspot::after {
+        content: "";
+        position: absolute;
+        inset: -7px;
+        border: 2px solid rgba(232, 88, 84, .62);
+        border-radius: inherit;
+        animation: cardio-pulse 1.8s ease-out infinite;
+      }
+      .cardio-callout {
+        position: absolute;
+        top: 246px;
+        right: 18px;
+        z-index: 5;
+        width: 264px;
+        padding: 18px 20px;
+        background: rgba(255, 255, 255, .94);
+        border-radius: 20px;
+        box-shadow: 0 16px 40px rgba(25, 31, 40, .12);
+        backdrop-filter: blur(12px);
+        opacity: 0;
+        transition: opacity 360ms ease;
+      }
+      .cardio-callout strong { display: block; color: #e85854; font-size: 14px; }
+      .cardio-callout span { display: block; margin-top: 7px; color: var(--fg-secondary); font-size: 12px; line-height: 1.55; }
+      .journal-step--active.is-cardio-visible .cardio-hotspot,
+      .journal-step--active.is-cardio-visible .cardio-callout { opacity: 1; }
+
+      @keyframes cardio-pulse {
+        0% { opacity: .8; transform: scale(.82); }
+        75%, 100% { opacity: 0; transform: scale(1.35); }
+      }
+
+      .tempo-section, .protein-section { background: var(--surface); }
+      .supporting-section { padding: 170px 24px; background: #ffffff; }
+      .supporting-head { max-width: 1120px; margin: 0 auto 72px; }
+      .supporting-head p { margin: 0 0 18px; color: var(--accent); font-size: 16px; font-weight: 700; }
+      .supporting-head h2 {
+        max-width: 820px;
+        margin: 0;
+        font-size: clamp(44px, 5.4vw, 68px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .supporting-section > .feature-section {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 64px;
+        border-radius: 44px;
+      }
+      .supporting-section > .feature-section + .feature-section { margin-top: 28px; }
+      .supporting-section .feature-spotlight { min-height: 560px; gap: 64px; }
+      .supporting-section .feature-spotlight__copy h2 { font-size: clamp(40px, 4.4vw, 58px); }
+      .supporting-section .feature-screens { min-height: 560px; }
+      .supporting-section .feature-screens .phone { width: 190px; }
+      .supporting-section .feature-screens {
+        overflow: hidden;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+        border-radius: 36px;
+      }
+      .feature-spotlight {
+        max-width: 1120px;
+        min-height: 720px;
+        display: grid;
+        grid-template-columns: .9fr 1.1fr;
+        align-items: center;
+        gap: 100px;
+        margin: 0 auto;
+      }
+      .feature-spotlight--reverse .feature-spotlight__copy { order: 2; }
+      .feature-spotlight--reverse .feature-screens { order: 1; }
+      .feature-spotlight__copy small { color: var(--accent); font-size: 16px; font-weight: 700; }
+      .feature-spotlight__copy h2 {
+        margin: 18px 0 24px;
+        font-size: clamp(46px, 5vw, 68px);
+        line-height: 1.1;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .feature-spotlight__copy p { max-width: 500px; margin: 0; color: var(--fg-secondary); font-size: 18px; line-height: 1.75; word-break: keep-all; }
+      .feature-screens { position: relative; min-height: 680px; display: grid; place-items: center; }
+      .feature-screens .phone { width: 215px; }
+      .feature-screens .phone:first-child { transform: translate(-95px, 45px); }
+      .feature-screens .phone:last-child { position: absolute; transform: translate(95px, -45px); }
+
+      .statement-section {
+        min-height: 190svh;
+        padding: 0 24px;
+      }
+      .statement-layout {
+        position: sticky;
+        top: 64px;
+        max-width: 1120px;
+        min-height: calc(100svh - 64px);
+        display: grid;
+        grid-template-columns: 1fr .72fr;
+        align-items: center;
+        gap: 92px;
+        margin: 0 auto;
+      }
+      .statement-section p {
+        max-width: 720px;
+        margin: 0;
+        color: var(--fg);
+        font-size: clamp(34px, 4.4vw, 58px);
+        font-weight: 750;
+        line-height: 1.42;
+        letter-spacing: -.05em;
+        word-break: keep-all;
+      }
+      .statement-section span { color: var(--accent); }
+      .home-scroll-visual {
+        position: relative;
+        min-height: 660px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 44px;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+      }
+      .screen-state-phone {
+        position: relative;
+        width: 225px;
+        aspect-ratio: 1206 / 2622;
+        overflow: hidden;
+        background: #171717;
+        border: 9px solid var(--fg);
+        border-radius: 48px;
+        box-shadow: 0 30px 70px rgba(25, 31, 40, .2);
+      }
+      .screen-state-layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #171717;
+        will-change: opacity, transform, clip-path;
+      }
+      .screen-state-layer + .screen-state-layer { opacity: 0; visibility: hidden; }
+      .screen-state-layer img { width: 100%; height: 100%; display: block; object-fit: cover; }
+      .history-phone [data-session-screen="filtered"],
+      .history-phone [data-result-screen="edit"] {
+        z-index: 3;
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .history-section {
+        padding: 170px 24px;
+        background: var(--surface);
+      }
+      .history-layout {
+        max-width: 1120px;
+        min-height: 235svh;
+        display: grid;
+        grid-template-columns: .82fr 1.18fr;
+        align-items: start;
+        gap: 84px;
+        margin: 0 auto;
+      }
+      .history-copy {
+        position: sticky;
+        top: 64px;
+        min-height: calc(100svh - 64px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .section-copy small { color: var(--accent); font-size: 15px; font-weight: 750; }
+      .section-copy h2 {
+        margin: 18px 0 24px;
+        font-size: clamp(44px, 5vw, 68px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .section-copy p {
+        max-width: 480px;
+        margin: 0;
+        color: var(--fg-secondary);
+        font-size: 18px;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+      .history-visual {
+        position: sticky;
+        top: 64px;
+        height: calc(100svh - 128px);
+        min-height: 680px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 44px;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+      }
+      .history-phone {
+        position: absolute;
+        width: 214px;
+        aspect-ratio: 1206 / 2622;
+      }
+      .history-phone--sessions { left: 16%; top: 14%; }
+      .history-phone--result { right: 14%; bottom: 8%; }
+      .history-phone .screen-state-layer { border-radius: 38px; }
+      .capture-note {
+        position: absolute;
+        z-index: 4;
+        left: 50%;
+        bottom: 18px;
+        padding: 8px 12px;
+        color: var(--fg-tertiary);
+        background: rgba(255, 255, 255, .82);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        transform: translateX(-50%);
+        backdrop-filter: blur(10px);
+      }
+
+      .calendar-peek {
+        max-width: 1120px;
+        min-height: 175svh;
         display: grid;
         grid-template-columns: 1.08fr .92fr;
-        align-items: center;
-        gap: 76px;
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 90px 22px 110px;
+        align-items: start;
+        gap: 84px;
+        margin: 150px auto 0;
       }
-      .eyebrow { margin: 0 0 18px; color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
-      .hero h1 { max-width: 750px; margin: 0 0 25px; font-size: clamp(60px, 7.8vw, 108px); line-height: .92; letter-spacing: -.065em; }
-      .hero-copy > p:not(.eyebrow) { max-width: 580px; margin: 0 0 34px; color: var(--fg-2); font-size: 18px; line-height: 1.7; }
-      .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; }
-      .hero-visual { position: relative; min-height: 650px; display: grid; place-items: center; }
-      .hero-visual::before { content: ""; position: absolute; width: min(36vw, 480px); aspect-ratio: 1; border: 1px solid var(--border); border-radius: 50%; }
-      .hero-visual::after { content: ""; position: absolute; width: min(31vw, 410px); aspect-ratio: 1; border-radius: 50%; background: var(--muted); }
-      .phone { position: relative; z-index: 2; width: 270px; aspect-ratio: 9 / 19.5; display: grid; place-items: center; padding: 24px; color: var(--fg-2); background: var(--surface); border: 9px solid var(--fg); border-radius: 47px; box-shadow: 0 28px 60px rgba(58,42,26,.16); text-align: center; transform: rotate(4deg); transition: transform 400ms ease; }
-      [data-theme="dark"] .phone { box-shadow: 0 28px 60px rgba(0,0,0,.35); }
-      .phone:hover { transform: rotate(0) translateY(-7px); }
-      .phone::before { content: ""; position: absolute; top: 13px; left: 50%; width: 82px; height: 22px; border-radius: 999px; background: var(--fg); transform: translateX(-50%); }
-      .phone strong { display: block; margin-bottom: 9px; color: var(--accent); font-size: 13px; letter-spacing: .05em; }
-      .phone span { font-size: 12px; line-height: 1.6; }
-      .metric { position: absolute; z-index: 3; padding: 14px 0; color: var(--fg-2); border-block: 1px solid var(--border); font-size: 11px; line-height: 1.4; }
-      .metric strong { display: block; margin-bottom: 2px; color: var(--fg); font-size: 26px; letter-spacing: -.04em; }
-      .metric.a { top: 140px; left: 0; }
-      .metric.b { right: -10px; bottom: 140px; }
+      .calendar-peek__visual {
+        position: sticky;
+        top: 64px;
+        height: calc(100svh - 128px);
+        min-height: 620px;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 44px;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+      }
+      .calendar-peek__phone { width: 225px; }
+      .calendar-peek__phone .screen-state-layer { border-radius: 39px; }
+      .calendar-peek__copy {
+        position: sticky;
+        top: 64px;
+        min-height: calc(100svh - 64px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .calendar-handoff {
+        position: relative;
+        min-height: 240svh;
+        background: var(--bg);
+      }
+      .calendar-handoff__sticky {
+        position: sticky;
+        top: 64px;
+        height: calc(100svh - 64px);
+        display: grid;
+        grid-template-columns: .82fr 1.18fr;
+        align-items: center;
+        gap: 84px;
+        max-width: 1168px;
+        margin: 0 auto;
+        padding: 48px 24px;
+      }
+      .handoff-copy-stage { display: none; }
+      .handoff-copy-stage.is-active { display: block; }
+      .handoff-copy-stage h2 { min-height: 2.3em; }
+      .handoff-device {
+        position: relative;
+        min-height: min(700px, calc(100svh - 110px));
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        border-radius: 44px;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+      }
+      .handoff-phone {
+        position: relative;
+        width: 235px;
+        aspect-ratio: 9 / 19.5;
+        overflow: hidden;
+        background: #111315;
+        border: 9px solid var(--fg);
+        border-radius: 48px;
+        box-shadow: 0 30px 70px rgba(25, 31, 40, .2);
+      }
+      .handoff-screen {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #191b1d;
+      }
+      .handoff-screen--result { z-index: 1; }
+      .handoff-screen--month { z-index: 2; opacity: 0; visibility: hidden; }
+      .handoff-screen--detail { z-index: 3; opacity: 0; visibility: hidden; }
+      .handoff-screen img { width: 100%; height: 100%; display: block; object-fit: cover; }
+      .tap-pulse {
+        position: absolute;
+        z-index: 5;
+        left: 49%;
+        top: 35%;
+        width: 84px;
+        aspect-ratio: 1;
+        border: 2px solid rgba(255, 255, 255, .82);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(.55);
+        opacity: 0;
+      }
 
-      .journey { color: var(--on-strong); background: var(--strong); }
-      .journey-inner { max-width: 1180px; display: grid; grid-template-columns: repeat(4, 1fr); margin: 0 auto; padding: 0 22px; }
-      .journey-item { padding: 24px 0; border-right: 1px solid color-mix(in srgb, var(--on-strong) 18%, transparent); }
-      .journey-item + .journey-item { padding-left: 26px; }
-      .journey-item:last-child { border-right: 0; }
-      .journey-item span { display: block; margin-bottom: 7px; opacity: .48; font-size: 10px; font-weight: 700; }
-      .journey-item strong { font-size: 15px; }
+      .protein-demo {
+        position: relative;
+        min-height: 145svh;
+      }
+      .protein-demo__sticky {
+        position: sticky;
+        top: 64px;
+        min-height: calc(100svh - 64px);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        gap: 64px;
+      }
+      .protein-copy-stage { display: none; }
+      .protein-copy-stage.is-active { display: block; }
+      .protein-scroll-frame {
+        position: relative;
+        width: 214px;
+        aspect-ratio: 9 / 19.5;
+        overflow: hidden;
+        background: #191b1d;
+        border: 9px solid var(--fg);
+        border-radius: 46px;
+        box-shadow: 0 30px 70px rgba(25, 31, 40, .2);
+      }
+      .protein-demo .feature-screens { min-height: 650px; place-items: center; }
+      .protein-demo .protein-scroll-frame {
+        position: relative;
+        z-index: 3;
+      }
+      .protein-screen-layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background: #191b1d;
+      }
+      .protein-screen-layer--list { z-index: 1; }
+      .protein-screen-layer--detail { z-index: 2; opacity: 0; visibility: hidden; }
+      .protein-screen-layer img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .protein-screen-layer--list img { transform: none; }
+      .protein-screen-layer--detail img {
+        transform-origin: top center;
+        transform: none;
+        will-change: transform;
+      }
+      .protein-tap-pulse {
+        position: absolute;
+        z-index: 4;
+        left: 50%;
+        top: 39%;
+        width: 48px;
+        aspect-ratio: 1;
+        border: 2px solid rgba(255, 255, 255, .9);
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, .3);
+        transform: translate(-50%, -50%) scale(.55);
+        opacity: 0;
+      }
 
-      .section { padding: 140px 22px; }
-      .section-inner { max-width: 1120px; margin: 0 auto; }
-      .section-head { max-width: 820px; margin-bottom: 74px; }
-      .section-head h2 { margin: 0 0 20px; font-size: clamp(46px, 6vw, 80px); line-height: 1.02; letter-spacing: -.055em; }
-      .section-head > p:not(.eyebrow) { max-width: 650px; margin: 0; color: var(--fg-2); font-size: 17px; line-height: 1.7; }
-
-      .story { color: var(--story-fg); background: var(--story-bg); }
-      .story-grid { display: grid; grid-template-columns: .82fr 1.18fr; align-items: start; gap: 90px; }
-      .story-copy { position: sticky; top: 120px; min-height: 520px; display: flex; flex-direction: column; justify-content: center; }
-      .story .eyebrow { color: var(--story-accent); }
-      .story-copy h2 { margin: 0 0 22px; font-size: clamp(46px, 5vw, 72px); line-height: 1.03; letter-spacing: -.055em; }
-      .story-copy > p:not(.eyebrow) { margin: 0; color: rgba(255,255,255,.62); font-size: 16px; line-height: 1.7; }
-      .scene-list { border-top: 1px solid rgba(255,255,255,.14); }
-      .scene { min-height: 650px; display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 38px; padding: 58px 0; border-bottom: 1px solid rgba(255,255,255,.14); }
-      .scene-copy span { color: var(--story-accent); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
-      .scene-copy h3 { margin: 18px 0 13px; font-size: 30px; line-height: 1.2; letter-spacing: -.04em; }
-      .scene-copy p { margin: 0; color: rgba(255,255,255,.58); font-size: 14px; line-height: 1.65; }
-      .scene-visual { min-height: 500px; display: grid; place-items: center; background: var(--story-surface); border-radius: 16px; }
-      .scene .phone { width: 200px; color: #876b45; background: #faf7f2; border-color: #1c1c1e; box-shadow: 0 24px 54px rgba(0,0,0,.3); }
-      .scene .phone::before { background: #1c1c1e; }
-      .scene .phone strong { color: #9b7e56; }
-
-      .feature-list { border-top: 1px solid var(--border); }
-      .feature { display: grid; grid-template-columns: 90px 1fr 1fr; gap: 32px; padding: 42px 0; border-bottom: 1px solid var(--border); }
-      .feature > span { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
-      .feature h3 { margin: 0; font-size: clamp(28px, 3vw, 40px); line-height: 1.15; letter-spacing: -.045em; }
-      .feature p { max-width: 480px; margin: 0; color: var(--fg-2); font-size: 15px; line-height: 1.7; }
-
-      .product-section { background: var(--subtle); }
-      .product-layout { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 80px; }
-      .product-copy h2 { margin: 0 0 20px; font-size: clamp(46px, 5vw, 72px); line-height: 1.02; letter-spacing: -.055em; }
-      .product-copy > p:not(.eyebrow) { max-width: 520px; margin: 0; color: var(--fg-2); font-size: 16px; line-height: 1.7; }
-      .product-visual { min-height: 650px; display: grid; grid-template-columns: repeat(2, 1fr); align-items: center; gap: 24px; }
-      .product-visual .phone { width: 220px; justify-self: end; transform: rotate(-4deg); }
-      .product-visual .phone:last-child { justify-self: start; transform: rotate(5deg) translateY(48px); }
-
-      .final { padding: 170px 22px; color: var(--on-accent); background: var(--accent); text-align: center; }
-      .final h2 { max-width: 900px; margin: 0 auto 24px; font-size: clamp(54px, 7vw, 96px); line-height: .98; letter-spacing: -.06em; }
-      .final p { margin: 0 auto 32px; opacity: .72; font-size: 16px; }
-      .final .primary-action { color: var(--fg); background: var(--surface); }
-      footer { display: flex; justify-content: space-between; gap: 20px; max-width: 1120px; margin: 0 auto; padding: 32px 22px 44px; color: var(--fg-2); border-top: 1px solid var(--border); font-size: 12px; }
+      footer {
+        max-width: 1120px;
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        margin: 0 auto;
+        padding: 38px 24px 52px;
+        color: var(--fg-tertiary);
+        font-size: 12px;
+      }
       footer div { display: flex; gap: 20px; }
 
-      @media (max-width: 900px) {
-        .nav-links a:not(.primary-action) { display: none; }
-        .hero { grid-template-columns: 1fr; gap: 30px; text-align: center; }
-        .hero-copy > p:not(.eyebrow) { margin-inline: auto; }
-        .hero .actions { justify-content: center; }
-        .hero-visual { min-height: 570px; }
-        .metric.a { left: 10%; }
-        .metric.b { right: 8%; }
-        .story-grid { grid-template-columns: 1fr; }
-        .story-copy { position: static; min-height: auto; }
-        .scene { grid-template-columns: 1fr 1fr; }
-        .feature { grid-template-columns: 70px 1fr; }
-        .feature p { grid-column: 2; }
-        .product-layout { grid-template-columns: 1fr; }
+      a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+      @media (max-width: 1100px) {
+        .hero { padding-top: 90px; }
+        .hero h1 { font-size: clamp(48px, 8vw, 64px); }
+        .hero-stage { min-height: 500px; margin-top: 28px; }
+        .journal-step, .feature-spotlight { grid-template-columns: 1fr; gap: 54px; }
+        .journal-step { min-height: auto; padding-block: 90px; }
+        .journal-step__copy, .journal-step--reverse .journal-step__copy,
+        .feature-spotlight__copy, .feature-spotlight--reverse .feature-spotlight__copy { order: 1; }
+        .journal-step__visual, .journal-step--reverse .journal-step__visual,
+        .feature-screens, .feature-spotlight--reverse .feature-screens { order: 2; }
+        .journal-step__copy p, .feature-spotlight__copy p { max-width: 620px; }
+        .supporting-section > .feature-section { padding: 64px 48px; }
+        .history-layout, .calendar-peek, .calendar-handoff__sticky { gap: 48px; }
       }
+
+      @media (min-width: 901px) and (max-width: 1100px) {
+        .journal-step--active { grid-template-columns: .78fr 1.22fr; gap: 40px; }
+        .journal-step--active .journal-step__copy { order: 2; }
+        .journal-step--active .journal-step__visual { order: 1; }
+      }
+
       @media (max-width: 600px) {
-        .concept-note { font-size: 10px; }
-        .nav { min-height: 62px; padding-inline: 18px; }
-        .nav-right { gap: 14px; }
-        .nav-links .primary-action { min-height: 42px; padding-inline: 15px; }
-        .hero { min-height: auto; padding: 74px 18px 90px; }
-        .hero h1 { font-size: 59px; }
-        .hero-copy > p:not(.eyebrow) { font-size: 16px; }
-        .hero-visual { min-height: 500px; }
-        .hero-visual::before { width: 350px; }
-        .hero-visual::after { width: 300px; }
-        .hero-visual .phone { width: 220px; }
-        .metric.a { top: 75px; left: 0; }
-        .metric.b { right: 0; bottom: 80px; }
-        .journey-inner { grid-template-columns: repeat(2, 1fr); padding-inline: 18px; }
-        .journey-item:nth-child(2) { border-right: 0; }
-        .journey-item:nth-child(3), .journey-item:nth-child(4) { border-top: 1px solid color-mix(in srgb, var(--on-strong) 18%, transparent); }
-        .journey-item:nth-child(3) { padding-left: 0; }
-        .section { padding: 96px 18px; }
-        .section-head { margin-bottom: 50px; }
-        .story-grid { gap: 46px; }
-        .scene { grid-template-columns: 1fr; min-height: auto; padding-block: 48px; }
-        .scene-visual { min-height: 480px; }
-        .feature { grid-template-columns: 1fr; gap: 14px; padding-block: 32px; }
-        .feature p { grid-column: auto; }
-        .product-visual { min-height: 520px; gap: 8px; }
-        .product-visual .phone { width: 165px; }
-        .final { padding: 110px 18px; }
-        footer { flex-direction: column; padding-inline: 18px; }
+        .site-header { min-height: 60px; padding-inline: 18px; }
+        .hero { min-height: auto; padding: 62px 18px 0; }
+        .hero-kicker { margin-bottom: 14px; font-size: 13px; }
+        .hero h1 { font-size: clamp(40px, 11.6vw, 50px); line-height: 1.14; }
+        .hero-lead { margin-top: 20px; font-size: 16px; line-height: 1.65; }
+        .hero-lead br { display: none; }
+        .hero-flow { gap: 9px; margin-top: 16px; font-size: 11px; }
+        .hero-store-actions { gap: 8px; margin-top: 26px; }
+        .hero-store-button { min-width: 0; min-height: 48px; padding-inline: 15px; font-size: 14px; }
+        .hero-stage { flex-basis: 450px; width: calc(100% + 36px); min-height: 450px; margin: 24px -18px 0; }
+        .hero-stage::before { bottom: -280px; width: 680px; height: 610px; }
+        .hero-stage::after { bottom: -40px; width: 430px; }
+        .hero-stage .phone { width: 205px; transform: translateY(44px); }
+        .feature-section { padding: 110px 18px; }
+        .feature-head { margin-bottom: 42px; }
+        .journal-step { gap: 40px; padding-block: 70px; }
+        .journal-step__copy h3, .feature-spotlight__copy h2 { font-size: 42px; }
+        .journal-step__copy p, .feature-spotlight__copy p { font-size: 16px; }
+        .journal-step__visual { min-height: 550px; border-radius: 30px; }
+        .journal-step__visual .phone { width: 190px; }
+        .journal-step__visual--pair { gap: 8px; padding: 22px 12px; }
+        .journal-step__visual--pair .phone { width: min(41vw, 165px); }
+        .journal-step__visual--active { min-height: 760px; }
+        .journal-step--active { min-height: auto; }
+        .journal-step--active .journal-step__visual { position: relative; top: auto; margin-block: 0; }
+        .workout-copy-stage { min-height: auto; padding-block: 52px; }
+        .live-activity-showcase { width: 100%; height: 710px; }
+        .live-activity-showcase .phone { top: 0; left: 50%; width: 165px; transform: translateX(-50%) rotate(-3deg); }
+        .live-activity-asset { left: 50%; width: min(80vw, 280px); transform: translateX(-50%); }
+        .cardio-callout { top: 374px; right: auto; left: 50%; width: min(80vw, 280px); transform: translateX(-50%); }
+        .live-activity-asset--island { top: 474px; right: auto; }
+        .live-activity-asset--lock { right: auto; bottom: 8px; }
+        .feature-spotlight { min-height: auto; gap: 44px; }
+        .feature-screens { min-height: 550px; }
+        .feature-screens .phone { width: min(43vw, 175px); }
+        .feature-screens .phone:first-child { transform: translate(-20%, 40px); }
+        .feature-screens .phone:last-child { transform: translate(20%, -35px); }
+        .supporting-section { padding: 110px 18px; }
+        .supporting-head { margin-bottom: 44px; }
+        .supporting-head h2 { font-size: 42px; }
+        .supporting-section > .feature-section { padding: 58px 18px; border-radius: 30px; }
+        .supporting-section > .feature-section + .feature-section { margin-top: 18px; }
+        .supporting-section .feature-spotlight { gap: 34px; }
+        .supporting-section .feature-spotlight__copy h2 { font-size: 38px; }
+        .supporting-section .feature-screens { min-height: 500px; }
+        .supporting-section .feature-screens .phone { width: min(41vw, 165px); }
+        .statement-section { min-height: 190svh; padding: 0 18px; }
+        .statement-layout { top: 60px; min-height: calc(100svh - 60px); grid-template-columns: 1fr; gap: 32px; }
+        .statement-section p { font-size: 32px; line-height: 1.45; }
+        .home-scroll-visual { min-height: 560px; border-radius: 30px; }
+        .screen-state-phone { width: min(55vw, 205px); border-radius: 42px; }
+        .history-section { padding: 110px 18px; }
+        .history-layout, .calendar-peek { grid-template-columns: 1fr; gap: 42px; }
+        .history-layout { min-height: 220svh; display: block; }
+        .history-copy { position: relative; top: auto; min-height: auto; margin-bottom: 42px; }
+        .history-visual {
+          position: sticky;
+          top: 72px;
+          height: calc(100svh - 96px);
+          min-height: 570px;
+          border-radius: 30px;
+        }
+        .history-phone { width: min(47vw, 178px); }
+        .history-phone--sessions { left: 8%; }
+        .history-phone--result { right: 7%; }
+        .calendar-peek { min-height: 190svh; margin-top: 110px; }
+        .calendar-peek__copy { position: relative; top: auto; min-height: auto; order: 1; }
+        .calendar-peek__visual {
+          position: sticky;
+          top: 72px;
+          height: calc(100svh - 96px);
+          order: 2;
+          min-height: 560px;
+          border-radius: 30px;
+        }
+        .calendar-peek__phone { width: 190px; }
+        .calendar-handoff { min-height: 210svh; }
+        .calendar-handoff__sticky {
+          top: 60px;
+          height: calc(100svh - 60px);
+          grid-template-columns: 1fr;
+          align-content: center;
+          gap: 24px;
+          padding: 24px 18px;
+        }
+        .calendar-handoff .section-copy h2 { margin-block: 10px 14px; font-size: 36px; }
+        .calendar-handoff .section-copy p { font-size: 15px; }
+        .handoff-device { min-height: 54svh; border-radius: 30px; }
+        .handoff-phone { width: min(47vw, 190px); border-radius: 40px; }
+        .protein-demo { min-height: 175svh; }
+        .protein-demo__sticky { position: sticky; top: 60px; min-height: calc(100svh - 60px); grid-template-columns: 1fr; gap: 24px; }
+        .protein-scroll-frame { width: min(48vw, 190px); }
+        .protein-demo .feature-screens { min-height: 520px; }
+        footer { align-items: flex-start; flex-direction: column; padding-inline: 18px; }
       }
+
       @media (prefers-reduced-motion: reduce) {
         html { scroll-behavior: auto; }
-        *, *::before, *::after { transition-duration: .01ms !important; }
+        .cardio-hotspot::after { animation: none; opacity: .55; }
+        .protein-screen-layer--detail img { transform: none !important; }
+      }
+
+      /* Workout journal: one reversible, scroll-synchronised 3D sequence. */
+      body { overflow-x: hidden; }
+      .journal-3d-sequence {
+        max-width: 1280px;
+        min-height: 480svh;
+        display: grid;
+        grid-template-columns: .78fr 1.22fr;
+        align-items: start;
+        gap: 80px;
+        margin: 0 auto 90px;
+      }
+      .journal-3d-copy {
+        position: sticky;
+        top: 64px;
+        height: calc(100svh - 64px);
+        align-self: start;
+      }
+      .journal-3d-copy-stage {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(22px);
+        transition: opacity 280ms ease, transform 280ms ease;
+        pointer-events: none;
+      }
+      .journal-3d-copy-stage.is-active { opacity: 1; visibility: visible; transform: translateY(0); }
+      .journal-3d-copy-card { width: 100%; }
+      .journal-3d-copy-card small { color: var(--accent); font-size: 14px; font-weight: 700; }
+      .journal-3d-copy-card h3 {
+        margin: 18px 0 24px;
+        font-size: clamp(42px, 5vw, 64px);
+        line-height: 1.12;
+        letter-spacing: -.055em;
+        word-break: keep-all;
+      }
+      .journal-3d-copy-card p {
+        max-width: 470px;
+        margin: 0;
+        color: var(--fg-secondary);
+        font-size: 18px;
+        line-height: 1.75;
+        word-break: keep-all;
+      }
+      .journal-3d-copy-detail { margin-top: 34px; padding-top: 30px; border-top: 1px solid rgba(139, 149, 161, .22); }
+      .journal-3d-copy-detail h3 { margin-top: 12px; font-size: clamp(28px, 3vw, 38px); }
+      .journal-3d-stage-column { position: relative; min-width: 0; height: 100%; align-self: stretch; }
+      .journal-3d-stage {
+        position: sticky;
+        top: 64px;
+        height: calc(100svh - 64px);
+        min-height: 620px;
+        display: grid;
+        place-items: center;
+        background: var(--device-stage);
+        border: 1px solid var(--device-stage-border);
+        border-radius: 44px;
+        overflow: hidden;
+        isolation: isolate;
+      }
+      .journal-3d-stage::before {
+        content: "";
+        position: absolute;
+        width: 72%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(155, 126, 86, .2), rgba(155, 126, 86, 0) 68%);
+        pointer-events: none;
+      }
+      #journal-iphone-canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        width: 100%;
+        height: 100%;
+        display: block;
+        opacity: 0;
+        cursor: grab;
+        touch-action: pan-y;
+        transition: opacity 520ms ease;
+      }
+      #journal-iphone-canvas:active { cursor: grabbing; }
+      .journal-3d-stage.is-model-ready #journal-iphone-canvas { opacity: 1; }
+      .journal-3d-loading {
+        position: absolute;
+        z-index: 5;
+        bottom: 28px;
+        left: 50%;
+        padding: 9px 14px;
+        color: var(--fg-secondary);
+        background: rgba(255, 255, 255, .82);
+        border-radius: 999px;
+        box-shadow: 0 8px 30px rgba(25, 31, 40, .08);
+        font-size: 12px;
+        font-weight: 700;
+        transform: translateX(-50%);
+        transition: opacity 240ms ease;
+      }
+      .journal-3d-stage.is-model-ready .journal-3d-loading,
+      .journal-3d-stage.is-webgl-fallback .journal-3d-loading { opacity: 0; pointer-events: none; }
+      .journal-3d-fallback {
+        position: relative;
+        z-index: 1;
+        width: 225px;
+        transition: opacity 320ms ease;
+      }
+      .journal-3d-stage.is-model-ready .journal-3d-fallback { opacity: 0; }
+      .journal-3d-stage.is-webgl-fallback .journal-3d-fallback { opacity: 1; }
+      .journal-3d-stage .live-activity-asset,
+      .journal-3d-stage .cardio-callout,
+      .journal-3d-stage > .cardio-hotspot {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .journal-3d-stage .live-activity-asset { width: min(290px, 42%); }
+      .journal-3d-stage .live-activity-asset--island { top: 15%; right: 4%; }
+      .journal-3d-stage .live-activity-asset--lock { right: 3%; bottom: 13%; }
+      .journal-3d-stage .cardio-callout { top: 35%; right: 6%; width: min(250px, 38%); }
+      .journal-3d-stage > .cardio-hotspot--screen { left: 0; top: 0; width: 0; }
+      .journal-step--calendar { min-height: 720px; }
+
+
+      @media (max-width: 1100px) {
+        .journal-3d-sequence { grid-template-columns: .82fr 1.18fr; gap: 40px; }
+        .journal-3d-stage { min-height: 580px; border-radius: 36px; }
+        .journal-3d-copy-card h3 { font-size: clamp(38px, 5vw, 54px); }
+      }
+
+      @media (max-width: 760px) {
+        .journal-3d-sequence {
+          position: relative;
+          grid-template-columns: 1fr;
+          gap: 0;
+          margin-bottom: 60px;
+        }
+        .journal-3d-copy,
+        .journal-3d-stage-column { grid-area: 1 / 1; }
+        .journal-3d-copy {
+          position: sticky;
+          top: 60px;
+          z-index: 3;
+          height: calc(100svh - 60px);
+          pointer-events: none;
+        }
+        .journal-3d-stage-column { z-index: 1; min-height: 100%; height: 100%; }
+        .journal-3d-stage {
+          top: 60px;
+          height: 58svh;
+          min-height: 400px;
+          border-radius: 28px;
+        }
+        .journal-3d-copy-stage {
+          align-items: flex-end;
+          padding: 0 12px 5svh;
+          opacity: 0;
+        }
+        .journal-3d-copy-stage.is-active { opacity: 1; }
+        .journal-3d-copy-card {
+          padding: 24px;
+          background: rgba(255, 255, 255, .94);
+          border: 1px solid rgba(139, 149, 161, .12);
+          border-radius: 24px;
+          box-shadow: 0 18px 48px rgba(25, 31, 40, .12);
+          backdrop-filter: blur(14px);
+        }
+        .journal-3d-copy-card h3 { margin-block: 12px 16px; font-size: 34px; }
+        .journal-3d-copy-card p { font-size: 15px; line-height: 1.65; }
+        .journal-3d-copy-detail { display: none; }
+        .journal-3d-stage .live-activity-asset { width: min(48%, 210px); }
+        .journal-3d-stage .live-activity-asset--island { top: 12%; right: 2%; }
+        .journal-3d-stage .live-activity-asset--lock { right: 2%; bottom: 12%; }
+        .journal-3d-stage .cardio-callout { display: none; }
+        .journal-3d-stage > .cardio-hotspot--screen { display: none; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .journal-3d-copy-stage { transition: none; transform: none; }
+        #journal-iphone-canvas, .journal-3d-fallback { transition: opacity 120ms linear; }
       }
     </style>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "/node_modules/three/build/three.module.js",
+          "three/addons/": "/node_modules/three/examples/jsm/",
+          "gsap": "/node_modules/gsap/index.js",
+          "gsap/ScrollTrigger": "/node_modules/gsap/ScrollTrigger.js"
+        }
+      }
+    </script>
   </head>
   <body>
-    <div class="concept-note">HTML CONCEPT · 실제 앱 스크린샷으로 교체 예정</div>
-    <nav class="nav" aria-label="주요 메뉴">
+    <canvas id="shared-device-canvas" aria-hidden="true"></canvas>
+    <header class="site-header">
       <a class="wordmark" href="#top">YepBuddy</a>
-      <div class="nav-right">
-        <div class="nav-links"><a href="#flow">사용 흐름</a><a href="#features">기능</a><a href="/support">지원</a><a class="primary-action" href="#download">앱 만나보기</a></div>
-        <button class="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
-      </div>
-    </nav>
+    </header>
 
     <main id="top">
       <section class="hero">
         <div class="hero-copy">
-          <p class="eyebrow">나의 운동을 가장 나답게</p>
-          <h1>운동의 순간을 기록의 리듬으로.</h1>
-          <p>시작부터 결과까지 흩어진 운동 경험을 하나의 흐름으로 연결합니다. YepBuddy와 함께 오늘의 운동을 분명하게 남겨보세요.</p>
-          <div class="actions"><a class="primary-action" href="#download">앱 만나보기</a><a class="text-action" href="#flow">사용 흐름 살펴보기</a></div>
+          <p class="hero-kicker">운동일지</p>
+          <h1>운동은 꾸준하게,<br />기록은 간단하게.</h1>
+          <p class="hero-lead">버튼 한 번으로 시작하고, 운동에만 집중하세요.<br />시간과 세트, 심박수와 유산소까지 한 흐름으로 기록해요.</p>
+          <div class="hero-store-actions">
+            <a class="hero-store-button" href="https://apps.apple.com/tt/app/%EC%98%99%EB%B2%84%EB%94%94/id6768154123" target="_blank" rel="noopener noreferrer"><img class="store-icon store-icon--apple" src="../assets/landing/apple-icon.png" alt="" aria-hidden="true" />App Store</a>
+            <a class="hero-store-button" href="https://play.google.com/store/apps/details?id=com.juhun.yepbuddy.app&amp;hl=ko" target="_blank" rel="noopener noreferrer"><img class="store-icon store-icon--google" src="../assets/landing/google-play-icon.png" alt="" aria-hidden="true" />Google Play</a>
+          </div>
         </div>
-        <div class="hero-visual" aria-label="홈 화면 이미지 자리">
-          <div class="metric a"><strong>03회</strong>이번 주 운동</div>
-          <div class="phone"><div><strong>IMAGE S01</strong><span>홈 화면<br />AI iPhone cover</span></div></div>
-          <div class="metric b"><strong>2h 46m</strong>누적 운동 시간</div>
-        </div>
-      </section>
-
-      <div class="journey" aria-label="앱 사용 흐름">
-        <div class="journey-inner"><div class="journey-item"><span>01</span><strong>루틴을 준비하고</strong></div><div class="journey-item"><span>02</span><strong>운동에 집중하고</strong></div><div class="journey-item"><span>03</span><strong>결과를 확인하고</strong></div><div class="journey-item"><span>04</span><strong>기록을 이어갑니다</strong></div></div>
-      </div>
-
-      <section class="section story" id="flow">
-        <div class="section-inner story-grid">
-          <div class="story-copy"><p class="eyebrow">한 번의 운동, 하나의 흐름</p><h2>운동에 집중하면 기록은 따라옵니다.</h2><p>실제 구현에서는 왼쪽 설명을 고정하고 스크롤에 따라 오른쪽 앱 화면이 자연스럽게 교체됩니다.</p></div>
-          <div class="scene-list">
-            <article class="scene"><div class="scene-copy"><span>STEP 01 · S02</span><h3>세트와 휴식을 놓치지 않게</h3><p>현재 운동과 다음 흐름을 확인하며 운동에 집중합니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S02</strong><span>운동 진행 화면</span></div></div></div></article>
-            <article class="scene"><div class="scene-copy"><span>STEP 02 · S03</span><h3>끝난 순간 성취를 확인하게</h3><p>완료한 운동의 시간과 종목, 세트 기록을 한눈에 돌아봅니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S03</strong><span>운동 결과 화면</span></div></div></div></article>
-            <article class="scene"><div class="scene-copy"><span>STEP 03 · S04</span><h3>쌓인 기록이 다음 운동으로</h3><p>주간과 월간 기록을 보며 나만의 운동 리듬을 이어갑니다.</p></div><div class="scene-visual"><div class="phone"><div><strong>IMAGE S04</strong><span>기록 또는 캘린더</span></div></div></div></article>
+        <div class="hero-stage" aria-label="YepBuddy 운동일지 홈 화면">
+          <div class="phone phone--screen" data-device-3d="hero" data-static-texture="../assets/landing/01a-journal-home-top.PNG" data-static-angle="-7">
+            <canvas class="static-3d-phone-canvas" aria-hidden="true"></canvas>
+            <img class="phone__screen-image" src="../assets/landing/01a-journal-home-top.PNG" alt="YepBuddy 운동일지 홈 화면" />
           </div>
         </div>
       </section>
 
-      <section class="section" id="features">
-        <div class="section-inner">
-          <header class="section-head"><p class="eyebrow">운동 전후까지 연결</p><h2>기록 앱에서 끝나지 않도록.</h2><p>기능을 카드 안에 가두지 않고, 사용자가 겪는 상황과 해결되는 맥락을 함께 보여줍니다.</p></header>
-          <div class="feature-list">
-            <article class="feature"><span>01</span><h3>나만의 루틴</h3><p>반복하는 운동을 미리 구성해 헬스장에 도착한 순간 고민 없이 시작합니다.</p></article>
-            <article class="feature"><span>02</span><h3>운동 진행</h3><p>현재 세트와 다음 순서를 확인해 기록을 위해 운동 흐름을 끊지 않습니다.</p></article>
-            <article class="feature"><span>03</span><h3>운동 기록</h3><p>완료한 운동을 돌아보고 지난 기록을 다음 운동을 위한 기준으로 사용합니다.</p></article>
+      <section class="statement-section" data-home-scroll aria-label="YepBuddy 운동일지 소개">
+        <div class="statement-layout">
+          <p>오늘 할 운동부터<br />지난 루틴까지 한눈에.<br /><span>내려보면 필요한 기록이 자연스럽게 이어져요.</span></p>
+          <div class="home-scroll-visual" aria-label="운동일지 홈을 아래로 내려보는 화면">
+            <div class="screen-state-phone" data-device-3d="home">
+              <div class="screen-state-layer" data-home-screen="top"><img src="../assets/landing/01a-journal-home-top.PNG" alt="운동일지 홈 상단" /></div>
+              <div class="screen-state-layer" data-home-screen="bottom"><img src="../assets/landing/01b-journal-home-bottom.PNG" alt="운동일지 홈에서 루틴 목록까지 내린 화면" /></div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section product-section">
-        <div class="section-inner product-layout">
-          <div class="product-copy"><p class="eyebrow">운동 이후의 선택까지</p><h2>루틴과 단백질 탐색도 한 흐름 안에서.</h2><p>직접 촬영한 루틴 화면과 단백질 탐색 화면을 AI iPhone cover로 만든 뒤 이 두 자리에 조합합니다.</p></div>
-          <div class="product-visual"><div class="phone"><div><strong>IMAGE S05</strong><span>루틴 구성 화면</span></div></div><div class="phone"><div><strong>IMAGE S06</strong><span>단백질 탐색 화면</span></div></div></div>
+      <section class="feature-section journal-section" aria-labelledby="journal-title">
+        <header class="feature-head">
+          <p>운동일지</p>
+          <h2 id="journal-title">운동을 시작하는 순간부터,<br />끝난 기록을 다시 볼 때까지.</h2>
+        </header>
+
+        <div class="journal-flow">
+          <div class="journal-3d-sequence" data-journal-3d-sequence>
+            <div class="journal-3d-copy">
+              <article class="journal-3d-copy-stage is-active" data-journal-step="0" aria-current="step">
+                <div class="journal-3d-copy-card">
+                  <small>운동 시작</small>
+                  <h3>누르자마자,<br />바로 운동.</h3>
+                  <p>운동 시작 버튼을 누르면 3초 카운트다운 뒤 기록이 시작돼요. 무엇을 할지는 운동하면서 정해도 괜찮아요.</p>
+                </div>
+              </article>
+
+              <article class="journal-3d-copy-stage" data-journal-step="1">
+                <div class="journal-3d-copy-card">
+                  <small>운동 중 · 기록</small>
+                  <h3>지난 운동을 기억해,<br />오늘 기록은 더 빠르게.</h3>
+                  <p>루틴이나 운동 부위를 고르면 같은 구성의 지난 세트 수가 먼저 채워져요. 필요한 만큼 고치고, 이전 메모도 한 번에 가져오세요.</p>
+                </div>
+              </article>
+
+              <article class="journal-3d-copy-stage" data-journal-step="2">
+                <div class="journal-3d-copy-card">
+                  <small>운동 중 · 실시간</small>
+                  <h3>화면을 보고 있지 않아도,<br />운동은 계속 기록돼요.</h3>
+                  <p>하단 시트에서 유산소를 시작하고, 다이내믹 아일랜드와 잠금화면에서 시간과 심박수를 확인하세요. 일시정지와 재개도 바로 할 수 있어요.</p>
+                </div>
+              </article>
+
+              <article class="journal-3d-copy-stage" data-journal-step="3">
+                <div class="journal-3d-copy-card">
+                  <small>운동 종료</small>
+                  <h3>끝나면 결과가<br />한 화면에.</h3>
+                  <p>운동 시간과 칼로리, 세트 수, 평균 심박수부터 메모와 운동 위치까지. 방금 끝낸 운동을 바로 확인하고 필요한 기록은 다시 고칠 수 있어요.</p>
+                </div>
+              </article>
+            </div>
+
+            <div class="journal-3d-stage-column">
+              <div class="journal-3d-stage" data-journal-3d-stage aria-label="스크롤과 함께 운동 기록 화면이 전환되는 3D 아이폰">
+                <canvas id="journal-iphone-canvas" aria-label="YepBuddy 운동일지 3D 아이폰"></canvas>
+                <div class="journal-3d-loading" role="status" aria-live="polite">3D 아이폰 불러오는 중</div>
+                <div class="phone phone--screen journal-3d-fallback">
+                  <img class="phone__screen-image" src="../assets/landing/02-workout-countdown.PNG" alt="YepBuddy 운동 시작 카운트다운" />
+                </div>
+                <span class="cardio-hotspot cardio-hotspot--screen" aria-hidden="true"></span>
+                <div class="live-activity-asset live-activity-asset--island">
+                  <img class="live-activity-image" src="../assets/landing/06-live-activity-island-full.PNG" alt="확장된 다이나믹 아일랜드의 YepBuddy 운동 기록" />
+                  <span class="cardio-hotspot cardio-hotspot--island" aria-hidden="true"></span>
+                </div>
+                <div class="cardio-callout"><strong>유산소도 바로 추가</strong><span>러닝 버튼을 누르면 현재 운동에 이어 간단하게 기록할 수 있어요.</span></div>
+                <div class="live-activity-asset live-activity-asset--lock">
+                  <img class="live-activity-image" src="../assets/landing/07-live-activity-lock-full.PNG" alt="잠금화면의 YepBuddy 운동 Live Activity" />
+                  <span class="cardio-hotspot cardio-hotspot--lock" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
-      <section class="final" id="download"><h2>오늘의 운동을 내일의 기록으로.</h2><p>앱스토어 링크가 준비되면 실제 다운로드 CTA로 교체합니다.</p><a class="primary-action" href="mailto:wngns9807@gmail.com?subject=YepBuddy%20Launch">앱 만나보기</a></section>
+      <section class="history-section" aria-labelledby="history-title">
+        <div class="history-layout">
+          <div class="section-copy history-copy">
+            <small>쌓인 기록</small>
+            <h2 id="history-title">지난 운동은<br />필요할 때 바로.</h2>
+            <p>부위별로 기록을 골라보고, 결과를 아래로 내려 시간과 세트, 심박수와 장소까지 다시 확인하세요.</p>
+          </div>
+          <div class="history-visual" aria-label="세션 목록과 운동 결과 스크롤 예시">
+            <div class="screen-state-phone history-phone history-phone--sessions" data-device-3d="sessions">
+              <div class="screen-state-layer" data-session-screen="top"><img src="../assets/landing/11-session-list-top.PNG" alt="운동 세션 목록 상단" /></div>
+              <div class="screen-state-layer" data-session-screen="scrolled"><img src="../assets/landing/12-session-list-scrolled.PNG" alt="아래로 내린 운동 세션 목록" /></div>
+              <div class="screen-state-layer" data-session-screen="filtered"><img src="../assets/landing/13-session-list-filtered.PNG" alt="가슴 운동으로 필터링한 세션 목록" /></div>
+            </div>
+            <div class="screen-state-phone history-phone history-phone--result" data-device-3d="result">
+              <div class="screen-state-layer" data-result-screen="top"><img src="../assets/landing/08-workout-result-top.PNG" alt="운동 결과 상단" /></div>
+              <div class="screen-state-layer" data-result-screen="bottom"><img src="../assets/landing/09-workout-result-bottom.PNG" alt="위치 지도까지 내린 운동 결과" /></div>
+              <div class="screen-state-layer" data-result-screen="edit"><img src="../assets/landing/10-workout-result-edit-sheet.png" alt="세트 수정 시트를 연 운동 결과" /></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="calendar-peek">
+          <div class="calendar-peek__visual" aria-label="날짜를 길게 눌러 운동 부위를 확인하는 예시">
+            <div class="screen-state-phone calendar-peek__phone" data-device-3d="calendar">
+              <div class="screen-state-layer" data-calendar-screen="default"><img src="../assets/landing/14-workout-calendar.PNG" alt="YepBuddy 앱 내부 운동 캘린더" /></div>
+              <div class="screen-state-layer" data-calendar-screen="pressed"><img src="../assets/landing/15-workout-calendar-long-press.PNG" alt="날짜를 길게 눌러 운동 부위를 펼친 캘린더" /></div>
+            </div>
+          </div>
+          <div class="section-copy calendar-peek__copy">
+            <small>운동 캘린더</small>
+            <h2>어느 날, 무엇을 했는지 한눈에.</h2>
+            <p>운동한 날짜에는 부위가 표시돼요. 기록이 여러 개라면 날짜를 길게 눌러 그날의 운동을 펼쳐볼 수 있어요.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="calendar-handoff" data-calendar-handoff aria-labelledby="calendar-handoff-title">
+        <div class="calendar-handoff__sticky">
+          <div class="section-copy handoff-copy">
+            <article class="handoff-copy-stage is-active" data-handoff-copy="0">
+              <small>운동 종료</small>
+              <h2 id="calendar-handoff-title">운동을 마치면,<br />기록부터 정리돼요.</h2>
+              <p>운동 결과는 YepBuddy에 바로 저장되고, 시간과 부위, 유산소 기록까지 하나의 세션으로 남아요.</p>
+            </article>
+            <article class="handoff-copy-stage" data-handoff-copy="1">
+              <small>기기 캘린더</small>
+              <h2>캘린더를 열면,<br />운동한 날이 보여요.</h2>
+              <p>완료한 운동은 기기 캘린더 일정으로 자동 추가돼요. 평소 쓰는 월간 화면에서 운동한 날을 바로 찾을 수 있어요.</p>
+            </article>
+            <article class="handoff-copy-stage" data-handoff-copy="2">
+              <small>일정 상세</small>
+              <h2>그날의 운동도<br />일정 안에 그대로.</h2>
+              <p>운동한 시간과 기록을 캘린더 일정에서 다시 확인할 수 있어요.</p>
+            </article>
+          </div>
+          <div class="handoff-device" aria-label="YepBuddy 결과가 기기 캘린더로 이어지는 화면 전환">
+            <div class="handoff-phone" data-device-3d="handoff">
+              <div class="handoff-screen handoff-screen--result" data-handoff-screen="result">
+                <img src="../assets/landing/08-workout-result-top.PNG" alt="YepBuddy 운동 결과 화면" />
+              </div>
+              <div class="handoff-screen handoff-screen--month" data-handoff-screen="month">
+                <img src="../assets/landing/16-ios-home-calendar.PNG" alt="iOS 캘린더 월간 화면" />
+              </div>
+              <div class="handoff-screen handoff-screen--detail" data-handoff-screen="detail">
+                <img src="../assets/landing/17-device-calendar-event.PNG" alt="기기 캘린더에 저장된 운동 일정 상세" />
+              </div>
+              <span class="tap-pulse"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="supporting-section" aria-labelledby="supporting-title">
+        <header class="supporting-head">
+          <p>필요할 때 꺼내 쓰는 도구</p>
+          <h2 id="supporting-title">운동일지는 중심에,<br />나머지는 가볍게.</h2>
+        </header>
+
+        <div class="feature-section tempo-section" aria-labelledby="tempo-title">
+          <div class="feature-spotlight">
+            <div class="feature-spotlight__copy">
+              <small>템포</small>
+              <h2 id="tempo-title">반복의 리듬만<br />간단하게 맞춰요.</h2>
+              <p>수축과 이완 시간, 횟수와 세트만 정하세요. 준비 카운트다운이 끝나면 소리와 진동으로 다음 동작을 알려줘요.</p>
+            </div>
+            <div class="feature-screens">
+              <div class="phone phone--screen" data-device-3d="tempo-settings" data-static-texture="../assets/landing/18-tempo-settings.png" data-static-angle="7">
+                <canvas class="static-3d-phone-canvas" aria-hidden="true"></canvas>
+                <img class="phone__screen-image" src="../assets/landing/18-tempo-settings.png" alt="YepBuddy 템포 설정 화면" />
+              </div>
+              <div class="phone phone--screen" data-device-3d="tempo-active" data-static-texture="../assets/landing/19-tempo-active.png" data-static-angle="-7">
+                <canvas class="static-3d-phone-canvas" aria-hidden="true"></canvas>
+                <img class="phone__screen-image" src="../assets/landing/19-tempo-active.png" alt="YepBuddy 템포 진행 화면" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feature-section protein-section" aria-labelledby="protein-title">
+          <div class="protein-demo" data-protein-demo>
+            <div class="protein-demo__sticky">
+              <div class="feature-spotlight__copy protein-copy">
+                <article class="protein-copy-stage is-active" data-protein-copy="0">
+                  <small>단백질</small>
+                  <h2 id="protein-title">종류별로 고르고,<br />가격부터 비교하세요.</h2>
+                  <p>WPC와 WPI, 크레아틴까지 필요한 종류를 고르면 제품별 현재가와 그램당 가격을 빠르게 비교할 수 있어요.</p>
+                </article>
+                <article class="protein-copy-stage" data-protein-copy="1">
+                  <small>가격 상세</small>
+                  <h2>지금 가격이 괜찮은지,<br />한 화면에서 확인하세요.</h2>
+                  <p>제품 상세에서 현재가와 특징, 가격 추이를 한 번에 확인하고 구매 시점을 가늠해보세요.</p>
+                </article>
+              </div>
+              <div class="feature-screens" aria-label="프로틴 목록에서 제품을 고르고 상세 가격 추이를 내려보는 예시">
+                <div class="protein-scroll-frame" data-device-3d="protein">
+                  <div class="protein-screen-layer protein-screen-layer--list" data-protein-screen="list">
+                    <img src="../assets/landing/20-protein-list.png" alt="프로틴 목록과 제품별 현재 가격대 화면" />
+                  </div>
+                  <div class="protein-screen-layer protein-screen-layer--detail" data-protein-screen="detail">
+                    <img src="../assets/landing/21-protein-detail.png" alt="프로틴 현재가와 가격 추이 상세 화면" />
+                  </div>
+                  <span class="protein-tap-pulse" aria-hidden="true"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
-    <footer><span>© 2026 YepBuddy</span><div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div></footer>
+    <footer>
+      <span>© 2026 YepBuddy</span>
+      <div><a href="/privacy">Privacy Policy</a><a href="/support">Support</a></div>
+    </footer>
 
-    <script>
-      const root = document.documentElement
-      const toggle = document.querySelector(".theme-toggle")
-      const setTheme = (theme) => {
-        root.dataset.theme = theme
-        toggle.textContent = theme === "light" ? "Dark mode" : "Light mode"
-        toggle.setAttribute("aria-pressed", String(theme === "dark"))
+    <a class="language-switch" href="/en" aria-label="영어로 전환">EN</a>
+    <script type="module">
+      import * as THREE from "three"
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
+      import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js"
+      import { gsap } from "gsap"
+      import { ScrollTrigger } from "gsap/ScrollTrigger"
+
+      gsap.registerPlugin(ScrollTrigger)
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      const sequence = document.querySelector("[data-journal-3d-sequence]")
+      const stage = document.querySelector("[data-journal-3d-stage]")
+      const canvas = document.querySelector("#journal-iphone-canvas")
+      const loadingLabel = stage?.querySelector(".journal-3d-loading")
+      const fallbackPhone = stage?.querySelector(".journal-3d-fallback")
+      const mainScreenHotspot = stage?.querySelector(".cardio-hotspot--screen")
+      const copyStages = [...document.querySelectorAll("[data-journal-step]")]
+      const liveActivityContainers = stage
+        ? [...stage.querySelectorAll(".live-activity-asset, .cardio-callout")]
+        : []
+      const liveActivityHotspots = stage
+        ? [...stage.querySelectorAll(".cardio-hotspot")]
+        : []
+
+      const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value))
+      const rangeProgress = (start, end, value) => clamp((value - start) / (end - start))
+      const smooth = (value) => value * value * (3 - 2 * value)
+      const easeRange = (start, end, value) => smooth(rangeProgress(start, end, value))
+
+      function configureScreenTexture(texture) {
+        texture.colorSpace = THREE.SRGBColorSpace
+        texture.flipY = false
+        texture.center.set(.5, .5)
+        texture.rotation = Math.PI
+        texture.wrapS = THREE.RepeatWrapping
+        texture.repeat.x = -1
+        texture.updateMatrix()
+        texture.anisotropy = Math.min(8, renderer?.capabilities.getMaxAnisotropy() || 1)
+        texture.needsUpdate = true
+        return texture
       }
-      setTheme(window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-      toggle.addEventListener("click", () => setTheme(root.dataset.theme === "light" ? "dark" : "light"))
+
+      function addStudioLights(targetScene) {
+        targetScene.add(new THREE.HemisphereLight(0xffffff, 0x30363d, 1.7))
+        const keyLight = new THREE.DirectionalLight(0xffffff, 3.15)
+        keyLight.position.set(-3.5, 5.5, 6.5)
+        targetScene.add(keyLight)
+        const fillLight = new THREE.DirectionalLight(0xeaf2ff, 1.45)
+        fillLight.position.set(4, 1.5, 4)
+        targetScene.add(fillLight)
+        const rimLight = new THREE.DirectionalLight(0xffffff, 2.1)
+        rimLight.position.set(3.5, 3, -5)
+        targetScene.add(rimLight)
+      }
+
+      let renderer
+      let camera
+      let scene
+      let scrollGroup
+      let interactionGroup
+      let screenMesh
+      let screenMaterial
+      let screenTextures = []
+      let modelRoot
+      let dracoLoader
+      let resizeObserver
+      let frameId
+      let sequenceProgress = 0
+      let appliedScreenIndex = -1
+      let disposed = false
+
+      const sharedDeviceCanvas = document.querySelector("#shared-device-canvas")
+      const sharedDeviceHosts = [...document.querySelectorAll("[data-device-3d]")]
+      const sharedDeviceScreens = new Map()
+      const sharedDeviceRecords = new Map()
+      const sharedTextureCache = new Map()
+      let sharedDeviceRenderer
+
+      const sharedDeviceConfigs = {
+        hero: { pose: -8, screens: ["../assets/landing/01a-journal-home-top.PNG"] },
+        home: { pose: 8, screens: ["../assets/landing/01a-journal-home-top.PNG", "../assets/landing/01b-journal-home-bottom.PNG"] },
+        sessions: { pose: 8, screens: ["../assets/landing/11-session-list-top.PNG", "../assets/landing/12-session-list-scrolled.PNG", "../assets/landing/13-session-list-filtered.PNG"] },
+        result: { pose: -8, screens: ["../assets/landing/08-workout-result-top.PNG", "../assets/landing/09-workout-result-bottom.PNG", "../assets/landing/10-workout-result-edit-sheet.png"] },
+        calendar: { pose: 8, screens: ["../assets/landing/14-workout-calendar.PNG", "../assets/landing/15-workout-calendar-long-press.PNG"] },
+        handoff: { pose: -8, screens: ["../assets/landing/08-workout-result-top.PNG", "../assets/landing/16-ios-home-calendar.PNG", "../assets/landing/17-device-calendar-event.PNG"] },
+        "tempo-settings": { pose: 8, screens: ["../assets/landing/18-tempo-settings.png"] },
+        "tempo-active": { pose: -8, screens: ["../assets/landing/19-tempo-active.png"] },
+        protein: { pose: -8, screens: ["../assets/landing/20-protein-list.png", "../assets/landing/21-protein-detail.png"] },
+      }
+
+      function setSharedDeviceScreen(id, index) {
+        sharedDeviceScreens.set(id, index)
+        const record = sharedDeviceRecords.get(id)
+        if (!record || !record.textures[index] || record.screenIndex === index) return
+        record.screenMaterial.map = record.textures[index]
+        record.screenMaterial.needsUpdate = true
+        record.screenIndex = index
+      }
+
+      function resizeSharedDeviceRenderer() {
+        if (!sharedDeviceRenderer || !sharedDeviceCanvas) return
+        const width = Math.max(1, window.innerWidth)
+        const height = Math.max(1, window.innerHeight)
+        const pixelRatio = sharedDeviceRenderer.getPixelRatio()
+        if (
+          sharedDeviceCanvas.width === Math.floor(width * pixelRatio)
+          && sharedDeviceCanvas.height === Math.floor(height * pixelRatio)
+        ) return
+        sharedDeviceRenderer.setSize(width, height, false)
+      }
+
+      function renderSharedDevices() {
+        if (!sharedDeviceRenderer || !sharedDeviceCanvas || !sharedDeviceRecords.size) return
+        resizeSharedDeviceRenderer()
+        const viewportWidth = window.innerWidth
+        const viewportHeight = window.innerHeight
+
+        sharedDeviceRenderer.setScissorTest(false)
+        sharedDeviceRenderer.setClearColor(0x000000, 0)
+        sharedDeviceRenderer.clear(true, true, true)
+        sharedDeviceRenderer.setScissorTest(true)
+
+        sharedDeviceRecords.forEach((record) => {
+          const rect = record.host.getBoundingClientRect()
+          if (
+            rect.right <= 0 || rect.left >= viewportWidth
+            || rect.bottom <= 0 || rect.top >= viewportHeight
+            || rect.width < 2 || rect.height < 2
+          ) return
+
+          const left = Math.max(0, rect.left)
+          const right = Math.min(viewportWidth, rect.right)
+          const top = Math.max(0, rect.top)
+          const bottom = Math.min(viewportHeight, rect.bottom)
+          const width = Math.max(1, right - left)
+          const height = Math.max(1, bottom - top)
+
+          record.currentYaw += (record.targetYaw - record.currentYaw) * .08
+          record.currentPitch += (record.targetPitch - record.currentPitch) * .08
+          record.pivot.rotation.y = record.baseYaw + record.currentYaw
+          record.pivot.rotation.x = record.currentPitch
+
+          const hostOpacity = Number.parseFloat(getComputedStyle(record.host).opacity || "1")
+          record.materials.forEach(({ material, opacity, transparent }) => {
+            material.opacity = opacity * hostOpacity
+            material.transparent = transparent || hostOpacity < .999
+          })
+
+          record.camera.aspect = rect.width / rect.height
+          record.camera.updateProjectionMatrix()
+          sharedDeviceRenderer.setScissor(left, viewportHeight - bottom, width, height)
+          sharedDeviceRenderer.setViewport(rect.left, viewportHeight - rect.bottom, rect.width, rect.height)
+          sharedDeviceRenderer.clearDepth()
+          sharedDeviceRenderer.render(record.scene, record.camera)
+        })
+        sharedDeviceRenderer.setScissorTest(false)
+      }
+
+      async function setupSharedDevices(sourceModel, textureLoader) {
+        if (!sharedDeviceCanvas || !sharedDeviceHosts.length) return
+
+        sharedDeviceRenderer = new THREE.WebGLRenderer({ canvas: sharedDeviceCanvas, alpha: true, antialias: true })
+        sharedDeviceRenderer.setClearColor(0x000000, 0)
+        sharedDeviceRenderer.outputColorSpace = THREE.SRGBColorSpace
+        sharedDeviceRenderer.toneMapping = THREE.ACESFilmicToneMapping
+        sharedDeviceRenderer.toneMappingExposure = .94
+        sharedDeviceRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 760 ? 1.35 : 1.75))
+        resizeSharedDeviceRenderer()
+
+        const loadSharedTexture = (path) => {
+          if (!sharedTextureCache.has(path)) {
+            sharedTextureCache.set(path, textureLoader.loadAsync(path).then((texture) => {
+              texture.colorSpace = THREE.SRGBColorSpace
+              texture.flipY = false
+              texture.center.set(.5, .5)
+              texture.rotation = Math.PI
+              texture.wrapS = THREE.RepeatWrapping
+              texture.repeat.x = -1
+              texture.updateMatrix()
+              texture.needsUpdate = true
+              return texture
+            }))
+          }
+          return sharedTextureCache.get(path)
+        }
+
+        await Promise.all(sharedDeviceHosts.map(async (host) => {
+          const id = host.getAttribute("data-device-3d")
+          const config = sharedDeviceConfigs[id]
+          if (!config) return
+
+          const textures = await Promise.all(config.screens.map(loadSharedTexture))
+          textures.forEach((texture) => {
+            texture.anisotropy = Math.min(8, sharedDeviceRenderer.capabilities.getMaxAnisotropy())
+            texture.needsUpdate = true
+          })
+
+          const scene = new THREE.Scene()
+          const camera = new THREE.PerspectiveCamera(36, 1, .1, 100)
+          camera.position.set(0, 0, 5.45)
+          addStudioLights(scene)
+
+          const pivot = new THREE.Group()
+          const model = sourceModel.clone(true)
+          const materials = []
+          model.traverse((child) => {
+            if (!child.isMesh) return
+            const originals = Array.isArray(child.material) ? child.material : [child.material]
+            const clones = originals.map((material) => {
+              const clone = material.clone()
+              materials.push({ material: clone, opacity: clone.opacity, transparent: clone.transparent })
+              return clone
+            })
+            child.material = Array.isArray(child.material) ? clones : clones[0]
+          })
+
+          const screenMesh = model.getObjectByName("xXDHkMplTIDAXLN")
+          if (!screenMesh?.isMesh) return
+          const screenMaterial = new THREE.MeshBasicMaterial({ map: textures[0], toneMapped: false })
+          const oldScreenMaterials = Array.isArray(screenMesh.material) ? screenMesh.material : [screenMesh.material]
+          oldScreenMaterials.forEach((material) => {
+            const materialIndex = materials.findIndex((entry) => entry.material === material)
+            if (materialIndex >= 0) materials.splice(materialIndex, 1)
+            material.dispose()
+          })
+          screenMesh.material = screenMaterial
+          materials.push({ material: screenMaterial, opacity: 1, transparent: false })
+
+          const bounds = new THREE.Box3().setFromObject(model)
+          const size = bounds.getSize(new THREE.Vector3())
+          model.scale.multiplyScalar(3.02 / size.y)
+          const centeredBounds = new THREE.Box3().setFromObject(model)
+          const center = centeredBounds.getCenter(new THREE.Vector3())
+          model.position.sub(center)
+          model.position.y -= .02
+          pivot.add(model)
+          scene.add(pivot)
+
+          const record = {
+            id,
+            host,
+            scene,
+            camera,
+            pivot,
+            model,
+            materials,
+            textures,
+            screenMaterial,
+            screenIndex: 0,
+            baseYaw: Math.PI + THREE.MathUtils.degToRad(config.pose),
+            targetYaw: 0,
+            currentYaw: 0,
+            targetPitch: 0,
+            currentPitch: 0,
+          }
+          pivot.rotation.y = record.baseYaw
+          sharedDeviceRecords.set(id, record)
+
+          host.addEventListener("pointermove", (event) => {
+            if (reducedMotion) return
+            const rect = host.getBoundingClientRect()
+            record.targetYaw = THREE.MathUtils.degToRad(((event.clientX - rect.left) / rect.width - .5) * 4)
+            record.targetPitch = THREE.MathUtils.degToRad(-((event.clientY - rect.top) / rect.height - .5) * 3)
+          })
+          host.addEventListener("pointerleave", () => {
+            record.targetYaw = 0
+            record.targetPitch = 0
+          })
+
+          host.classList.add("is-device-3d-ready")
+          setSharedDeviceScreen(id, sharedDeviceScreens.get(id) || 0)
+        }))
+      }
+
+      const interaction = {
+        dragging: false,
+        pointerId: null,
+        startX: 0,
+        startY: 0,
+        startRotationX: 0,
+        startRotationY: 0,
+        targetX: 0,
+        targetY: 0,
+        currentX: 0,
+        currentY: 0,
+      }
+
+      function setActiveCopy(index) {
+        copyStages.forEach((copy, copyIndex) => {
+          const isActive = copyIndex === index
+          copy.classList.toggle("is-active", isActive)
+          if (isActive) copy.setAttribute("aria-current", "step")
+          else copy.removeAttribute("aria-current")
+        })
+      }
+
+      function setScreen(index) {
+        if (!screenMaterial || !screenTextures[index] || appliedScreenIndex === index) return
+        screenMaterial.map = screenTextures[index]
+        screenMaterial.needsUpdate = true
+        appliedScreenIndex = index
+      }
+
+      function getScrollRotation(progress) {
+        if (reducedMotion) return 0
+        const smooth = (value) => value * value * (3 - 2 * value)
+        const turnToBack = smooth(easeRange(.62, .7, progress))
+        const turnToFront = smooth(easeRange(.76, .84, progress))
+        return Math.PI * (turnToBack + turnToFront)
+      }
+
+      function syncSequence(progress) {
+        sequenceProgress = clamp(progress)
+        const copyIndex = sequenceProgress < .25 ? 0 : sequenceProgress < .5 ? 1 : sequenceProgress < .8 ? 2 : 3
+        let screenIndex = 0
+
+        if (sequenceProgress < .185) {
+          screenIndex = 0
+          setScreen(screenIndex)
+        } else if (sequenceProgress < .36) {
+          screenIndex = 1
+          setScreen(screenIndex)
+        } else if (sequenceProgress < .48) {
+          screenIndex = 2
+          setScreen(screenIndex)
+        } else if (sequenceProgress < .56) {
+          screenIndex = 3
+          setScreen(screenIndex)
+        } else if (sequenceProgress < .73) {
+          screenIndex = 4
+          setScreen(screenIndex)
+        } else if (sequenceProgress < .9) {
+          screenIndex = 5
+          setScreen(screenIndex)
+        } else {
+          screenIndex = 6
+          setScreen(screenIndex)
+        }
+        setActiveCopy(copyIndex)
+        if (stage) {
+          stage.dataset.screen = ["countdown", "active-top", "active-bottom", "drawer-open", "cardio", "result-top", "result-bottom"][screenIndex]
+          stage.dataset.copy = String(copyIndex)
+          stage.dataset.progress = sequenceProgress.toFixed(3)
+        }
+
+        if (scrollGroup) {
+          scrollGroup.rotation.y = getScrollRotation(sequenceProgress)
+          stage.dataset.rotation = scrollGroup.rotation.y.toFixed(3)
+        }
+
+        const liveIn = easeRange(.51, .58, sequenceProgress)
+        const liveOut = 1 - easeRange(.6, .62, sequenceProgress)
+        const liveVisibility = reducedMotion
+          ? (copyIndex === 2 ? 1 : 0)
+          : liveIn * liveOut
+
+        if (scrollGroup) scrollGroup.position.x = -0.28 * liveVisibility
+        gsap.set(liveActivityContainers, {
+          autoAlpha: liveVisibility,
+          y: reducedMotion ? 0 : 14 * (1 - liveVisibility),
+        })
+        gsap.set(liveActivityHotspots, { autoAlpha: liveVisibility })
+      }
+
+      function setupJournalScroll() {
+        if (!sequence) return
+
+        const scrollState = { progress: 0 }
+        const scrubTween = gsap.to(scrollState, {
+          progress: 1,
+          ease: "none",
+          paused: true,
+          onUpdate: () => syncSequence(scrollState.progress),
+        })
+
+        const trigger = ScrollTrigger.create({
+          trigger: sequence,
+          start: "top top+=64",
+          end: "bottom bottom",
+          animation: scrubTween,
+          scrub: true,
+          invalidateOnRefresh: true,
+          onRefresh: (self) => syncSequence(self.progress),
+        })
+
+        syncSequence(trigger.progress)
+        return trigger
+      }
+
+      function setupPageAnimations() {
+        const media = gsap.matchMedia()
+
+        media.add(
+          {
+            desktop: "(min-width: 761px)",
+            mobile: "(max-width: 760px)",
+            reduceMotion: "(prefers-reduced-motion: reduce)",
+          },
+          (context) => {
+            const { mobile, reduceMotion } = context.conditions
+            const homeScroll = document.querySelector("[data-home-scroll]")
+            const homeScreens = {
+              top: document.querySelector('[data-home-screen="top"]'),
+              bottom: document.querySelector('[data-home-screen="bottom"]'),
+            }
+            const sessionScreens = {
+              top: document.querySelector('[data-session-screen="top"]'),
+              scrolled: document.querySelector('[data-session-screen="scrolled"]'),
+              filtered: document.querySelector('[data-session-screen="filtered"]'),
+            }
+            const resultScreens = {
+              top: document.querySelector('[data-result-screen="top"]'),
+              bottom: document.querySelector('[data-result-screen="bottom"]'),
+              edit: document.querySelector('[data-result-screen="edit"]'),
+            }
+            const calendarScreens = {
+              default: document.querySelector('[data-calendar-screen="default"]'),
+              pressed: document.querySelector('[data-calendar-screen="pressed"]'),
+            }
+            const handoff = document.querySelector("[data-calendar-handoff]")
+            const handoffScreens = {
+              result: document.querySelector('[data-handoff-screen="result"]'),
+              month: document.querySelector('[data-handoff-screen="month"]'),
+              detail: document.querySelector('[data-handoff-screen="detail"]'),
+            }
+            const handoffCopies = [...document.querySelectorAll("[data-handoff-copy]")]
+            const proteinDemo = document.querySelector("[data-protein-demo]")
+            const proteinListScreen = proteinDemo?.querySelector('[data-protein-screen="list"]')
+            const proteinDetailScreen = proteinDemo?.querySelector('[data-protein-screen="detail"]')
+            const proteinTapPulse = proteinDemo?.querySelector(".protein-tap-pulse")
+            const proteinCopies = [...document.querySelectorAll("[data-protein-copy]")]
+
+            const setHandoffCopy = (index) => {
+              handoffCopies.forEach((copy, copyIndex) => {
+                copy.classList.toggle("is-active", copyIndex === index)
+              })
+            }
+
+            const setProteinCopy = (index) => {
+              proteinCopies.forEach((copy, copyIndex) => {
+                copy.classList.toggle("is-active", copyIndex === index)
+              })
+            }
+
+            const syncProtein = (progress) => {
+              const detailVisibility = easeRange(.3, .43, progress)
+              const tapVisibility = easeRange(.16, .23, progress) * (1 - easeRange(.28, .34, progress))
+              setSharedDeviceScreen("protein", detailVisibility >= .5 ? 1 : 0)
+
+              gsap.set(proteinListScreen, {
+                autoAlpha: 1 - detailVisibility,
+                scale: 1 - detailVisibility * .035,
+              })
+              gsap.set(proteinDetailScreen, {
+                autoAlpha: detailVisibility,
+                scale: .97 + detailVisibility * .03,
+              })
+              gsap.set(proteinTapPulse, {
+                autoAlpha: tapVisibility,
+                scale: .55 + tapVisibility * .85,
+                boxShadow: `0 0 0 ${18 * tapVisibility}px rgba(255, 255, 255, 0)`,
+              })
+              setProteinCopy(progress < .38 ? 0 : 1)
+            }
+
+            const syncHomeScroll = (progress) => {
+              const bottomVisibility = easeRange(.46, .54, progress)
+              setSharedDeviceScreen("home", bottomVisibility >= .5 ? 1 : 0)
+              gsap.set(homeScreens.top, { autoAlpha: 1 - bottomVisibility, scale: 1 - bottomVisibility * .02 })
+              gsap.set(homeScreens.bottom, { autoAlpha: bottomVisibility, scale: .98 + bottomVisibility * .02 })
+            }
+
+            const syncHistory = (progress) => {
+              const sessionScroll = easeRange(.28, .34, progress)
+              const sessionFilter = easeRange(.7, .76, progress)
+              const resultScroll = easeRange(.42, .48, progress)
+              const resultEdit = easeRange(.76, .82, progress)
+
+              setSharedDeviceScreen("sessions", sessionFilter >= .5 ? 2 : sessionScroll >= .5 ? 1 : 0)
+              setSharedDeviceScreen("result", resultEdit >= .5 ? 2 : resultScroll >= .5 ? 1 : 0)
+
+              gsap.set(sessionScreens.top, { autoAlpha: 1 - sessionScroll })
+              gsap.set(sessionScreens.scrolled, { autoAlpha: sessionScroll * (1 - sessionFilter) })
+              gsap.set(sessionScreens.filtered, { autoAlpha: sessionFilter, scale: .985 + sessionFilter * .015 })
+              gsap.set(resultScreens.top, { autoAlpha: 1 - resultScroll })
+              gsap.set(resultScreens.bottom, { autoAlpha: resultScroll * (1 - resultEdit) })
+              gsap.set(resultScreens.edit, { autoAlpha: resultEdit, yPercent: 3 * (1 - resultEdit) })
+            }
+
+            const syncHandoff = (progress) => {
+              const resultOut = easeRange(.14, .3, progress)
+              const monthIn = easeRange(.2, .36, progress)
+              const monthOut = easeRange(.62, .76, progress)
+              const detailIn = easeRange(.68, .84, progress)
+              const monthVisibility = monthIn * (1 - monthOut)
+              const pulseVisibility = easeRange(.49, .56, progress) * (1 - easeRange(.61, .68, progress))
+              setSharedDeviceScreen("handoff", progress < .28 ? 0 : progress < .72 ? 1 : 2)
+
+              gsap.set(handoffScreens.result, {
+                autoAlpha: 1 - resultOut,
+                scale: 1 - resultOut * .07,
+              })
+              gsap.set(handoffScreens.month, {
+                autoAlpha: monthVisibility,
+                scale: .96 + monthVisibility * .04,
+              })
+              gsap.set(handoffScreens.detail, {
+                autoAlpha: detailIn,
+                scale: .96 + detailIn * .04,
+                yPercent: 3 * (1 - detailIn),
+              })
+              gsap.set(".tap-pulse", {
+                autoAlpha: pulseVisibility,
+                scale: .55 + pulseVisibility * .9,
+              })
+              setHandoffCopy(progress < .32 ? 0 : progress < .7 ? 1 : 2)
+            }
+
+            if (reduceMotion) {
+              gsap.set(
+                ".hero-kicker, .hero h1, .hero-lead, .hero-store-button, .hero-stage .phone, .statement-section p, .history-section, .calendar-handoff, .tempo-section, .protein-section",
+                { clearProps: "all" },
+              )
+              gsap.set(homeScreens.top, { autoAlpha: 1, scale: 1 })
+              gsap.set(homeScreens.bottom, { autoAlpha: 0 })
+              gsap.set(sessionScreens.top, { autoAlpha: 1 })
+              gsap.set(sessionScreens.scrolled, { autoAlpha: 0 })
+              gsap.set(sessionScreens.filtered, { autoAlpha: 0 })
+              gsap.set(resultScreens.top, { autoAlpha: 1 })
+              gsap.set(resultScreens.bottom, { autoAlpha: 0 })
+              gsap.set(resultScreens.edit, { autoAlpha: 0 })
+              gsap.set(calendarScreens.default, { autoAlpha: 1 })
+              gsap.set(calendarScreens.pressed, { autoAlpha: 0 })
+              setSharedDeviceScreen("home", 0)
+              setSharedDeviceScreen("sessions", 0)
+              setSharedDeviceScreen("result", 0)
+              setSharedDeviceScreen("calendar", 0)
+              setSharedDeviceScreen("handoff", 2)
+              setSharedDeviceScreen("protein", 1)
+              gsap.set(handoffScreens.result, { autoAlpha: 0 })
+              gsap.set(handoffScreens.month, { autoAlpha: 0 })
+              gsap.set(handoffScreens.detail, { autoAlpha: 1, scale: 1, yPercent: 0 })
+              setHandoffCopy(2)
+              gsap.set(proteinListScreen, { autoAlpha: 0 })
+              gsap.set(proteinDetailScreen, { autoAlpha: 1, scale: 1 })
+              setProteinCopy(1)
+              return
+            }
+
+            const heroIntro = gsap.timeline({ defaults: { ease: "power2.out" } })
+            heroIntro
+              .from(".hero-kicker", { autoAlpha: 0, y: 16, duration: .45 })
+              .from(".hero h1", { autoAlpha: 0, y: 28, duration: .78 }, "-=.24")
+              .from(".hero-lead", { autoAlpha: 0, y: 18, duration: .55 }, "-=.4")
+              .from(".hero-store-button", { autoAlpha: 0, y: 16, duration: .5, stagger: .08 }, "-=.3")
+              .from(".hero-stage .phone", { autoAlpha: 0, y: 92, scale: .96, duration: .82 }, "-=.32")
+
+            gsap.from(".statement-section p", {
+              autoAlpha: 0,
+              y: 28,
+              duration: .9,
+              ease: "power2.out",
+              scrollTrigger: { trigger: ".statement-section", start: "top 66%", once: true },
+            })
+
+            gsap.from(".home-scroll-visual", {
+              autoAlpha: 0,
+              y: 48,
+              duration: .8,
+              ease: "power2.out",
+              scrollTrigger: { trigger: ".statement-section", start: "top 68%", once: true },
+            })
+            if (homeScroll) {
+              const homeScrollTrigger = ScrollTrigger.create({
+                trigger: homeScroll,
+                start: mobile ? "top top+=60" : "top top+=64",
+                end: "bottom bottom",
+                scrub: .35,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => syncHomeScroll(self.progress),
+                onRefresh: (self) => syncHomeScroll(self.progress),
+              })
+              syncHomeScroll(homeScrollTrigger.progress)
+            }
+
+            gsap.from(".history-copy", {
+              autoAlpha: 0,
+              y: 32,
+              duration: .75,
+              ease: "power2.out",
+              scrollTrigger: { trigger: ".history-layout", start: "top 68%", once: true },
+            })
+            gsap.from(".history-phone", {
+              autoAlpha: 0,
+              y: (index) => index === 0 ? 72 : -20,
+              duration: .8,
+              stagger: .16,
+              ease: "power2.out",
+              scrollTrigger: { trigger: ".history-visual", start: "top 70%", once: true },
+            })
+            const historyTrigger = ScrollTrigger.create({
+              trigger: ".history-layout",
+              start: mobile ? "top 72%" : "top top+=64",
+              end: "bottom bottom",
+              scrub: .35,
+              invalidateOnRefresh: true,
+              onUpdate: (self) => syncHistory(self.progress),
+              onRefresh: (self) => syncHistory(self.progress),
+            })
+            syncHistory(historyTrigger.progress)
+
+            const calendarPeek = gsap.timeline({
+              scrollTrigger: {
+                trigger: ".calendar-peek",
+                start: mobile ? "top 72%" : "top top+=64",
+                end: "bottom bottom",
+                scrub: .35,
+                onUpdate: (self) => {
+                  setSharedDeviceScreen("calendar", self.progress >= .58 ? 1 : 0)
+                },
+                onRefresh: (self) => {
+                  setSharedDeviceScreen("calendar", self.progress >= .58 ? 1 : 0)
+                },
+              },
+            })
+            calendarPeek
+              .from(".calendar-peek__copy", { autoAlpha: 0, y: 26, duration: .28 })
+              .from(".calendar-peek__phone", { autoAlpha: 0, y: 58, duration: .32 }, "<")
+              .to(calendarScreens.default, { autoAlpha: 0, duration: .16 })
+              .to(calendarScreens.pressed, { autoAlpha: 1, yPercent: 0, duration: .22 }, "<")
+
+            if (handoff) {
+              const handoffTrigger = ScrollTrigger.create({
+                trigger: handoff,
+                start: "top top+=64",
+                end: "bottom bottom",
+                scrub: true,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => syncHandoff(self.progress),
+                onRefresh: (self) => syncHandoff(self.progress),
+              })
+              syncHandoff(handoffTrigger.progress)
+            }
+
+            gsap.from(".tempo-section .feature-spotlight__copy", {
+              autoAlpha: 0,
+              y: 26,
+              duration: .7,
+              scrollTrigger: { trigger: ".tempo-section", start: "top 70%", once: true },
+            })
+            gsap.from(".tempo-section .feature-screens .phone", {
+              autoAlpha: 0,
+              y: (index) => index === 0 ? 64 : -14,
+              duration: .7,
+              stagger: .16,
+              ease: "power2.out",
+              scrollTrigger: { trigger: ".tempo-section .feature-screens", start: "top 72%", once: true },
+            })
+            if (proteinDemo && proteinListScreen && proteinDetailScreen) {
+              gsap.from(".protein-copy", {
+                autoAlpha: 0,
+                y: 28,
+                duration: .72,
+                scrollTrigger: { trigger: ".protein-section", start: "top 70%", once: true },
+              })
+              gsap.from(".protein-scroll-frame", {
+                autoAlpha: 0,
+                y: 54,
+                duration: .75,
+                ease: "power2.out",
+                scrollTrigger: { trigger: ".protein-demo .feature-screens", start: "top 72%", once: true },
+              })
+              const proteinTrigger = ScrollTrigger.create({
+                trigger: proteinDemo,
+                start: mobile ? "top 72%" : "top top+=64",
+                end: mobile ? "bottom 24%" : "bottom bottom",
+                scrub: true,
+                invalidateOnRefresh: true,
+                onUpdate: (self) => syncProtein(self.progress),
+                onRefresh: (self) => syncProtein(self.progress),
+              })
+              syncProtein(proteinTrigger.progress)
+            }
+          },
+        )
+
+        return media
+      }
+
+      function resizeRenderer() {
+        if (!renderer || !camera || !stage) return
+        const width = Math.max(1, stage.clientWidth)
+        const height = Math.max(1, stage.clientHeight)
+        camera.aspect = width / height
+        camera.updateProjectionMatrix()
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth <= 760 ? 1.5 : 2))
+        renderer.setSize(width, height, false)
+      }
+
+      function handlePointerDown(event) {
+        if (reducedMotion || (event.pointerType === "touch" && window.innerWidth <= 760)) return
+        interaction.dragging = true
+        interaction.pointerId = event.pointerId
+        interaction.startX = event.clientX
+        interaction.startY = event.clientY
+        interaction.startRotationX = interaction.targetX
+        interaction.startRotationY = interaction.targetY
+        canvas.setPointerCapture(event.pointerId)
+      }
+
+      function handlePointerMove(event) {
+        if (!interaction.dragging || event.pointerId !== interaction.pointerId) return
+        const maxX = THREE.MathUtils.degToRad(3)
+        const maxY = THREE.MathUtils.degToRad(4)
+        interaction.targetY = clamp(
+          interaction.startRotationY + (event.clientX - interaction.startX) * .0045,
+          -maxY,
+          maxY,
+        )
+        interaction.targetX = clamp(
+          interaction.startRotationX + (event.clientY - interaction.startY) * .004,
+          -maxX,
+          maxX,
+        )
+      }
+
+      function handlePointerEnd(event) {
+        if (event.pointerId !== interaction.pointerId) return
+        interaction.dragging = false
+        interaction.pointerId = null
+        if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId)
+      }
+
+      function updateMainScreenHotspot() {
+        if (!screenMesh || !mainScreenHotspot || !camera || !scene || !stage) return
+        const geometry = screenMesh.geometry
+        if (!geometry.boundingBox) geometry.computeBoundingBox()
+        const bounds = geometry.boundingBox
+        if (!bounds) return
+
+        scene.updateMatrixWorld(true)
+        camera.updateMatrixWorld(true)
+        const z = (bounds.min.z + bounds.max.z) * .5
+        const corners = [
+          new THREE.Vector3(bounds.min.x, bounds.min.y, z),
+          new THREE.Vector3(bounds.min.x, bounds.max.y, z),
+          new THREE.Vector3(bounds.max.x, bounds.min.y, z),
+          new THREE.Vector3(bounds.max.x, bounds.max.y, z),
+        ].map((point) => screenMesh.localToWorld(point).project(camera))
+
+        const projectedX = corners.map((point) => (point.x + 1) * .5 * stage.clientWidth)
+        const projectedY = corners.map((point) => (1 - point.y) * .5 * stage.clientHeight)
+        const left = Math.min(...projectedX)
+        const right = Math.max(...projectedX)
+        const top = Math.min(...projectedY)
+        const bottom = Math.max(...projectedY)
+        const screenWidth = right - left
+        const size = screenWidth * .13
+        const centerX = left + screenWidth * .248
+        const centerY = top + (bottom - top) * .679
+
+        mainScreenHotspot.style.left = `${centerX - size * .5}px`
+        mainScreenHotspot.style.top = `${centerY - size * .5}px`
+        mainScreenHotspot.style.width = `${size}px`
+      }
+
+      function render() {
+        if (disposed) return
+        frameId = requestAnimationFrame(render)
+        renderSharedDevices()
+        if (!renderer || !scene || !camera || !interactionGroup) return
+
+        if (!interaction.dragging) {
+          interaction.targetX *= .9
+          interaction.targetY *= .9
+        }
+        interaction.currentX += (interaction.targetX - interaction.currentX) * .12
+        interaction.currentY += (interaction.targetY - interaction.currentY) * .12
+        interactionGroup.rotation.x = interaction.currentX
+        interactionGroup.rotation.y = interaction.currentY
+        updateMainScreenHotspot()
+        renderer.render(scene, camera)
+      }
+
+      async function setupThreeScene() {
+        if (!stage || !canvas) return
+
+        try {
+          renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true })
+          renderer.setClearColor(0x000000, 0)
+          renderer.outputColorSpace = THREE.SRGBColorSpace
+          renderer.toneMapping = THREE.ACESFilmicToneMapping
+          renderer.toneMappingExposure = .94
+
+          scene = new THREE.Scene()
+          camera = new THREE.PerspectiveCamera(36, 1, .1, 100)
+          camera.position.set(0, 0, window.innerWidth <= 760 ? 5.75 : 5.45)
+
+          scrollGroup = new THREE.Group()
+          interactionGroup = new THREE.Group()
+          scrollGroup.add(interactionGroup)
+          scene.add(scrollGroup)
+          addStudioLights(scene)
+
+          resizeRenderer()
+          resizeObserver = new ResizeObserver(resizeRenderer)
+          resizeObserver.observe(stage)
+
+          const textureLoader = new THREE.TextureLoader()
+          const gltfLoader = new GLTFLoader()
+          dracoLoader = new DRACOLoader()
+          dracoLoader.setDecoderPath("/node_modules/three/examples/jsm/libs/draco/")
+          gltfLoader.setDRACOLoader(dracoLoader)
+          const texturePaths = [
+            "../assets/landing/02-workout-countdown.PNG",
+            "../assets/landing/03a-workout-active-top.PNG",
+            "../assets/landing/03b-workout-active-bottom.PNG",
+            "../assets/landing/04-workout-drawer-open.PNG",
+            "../assets/landing/05-workout-drawer-cardio.PNG",
+            "../assets/landing/08-workout-result-top.PNG",
+            "../assets/landing/09-workout-result-bottom.PNG",
+          ]
+
+          const texturePromise = Promise.all(texturePaths.map((path) => textureLoader.loadAsync(path)))
+          // Apple iPhone 15 Pro Max Black by Polyman_3D, CC BY 4.0; local copy from the referenced showcase repository.
+          const modelPromise = gltfLoader.loadAsync("../assets/landing/models/iphone-15.glb")
+          const [textures, gltf] = await Promise.all([texturePromise, modelPromise])
+          const sharedSourceModel = gltf.scene.clone(true)
+
+          screenTextures = textures.map(configureScreenTexture)
+
+          modelRoot = gltf.scene
+          screenMesh = modelRoot.getObjectByName("xXDHkMplTIDAXLN")
+          if (!screenMesh?.isMesh) {
+            const meshTable = []
+            modelRoot.traverse((child) => {
+              if (child.isMesh) meshTable.push({ mesh: child.name, material: child.material?.name || "(unnamed)" })
+            })
+            console.table(meshTable)
+            throw new Error("iPhone screen mesh xXDHkMplTIDAXLN was not found")
+          }
+
+          screenMaterial = new THREE.MeshBasicMaterial({
+            map: screenTextures[0],
+            toneMapped: false,
+          })
+          screenMesh.material = screenMaterial
+          appliedScreenIndex = 0
+
+          const initialBounds = new THREE.Box3().setFromObject(modelRoot)
+          const initialSize = initialBounds.getSize(new THREE.Vector3())
+          const targetHeight = window.innerWidth <= 760 ? 2.7 : 3.02
+          modelRoot.scale.multiplyScalar(targetHeight / initialSize.y)
+          const centeredBounds = new THREE.Box3().setFromObject(modelRoot)
+          const center = centeredBounds.getCenter(new THREE.Vector3())
+          modelRoot.position.sub(center)
+          modelRoot.position.y -= .03
+          modelRoot.rotation.y = Math.PI
+          interactionGroup.add(modelRoot)
+
+          syncSequence(sequenceProgress)
+          stage.classList.add("is-model-ready")
+          fallbackPhone?.setAttribute("aria-hidden", "true")
+          if (loadingLabel) loadingLabel.textContent = "3D 아이폰 로드 완료"
+
+          canvas.addEventListener("pointerdown", handlePointerDown)
+          canvas.addEventListener("pointermove", handlePointerMove)
+          canvas.addEventListener("pointerup", handlePointerEnd)
+          canvas.addEventListener("pointercancel", handlePointerEnd)
+          render()
+          setupSharedDevices(sharedSourceModel, textureLoader).catch((error) => {
+            console.warn("YepBuddy shared 3D phones fallback:", error)
+          })
+        } catch (error) {
+          stage.classList.add("is-webgl-fallback")
+          stage.dataset.error = error instanceof Error ? error.message : String(error)
+          if (loadingLabel) loadingLabel.textContent = "3D를 불러오지 못해 이미지로 표시합니다"
+          console.warn("YepBuddy 3D iPhone fallback:", error)
+        }
+      }
+
+      function disposeThreeScene() {
+        disposed = true
+        cancelAnimationFrame(frameId)
+        resizeObserver?.disconnect()
+        canvas?.removeEventListener("pointerdown", handlePointerDown)
+        canvas?.removeEventListener("pointermove", handlePointerMove)
+        canvas?.removeEventListener("pointerup", handlePointerEnd)
+        canvas?.removeEventListener("pointercancel", handlePointerEnd)
+        modelRoot?.traverse((child) => {
+          if (!child.isMesh) return
+          child.geometry?.dispose()
+          const materials = Array.isArray(child.material) ? child.material : [child.material]
+          materials.forEach((material) => material?.dispose())
+        })
+        screenTextures.forEach((texture) => texture.dispose())
+        const sharedTextures = new Set()
+        sharedDeviceRecords.forEach((record) => {
+          record.materials.forEach(({ material }) => material.dispose())
+          record.textures.forEach((texture) => sharedTextures.add(texture))
+          record.host.classList.remove("is-device-3d-ready")
+        })
+        sharedTextures.forEach((texture) => texture.dispose())
+        sharedDeviceRecords.clear()
+        sharedTextureCache.clear()
+        sharedDeviceRenderer?.dispose()
+        sharedDeviceRenderer?.forceContextLoss()
+        dracoLoader?.dispose()
+        renderer?.dispose()
+        renderer?.forceContextLoss()
+      }
+
+      const journalScrollTrigger = setupJournalScroll()
+      const pageAnimationMedia = setupPageAnimations()
+      setupThreeScene()
+      window.addEventListener("load", () => ScrollTrigger.refresh(), { once: true })
+      window.addEventListener(
+        "pagehide",
+        () => {
+          journalScrollTrigger?.kill()
+          pageAnimationMedia?.revert()
+          disposeThreeScene()
+        },
+        { once: true },
+      )
     </script>
   </body>
 </html>
