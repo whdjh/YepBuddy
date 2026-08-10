@@ -14,10 +14,12 @@ export function PageLayout({ locale, switchTo, text, children }: PageLayoutProps
   return (
     <>
       <SiteHeader locale={locale} text={text} />
-      <main>{children}</main>
+      <main className="mx-auto max-w-[760px] px-page-mobile pt-9 pb-20 phone:px-page phone:pt-12">
+        {children}
+      </main>
       <a
         href={switchTo}
-        className="fixed right-4 z-100 inline-flex items-center justify-center min-w-58px min-h-42px px-14px rounded-full border border-(--yb-border) bg-(--yb-surface) text-(--yb-fg) no-underline text-[12px] font-bold tracking-[0.01em] hover:bg-(--yb-surface-subtle) focus-visible:outline-2 focus-visible:outline-(--yb-accent) focus-visible:outline-offset-2 bottom-[calc(16px+env(safe-area-inset-bottom))]"
+        className="fixed right-4 bottom-[calc(16px+env(safe-area-inset-bottom))] z-30 inline-flex min-h-[42px] min-w-[58px] items-center justify-center rounded-full border border-line bg-canvas px-3.5 text-caption font-bold tracking-[0.01em] text-ink no-underline shadow-floating transition-colors duration-fast hover:bg-surface focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2"
         aria-label={switchAriaLabel}
       >
         {switchLabel}

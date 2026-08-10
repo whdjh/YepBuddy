@@ -7,25 +7,38 @@ export function SupportPage({ locale, switchTo, text }: PageProps) {
 
   return (
     <PageLayout locale={locale} text={text} switchTo={switchTo}>
-      <p className="date">{text.header.support}</p>
-      <h1>{strings.title}</h1>
+      <p className="mb-3 text-caption font-bold tracking-[0.06em] text-brand">
+        {text.header.support}
+      </p>
+      <h1 className="mb-10 text-section-compact font-heavy text-ink">{strings.title}</h1>
 
-      <section>
-        <h2>{strings.contactEmailLabel}</h2>
-        <p>{strings.contactIntro}</p>
-        <p>
-          <a href={`mailto:${strings.contactEmail}`}>{strings.contactEmail}</a>
+      <section className="mt-7 border-t border-line pt-6">
+        <h2 className="mb-3 text-2xl font-bold tracking-[-0.035em] text-ink">
+          {strings.contactEmailLabel}
+        </h2>
+        <p className="mb-4 text-body text-ink-secondary">{strings.contactIntro}</p>
+        <p className="text-body">
+          <a
+            className="text-brand underline-offset-4 transition-colors duration-fast hover:text-brand-hover"
+            href={`mailto:${strings.contactEmail}`}
+          >
+            {strings.contactEmail}
+          </a>
         </p>
       </section>
 
       {strings.sections.map((section) => (
-        <section key={section.title}>
-          <h2>{section.title}</h2>
+        <section className="mt-7 border-t border-line pt-6" key={section.title}>
+          <h2 className="mb-3 text-2xl font-bold tracking-[-0.035em] text-ink">
+            {section.title}
+          </h2>
           {section.content?.map((paragraph) => (
-            <p key={paragraph}>{paragraph}</p>
+            <p className="mb-4 text-body text-ink-secondary" key={paragraph}>
+              {paragraph}
+            </p>
           ))}
           {section.items ? (
-            <ul>
+            <ul className="list-disc space-y-2 pl-6 text-body text-ink-secondary marker:text-brand">
               {section.items.map((item) => (
                 <li key={item}>{item}</li>
               ))}
@@ -34,10 +47,17 @@ export function SupportPage({ locale, switchTo, text }: PageProps) {
         </section>
       ))}
 
-      <section>
-        <h2>{text.header.privacy}</h2>
-        <p>
-          <a href={pathWithLocale(locale, "/privacy")}>{text.header.privacy}</a>
+      <section className="mt-7 border-t border-line pt-6">
+        <h2 className="mb-3 text-2xl font-bold tracking-[-0.035em] text-ink">
+          {text.header.privacy}
+        </h2>
+        <p className="text-body">
+          <a
+            className="text-brand underline-offset-4 transition-colors duration-fast hover:text-brand-hover"
+            href={pathWithLocale(locale, "/privacy")}
+          >
+            {text.header.privacy}
+          </a>
         </p>
       </section>
     </PageLayout>
