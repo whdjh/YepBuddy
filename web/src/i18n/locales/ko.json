@@ -11,6 +11,62 @@
     }
   },
   "home": {
+    "journalIntro": {
+      "eyebrow": "운동일지",
+      "titleLines": [
+        "운동을 시작하는 순간부터,",
+        "끝난 기록을 다시 볼 때까지."
+      ]
+    },
+    "sectionIntro": {
+      "eyebrow": "필요할 때 꺼내 쓰는 도구",
+      "titleLines": [
+        "운동일지는 중심에,",
+        "나머지는 가볍게."
+      ]
+    },
+    "statement": {
+      "ariaLabel": "YepBuddy 운동일지 소개",
+      "titleLines": [
+        "오늘 할 운동부터",
+        "지난 루틴까지 한눈에.",
+        "내려보면 필요한 기록이 자연스럽게 이어져요."
+      ],
+      "topAlt": "운동일지 홈 상단",
+      "bottomAlt": "운동일지 홈에서 루틴 목록까지 내린 화면"
+    },
+    "tempo": {
+      "eyebrow": "템포",
+      "titleLines": [
+        "반복의 리듬만",
+        "간단하게 맞춰요."
+      ],
+      "description": "수축과 이완 시간, 횟수와 세트만 정하세요. 준비 카운트다운이 끝나면 소리와 진동으로 다음 동작을 알려줘요.",
+      "settingsAlt": "YepBuddy 템포 설정 화면",
+      "activeAlt": "YepBuddy 템포 진행 화면"
+    },
+    "protein": {
+      "steps": [
+        {
+          "eyebrow": "단백질",
+          "titleLines": [
+            "종류별로 고르고,",
+            "가격부터 비교하세요."
+          ],
+          "description": "WPC와 WPI, 크레아틴까지 필요한 종류를 고르면 제품별 현재가와 그램당 가격을 빠르게 비교할 수 있어요."
+        },
+        {
+          "eyebrow": "가격 상세",
+          "titleLines": [
+            "지금 가격이 괜찮은지,",
+            "한 화면에서 확인하세요."
+          ],
+          "description": "제품 상세에서 현재가와 특징, 가격 추이를 한 번에 확인하고 구매 시점을 가늠해보세요."
+        }
+      ],
+      "listAlt": "프로틴 목록과 제품별 현재 가격대 화면",
+      "detailAlt": "프로틴 현재가와 가격 추이 상세 화면"
+    },
     "title": "YepBuddy",
     "description": "iOS/Android 앱 YepBuddy 지원 사이트입니다.",
     "hero": {
