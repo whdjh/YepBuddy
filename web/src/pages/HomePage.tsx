@@ -19,12 +19,9 @@ export function HomePage({ locale, switchTo, text }: PageProps) {
         titleLines={strings.statement.titleLines}
         topAlt={strings.statement.topAlt}
       />
-      <JournalSection
-        eyebrow={strings.journalIntro.eyebrow}
-        titleLines={strings.journalIntro.titleLines}
-      />
-      <HistorySection />
-      <CalendarHandoffSection />
+      <JournalSection {...strings.journal} />
+      <HistorySection {...strings.history} />
+      <CalendarHandoffSection {...strings.calendarHandoff} />
       <SupportingSection
         eyebrow={strings.sectionIntro.eyebrow}
         protein={strings.protein}

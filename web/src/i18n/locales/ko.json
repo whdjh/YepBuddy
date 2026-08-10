@@ -11,11 +11,140 @@
     }
   },
   "home": {
-    "journalIntro": {
+    "journal": {
       "eyebrow": "운동일지",
       "titleLines": [
         "운동을 시작하는 순간부터,",
         "끝난 기록을 다시 볼 때까지."
+      ],
+      "steps": [
+        {
+          "id": "start",
+          "eyebrow": "운동 시작",
+          "titleLines": [
+            "누르자마자,",
+            "바로 운동."
+          ],
+          "description": "운동 시작 버튼을 누르면 3초 카운트다운 뒤 기록이 시작돼요. 무엇을 할지는 운동하면서 정해도 괜찮아요."
+        },
+        {
+          "id": "record",
+          "eyebrow": "운동 중 · 기록",
+          "titleLines": [
+            "지난 운동을 기억해,",
+            "오늘 기록은 더 빠르게."
+          ],
+          "description": "루틴이나 운동 부위를 고르면 같은 구성의 지난 세트 수가 먼저 채워져요. 필요한 만큼 고치고, 이전 메모도 한 번에 가져오세요."
+        },
+        {
+          "id": "live",
+          "eyebrow": "운동 중 · 실시간",
+          "titleLines": [
+            "화면을 보고 있지 않아도,",
+            "운동은 계속 기록돼요."
+          ],
+          "description": "하단 시트에서 유산소를 시작하고, 다이내믹 아일랜드와 잠금화면에서 시간과 심박수를 확인하세요. 일시정지와 재개도 바로 할 수 있어요."
+        },
+        {
+          "id": "result",
+          "eyebrow": "운동 종료",
+          "titleLines": [
+            "끝나면 결과가",
+            "한 화면에."
+          ],
+          "description": "운동 시간과 칼로리, 세트 수, 평균 심박수부터 메모와 운동 위치까지. 방금 끝낸 운동을 바로 확인하고 필요한 기록은 다시 고칠 수 있어요."
+        }
+      ],
+      "imageAlts": {
+        "countdown": "YepBuddy 운동 시작 카운트다운",
+        "activeTop": "운동 중 세트와 운동 부위를 기록하는 화면 상단",
+        "activeBottom": "운동 중 메모와 실시간 타이머를 확인하는 화면",
+        "drawerCardio": "운동 중 유산소 기록 메뉴를 연 화면",
+        "liveIsland": "확장된 다이내믹 아일랜드의 YepBuddy 운동 기록",
+        "liveLock": "잠금화면의 YepBuddy 운동 Live Activity",
+        "resultTop": "운동 시간과 칼로리, 세트 수가 표시된 운동 결과 상단",
+        "resultBottom": "운동 위치 지도까지 내린 운동 결과 화면"
+      },
+      "liveCallout": {
+        "title": "유산소도 바로 추가",
+        "description": "러닝 버튼을 누르면 현재 운동에 이어 간단하게 기록할 수 있어요."
+      }
+    },
+    "history": {
+      "eyebrow": "쌓인 기록",
+      "titleLines": [
+        "지난 운동은",
+        "필요할 때 바로."
+      ],
+      "description": "부위별로 기록을 골라보고, 결과를 아래로 내려 시간과 세트, 심박수와 장소까지 다시 확인하세요.",
+      "sessionHeading": "세션 목록",
+      "resultHeading": "운동 결과",
+      "screenLabels": {
+        "sessionTop": "전체 기록",
+        "sessionScrolled": "기록 탐색",
+        "sessionFiltered": "부위 필터",
+        "resultTop": "결과 요약",
+        "resultBottom": "상세 기록",
+        "resultEdit": "세트 수정"
+      },
+      "imageAlts": {
+        "sessionTop": "운동 세션 목록 상단",
+        "sessionScrolled": "아래로 내린 운동 세션 목록",
+        "sessionFiltered": "가슴 운동으로 필터링한 세션 목록",
+        "resultTop": "운동 결과 상단",
+        "resultBottom": "위치 지도까지 내린 운동 결과",
+        "resultEdit": "세트 수정 시트를 연 운동 결과"
+      },
+      "calendar": {
+        "eyebrow": "운동 캘린더",
+        "titleLines": [
+          "어느 날, 무엇을 했는지",
+          "한눈에."
+        ],
+        "description": "운동한 날짜에는 부위가 표시돼요. 기록이 여러 개라면 날짜를 길게 눌러 그날의 운동을 펼쳐볼 수 있어요.",
+        "screenLabels": {
+          "default": "월간 기록",
+          "pressed": "날짜 상세"
+        },
+        "imageAlts": {
+          "default": "YepBuddy 앱 내부 운동 캘린더",
+          "pressed": "날짜를 길게 눌러 운동 부위를 펼친 캘린더"
+        }
+      }
+    },
+    "calendarHandoff": {
+      "ariaLabel": "운동 결과가 기기 캘린더로 이어지는 과정",
+      "steps": [
+        {
+          "id": "result",
+          "eyebrow": "운동 종료",
+          "titleLines": [
+            "운동을 마치면,",
+            "기록부터 정리돼요."
+          ],
+          "description": "운동 결과는 YepBuddy에 바로 저장되고, 시간과 부위, 유산소 기록까지 하나의 세션으로 남아요.",
+          "imageAlt": "YepBuddy 운동 결과 화면"
+        },
+        {
+          "id": "month",
+          "eyebrow": "기기 캘린더",
+          "titleLines": [
+            "캘린더를 열면,",
+            "운동한 날이 보여요."
+          ],
+          "description": "완료한 운동은 기기 캘린더 일정으로 자동 추가돼요. 평소 쓰는 월간 화면에서 운동한 날을 바로 찾을 수 있어요.",
+          "imageAlt": "iOS 캘린더 월간 화면"
+        },
+        {
+          "id": "detail",
+          "eyebrow": "일정 상세",
+          "titleLines": [
+            "그날의 운동도",
+            "일정 안에 그대로."
+          ],
+          "description": "운동한 시간과 기록을 캘린더 일정에서 다시 확인할 수 있어요.",
+          "imageAlt": "기기 캘린더에 저장된 운동 일정 상세"
+        }
       ]
     },
     "sectionIntro": {
