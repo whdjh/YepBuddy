@@ -1,120 +1,30 @@
 @import "tailwindcss";
-@import "../../mobile/src/global.css";
+@config "../tailwind.config.cjs";
 
-:root {
-  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: var(--yb-fg);
-}
-
-body {
-  margin: 0;
-  background: var(--yb-bg);
-  color: var(--yb-fg);
-}
-
-a {
-  color: var(--yb-accent);
-  text-decoration-color: color-mix(in oklab, var(--yb-accent), transparent 40%);
-}
-
-a:hover {
-  color: var(--yb-accent-hover);
-}
-
-header {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 24px 20px 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-header > a {
-  font-weight: 700;
-  text-decoration: none;
-  color: var(--yb-fg);
-}
-
-nav {
-  display: flex;
-  gap: 14px;
-}
-
-nav a {
-  color: var(--yb-fg-secondary);
-}
-
-main {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 48px 20px 80px;
-}
-
-h1 {
-  margin: 0 0 24px;
-  font-size: clamp(36px, 7vw, 64px);
-  letter-spacing: -0.04em;
-  line-height: 1.2;
-}
-
-h2 {
-  margin: 0 0 10px;
-  font-size: clamp(24px, 4vw, 36px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-}
-
-p,
-li {
-  font-size: 16px;
-  line-height: 1.65;
-}
-
-p {
-  margin: 0 0 16px;
-}
-
-ul {
-  margin: 0;
-  padding-left: 22px;
-}
-
-li + li {
-  margin-top: 8px;
-}
-
-section {
-  margin-top: 28px;
-  border-top: 1px solid var(--yb-border);
-  padding-top: 24px;
-}
-
-section:first-of-type {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.date {
-  color: var(--yb-fg-secondary);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-}
-
-@media (max-width: 520px) {
-  header {
-    display: block;
+@layer base {
+  :root {
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color-scheme: light;
   }
 
-  nav {
-    margin-top: 10px;
+  * {
+    box-sizing: border-box;
   }
 
-  main {
-    padding-top: 36px;
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink;
+    margin: 0;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    @apply bg-brand text-on-brand;
   }
 }

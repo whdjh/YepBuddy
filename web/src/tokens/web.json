@@ -1,0 +1,183 @@
+{
+  "$description": "YepBuddy web landing design tokens. Values are taken from src/docs/landing-mockup.html and named by their web UI role.",
+  "color": {
+    "canvas": "#FFFFFF",
+    "surface": "#F7F8FA",
+    "surface-strong": "#F2F4F6",
+    "surface-cool": "#EDF3F4",
+    "surface-cool-strong": "#E1EBEC",
+    "ink": "#191F28",
+    "ink-secondary": "#4E5968",
+    "ink-tertiary": "#8B95A1",
+    "brand": "#9B7E56",
+    "brand-hover": "#876B45",
+    "on-brand": "#FFFFFF",
+    "danger": "#E85854",
+    "line": "rgba(139, 149, 161, 0.12)",
+    "line-strong": "rgba(139, 149, 161, 0.22)",
+    "glass": "rgba(255, 255, 255, 0.82)",
+    "device": "#111315",
+    "device-screen": "#191B1D"
+  },
+  "fontFamily": {
+    "sans": [
+      "Pretendard Variable",
+      "Pretendard",
+      "-apple-system",
+      "BlinkMacSystemFont",
+      "sans-serif"
+    ]
+  },
+  "fontSize": {
+    "hero-mobile": [
+      "clamp(2.5rem, 11.6vw, 3.125rem)",
+      {
+        "lineHeight": "1.14",
+        "letterSpacing": "-0.06em"
+      }
+    ],
+    "hero": [
+      "clamp(3.25rem, 6.4vw, 4.875rem)",
+      {
+        "lineHeight": "1.12",
+        "letterSpacing": "-0.06em"
+      }
+    ],
+    "section": [
+      "clamp(3rem, 6vw, 4.75rem)",
+      {
+        "lineHeight": "1.12",
+        "letterSpacing": "-0.055em"
+      }
+    ],
+    "section-mobile": [
+      "2.625rem",
+      {
+        "lineHeight": "1.12",
+        "letterSpacing": "-0.055em"
+      }
+    ],
+    "section-compact": [
+      "clamp(2.75rem, 5.4vw, 4.25rem)",
+      {
+        "lineHeight": "1.12",
+        "letterSpacing": "-0.055em"
+      }
+    ],
+    "feature": [
+      "clamp(2.625rem, 5vw, 4rem)",
+      {
+        "lineHeight": "1.12",
+        "letterSpacing": "-0.055em"
+      }
+    ],
+    "statement": [
+      "clamp(2.125rem, 4.4vw, 3.625rem)",
+      {
+        "lineHeight": "1.42",
+        "letterSpacing": "-0.05em"
+      }
+    ],
+    "statement-mobile": [
+      "2rem",
+      {
+        "lineHeight": "1.45",
+        "letterSpacing": "-0.05em"
+      }
+    ],
+    "body-lg": [
+      "1.125rem",
+      {
+        "lineHeight": "1.75"
+      }
+    ],
+    "body-lg-mobile": [
+      "1rem",
+      {
+        "lineHeight": "1.65"
+      }
+    ],
+    "body": [
+      "1rem",
+      {
+        "lineHeight": "1.65"
+      }
+    ],
+    "eyebrow": [
+      "0.9375rem",
+      {
+        "lineHeight": "1.4"
+      }
+    ],
+    "eyebrow-mobile": [
+      "0.8125rem",
+      {
+        "lineHeight": "1.4"
+      }
+    ],
+    "caption": [
+      "0.75rem",
+      {
+        "lineHeight": "1.55"
+      }
+    ]
+  },
+  "fontWeight": {
+    "emphasis": "750",
+    "heavy": "800"
+  },
+  "spacing": {
+    "page": "1.5rem",
+    "page-mobile": "1.125rem",
+    "header": "4rem",
+    "header-mobile": "3.75rem",
+    "section": "10.625rem",
+    "section-mobile": "6.875rem",
+    "feature-card": "4rem"
+  },
+  "maxWidth": {
+    "copy": "31.25rem",
+    "lead": "40.625rem",
+    "intro": "53.75rem",
+    "hero-copy": "58.75rem",
+    "content": "70rem",
+    "content-wide": "80rem"
+  },
+  "borderRadius": {
+    "action": "0.75rem",
+    "callout": "1.25rem",
+    "visual-mobile": "1.875rem",
+    "visual": "2.25rem",
+    "feature-mobile": "1.875rem",
+    "feature": "2.75rem",
+    "phone-mobile": "2.625rem",
+    "phone": "3rem"
+  },
+  "borderWidth": {
+    "phone": "0.5625rem"
+  },
+  "boxShadow": {
+    "action": "0 0.75rem 1.875rem rgba(25, 31, 40, 0.14)",
+    "floating": "0 0.5rem 1.875rem rgba(25, 31, 40, 0.12)",
+    "callout": "0 1rem 2.5rem rgba(25, 31, 40, 0.12)",
+    "phone": "0 1.875rem 4.375rem rgba(25, 31, 40, 0.2)"
+  },
+  "backgroundImage": {
+    "hero": "radial-gradient(circle at 50% 76%, rgba(155, 126, 86, 0.16), transparent 30%), linear-gradient(180deg, #FBFCFD 0%, #EDF3F4 58%, #E1EBEC 100%)",
+    "device-stage": "linear-gradient(145deg, #F8F9FA 0%, #EEF1F3 54%, #E8ECEF 100%)"
+  },
+  "aspectRatio": {
+    "phone": "9 / 19.5",
+    "app-screen": "1206 / 2622"
+  },
+  "screens": {
+    "phone": "600px",
+    "tablet": "760px",
+    "desktop": "1100px"
+  },
+  "transitionDuration": {
+    "fast": "240ms",
+    "normal": "360ms",
+    "slow": "520ms"
+  }
+}
