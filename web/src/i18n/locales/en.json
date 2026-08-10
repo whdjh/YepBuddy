@@ -70,11 +70,18 @@
     "title": "YepBuddy",
     "description": "Support site for the YepBuddy iOS and Android app.",
     "hero": {
-      "eyebrow": "One rhythm for your workout",
-      "title": "Record, train, and review your workouts with less friction.",
-      "lead": "Start an exercise, follow the flow, and keep your routine consistent.",
-      "ctaPrimary": "Try the app",
-      "ctaSecondary": "Explore support flow"
+      "eyebrow": "Workout journal",
+      "titleLines": [
+        "Keep workouts consistent,",
+        "and logging simple."
+      ],
+      "leadLines": [
+        "Start with one tap and stay focused on your workout.",
+        "Track time, sets, heart rate, and cardio in one seamless flow."
+      ],
+      "screenAlt": "YepBuddy workout journal home screen",
+      "appStoreAriaLabel": "View YepBuddy on the App Store (opens in a new tab)",
+      "googlePlayAriaLabel": "View YepBuddy on Google Play (opens in a new tab)"
     },
     "features": [
       {

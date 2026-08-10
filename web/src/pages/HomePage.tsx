@@ -12,7 +12,7 @@ export function HomePage({ locale, switchTo, text }: PageProps) {
 
   return (
     <PageLayout locale={locale} text={text} switchTo={switchTo}>
-      <HeroSection />
+      <HeroSection locale={locale} {...strings.hero} />
       <StatementSection
         ariaLabel={strings.statement.ariaLabel}
         bottomAlt={strings.statement.bottomAlt}

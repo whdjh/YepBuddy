@@ -70,11 +70,18 @@
     "title": "YepBuddy",
     "description": "iOS/Android 앱 YepBuddy 지원 사이트입니다.",
     "hero": {
-      "eyebrow": "운동에 집중하면 기록은 따라옵니다",
-      "title": "운동의 순간을 기록의 리듬으로.",
-      "lead": "루틴을 준비하고, 운동 중에는 흐름에 집중하고, 끝난 뒤엔 한 번에 정리하세요.",
-      "ctaPrimary": "앱 만나보기",
-      "ctaSecondary": "지원 안내 보기"
+      "eyebrow": "운동일지",
+      "titleLines": [
+        "운동은 꾸준하게,",
+        "기록은 간단하게."
+      ],
+      "leadLines": [
+        "버튼 한 번으로 시작하고, 운동에만 집중하세요.",
+        "시간과 세트, 심박수와 유산소까지 한 흐름으로 기록해요."
+      ],
+      "screenAlt": "YepBuddy 운동일지 홈 화면",
+      "appStoreAriaLabel": "App Store에서 YepBuddy 보기 (새 창)",
+      "googlePlayAriaLabel": "Google Play에서 YepBuddy 보기 (새 창)"
     },
     "features": [
       {
