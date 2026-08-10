@@ -13,7 +13,12 @@ export function HomePage({ locale, switchTo, text }: PageProps) {
   return (
     <PageLayout locale={locale} text={text} switchTo={switchTo}>
       <HeroSection />
-      <StatementSection />
+      <StatementSection
+        ariaLabel={strings.statement.ariaLabel}
+        bottomAlt={strings.statement.bottomAlt}
+        titleLines={strings.statement.titleLines}
+        topAlt={strings.statement.topAlt}
+      />
       <JournalSection
         eyebrow={strings.journalIntro.eyebrow}
         titleLines={strings.journalIntro.titleLines}
@@ -22,6 +27,8 @@ export function HomePage({ locale, switchTo, text }: PageProps) {
       <CalendarHandoffSection />
       <SupportingSection
         eyebrow={strings.sectionIntro.eyebrow}
+        protein={strings.protein}
+        tempo={strings.tempo}
         titleLines={strings.sectionIntro.titleLines}
       />
     </PageLayout>

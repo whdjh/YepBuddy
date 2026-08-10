@@ -1,11 +1,37 @@
+import proteinDetailImage from "../../../assets/landing/21-protein-detail.png"
+import proteinListImage from "../../../assets/landing/20-protein-list.png"
+import tempoActiveImage from "../../../assets/landing/19-tempo-active.png"
+import tempoSettingsImage from "../../../assets/landing/18-tempo-settings.png"
+import { FeatureCard } from "../FeatureCard"
 import { SectionIntro } from "../SectionIntro"
 
 type SupportingSectionProps = {
   eyebrow: string
+  protein: {
+    detailAlt: string
+    listAlt: string
+    steps: readonly {
+      description: string
+      eyebrow: string
+      titleLines: readonly string[]
+    }[]
+  }
+  tempo: {
+    activeAlt: string
+    description: string
+    eyebrow: string
+    settingsAlt: string
+    titleLines: readonly string[]
+  }
   titleLines: readonly string[]
 }
 
-export function SupportingSection({ eyebrow, titleLines }: SupportingSectionProps) {
+export function SupportingSection({
+  eyebrow,
+  protein,
+  tempo,
+  titleLines,
+}: SupportingSectionProps) {
   return (
     <section
       aria-labelledby="supporting-tools-title"
@@ -13,12 +39,6 @@ export function SupportingSection({ eyebrow, titleLines }: SupportingSectionProp
       data-landing-section="supporting"
       id="supporting"
     >
-      <p
-        aria-hidden="true"
-        className="absolute top-4 left-page-mobile text-caption text-ink-tertiary phone:left-page"
-      >
-        지원 도구 섹션
-      </p>
       <div className="mx-auto max-w-content px-page-mobile phone:px-page">
         <SectionIntro
           eyebrow={eyebrow}
@@ -26,6 +46,63 @@ export function SupportingSection({ eyebrow, titleLines }: SupportingSectionProp
           headingLevel="h2"
           titleLines={titleLines}
         />
+      </div>
+      <div className="px-page-mobile phone:px-page">
+        <FeatureCard
+          background="surface"
+          headingLevel="h3"
+          phones={[
+            {
+              angle: 8,
+              screens: [
+                {
+                  imageAlt: tempo.settingsAlt,
+                  imageSrc: tempoSettingsImage,
+                },
+              ],
+            },
+            {
+              angle: -8,
+              screens: [
+                {
+                  imageAlt: tempo.activeAlt,
+                  imageSrc: tempoActiveImage,
+                },
+              ],
+            },
+          ]}
+          steps={[
+            {
+              description: tempo.description,
+              eyebrow: tempo.eyebrow,
+              titleLines: tempo.titleLines,
+            },
+          ]}
+          visualPosition="right"
+        />
+        <div className="mt-4.5 desktop:mt-7">
+          <FeatureCard
+            background="surface"
+            headingLevel="h3"
+            phones={[
+              {
+                angle: -8,
+                screens: [
+                  {
+                    imageAlt: protein.listAlt,
+                    imageSrc: proteinListImage,
+                  },
+                  {
+                    imageAlt: protein.detailAlt,
+                    imageSrc: proteinDetailImage,
+                  },
+                ],
+              },
+            ]}
+            steps={protein.steps}
+            visualPosition="left"
+          />
+        </div>
       </div>
     </section>
   )

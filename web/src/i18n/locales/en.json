@@ -25,6 +25,48 @@
         "everything else kept light."
       ]
     },
+    "statement": {
+      "ariaLabel": "Introduction to the YepBuddy workout journal",
+      "titleLines": [
+        "Today's workout,",
+        "and every routine before it.",
+        "Scroll to let the records follow naturally."
+      ],
+      "topAlt": "Top of the workout journal home screen",
+      "bottomAlt": "Workout journal home scrolled to the routine list"
+    },
+    "tempo": {
+      "eyebrow": "Tempo",
+      "titleLines": [
+        "Set the rhythm",
+        "for every rep."
+      ],
+      "description": "Choose contraction and release times, reps, and sets. After the countdown, sound and vibration guide you into the next movement.",
+      "settingsAlt": "YepBuddy tempo settings screen",
+      "activeAlt": "YepBuddy tempo session in progress"
+    },
+    "protein": {
+      "steps": [
+        {
+          "eyebrow": "Protein",
+          "titleLines": [
+            "Choose the type,",
+            "then compare prices."
+          ],
+          "description": "Choose WPC, WPI, creatine, or another type to quickly compare current prices and price per gram."
+        },
+        {
+          "eyebrow": "Price details",
+          "titleLines": [
+            "See whether today's price",
+            "is worth it at a glance."
+          ],
+          "description": "Check the current price, key details, and price history together to help decide when to buy."
+        }
+      ],
+      "listAlt": "Protein products and current price ranges",
+      "detailAlt": "Protein current price and price history details"
+    },
     "title": "YepBuddy",
     "description": "Support site for the YepBuddy iOS and Android app.",
     "hero": {
