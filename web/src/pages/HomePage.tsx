@@ -8,16 +8,22 @@ import { SupportingSection } from "../components/landing/sections/SupportingSect
 import type { PageProps } from "../types/landing"
 
 export function HomePage({ locale, switchTo, text }: PageProps) {
-  const strings = text.home.sectionIntro
+  const strings = text.home
 
   return (
     <PageLayout locale={locale} text={text} switchTo={switchTo}>
       <HeroSection />
       <StatementSection />
-      <JournalSection />
+      <JournalSection
+        eyebrow={strings.journalIntro.eyebrow}
+        titleLines={strings.journalIntro.titleLines}
+      />
       <HistorySection />
       <CalendarHandoffSection />
-      <SupportingSection eyebrow={strings.eyebrow} titleLines={strings.titleLines} />
+      <SupportingSection
+        eyebrow={strings.sectionIntro.eyebrow}
+        titleLines={strings.sectionIntro.titleLines}
+      />
     </PageLayout>
   )
 }

@@ -11,6 +11,20 @@
     }
   },
   "home": {
+    "journalIntro": {
+      "eyebrow": "Workout journal",
+      "titleLines": [
+        "From the moment you start,",
+        "to the records you revisit."
+      ]
+    },
+    "sectionIntro": {
+      "eyebrow": "Tools when you need them",
+      "titleLines": [
+        "Your workout journal at the center,",
+        "everything else kept light."
+      ]
+    },
     "title": "YepBuddy",
     "description": "Support site for the YepBuddy iOS and Android app.",
     "hero": {

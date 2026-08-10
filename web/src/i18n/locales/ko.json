@@ -11,6 +11,20 @@
     }
   },
   "home": {
+    "journalIntro": {
+      "eyebrow": "운동일지",
+      "titleLines": [
+        "운동을 시작하는 순간부터,",
+        "끝난 기록을 다시 볼 때까지."
+      ]
+    },
+    "sectionIntro": {
+      "eyebrow": "필요할 때 꺼내 쓰는 도구",
+      "titleLines": [
+        "운동일지는 중심에,",
+        "나머지는 가볍게."
+      ]
+    },
     "title": "YepBuddy",
     "description": "iOS/Android 앱 YepBuddy 지원 사이트입니다.",
     "hero": {

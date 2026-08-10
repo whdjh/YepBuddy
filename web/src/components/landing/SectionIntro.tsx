@@ -14,25 +14,20 @@ export function SectionIntro({
   const Heading = headingLevel
 
   return (
-    <section
-      aria-labelledby={headingId}
-      className="py-section-mobile desktop:py-section"
-    >
-      <header className="max-w-intro">
-        <p className="mb-[18px] text-eyebrow-mobile font-bold text-brand phone:text-eyebrow">
-          {eyebrow}
-        </p>
-        <Heading
-          id={headingId}
-          className="m-0 break-keep text-section-mobile font-heavy text-ink desktop:text-section-compact"
-        >
-          {titleLines.map((line, index) => (
-            <span className="block" key={`${index}-${line}`}>
-              {line}
-            </span>
-          ))}
-        </Heading>
-      </header>
-    </section>
+    <header className="max-w-intro py-section-mobile desktop:py-section">
+      <p className="mb-[18px] text-eyebrow-mobile font-bold text-brand phone:text-eyebrow">
+        {eyebrow}
+      </p>
+      <Heading
+        id={headingId}
+        className="m-0 break-keep text-section-mobile font-heavy text-ink desktop:text-section-compact"
+      >
+        {titleLines.map((line, index) => (
+          <span className="block" key={`${index}-${line}`}>
+            {line}
+          </span>
+        ))}
+      </Heading>
+    </header>
   )
 }
