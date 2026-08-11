@@ -1,5 +1,5 @@
-import homeBottomImage from "../../../assets/landing/01b-journal-home-bottom.PNG"
-import homeTopImage from "../../../assets/landing/01a-journal-home-top.PNG"
+import homeBottomImage from "../../../assets/landing/01b-journal-home-bottom-mobile.PNG"
+import homeTopImage from "../../../assets/landing/01a-journal-home-top-mobile.PNG"
 import { FeatureCard } from "../FeatureCard"
 
 type StatementSectionProps = {

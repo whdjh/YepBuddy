@@ -11,11 +11,141 @@
     }
   },
   "home": {
-    "journalIntro": {
+    "journal": {
       "eyebrow": "Workout journal",
       "titleLines": [
         "From the moment you start,",
         "to the records you revisit."
+      ],
+      "steps": [
+        {
+          "id": "start",
+          "eyebrow": "Start workout",
+          "titleLines": [
+            "One tap,",
+            "then start moving."
+          ],
+          "description": "Tap Start Workout and logging begins after a three-second countdown. You can decide what to train as you go."
+        },
+        {
+          "id": "record",
+          "eyebrow": "During workout · Logging",
+          "titleLines": [
+            "Your last workout remembered,",
+            "today's log filled faster."
+          ],
+          "description": "Choose a routine or body area and your previous set counts are filled in first. Adjust what you need and bring back your last memo in one tap."
+        },
+        {
+          "id": "live",
+          "eyebrow": "During workout · Live",
+          "titleLines": [
+            "Even when the screen is off,",
+            "your workout keeps recording."
+          ],
+          "description": "Start cardio from the bottom sheet, then check time and heart rate from Dynamic Island or the Lock Screen. Pause and resume without reopening the app."
+        },
+        {
+          "id": "result",
+          "eyebrow": "Finish workout",
+          "titleLines": [
+            "When you're done,",
+            "the full result is together."
+          ],
+          "description": "Review duration, calories, sets, average heart rate, notes, and workout location at once. You can also correct anything before moving on."
+        }
+      ],
+      "imageAlts": {
+        "countdown": "YepBuddy workout start countdown",
+        "activeTop": "Top of the in-workout set and body-area logging screen",
+        "activeBottom": "In-workout notes and live timer screen",
+        "drawerOpen": "In-workout screen with the logging menu open",
+        "drawerCardio": "In-workout screen with the cardio recording menu open",
+        "liveIsland": "Expanded Dynamic Island showing a YepBuddy workout",
+        "liveLock": "YepBuddy workout Live Activity on the Lock Screen",
+        "resultTop": "Workout result with duration, calories, and set count",
+        "resultBottom": "Workout result scrolled to the location map"
+      },
+      "liveCallout": {
+        "title": "Add cardio right away",
+        "description": "Tap the running button to continue with a simple cardio log in the same workout."
+      }
+    },
+    "history": {
+      "eyebrow": "Your workout history",
+      "titleLines": [
+        "Past workouts,",
+        "ready when you need them."
+      ],
+      "description": "Filter records by body area, then scroll through a result to revisit duration, sets, heart rate, and location.",
+      "sessionHeading": "Session list",
+      "resultHeading": "Workout result",
+      "screenLabels": {
+        "sessionTop": "All records",
+        "sessionScrolled": "Browse records",
+        "sessionFiltered": "Body filter",
+        "resultTop": "Summary",
+        "resultBottom": "Details",
+        "resultEdit": "Edit sets"
+      },
+      "imageAlts": {
+        "sessionTop": "Top of the workout session list",
+        "sessionScrolled": "Workout session list after scrolling",
+        "sessionFiltered": "Session list filtered to chest workouts",
+        "resultTop": "Top of a workout result",
+        "resultBottom": "Workout result scrolled to the location map",
+        "resultEdit": "Workout result with the set editing sheet open"
+      },
+      "calendar": {
+        "eyebrow": "Workout calendar",
+        "titleLines": [
+          "See what you trained,",
+          "day by day."
+        ],
+        "description": "Training days show the body areas you worked. When a day has multiple records, press and hold it to expand every workout.",
+        "screenLabels": {
+          "default": "Monthly view",
+          "pressed": "Day details"
+        },
+        "imageAlts": {
+          "default": "Workout calendar inside YepBuddy",
+          "pressed": "Workout calendar expanded by pressing and holding a date"
+        }
+      }
+    },
+    "calendarHandoff": {
+      "ariaLabel": "How a workout result flows into the device calendar",
+      "steps": [
+        {
+          "id": "result",
+          "eyebrow": "Finish workout",
+          "titleLines": [
+            "When the workout ends,",
+            "the record is organized."
+          ],
+          "description": "YepBuddy saves the result right away, keeping duration, body areas, and cardio together as one session.",
+          "imageAlt": "YepBuddy workout result screen"
+        },
+        {
+          "id": "month",
+          "eyebrow": "Device calendar",
+          "titleLines": [
+            "Open your calendar,",
+            "and training days stand out."
+          ],
+          "description": "Completed workouts are automatically added as calendar events, so you can find training days in the monthly view you already use.",
+          "imageAlt": "iOS Calendar month view"
+        },
+        {
+          "id": "detail",
+          "eyebrow": "Event details",
+          "titleLines": [
+            "That day's workout,",
+            "right inside the event."
+          ],
+          "description": "Revisit the workout time and record directly from the calendar event.",
+          "imageAlt": "Workout event details saved to the device calendar"
+        }
       ]
     },
     "sectionIntro": {
@@ -70,11 +200,18 @@
     "title": "YepBuddy",
     "description": "Support site for the YepBuddy iOS and Android app.",
     "hero": {
-      "eyebrow": "One rhythm for your workout",
-      "title": "Record, train, and review your workouts with less friction.",
-      "lead": "Start an exercise, follow the flow, and keep your routine consistent.",
-      "ctaPrimary": "Try the app",
-      "ctaSecondary": "Explore support flow"
+      "eyebrow": "Workout journal",
+      "titleLines": [
+        "Keep workouts consistent,",
+        "and logging simple."
+      ],
+      "leadLines": [
+        "Start with one tap and stay focused on your workout.",
+        "Track time, sets, heart rate, and cardio in one seamless flow."
+      ],
+      "screenAlt": "YepBuddy workout journal home screen",
+      "appStoreAriaLabel": "View YepBuddy on the App Store (opens in a new tab)",
+      "googlePlayAriaLabel": "View YepBuddy on Google Play (opens in a new tab)"
     },
     "features": [
       {

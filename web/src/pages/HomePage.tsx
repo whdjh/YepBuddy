@@ -12,19 +12,16 @@ export function HomePage({ locale, switchTo, text }: PageProps) {
 
   return (
     <PageLayout locale={locale} text={text} switchTo={switchTo}>
-      <HeroSection />
+      <HeroSection locale={locale} {...strings.hero} />
       <StatementSection
         ariaLabel={strings.statement.ariaLabel}
         bottomAlt={strings.statement.bottomAlt}
         titleLines={strings.statement.titleLines}
         topAlt={strings.statement.topAlt}
       />
-      <JournalSection
-        eyebrow={strings.journalIntro.eyebrow}
-        titleLines={strings.journalIntro.titleLines}
-      />
-      <HistorySection />
-      <CalendarHandoffSection />
+      <JournalSection {...strings.journal} />
+      <HistorySection {...strings.history} />
+      <CalendarHandoffSection {...strings.calendarHandoff} />
       <SupportingSection
         eyebrow={strings.sectionIntro.eyebrow}
         protein={strings.protein}

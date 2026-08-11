@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from "react"
-import type * as THREE from "three"
-import iphoneModelUrl from "../../assets/landing/models/iphone-15.glb?url"
+import { createRef, useEffect, useMemo, useRef } from "react"
+import {
+  SequencePhone3D,
+  type SequencePhoneController,
+} from "./SequencePhone3D"
 
 type FeatureStep = {
   accentLineIndex?: number
@@ -20,7 +22,7 @@ type FeaturePhone = {
 }
 
 type FeatureCardProps = {
-  background: "canvas" | "surface" | "cool"
+  background: "canvas" | "surface"
   headingLevel: "h2" | "h3"
   phones: readonly FeaturePhone[]
   steps: readonly FeatureStep[]
@@ -45,12 +47,14 @@ export function FeatureCard({
   const visualRef = useRef<HTMLDivElement>(null)
   const stepRefs = useRef<(HTMLDivElement | null)[]>([])
   const phoneRefs = useRef<(HTMLDivElement | null)[]>([])
-  const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([])
-  const screenImageRefs = useRef<(HTMLImageElement | null)[][]>([])
-  const screenSettersRef = useRef<((screenIndex: number) => void)[]>([])
+  const phoneControllerRefs = useMemo(
+    () =>
+      Array.from({ length: phones.length }, () =>
+        createRef<SequencePhoneController>(),
+      ),
+    [phones.length],
+  )
   const tapPulseRef = useRef<HTMLSpanElement>(null)
-  const activeScreenRef = useRef(0)
-  const [isThreeReady, setIsThreeReady] = useState(false)
 
   useEffect(() => {
     const card = cardRef.current
@@ -103,26 +107,9 @@ export function FeatureCard({
           : easeRange(0.16, 0.23, progress) *
             (1 - easeRange(0.28, 0.34, progress))
         const activeScreen = detailVisibility >= 0.5 ? 1 : 0
-        activeScreenRef.current = activeScreen
-        screenSettersRef.current.forEach((setScreen) => setScreen(activeScreen))
-
-        screenImageRefs.current.forEach((screenImages) => {
-          if (screenImages[0]) {
-            gsap.set(screenImages[0], {
-              autoAlpha: 1 - detailVisibility,
-              scale:
-                1 - detailVisibility * (isHomeSequence ? 0.02 : 0.035),
-            })
-          }
-          if (screenImages[1]) {
-            gsap.set(screenImages[1], {
-              autoAlpha: detailVisibility,
-              scale: isHomeSequence
-                ? 0.98 + detailVisibility * 0.02
-                : 0.97 + detailVisibility * 0.03,
-            })
-          }
-        })
+        phoneControllerRefs.forEach((controllerRef) =>
+          controllerRef.current?.setScreen(activeScreen),
+        )
 
         if (tapPulseRef.current) {
           gsap.set(tapPulseRef.current, {
@@ -212,310 +199,15 @@ export function FeatureCard({
       cancelled = true
       animationMedia?.revert()
     }
-  }, [hasScreenSequence, hasScrollSequence, hasStepSequence, isHomeSequence, phones, steps])
-
-  useEffect(() => {
-    const card = cardRef.current
-    const phoneElements = phoneRefs.current.slice(0, phones.length)
-    const canvases = canvasRefs.current.slice(0, phones.length)
-
-    if (
-      !card ||
-      phoneElements.some((phone) => phone === null) ||
-      canvases.some((canvas) => canvas === null)
-    ) {
-      return
-    }
-
-    let disposed = false
-    let frameId = 0
-    let isVisible = true
-    let sourceModel: THREE.Group | null = null
-    let threeModule: typeof import("three") | null = null
-    let disposeDracoLoader: () => void = () => undefined
-    const geometries = new Set<THREE.BufferGeometry>()
-    const materials = new Set<THREE.Material>()
-    const textures = new Set<THREE.Texture>()
-    const renderers: THREE.WebGLRenderer[] = []
-    const resizeObservers: ResizeObserver[] = []
-    const removePointerListeners: (() => void)[] = []
-    const scenes: {
-      camera: THREE.PerspectiveCamera
-      currentPitch: number
-      currentYaw: number
-      pivot: THREE.Group
-      renderer: THREE.WebGLRenderer
-      scene: THREE.Scene
-      targetPitch: number
-      targetYaw: number
-    }[] = []
-
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting
-      },
-      { rootMargin: "200px" },
-    )
-    visibilityObserver.observe(card)
-
-    const rememberMaterial = (material: THREE.Material) => {
-      materials.add(material)
-      Object.values(material).forEach((value) => {
-        if (threeModule && value instanceof threeModule.Texture) textures.add(value)
-      })
-    }
-
-    const rememberModelResources = (model: THREE.Object3D) => {
-      model.traverse((child) => {
-        if (!threeModule || !(child instanceof threeModule.Mesh)) return
-        geometries.add(child.geometry)
-        const childMaterials = Array.isArray(child.material)
-          ? child.material
-          : [child.material]
-        childMaterials.forEach(rememberMaterial)
-      })
-    }
-
-    const disposeResources = () => {
-      resizeObservers.forEach((observer) => observer.disconnect())
-      removePointerListeners.forEach((removeListener) => removeListener())
-      renderers.forEach((renderer) => {
-        renderer.dispose()
-        renderer.forceContextLoss()
-      })
-      materials.forEach((material) => material.dispose())
-      textures.forEach((texture) => texture.dispose())
-      geometries.forEach((geometry) => geometry.dispose())
-      disposeDracoLoader()
-      screenSettersRef.current = []
-    }
-
-    const addStudioLights = (scene: THREE.Scene) => {
-      if (!threeModule) return
-      scene.add(new threeModule.HemisphereLight(0xffffff, 0x30363d, 1.7))
-      const keyLight = new threeModule.DirectionalLight(0xffffff, 3.15)
-      keyLight.position.set(-3.5, 5.5, 6.5)
-      scene.add(keyLight)
-      const fillLight = new threeModule.DirectionalLight(0xeaf2ff, 1.45)
-      fillLight.position.set(4, 1.5, 4)
-      scene.add(fillLight)
-      const rimLight = new threeModule.DirectionalLight(0xffffff, 2.1)
-      rimLight.position.set(3.5, 3, -5)
-      scene.add(rimLight)
-    }
-
-    const render = () => {
-      if (disposed) return
-      frameId = requestAnimationFrame(render)
-      if (!isVisible) return
-
-      scenes.forEach((phoneScene) => {
-        phoneScene.currentYaw +=
-          (phoneScene.targetYaw - phoneScene.currentYaw) * 0.08
-        phoneScene.currentPitch +=
-          (phoneScene.targetPitch - phoneScene.currentPitch) * 0.08
-        phoneScene.pivot.rotation.y += phoneScene.currentYaw
-        phoneScene.pivot.rotation.x = phoneScene.currentPitch
-        phoneScene.renderer.render(phoneScene.scene, phoneScene.camera)
-        phoneScene.pivot.rotation.y -= phoneScene.currentYaw
-      })
-    }
-
-    const setup = async () => {
-      try {
-        const [ThreeModule, { DRACOLoader, DRACO_GLTF_CONFIG }, { GLTFLoader }] =
-          await Promise.all([
-            import("three"),
-            import("three/addons/loaders/DRACOLoader.js"),
-            import("three/addons/loaders/GLTFLoader.js"),
-          ])
-        if (disposed) return
-
-        const Three = ThreeModule
-        threeModule = Three
-        const dracoLoader = new DRACOLoader().setDecoderPath(DRACO_GLTF_CONFIG)
-        disposeDracoLoader = () => {
-          dracoLoader.dispose()
-        }
-        const textureLoader = new Three.TextureLoader()
-        const gltfLoader = new GLTFLoader().setDRACOLoader(dracoLoader)
-        const [gltf, phoneTextures] = await Promise.all([
-          gltfLoader.loadAsync(iphoneModelUrl),
-          Promise.all(
-            phones.map((phone) =>
-              Promise.all(
-                phone.screens.map((screen) => textureLoader.loadAsync(screen.imageSrc)),
-              ),
-            ),
-          ),
-        ])
-
-        sourceModel = gltf.scene
-        rememberModelResources(sourceModel)
-        phoneTextures.flat().forEach((texture) => {
-          texture.colorSpace = Three.SRGBColorSpace
-          texture.flipY = false
-          texture.center.set(0.5, 0.5)
-          texture.rotation = Math.PI
-          texture.wrapS = Three.RepeatWrapping
-          texture.repeat.x = -1
-          texture.updateMatrix()
-          texture.needsUpdate = true
-          textures.add(texture)
-        })
-
-        if (disposed) {
-          disposeResources()
-          return
-        }
-
-        phones.forEach((phone, index) => {
-          const phoneElement = phoneElements[index]
-          const canvas = canvases[index]
-          const screenTextures = phoneTextures[index]
-          if (!phoneElement || !canvas || !sourceModel || !screenTextures) return
-
-          const renderer = new Three.WebGLRenderer({
-            alpha: true,
-            antialias: true,
-            canvas,
-          })
-          renderer.setClearColor(0x000000, 0)
-          renderer.outputColorSpace = Three.SRGBColorSpace
-          renderer.toneMapping = Three.ACESFilmicToneMapping
-          renderer.toneMappingExposure = 0.94
-          renderer.setPixelRatio(
-            Math.min(window.devicePixelRatio || 1, window.innerWidth <= 760 ? 1.35 : 1.75),
-          )
-          renderers.push(renderer)
-
-          const scene = new Three.Scene()
-          const camera = new Three.PerspectiveCamera(36, 1, 0.1, 100)
-          camera.position.set(0, 0, 5.45)
-          addStudioLights(scene)
-
-          const pivot = new Three.Group()
-          const model = sourceModel.clone(true)
-          model.traverse((child) => {
-            if (!(child instanceof Three.Mesh)) return
-            const childMaterials = Array.isArray(child.material)
-              ? child.material
-              : [child.material]
-            const clonedMaterials = childMaterials.map((material) => material.clone())
-            clonedMaterials.forEach(rememberMaterial)
-            child.material = Array.isArray(child.material)
-              ? clonedMaterials
-              : clonedMaterials[0]
-          })
-
-          const screenMesh = model.getObjectByName("xXDHkMplTIDAXLN")
-          if (!(screenMesh instanceof Three.Mesh)) {
-            throw new Error("iPhone screen mesh was not found")
-          }
-
-          const oldScreenMaterials = Array.isArray(screenMesh.material)
-            ? screenMesh.material
-            : [screenMesh.material]
-          oldScreenMaterials.forEach((material) => {
-            materials.delete(material)
-            material.dispose()
-          })
-          const screenMaterial = new Three.MeshBasicMaterial({
-            map: screenTextures[0],
-            toneMapped: false,
-          })
-          screenMesh.material = screenMaterial
-          rememberMaterial(screenMaterial)
-          screenSettersRef.current[index] = (screenIndex) => {
-            const nextTexture = screenTextures[Math.min(screenIndex, screenTextures.length - 1)]
-            if (!nextTexture || screenMaterial.map === nextTexture) return
-            screenMaterial.map = nextTexture
-            screenMaterial.needsUpdate = true
-          }
-          screenSettersRef.current[index](activeScreenRef.current)
-
-          const bounds = new Three.Box3().setFromObject(model)
-          const size = bounds.getSize(new Three.Vector3())
-          model.scale.multiplyScalar(3.02 / size.y)
-          const centeredBounds = new Three.Box3().setFromObject(model)
-          const center = centeredBounds.getCenter(new Three.Vector3())
-          model.position.sub(center)
-          model.position.y -= 0.02
-          pivot.rotation.y = Math.PI + Three.MathUtils.degToRad(phone.angle)
-          pivot.add(model)
-          scene.add(pivot)
-          rememberModelResources(model)
-
-          const phoneScene = {
-            camera,
-            currentPitch: 0,
-            currentYaw: 0,
-            pivot,
-            renderer,
-            scene,
-            targetPitch: 0,
-            targetYaw: 0,
-          }
-          scenes.push(phoneScene)
-
-          const resize = () => {
-            const width = Math.max(1, phoneElement.clientWidth)
-            const height = Math.max(1, phoneElement.clientHeight)
-            renderer.setSize(width, height, false)
-            camera.aspect = width / height
-            camera.updateProjectionMatrix()
-            renderer.render(scene, camera)
-          }
-          const resizeObserver = new ResizeObserver(resize)
-          resizeObserver.observe(phoneElement)
-          resizeObservers.push(resizeObserver)
-          resize()
-
-          const handlePointerMove = (event: PointerEvent) => {
-            if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
-            const rect = phoneElement.getBoundingClientRect()
-            phoneScene.targetYaw = Three.MathUtils.degToRad(
-              ((event.clientX - rect.left) / rect.width - 0.5) * 4,
-            )
-            phoneScene.targetPitch = Three.MathUtils.degToRad(
-              -((event.clientY - rect.top) / rect.height - 0.5) * 3,
-            )
-          }
-          const handlePointerLeave = () => {
-            phoneScene.targetYaw = 0
-            phoneScene.targetPitch = 0
-          }
-          phoneElement.addEventListener("pointermove", handlePointerMove)
-          phoneElement.addEventListener("pointerleave", handlePointerLeave)
-          removePointerListeners.push(() => {
-            phoneElement.removeEventListener("pointermove", handlePointerMove)
-            phoneElement.removeEventListener("pointerleave", handlePointerLeave)
-          })
-        })
-
-        if (scenes.length !== phones.length) {
-          throw new Error("Not every 3D phone could be created")
-        }
-
-        setIsThreeReady(true)
-        render()
-      } catch (error) {
-        if (!disposed) {
-          console.warn("YepBuddy 3D phones fallback:", error)
-          setIsThreeReady(false)
-        }
-      }
-    }
-
-    void setup()
-
-    return () => {
-      disposed = true
-      cancelAnimationFrame(frameId)
-      visibilityObserver.disconnect()
-      disposeResources()
-    }
-  }, [phones])
+  }, [
+    hasScreenSequence,
+    hasScrollSequence,
+    hasStepSequence,
+    isHomeSequence,
+    phoneControllerRefs,
+    phones,
+    steps,
+  ])
 
   return (
     <article
@@ -523,8 +215,6 @@ export function FeatureCard({
       className={
         background === "canvas"
           ? "mx-auto max-w-content px-page-mobile phone:px-page"
-          : background === "cool"
-          ? "mx-auto max-w-content rounded-feature-mobile bg-surface-cool px-page-mobile py-14.5 phone:px-12 desktop:rounded-feature desktop:p-feature-card"
           : "mx-auto max-w-content rounded-feature-mobile bg-surface px-page-mobile py-14.5 phone:px-12 desktop:rounded-feature desktop:p-feature-card"
       }
     >
@@ -633,42 +323,11 @@ export function FeatureCard({
                       : "relative col-start-1 row-start-1 aspect-phone w-[min(41vw,165px)] translate-x-1/5 -translate-y-8.75 desktop:w-47.5 desktop:translate-x-23.75 desktop:-translate-y-11.25"
                 }
               >
-                <div
-                  className={
-                    isThreeReady
-                      ? "absolute inset-0 overflow-hidden rounded-phone-mobile border-phone border-ink bg-device opacity-0 shadow-phone transition-opacity duration-normal desktop:rounded-phone"
-                      : "absolute inset-0 overflow-hidden rounded-phone-mobile border-phone border-ink bg-device opacity-100 shadow-phone transition-opacity duration-normal desktop:rounded-phone"
-                  }
-                >
-                  {phone.screens.map((screen, screenIndex) => (
-                    <img
-                      alt={screen.imageAlt}
-                      className={
-                        screenIndex === 0
-                          ? "absolute inset-0 h-full w-full bg-device object-cover opacity-100"
-                          : "invisible absolute inset-0 h-full w-full bg-device object-cover opacity-0"
-                      }
-                      key={screen.imageSrc}
-                      ref={(element) => {
-                        if (!screenImageRefs.current[phoneIndex]) {
-                          screenImageRefs.current[phoneIndex] = []
-                        }
-                        screenImageRefs.current[phoneIndex][screenIndex] = element
-                      }}
-                      src={screen.imageSrc}
-                    />
-                  ))}
-                </div>
-                <canvas
-                  aria-hidden="true"
-                  ref={(element) => {
-                    canvasRefs.current[phoneIndex] = element
-                  }}
-                  className={
-                    isThreeReady
-                      ? "pointer-events-none absolute inset-0 h-full w-full opacity-100 transition-opacity duration-slow"
-                      : "pointer-events-none absolute inset-0 h-full w-full opacity-0 transition-opacity duration-slow"
-                  }
+                <SequencePhone3D
+                  angle={phone.angle}
+                  className="w-full"
+                  controllerRef={phoneControllerRefs[phoneIndex]}
+                  screens={phone.screens}
                 />
                 {hasStepSequence ? (
                   <span
