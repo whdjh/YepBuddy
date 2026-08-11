@@ -227,10 +227,19 @@ export function FeatureCard({
       return
     }
 
+    if (
+      window.matchMedia("(max-width: 760px), (prefers-reduced-motion: reduce)")
+        .matches
+    ) {
+      return
+    }
+
     let disposed = false
     let frameId = 0
-    let isVisible = true
+    let isVisible = false
     let sourceModel: THREE.Group | null = null
+    let setupStarted = false
+    let startRendering: () => void = () => undefined
     let threeModule: typeof import("three") | null = null
     let disposeDracoLoader: () => void = () => undefined
     const geometries = new Set<THREE.BufferGeometry>()
@@ -249,14 +258,6 @@ export function FeatureCard({
       targetPitch: number
       targetYaw: number
     }[] = []
-
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting
-      },
-      { rootMargin: "200px" },
-    )
-    visibilityObserver.observe(card)
 
     const rememberMaterial = (material: THREE.Material) => {
       materials.add(material)
@@ -305,9 +306,10 @@ export function FeatureCard({
     }
 
     const render = () => {
-      if (disposed) return
-      frameId = requestAnimationFrame(render)
-      if (!isVisible) return
+      if (disposed || !isVisible) {
+        frameId = 0
+        return
+      }
 
       scenes.forEach((phoneScene) => {
         phoneScene.currentYaw +=
@@ -319,9 +321,19 @@ export function FeatureCard({
         phoneScene.renderer.render(phoneScene.scene, phoneScene.camera)
         phoneScene.pivot.rotation.y -= phoneScene.currentYaw
       })
+      frameId = requestAnimationFrame(render)
+    }
+
+    startRendering = () => {
+      if (frameId === 0 && isVisible && scenes.length === phones.length) {
+        frameId = requestAnimationFrame(render)
+      }
     }
 
     const setup = async () => {
+      if (setupStarted || disposed) return
+      setupStarted = true
+
       try {
         const [ThreeModule, { DRACOLoader, DRACO_GLTF_CONFIG }, { GLTFLoader }] =
           await Promise.all([
@@ -498,7 +510,7 @@ export function FeatureCard({
         }
 
         setIsThreeReady(true)
-        render()
+        startRendering()
       } catch (error) {
         if (!disposed) {
           console.warn("YepBuddy 3D phones fallback:", error)
@@ -507,7 +519,20 @@ export function FeatureCard({
       }
     }
 
-    void setup()
+    const visibilityObserver = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting
+        if (entry.isIntersecting) {
+          void setup()
+          startRendering()
+        } else {
+          cancelAnimationFrame(frameId)
+          frameId = 0
+        }
+      },
+      { rootMargin: "0px" },
+    )
+    visibilityObserver.observe(card)
 
     return () => {
       disposed = true
@@ -648,7 +673,11 @@ export function FeatureCard({
                           ? "absolute inset-0 h-full w-full bg-device object-cover opacity-100"
                           : "invisible absolute inset-0 h-full w-full bg-device object-cover opacity-0"
                       }
+                      decoding="async"
+                      fetchPriority="low"
+                      height="2622"
                       key={screen.imageSrc}
+                      loading="lazy"
                       ref={(element) => {
                         if (!screenImageRefs.current[phoneIndex]) {
                           screenImageRefs.current[phoneIndex] = []
@@ -656,6 +685,7 @@ export function FeatureCard({
                         screenImageRefs.current[phoneIndex][screenIndex] = element
                       }}
                       src={screen.imageSrc}
+                      width="1206"
                     />
                   ))}
                 </div>

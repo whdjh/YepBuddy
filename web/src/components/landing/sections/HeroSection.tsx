@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react"
+import journalHomeMobileImage from "../../../assets/landing/01a-journal-home-top-mobile.PNG"
 import appleIcon from "../../../assets/landing/apple-icon.png"
 import googlePlayIcon from "../../../assets/landing/google-play-icon.png"
 import journalHomeImage from "../../../assets/landing/01a-journal-home-top.PNG"
@@ -190,7 +191,11 @@ export function HeroSection({
           className="pointer-events-none absolute -bottom-10 left-1/2 aspect-square w-107.5 -translate-x-1/2 rounded-full border border-brand/12 phone:-bottom-22 phone:w-[min(620px,68vw)]"
         />
         <div ref={phoneMotionRef} className="relative z-2">
-          <HeroPhone imageAlt={screenAlt} imageSrc={journalHomeImage} />
+          <HeroPhone
+            imageAlt={screenAlt}
+            imageSrc={journalHomeImage}
+            mobileImageSrc={journalHomeMobileImage}
+          />
         </div>
       </div>
     </section>

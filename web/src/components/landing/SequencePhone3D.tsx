@@ -97,6 +97,15 @@ export function SequencePhone3D({
     controllerRef.current = controller
     syncFallbackScreen(activeScreenIndex)
 
+    if (
+      window.matchMedia("(max-width: 760px), (prefers-reduced-motion: reduce)")
+        .matches
+    ) {
+      return () => {
+        if (controllerRef.current === controller) controllerRef.current = null
+      }
+    }
+
     const disposeResources = () => {
       cancelAnimationFrame(frameId)
       resizeObserver?.disconnect()
@@ -307,7 +316,7 @@ export function SequencePhone3D({
           frameId = 0
         }
       },
-      { rootMargin: "600px 0px" },
+      { rootMargin: "300px 0px" },
     )
     visibilityObserver.observe(host)
 
