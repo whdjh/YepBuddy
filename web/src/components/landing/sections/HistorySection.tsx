@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react"
 import workoutResultBottomImage from "../../../assets/landing/09-workout-result-bottom.PNG"
 import workoutResultEditImage from "../../../assets/landing/10-workout-result-edit-sheet.png"
 import workoutResultTopImage from "../../../assets/landing/08-workout-result-top.PNG"
@@ -6,14 +7,11 @@ import sessionListScrolledImage from "../../../assets/landing/12-session-list-sc
 import sessionListTopImage from "../../../assets/landing/11-session-list-top.PNG"
 import workoutCalendarLongPressImage from "../../../assets/landing/15-workout-calendar-long-press.PNG"
 import workoutCalendarImage from "../../../assets/landing/14-workout-calendar.PNG"
-import { StaticPhone } from "../StaticPhone"
-
-type ScreenState = {
-  alt: string
-  id: string
-  image: string
-  label: string
-}
+import {
+  SequencePhone3D,
+  type SequencePhoneController,
+  type SequencePhoneScreen,
+} from "../SequencePhone3D"
 
 type HistorySectionProps = {
   calendar: {
@@ -52,21 +50,6 @@ type HistorySectionProps = {
   titleLines: readonly string[]
 }
 
-function ScreenStateGrid({ screens }: { screens: readonly ScreenState[] }) {
-  return (
-    <div className="grid grid-cols-3 items-end gap-2 phone:gap-3.5">
-      {screens.map((screen) => (
-        <figure className="m-0 min-w-0" key={screen.id}>
-          <StaticPhone className="w-full" imageAlt={screen.alt} imageSrc={screen.image} />
-          <figcaption className="mt-3 text-center text-caption font-bold text-ink-secondary">
-            {screen.label}
-          </figcaption>
-        </figure>
-      ))}
-    </div>
-  )
-}
-
 export function HistorySection({
   calendar,
   description,
@@ -77,46 +60,140 @@ export function HistorySection({
   sessionHeading,
   titleLines,
 }: HistorySectionProps) {
-  const sessionScreens: ScreenState[] = [
-    {
-      alt: imageAlts.sessionTop,
-      id: "session-top",
-      image: sessionListTopImage,
-      label: screenLabels.sessionTop,
-    },
-    {
-      alt: imageAlts.sessionScrolled,
-      id: "session-scrolled",
-      image: sessionListScrolledImage,
-      label: screenLabels.sessionScrolled,
-    },
-    {
-      alt: imageAlts.sessionFiltered,
-      id: "session-filtered",
-      image: sessionListFilteredImage,
-      label: screenLabels.sessionFiltered,
-    },
+  const historySequenceRef = useRef<HTMLDivElement>(null)
+  const calendarSequenceRef = useRef<HTMLElement>(null)
+  const sessionControllerRef = useRef<SequencePhoneController | null>(null)
+  const resultControllerRef = useRef<SequencePhoneController | null>(null)
+  const calendarControllerRef = useRef<SequencePhoneController | null>(null)
+  const sessionLabelRef = useRef<HTMLElement>(null)
+  const resultLabelRef = useRef<HTMLElement>(null)
+  const calendarLabelRef = useRef<HTMLElement>(null)
+  const sessionScreens: SequencePhoneScreen[] = [
+    { imageAlt: imageAlts.sessionTop, imageSrc: sessionListTopImage },
+    { imageAlt: imageAlts.sessionScrolled, imageSrc: sessionListScrolledImage },
+    { imageAlt: imageAlts.sessionFiltered, imageSrc: sessionListFilteredImage },
   ]
-  const resultScreens: ScreenState[] = [
-    {
-      alt: imageAlts.resultTop,
-      id: "result-top",
-      image: workoutResultTopImage,
-      label: screenLabels.resultTop,
-    },
-    {
-      alt: imageAlts.resultBottom,
-      id: "result-bottom",
-      image: workoutResultBottomImage,
-      label: screenLabels.resultBottom,
-    },
-    {
-      alt: imageAlts.resultEdit,
-      id: "result-edit",
-      image: workoutResultEditImage,
-      label: screenLabels.resultEdit,
-    },
+  const resultScreens: SequencePhoneScreen[] = [
+    { imageAlt: imageAlts.resultTop, imageSrc: workoutResultTopImage },
+    { imageAlt: imageAlts.resultBottom, imageSrc: workoutResultBottomImage },
+    { imageAlt: imageAlts.resultEdit, imageSrc: workoutResultEditImage },
   ]
+  const calendarScreens: SequencePhoneScreen[] = [
+    { imageAlt: calendar.imageAlts.default, imageSrc: workoutCalendarImage },
+    { imageAlt: calendar.imageAlts.pressed, imageSrc: workoutCalendarLongPressImage },
+  ]
+
+  useEffect(() => {
+    const historySequence = historySequenceRef.current
+    const calendarSequence = calendarSequenceRef.current
+    const sessionLabel = sessionLabelRef.current
+    const resultLabel = resultLabelRef.current
+    const calendarLabel = calendarLabelRef.current
+    if (
+      !historySequence ||
+      !calendarSequence ||
+      !sessionLabel ||
+      !resultLabel ||
+      !calendarLabel
+    ) {
+      return
+    }
+
+    let cancelled = false
+    let animationMedia: { revert: () => void } | undefined
+
+    const setupAnimation = async () => {
+      const [{ gsap }, { ScrollTrigger }] = await Promise.all([
+        import("gsap"),
+        import("gsap/ScrollTrigger"),
+      ])
+      if (cancelled) return
+
+      const syncHistory = (progress: number) => {
+        const sessionIndex = progress >= 0.73 ? 2 : progress >= 0.31 ? 1 : 0
+        const resultIndex = progress >= 0.79 ? 2 : progress >= 0.45 ? 1 : 0
+        const sessionLabels = [
+          screenLabels.sessionTop,
+          screenLabels.sessionScrolled,
+          screenLabels.sessionFiltered,
+        ]
+        const resultLabels = [
+          screenLabels.resultTop,
+          screenLabels.resultBottom,
+          screenLabels.resultEdit,
+        ]
+        sessionControllerRef.current?.setScreen(sessionIndex)
+        resultControllerRef.current?.setScreen(resultIndex)
+        sessionControllerRef.current?.setPose({
+          rotationY: Math.sin(progress * Math.PI) * 0.12,
+        })
+        resultControllerRef.current?.setPose({
+          rotationY: -Math.sin(progress * Math.PI) * 0.12,
+        })
+        sessionLabel.textContent = sessionLabels[sessionIndex]
+        resultLabel.textContent = resultLabels[resultIndex]
+        historySequence.dataset.progress = progress.toFixed(3)
+      }
+
+      const syncCalendar = (progress: number) => {
+        const screenIndex = progress >= 0.58 ? 1 : 0
+        calendarControllerRef.current?.setScreen(screenIndex)
+        calendarControllerRef.current?.setPose({ rotationY: progress * 0.16 })
+        calendarLabel.textContent =
+          screenIndex === 0
+            ? calendar.screenLabels.default
+            : calendar.screenLabels.pressed
+        calendarSequence.dataset.progress = progress.toFixed(3)
+      }
+
+      gsap.registerPlugin(ScrollTrigger)
+      const media = gsap.matchMedia(historySequence)
+      animationMedia = media
+      media.add(
+        {
+          motion: "(prefers-reduced-motion: no-preference)",
+          reduced: "(prefers-reduced-motion: reduce)",
+        },
+        (context) => {
+          if (context.conditions?.reduced) {
+            syncHistory(0)
+            syncCalendar(0)
+            return
+          }
+
+          const historyTrigger = ScrollTrigger.create({
+            end: "bottom bottom",
+            invalidateOnRefresh: true,
+            onRefresh: (self) => syncHistory(self.progress),
+            onUpdate: (self) => syncHistory(self.progress),
+            scrub: 0.35,
+            start: () =>
+              window.innerWidth <= 760 ? "top 72%" : "top top+=64",
+            trigger: historySequence,
+          })
+          const calendarTrigger = ScrollTrigger.create({
+            end: "bottom bottom",
+            invalidateOnRefresh: true,
+            onRefresh: (self) => syncCalendar(self.progress),
+            onUpdate: (self) => syncCalendar(self.progress),
+            scrub: 0.35,
+            start: () =>
+              window.innerWidth <= 760 ? "top 72%" : "top top+=64",
+            trigger: calendarSequence,
+          })
+          syncHistory(historyTrigger.progress)
+          syncCalendar(calendarTrigger.progress)
+        },
+      )
+    }
+
+    void setupAnimation()
+
+    return () => {
+      cancelled = true
+      animationMedia?.revert()
+    }
+  }, [calendar.screenLabels, screenLabels])
 
   return (
     <section
@@ -126,87 +203,113 @@ export function HistorySection({
       id="history"
     >
       <div className="mx-auto max-w-content-wide px-page-mobile phone:px-page">
-        <article className="grid items-center gap-10 desktop:grid-cols-[0.72fr_1.28fr] desktop:gap-20">
-          <div className="max-w-copy">
-            <p className="m-0 text-sm font-bold text-brand">{eyebrow}</p>
-            <h2
-              id="history-title"
-              className="my-4.5 break-keep text-section-mobile font-heavy text-ink desktop:my-6 desktop:text-feature"
-            >
-              {titleLines.map((line) => (
-                <span className="block" key={line}>
-                  {line}
-                </span>
-              ))}
-            </h2>
-            <p className="m-0 break-keep text-body text-ink-secondary desktop:text-body-lg">
-              {description}
-            </p>
-          </div>
+        <div
+          ref={historySequenceRef}
+          className="relative min-h-[220svh] motion-reduce:min-h-0 desktop:min-h-[235svh]"
+          data-history-sequence
+        >
+          <article className="desktop:sticky desktop:top-header desktop:grid desktop:min-h-[calc(100svh-64px)] desktop:grid-cols-[0.72fr_1.28fr] desktop:items-center desktop:gap-20">
+            <div className="flex min-h-[55svh] max-w-copy flex-col justify-center desktop:min-h-0">
+              <p className="m-0 text-sm font-bold text-brand">{eyebrow}</p>
+              <h2
+                id="history-title"
+                className="my-4.5 break-keep text-section-mobile font-heavy text-ink desktop:my-6 desktop:text-feature"
+              >
+                {titleLines.map((line) => (
+                  <span className="block" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+              <p className="m-0 break-keep text-body text-ink-secondary desktop:text-body-lg">
+                {description}
+              </p>
+            </div>
 
-          <div
-            aria-label={`${sessionHeading}, ${resultHeading}`}
-            className="grid gap-10 overflow-hidden rounded-visual-mobile border border-line bg-device-stage px-3 py-8 phone:px-8 desktop:rounded-feature desktop:px-10 desktop:py-12"
-            data-history-visual
-            role="group"
-          >
-            <div>
-              <h3 className="mb-4 text-sm font-bold text-ink-secondary">{sessionHeading}</h3>
-              <ScreenStateGrid screens={sessionScreens} />
+            <div
+              aria-label={`${sessionHeading}, ${resultHeading}`}
+              className="sticky top-header-mobile grid min-h-[calc(100svh-60px)] place-items-center overflow-hidden rounded-visual-mobile border border-line bg-device-stage motion-reduce:relative motion-reduce:top-auto motion-reduce:min-h-150 desktop:static desktop:min-h-170 desktop:rounded-feature"
+              data-history-visual
+              role="group"
+            >
+              <figure className="relative col-start-1 row-start-1 m-0 -translate-x-27% -translate-y-12%">
+                <SequencePhone3D
+                  angle={8}
+                  className="w-[min(43vw,165px)] desktop:w-53.5"
+                  controllerRef={sessionControllerRef}
+                  screens={sessionScreens}
+                />
+              </figure>
+              <figure className="relative col-start-1 row-start-1 m-0 translate-x-[27%] translate-y-[12%]">
+                <SequencePhone3D
+                  angle={-8}
+                  className="w-[min(43vw,165px)] desktop:w-53.5"
+                  controllerRef={resultControllerRef}
+                  screens={resultScreens}
+                />
+              </figure>
+              <div className="pointer-events-none absolute inset-x-0 bottom-5 z-5 grid grid-cols-2 px-7 text-center desktop:px-14">
+                <span
+                  ref={sessionLabelRef}
+                  className="text-caption font-bold text-ink-secondary"
+                >
+                  {screenLabels.sessionTop}
+                </span>
+                <span
+                  ref={resultLabelRef}
+                  className="text-caption font-bold text-ink-secondary"
+                >
+                  {screenLabels.resultTop}
+                </span>
+              </div>
             </div>
-            <div className="border-t border-line-strong pt-8">
-              <h3 className="mb-4 text-sm font-bold text-ink-secondary">{resultHeading}</h3>
-              <ScreenStateGrid screens={resultScreens} />
-            </div>
-          </div>
-        </article>
+          </article>
+        </div>
 
         <article
+          ref={calendarSequenceRef}
           aria-labelledby="history-calendar-title"
-          className="grid items-center gap-10 pt-section-mobile desktop:grid-cols-[1.08fr_0.92fr] desktop:gap-20 desktop:pt-section"
+          className="relative min-h-[190svh] pt-section-mobile motion-reduce:min-h-0 desktop:min-h-[175svh] desktop:pt-section"
+          data-calendar-peek-sequence
         >
-          <div className="order-2 max-w-copy desktop:order-2">
-            <p className="m-0 text-sm font-bold text-brand">{calendar.eyebrow}</p>
-            <h2
-              id="history-calendar-title"
-              className="my-4.5 break-keep text-section-mobile font-heavy text-ink desktop:my-6 desktop:text-feature"
-            >
-              {calendar.titleLines.map((line) => (
-                <span className="block" key={line}>
-                  {line}
-                </span>
-              ))}
-            </h2>
-            <p className="m-0 break-keep text-body text-ink-secondary desktop:text-body-lg">
-              {calendar.description}
-            </p>
-          </div>
+          <div className="desktop:sticky desktop:top-header desktop:grid desktop:min-h-[calc(100svh-64px)] desktop:grid-cols-[1.08fr_0.92fr] desktop:items-center desktop:gap-20">
+            <div className="flex min-h-[55svh] max-w-copy flex-col justify-center desktop:order-2 desktop:min-h-0">
+              <p className="m-0 text-sm font-bold text-brand">{calendar.eyebrow}</p>
+              <h2
+                id="history-calendar-title"
+                className="my-4.5 break-keep text-section-mobile font-heavy text-ink desktop:my-6 desktop:text-feature"
+              >
+                {calendar.titleLines.map((line) => (
+                  <span className="block" key={line}>
+                    {line}
+                  </span>
+                ))}
+              </h2>
+              <p className="m-0 break-keep text-body text-ink-secondary desktop:text-body-lg">
+                {calendar.description}
+              </p>
+            </div>
 
-          <div
-            aria-label={calendar.eyebrow}
-            className="order-1 grid min-h-137.5 grid-cols-2 place-items-center gap-3 overflow-hidden rounded-visual-mobile border border-line bg-device-stage px-4 py-9 phone:px-8 desktop:min-h-160 desktop:rounded-feature"
-            role="group"
-          >
-            <figure className="m-0 w-full max-w-48">
-              <StaticPhone
-                className="w-full -rotate-3"
-                imageAlt={calendar.imageAlts.default}
-                imageSrc={workoutCalendarImage}
-              />
-              <figcaption className="mt-3 text-center text-caption font-bold text-ink-secondary">
-                {calendar.screenLabels.default}
-              </figcaption>
-            </figure>
-            <figure className="m-0 w-full max-w-48">
-              <StaticPhone
-                className="w-full rotate-3"
-                imageAlt={calendar.imageAlts.pressed}
-                imageSrc={workoutCalendarLongPressImage}
-              />
-              <figcaption className="mt-3 text-center text-caption font-bold text-ink-secondary">
-                {calendar.screenLabels.pressed}
-              </figcaption>
-            </figure>
+            <div
+              aria-label={calendar.eyebrow}
+              className="sticky top-header-mobile grid min-h-[calc(100svh-60px)] place-items-center overflow-hidden rounded-visual-mobile border border-line bg-device-stage motion-reduce:relative motion-reduce:top-auto motion-reduce:min-h-150 desktop:static desktop:order-1 desktop:min-h-160 desktop:rounded-feature"
+              role="group"
+            >
+              <figure className="m-0">
+                <SequencePhone3D
+                  angle={8}
+                  className="w-47.5 desktop:w-56.25"
+                  controllerRef={calendarControllerRef}
+                  screens={calendarScreens}
+                />
+                <figcaption
+                  ref={calendarLabelRef}
+                  className="mt-3 text-center text-caption font-bold text-ink-secondary"
+                >
+                  {calendar.screenLabels.default}
+                </figcaption>
+              </figure>
+            </div>
           </div>
         </article>
       </div>

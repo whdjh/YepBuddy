@@ -59,6 +59,7 @@
         "countdown": "YepBuddy 운동 시작 카운트다운",
         "activeTop": "운동 중 세트와 운동 부위를 기록하는 화면 상단",
         "activeBottom": "운동 중 메모와 실시간 타이머를 확인하는 화면",
+        "drawerOpen": "운동 중 기록 메뉴를 연 화면",
         "drawerCardio": "운동 중 유산소 기록 메뉴를 연 화면",
         "liveIsland": "확장된 다이내믹 아일랜드의 YepBuddy 운동 기록",
         "liveLock": "잠금화면의 YepBuddy 운동 Live Activity",

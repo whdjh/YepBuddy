@@ -59,6 +59,7 @@
         "countdown": "YepBuddy workout start countdown",
         "activeTop": "Top of the in-workout set and body-area logging screen",
         "activeBottom": "In-workout notes and live timer screen",
+        "drawerOpen": "In-workout screen with the logging menu open",
         "drawerCardio": "In-workout screen with the cardio recording menu open",
         "liveIsland": "Expanded Dynamic Island showing a YepBuddy workout",
         "liveLock": "YepBuddy workout Live Activity on the Lock Screen",
