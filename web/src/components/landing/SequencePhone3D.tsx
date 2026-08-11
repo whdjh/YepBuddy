@@ -7,14 +7,8 @@ export type SequencePhoneScreen = {
   imageSrc: string
 }
 
-export type SequencePhonePose = {
-  positionX?: number
-  rotationX?: number
-  rotationY?: number
-}
-
 export type SequencePhoneController = {
-  setPose: (pose: SequencePhonePose) => void
+  setRotationY: (rotationY: number) => void
   setScreen: (index: number) => void
 }
 
@@ -58,11 +52,7 @@ export function SequencePhone3D({
     const geometries = new Set<THREE.BufferGeometry>()
     const materials = new Set<THREE.Material>()
     const textures = new Set<THREE.Texture>()
-    const pose: Required<SequencePhonePose> = {
-      positionX: 0,
-      rotationX: 0,
-      rotationY: 0,
-    }
+    let rotationY = 0
 
     const syncFallbackScreen = (index: number) => {
       fallbackImageRefs.current.forEach((image, imageIndex) => {
@@ -83,17 +73,12 @@ export function SequencePhone3D({
       screenMaterial.needsUpdate = true
     }
 
-    const setPose = (nextPose: SequencePhonePose) => {
-      if (nextPose.positionX !== undefined) pose.positionX = nextPose.positionX
-      if (nextPose.rotationX !== undefined) pose.rotationX = nextPose.rotationX
-      if (nextPose.rotationY !== undefined) pose.rotationY = nextPose.rotationY
-      if (!scrollGroup) return
-      scrollGroup.position.x = pose.positionX
-      scrollGroup.rotation.x = pose.rotationX
-      scrollGroup.rotation.y = pose.rotationY
+    const setRotationY = (nextRotationY: number) => {
+      rotationY = nextRotationY
+      if (scrollGroup) scrollGroup.rotation.y = rotationY
     }
 
-    const controller: SequencePhoneController = { setPose, setScreen }
+    const controller: SequencePhoneController = { setRotationY, setScreen }
     controllerRef.current = controller
     syncFallbackScreen(activeScreenIndex)
 
@@ -147,10 +132,6 @@ export function SequencePhone3D({
           texture.rotation = Math.PI
           texture.wrapS = Three.RepeatWrapping
           texture.repeat.x = -1
-          texture.updateMatrix()
-          texture.generateMipmaps = true
-          texture.minFilter = Three.LinearMipmapLinearFilter
-          texture.magFilter = Three.LinearFilter
           texture.needsUpdate = true
           textures.add(texture)
         })
@@ -200,7 +181,7 @@ export function SequencePhone3D({
 
         const bounds = new Three.Box3().setFromObject(model)
         const size = bounds.getSize(new Three.Vector3())
-        model.scale.multiplyScalar((window.innerWidth <= 760 ? 2.72 : 3.02) / size.y)
+        model.scale.multiplyScalar(3.02 / size.y)
         const centeredBounds = new Three.Box3().setFromObject(model)
         const center = centeredBounds.getCenter(new Three.Vector3())
         model.position.sub(center)
@@ -209,7 +190,7 @@ export function SequencePhone3D({
 
         const scene = new Three.Scene()
         const camera = new Three.PerspectiveCamera(36, 1, 0.1, 100)
-        camera.position.set(0, 0, window.innerWidth <= 760 ? 5.75 : 5.45)
+        camera.position.set(0, 0, 5.45)
         scene.add(new Three.HemisphereLight(0xffffff, 0x30363d, 1.7))
         const keyLight = new Three.DirectionalLight(0xffffff, 3.15)
         keyLight.position.set(-3.5, 5.5, 6.5)
@@ -226,16 +207,14 @@ export function SequencePhone3D({
         interactionGroup.add(model)
         scrollGroup.add(interactionGroup)
         scene.add(scrollGroup)
-        setPose(pose)
+        setRotationY(rotationY)
 
         renderer = new Three.WebGLRenderer({ alpha: true, antialias: true, canvas })
         renderer.setClearColor(0x000000, 0)
         renderer.outputColorSpace = Three.SRGBColorSpace
         renderer.toneMapping = Three.ACESFilmicToneMapping
         renderer.toneMappingExposure = 0.94
-        renderer.setPixelRatio(
-          Math.min(window.devicePixelRatio || 1, window.innerWidth <= 760 ? 1.5 : 2),
-        )
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2))
         screenTextures.forEach((texture) => {
           texture.anisotropy = Math.min(8, renderer?.capabilities.getMaxAnisotropy() ?? 1)
           texture.needsUpdate = true
@@ -259,7 +238,6 @@ export function SequencePhone3D({
         let targetPitch = 0
         let targetYaw = 0
         const handlePointerMove = (event: PointerEvent) => {
-          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
           const rect = host.getBoundingClientRect()
           targetYaw = Three.MathUtils.degToRad(
             ((event.clientX - rect.left) / rect.width - 0.5) * 4,

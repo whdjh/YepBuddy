@@ -124,26 +124,24 @@ export function HistorySection({
         ]
         sessionControllerRef.current?.setScreen(sessionIndex)
         resultControllerRef.current?.setScreen(resultIndex)
-        sessionControllerRef.current?.setPose({
-          rotationY: Math.sin(progress * Math.PI) * 0.12,
-        })
-        resultControllerRef.current?.setPose({
-          rotationY: -Math.sin(progress * Math.PI) * 0.12,
-        })
+        sessionControllerRef.current?.setRotationY(
+          Math.sin(progress * Math.PI) * 0.12,
+        )
+        resultControllerRef.current?.setRotationY(
+          -Math.sin(progress * Math.PI) * 0.12,
+        )
         sessionLabel.textContent = sessionLabels[sessionIndex]
         resultLabel.textContent = resultLabels[resultIndex]
-        historySequence.dataset.progress = progress.toFixed(3)
       }
 
       const syncCalendar = (progress: number) => {
         const screenIndex = progress >= 0.58 ? 1 : 0
         calendarControllerRef.current?.setScreen(screenIndex)
-        calendarControllerRef.current?.setPose({ rotationY: progress * 0.16 })
+        calendarControllerRef.current?.setRotationY(progress * 0.16)
         calendarLabel.textContent =
           screenIndex === 0
             ? calendar.screenLabels.default
             : calendar.screenLabels.pressed
-        calendarSequence.dataset.progress = progress.toFixed(3)
       }
 
       gsap.registerPlugin(ScrollTrigger)

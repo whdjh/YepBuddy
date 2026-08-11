@@ -117,10 +117,9 @@ export function JournalSection({
           (1 - easeRange(0.6, 0.62, progress))
 
         phoneControllerRef.current?.setScreen(screenIndex)
-        phoneControllerRef.current?.setPose({
-          positionX: 0,
-          rotationY: Math.PI * (turnToBack + turnToFront),
-        })
+        phoneControllerRef.current?.setRotationY(
+          Math.PI * (turnToBack + turnToFront),
+        )
         copyElements.forEach((element, index) => {
           const isActive = index === copyIndex
           element.setAttribute("aria-hidden", String(!isActive))
@@ -135,9 +134,6 @@ export function JournalSection({
           autoAlpha: liveVisibility,
           y: 14 * (1 - liveVisibility),
         })
-        sequence.dataset.copy = String(copyIndex)
-        sequence.dataset.progress = progress.toFixed(3)
-        sequence.dataset.screen = String(screenIndex)
       }
 
       gsap.registerPlugin(ScrollTrigger)
@@ -151,7 +147,7 @@ export function JournalSection({
         (context) => {
           if (context.conditions?.reduced) {
             phoneControllerRef.current?.setScreen(0)
-            phoneControllerRef.current?.setPose({ positionX: 0, rotationY: 0 })
+            phoneControllerRef.current?.setRotationY(0)
             return
           }
 
@@ -239,7 +235,6 @@ export function JournalSection({
           <div className="sticky top-header-mobile grid h-[58svh] min-h-100 place-items-center overflow-hidden rounded-visual-mobile border border-line bg-device-stage motion-reduce:relative motion-reduce:top-auto motion-reduce:h-137.5 desktop:top-header desktop:h-[calc(100svh-64px)] desktop:min-h-155 desktop:rounded-feature">
             <div className="pointer-events-none absolute aspect-square w-[72%] rounded-full bg-[radial-gradient(circle,rgba(155,126,86,0.2),rgba(155,126,86,0)_68%)]" />
             <SequencePhone3D
-              angle={0}
               className="z-2 w-[min(48vw,190px)] desktop:w-58.75"
               controllerRef={phoneControllerRef}
               screens={phoneScreens}

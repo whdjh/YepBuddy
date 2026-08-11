@@ -69,9 +69,9 @@ export function CalendarHandoffSection({
         const detailTurn = easeRange(0.62, 0.84, progress)
 
         phoneControllerRef.current?.setScreen(screenIndex)
-        phoneControllerRef.current?.setPose({
-          rotationY: monthTurn * 0.18 - detailTurn * 0.34,
-        })
+        phoneControllerRef.current?.setRotationY(
+          monthTurn * 0.18 - detailTurn * 0.34,
+        )
         copyElements.forEach((element, index) => {
           const isActive = index === copyIndex
           element.setAttribute("aria-hidden", String(!isActive))
@@ -82,9 +82,6 @@ export function CalendarHandoffSection({
             y: isActive ? 0 : 22,
           })
         })
-        sequence.dataset.copy = String(copyIndex)
-        sequence.dataset.progress = progress.toFixed(3)
-        sequence.dataset.screen = String(screenIndex)
       }
 
       gsap.registerPlugin(ScrollTrigger)
@@ -98,7 +95,7 @@ export function CalendarHandoffSection({
         (context) => {
           if (context.conditions?.reduced) {
             phoneControllerRef.current?.setScreen(0)
-            phoneControllerRef.current?.setPose({ rotationY: 0 })
+            phoneControllerRef.current?.setRotationY(0)
             return
           }
 
