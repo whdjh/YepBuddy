@@ -69,8 +69,7 @@ export function WorkoutDrawer({
 }: WorkoutDrawerProps) {
   const { t } = useTranslation()
   const accentColor = useResolvedColorToken(semanticColorTokens.accent)
-  const cardioColor = useResolvedColorToken(semanticColorTokens.statusSuccess)
-  const onDangerColor = useResolvedColorToken(semanticColorTokens.onAccent)
+  const cardioColor = accentColor
 
   const collapseHeight =
     BUTTONS_HEIGHT + (Platform.OS === "android" ? 0 : bottomPadding)
@@ -80,14 +79,7 @@ export function WorkoutDrawer({
   const timerControl = getWorkoutDrawerTimerControl(isPaused)
   const canEndWorkout = canEndWorkoutFromDrawer(isPaused)
   const canStartCardio = !isPaused && !hasCardioStarted
-  const cardioButtonBorderColor = hasCardioStarted
-    ? cardioColor
-    : "rgba(34,197,94,0.45)"
-  const cardioButtonBackgroundColor = hasCardioStarted
-    ? cardioColor
-    : "rgba(255,255,255,0.08)"
   const cardioButtonOpacity = isPaused && !hasCardioStarted ? 0.55 : 1
-  const cardioIconColor = hasCardioStarted ? onDangerColor : cardioColor
   const timerControlBackgroundColor =
     timerControl.tone === "neutral" ? "rgba(255,255,255,0.12)" : accentColor
 
@@ -171,11 +163,9 @@ export function WorkoutDrawer({
               disabled: !canStartCardio,
               selected: hasCardioStarted,
             }}
-            className="items-center justify-center rounded-yb-icon"
+            className="items-center justify-center rounded-full"
             style={{
-              backgroundColor: cardioButtonBackgroundColor,
-              borderColor: cardioButtonBorderColor,
-              borderWidth: 1,
+              backgroundColor: "rgba(255,255,255,0.08)",
               height: 48,
               opacity: cardioButtonOpacity,
               position: "relative",
@@ -185,11 +175,10 @@ export function WorkoutDrawer({
             {hasCardioStarted ? (
               <Animated.View
                 pointerEvents="none"
-                className="absolute"
+                className="absolute rounded-full"
                 style={[
                   {
                     borderColor: "rgba(255,255,255,0.44)",
-                    borderRadius: 18,
                     borderWidth: 2,
                     height: 56,
                     left: -4,
@@ -203,29 +192,8 @@ export function WorkoutDrawer({
             <SymbolView
               name="figure.run"
               size={22}
-              tintColor={cardioIconColor}
+              tintColor={cardioColor}
             />
-            {hasCardioStarted ? (
-              <View
-                pointerEvents="none"
-                className="absolute items-center justify-center rounded-full"
-                style={{
-                  backgroundColor: onDangerColor,
-                  borderColor: "#161b22",
-                  borderWidth: 2,
-                  height: 16,
-                  right: -5,
-                  top: -5,
-                  width: 16,
-                }}
-              >
-                <SymbolView
-                  name="checkmark"
-                  size={9}
-                  tintColor={cardioColor}
-                />
-              </View>
-            ) : null}
           </Pressable>
 
           <WorkoutTimerText state={workoutState} />
