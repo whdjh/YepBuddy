@@ -1,90 +1,50 @@
 # YepBuddy
 
-YepBuddy는 운동 기록 모바일 앱, 서비스 랜딩페이지, 프로틴 가격 추적 워커를 함께 관리하는 모노레포입니다.
+YepBuddy는 운동 기록과 프로틴 가격 추적을 제공하는 Expo/React Native 기반 iOS·Android 피트니스 앱입니다.
 
-이 저장소는 단일 앱 제품이면서 동시에 Expo/React Native 기반 피트니스 앱을 만드는 개발자가 참고할 수 있는 공개 구현 사례를 목표로 합니다. 운동 세션 상태 관리, HealthKit 연동, 위치 기반 운동 리마인더, 라이브 액티비티, 가격 추적 워커처럼 모바일 앱에서 반복적으로 부딪히는 기능을 실제 서비스 코드 형태로 확인할 수 있습니다.
+하나의 제품을 구성하는 모바일 앱, 서비스 랜딩페이지, 가격 추적 워커와 배포 자동화를 모노레포에서 함께 관리합니다.
 
-## 오픈소스 활용 가치
+[서비스 바로가기](https://yepbuddy.netlify.app/)
 
-- Expo/React Native 앱에서 운동 기록, 루틴 진행, 알림, 위치 권한을 함께 다루는 구조를 참고할 수 있습니다.
-- iOS HealthKit, 라이브 액티비티, 다이내믹 아일랜드 연동을 앱 기능과 연결한 예제를 제공합니다.
-- Supabase를 사용하는 모바일 앱과 백그라운드 워커의 환경변수, 데이터 접근, 배포 구성을 함께 살펴볼 수 있습니다.
-- 기능 문서, PR 단위 변경, 릴리스 자동화 워크플로를 통해 작은 앱을 지속적으로 유지관리하는 방식을 공유합니다.
+## 전체 아키텍처
 
-## 운영 현황
+![YepBuddy 전체 아키텍처](./docs/assets/yepbuddy-architecture.png)
 
-이 프로젝트는 공개 리포지터리에서 기능 개발, 버그 수정, 문서 갱신을 PR 단위로 관리합니다. 현재는 핵심 메인테이너 중심으로 운영하며, 앱 안정화와 재사용 가능한 구현 정리를 우선순위로 두고 있습니다.
+---
 
-## 프로젝트 구성
+## 개발 및 배포 구성
 
-- `mobile`: Expo/React Native 기반 YepBuddy 모바일 앱
-- `web`: React/Vite 기반 서비스 랜딩페이지
-- `worker`: 쿠팡 파트너스 상품 검색과 Supabase 가격 저장을 담당하는 가격 추적 워커
+### iOS·Android 앱 스토어 배포
 
-## 사전 준비
+개인 프로젝트는 배포 간격이 일정하지 않아, 배포할 때마다 iOS와 Android의 서로 다른 명령어와 옵션을 다시 확인해야 했습니다. 이 과정의 실수를 줄이고 동일한 절차를 반복해서 사용할 수 있도록 스토어 배포를 GitHub Actions로 자동화했습니다.
 
-- Bun
-- pnpm 10
-- Node.js
-- iOS/Android 개발 환경은 Expo 네이티브 빌드 실행 시 필요합니다.
+플랫폼과 제출 여부만 선택하면 빌드부터 스토어 제출까지 실행되며, 배포 명령어를 따로 기억하거나 관리할 필요가 없어졌습니다. 안전한 배포를 위해 `main` 브랜치와 메인테이너 계정에서만 실행되도록 제한했습니다.
 
-각 하위 프로젝트의 의존성 설치 방식과 세부 실행 방법은 해당 디렉터리의 README를 함께 확인합니다.
+### 릴리스 관리
 
-## 실행
+Release Please가 Conventional Commits를 기준으로 앱 버전과 `CHANGELOG`를 갱신하고 릴리스 PR을 생성합니다. 이때 iOS `buildNumber`와 Android `versionCode`도 앱 버전에 맞춰 자동으로 반영합니다.
 
-레포지토리 루트에서 실행합니다.
+릴리스 PR이 병합되면 태그와 GitHub Release를 생성합니다. 플랫폼별 버전을 직접 수정하는 반복 작업을 없애고, 빌드 번호 중복으로 스토어 제출이 실패하는 위험을 줄였습니다.
 
-```bash
-bun run mobile
-bun run mobile:ios
-bun run mobile:android
-bun run web
-bun run worker
-```
+### 모노레포를 선택한 이유
 
-하위 프로젝트 디렉터리에서 직접 실행할 수도 있습니다.
+개인 프로젝트에서 모바일·웹·워커를 별도 저장소로 운영하면 PR, 설정, 자동화 워크플로 등 관리해야 할 지점이 늘어납니다. 특히 프로틴 가격 기능은 워커의 수집부터 Supabase 저장, 모바일 앱의 조회까지 하나의 흐름으로 연결됩니다.
 
-```bash
-cd mobile
-bun run start
+관리 지점을 줄이기 위해 세 프로젝트와 가격 수집·릴리스·스토어 배포 워크플로를 하나의 모노레포에서 관리합니다. 제품 단위의 변경을 한곳에서 검토하면서도 각 프로젝트의 빌드와 실행 구조는 독립적으로 유지했습니다.
 
-cd ../web
-pnpm dev
+---
 
-cd ../worker
-node --env-file=../.env.local trackers/all.js
-```
+## 핵심 구현
 
-## 환경변수
+### Mobile
 
-루트의 `.env.local`을 공통 로컬 환경변수 파일로 사용합니다. 필요한 경우 각 하위 프로젝트에도 `.env.local`을 둘 수 있습니다.
+- [상태 관리와 스냅샷 복구를 통한 운동 기록 유실 방지](mobile/README.md#1-상태-관리와-스냅샷-복구를-통한-운동-기록-유실-방지)
+- [플랫폼별 디자인을 공통 컴포넌트로 통합한 iOS·Android UI 구축](mobile/README.md#2-플랫폼별-디자인을-공통-컴포넌트로-통합한-iosandroid-ui-구축)
+- [React Native와 HealthKit을 연결한 양방향 브릿지 구축](mobile/README.md#3-react-native와-healthkit을-연결한-양방향-브릿지-구축)
 
-모바일 앱은 Supabase 공개 키가 필요합니다.
+### Worker
 
-```text
-EXPO_PUBLIC_SUPABASE_URL
-EXPO_PUBLIC_SUPABASE_ANON_KEY
-EXPO_PUBLIC_PRIVACY_POLICY_URL
-EXPO_PUBLIC_SUPPORT_URL
-```
-
-워커는 쿠팡 파트너스와 Supabase 서비스 키가 필요합니다.
-
-```text
-COUPANG_ACCESS_KEY
-COUPANG_SECRET_KEY
-SUPABASE_URL
-SUPABASE_SERVICE_ROLE_KEY
-COUPANG_DISCOUNT_PERCENT
-```
-
-`COUPANG_DISCOUNT_PERCENT`는 선택 값입니다. `.env`, `.env.local`, 인증 키, 서비스 키는 커밋하지 않습니다.
-
-## 참고 문서
-
-- [mobile/README.md](mobile/README.md)
-- [web/README.md](web/README.md)
-- [worker/README.md](worker/README.md)
+- [가격 수집부터 판정과 시각화까지 연결한 프로틴 가격 추적](worker/README.md#1-가격-수집부터-판정과-시각화까지-연결한-프로틴-가격-추적)
 
 ## License
 
