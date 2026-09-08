@@ -164,21 +164,31 @@ export function RoutineCycleSettingsSheet({
   return (
     <Modal
       visible={visible}
-      transparent
+      transparent={Platform.OS !== "ios"}
+      presentationStyle={Platform.OS === "ios" ? "pageSheet" : "overFullScreen"}
+      allowSwipeDismissal={!isSaving}
       animationType="slide"
       onRequestClose={handleRequestClose}
     >
       <GestureHandlerRootView style={StyleSheet.absoluteFill}>
-        <View className="absolute inset-0 justify-end bg-black/25">
-          <GesturePressable
-            style={StyleSheet.absoluteFill}
-            onPress={handleRequestClose}
-            accessibilityRole="button"
-            accessibilityLabel={t("common.close")}
-          />
+        <View className={Platform.OS === "ios"
+          ? "absolute inset-0 bg-yb-surface"
+          : "absolute inset-0 justify-end bg-black/25"}
+        >
+          {Platform.OS !== "ios" && (
+            <GesturePressable
+              style={StyleSheet.absoluteFill}
+              onPress={handleRequestClose}
+              accessibilityRole="button"
+              accessibilityLabel={t("common.close")}
+            />
+          )}
           <SafeAreaView
-            className="z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle bg-yb-surface px-yb-5 pt-yb-3 shadow-yb-lg"
+            className={`bg-yb-surface px-yb-5 pt-yb-3 ${Platform.OS === "ios"
+              ? "h-full"
+              : "z-10 max-h-[88%] rounded-t-[28px] border border-yb-border-subtle shadow-yb-lg"}`}
             edges={Platform.OS === "android" ? ["bottom"] : []}
+            onAccessibilityEscape={handleRequestClose}
           >
             <View className="mb-yb-5 h-yb-1 w-yb-12 self-center rounded-full bg-yb-border-subtle" />
             <ScrollView
