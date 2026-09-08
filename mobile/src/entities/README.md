@@ -131,6 +131,17 @@ HealthKit live metric 계약:
 - reducer는 심박수 `null`로 기존 심박수를 지우지 않고, 활동/총 칼로리는 이전 값보다 작은 값을 반영하지 않는다.
 - native live metric 값이 부족하면 HealthKit 샘플 fallback 값을 병합해 표시 지표를 보강한다.
 
+HealthKit 결과 상세 계약:
+
+- `getWorkoutSessionDetailData`는 저장 세션을 먼저 읽고 `healthKitWorkoutUUID`를 `getWorkoutDetail`에 전달한다. HealthKit 실패는 상세만 `null`로 만들며 저장 결과의 조회·수정·삭제를 막지 않는다.
+- 저장 `healthKitWorkoutUUID`가 있으면 해당 UUID만 조회한다. 비어 있지 않은 잘못된 UUID나 조회되지 않는 UUID도 다른 운동으로 대체하지 않는다.
+- UUID가 없는 기록은 HealthKit 초기화·조회 없이 상세를 `null`로 반환한다. 시작·종료 시각으로 운동을 추정해 연결하지 않는다. 날짜/월 요약의 기존 시작 시각 매칭 정책과 별개다.
+- `WorkoutSession.readWorkoutDetail(workoutUUID)`가 동일 workout과 연관된 심박 샘플을 조회한다. workout 연관 predicate와 시작·종료 strict predicate를 함께 사용하며, 시간대의 전체 심박 샘플 조회로 대체하지 않는다.
+- 결과 상세는 네이티브 브리지로 직접 조회하며 `react-native-health` 초기화 성공 여부에 의존하지 않는다. 권한 요청은 운동 시작 흐름에서 처리한다.
+- 네이티브가 심박 샘플을 시작 시각순으로 정렬하고 시각을 밀리초 포함 ISO 문자열로 반환한다. `healthKit.ts`는 양수 유한 BPM인 샘플만 남기며, 소수 BPM과 네이티브가 반환한 UUID·시각을 유지한다.
+- 상세에는 선택된 `workoutUUID`, `startDate`, `endDate`와 유효 심박 샘플을 전달한다. 차트 통계와 상세 평균은 같은 샘플을 사용하고, 샘플이 없을 때만 workout 평균을 보조값으로 사용한다.
+- Android와 상세 브리지 미지원 런타임은 HealthKit 접근·샘플 조회 없이 `null`을 반환한다. 원본 심박 샘플은 로컬·서버에 별도 저장하지 않는다.
+
 완료 세션 세트 수/캘린더 연결 계약:
 
 - `StoredWorkoutSession.calendarEventId`는 nullable이며, 필드가 없거나 잘못된 기존 저장값은 `null`로 정규화한다.
@@ -196,7 +207,9 @@ Feature 사용처:
 - `features/view-proteins`: 상품 목록과 최신 가격을 조회하고 `mergeProteinListItems`로 리스트 모델 생성, `ProteinCard`와 disclosure 렌더링
 - `features/view-protein-detail`: 단건 상품, 가격 히스토리, 맛 정보를 조회하고 `buildProteinDetail`로 상세 모델 생성, `PriceTrendChart`와 disclosure 렌더링
 
-구매 링크 열기는 `features/view-protein-detail`에서 `shared/lib/legalLinks`의 `getSafeWebUrl`, `openWebUrl`로 처리한다. `protein` entity 내부에서는 React Native의 URL 열기 API를 직접 호출하지 않는다.
+`PriceTrendChart`는 가격 이력을 순서 X·가격 Y로 변환하고 날짜·원화 formatter와 라벨만 `MetricChart`에 전달한다. 색상·높이·채움·최고최저 가이드와 점 선택 동작은 공용 컴포넌트가 심박 차트와 동일하게 처리하며, 가격 평균은 표시하지 않는다. 화면 계약은 [프로틴 기능서](../../docs/page/10_protein.md)를 따른다.
+
+현재 상세 화면의 구매 버튼은 비활성 상태다. `protein` entity 내부에서는 React Native의 URL 열기 API를 직접 호출하지 않는다.
 
 ## Shared API 사용
 
@@ -210,8 +223,8 @@ Protein이 사용하는 shared API:
 
 - `shared/hooks/useCardColors`: SwiftUI 기반 카드/차트 색상 토큰
 - `shared/hooks/useResolvedColorToken`, `shared/lib/designTokens`: NativeWind/CSS 변수와 primitive fallback 색상 해석
-- `shared/ui/Card`, `shared/ui/GlassSurface`: 프로틴 카드와 차트 표면
-- `shared/lib/skiaChartPaths`: 가격 차트 path 생성
+- `shared/ui/Card`: 프로틴 카드
+- `shared/ui/MetricChart`: 가격 차트의 통계·카드·선 렌더링과 점 선택·접근성 탐색
 
 `shared`에는 화면 흐름이나 특정 도메인 저장소 규칙을 올리지 않는다. 예를 들어 `sessionMetrics`와 `bodyPartSet`은 순수 함수지만 운동 도메인 의미가 강하므로 `workout-session`에 둔다.
 
@@ -231,7 +244,7 @@ Protein:
 
 - `@supabase/supabase-js`: 상품/가격/맛 데이터 조회
 - `expo-constants`: Supabase config fallback
-- `victory-native`, `@shopify/react-native-skia`: 가격 차트 렌더링
+- `victory-native`, `@shopify/react-native-skia`: 공용 `MetricChart` 내부에서 가격 차트 렌더링
 - `@expo/ui/swift-ui`: 프로틴 카드의 SwiftUI 텍스트/레이아웃
 
 ## 저장소 Key와 데이터
@@ -268,7 +281,7 @@ Protein은 로컬 저장소를 쓰지 않는다. Supabase에서는 다음을 사
 - `WorkoutProvider`는 앱 시작 시 진행 중 운동 스냅샷을 읽고, 운동 상태가 바뀌면 debounce로 저장한다.
 - `completeWorkout`은 완료 세션 저장, 결과 위치 기반 장소 학습, 장소 알림의 당일 차단 시각 갱신, geofence 동기화, 진행 중 스냅샷 삭제를 수행한다.
 - `startWorkoutSession`은 사용자 운동 시작 흐름에서만 HealthKit 권한/초기화를 요청한다.
-- HealthKit 조회 함수는 권한 캐시가 `"enabled"`일 때만 조용히 시도한다.
+- HealthKit 날짜·월 요약과 실시간 보완 샘플 조회는 기존 초기화 상태와 권한 캐시를 확인한다. 결과 상세는 저장 UUID로 네이티브 브리지를 직접 호출한다.
 - `getWorkoutLocationOnce`는 foreground location 권한을 요청하고 현재 위치를 한 번 읽는다.
 - `registerWorkoutToCalendar`는 캘린더 권한 요청, YepBuddy 캘린더 생성, 이벤트 생성을 수행하고, 생성 이벤트 ID를 해당 완료 세션에 연결한다. 권한 거부 시 설정 안내 Alert를 수행한다.
 - 캘린더 이벤트 갱신은 저장된 `calendarEventId` 또는 과거 세션의 유일 일치 후보를 대상으로 제목과 메모를 수정한다.

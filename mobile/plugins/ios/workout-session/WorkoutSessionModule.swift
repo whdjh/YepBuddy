@@ -190,12 +190,12 @@ final class WorkoutSessionModule: RCTEventEmitter {
   /// 저장된 HealthKit workout 상세 조회
   @objc(readWorkoutDetail:resolver:rejecter:)
   func readWorkoutDetail(
-    _ sessionId: String,
+    _ workoutUUID: String,
     resolver resolve: @escaping RCTPromiseResolveBlock,
     rejecter reject: @escaping RCTPromiseRejectBlock
   ) {
     controller.readWorkoutDetail(
-      sessionId: sessionId,
+      workoutUUID: workoutUUID,
       resolve: { resolve($0) },
       reject: { code, message, error in reject(code, message, error) }
     )

@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"
 import { getLocalDateKeyFromIso } from "@/shared/lib/date"
 import { getWorkoutBodyPartSetKey } from "./bodyPartSet"
 import { normalizeOptionalMetricCount } from "./metricNormalization"
+import { normalizeHealthKitWorkoutUUID } from "./healthKitNormalization"
 import { parseStoredWorkoutSession } from "./storedWorkoutSessionParser"
 import type {
   StoredWorkoutSession,
@@ -216,11 +217,9 @@ export async function updateStoredWorkoutHealthKitMetrics(
   const nextAverageHeartRate = normalizeOptionalMetricCount(
     metrics.averageHeartRate,
   )
-  const nextHealthKitWorkoutUUID =
-    typeof metrics.healthKitWorkoutUUID === "string" &&
-    metrics.healthKitWorkoutUUID.length > 0
-      ? metrics.healthKitWorkoutUUID
-      : null
+  const nextHealthKitWorkoutUUID = normalizeHealthKitWorkoutUUID(
+    metrics.healthKitWorkoutUUID,
+  )
 
   const nextSession = {
     ...session,

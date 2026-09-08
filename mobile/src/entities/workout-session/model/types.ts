@@ -120,12 +120,16 @@ export const EMPTY_WORKOUT_LIVE_STATS: WorkoutLiveStats = {
 }
 
 export interface WorkoutHeartRateSample {
+  uuid?: string
   bpm: number
   startDate: string
   endDate: string
 }
 
 export interface WorkoutHealthKitDetail {
+  workoutUUID: string
+  startDate: string
+  endDate: string
   activeKcal: number | null
   averageHeartRate: number | null
   duration: number | null

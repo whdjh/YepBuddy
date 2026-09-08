@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react"
-import { ActivityIndicator, Alert, ScrollView, Text, View } from "react-native"
+import { ActivityIndicator, Alert, Platform, ScrollView, Text, View } from "react-native"
 import { useRouter } from "expo-router"
 import { useTranslation } from "react-i18next"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
@@ -158,19 +158,6 @@ export function ResultScreen({
     healthKitAverageHeartRate: hk?.averageHeartRate ?? null,
     heartRateSamples: hk?.heartRateSamples ?? [],
   })
-  const chartData =
-    hk?.heartRateSamples.map((item, index) => ({
-      bpm: item.bpm,
-      time: index,
-    })) ?? []
-  const chartStartTimeLabel =
-    hk?.heartRateSamples && hk.heartRateSamples.length > 0
-      ? formatTime(hk.heartRateSamples[0].startDate)
-      : startTime
-  const chartEndTimeLabel =
-    hk?.heartRateSamples && hk.heartRateSamples.length > 0
-      ? formatTime(hk.heartRateSamples[hk.heartRateSamples.length - 1].endDate)
-      : endTime
 
   const flushPendingMemo = async () => {
     if (saveTimeoutRef.current) {
@@ -440,16 +427,15 @@ export function ResultScreen({
           />
 
           {/* 심박수 */}
-          {chartData.length > 0 && (
+          {Platform.OS === "ios" && hk && hk.heartRateSamples.length >= 2 && (
             <>
               <Text className="mb-yb-3 mt-yb-8 text-yb-heading-sm text-yb-fg">
                 {t("workout.result.heartRateChart")}
               </Text>
               <HeartRateChart
-                data={chartData}
-                avgBpm={avgHeartRate}
-                startTimeLabel={chartStartTimeLabel}
-                endTimeLabel={chartEndTimeLabel}
+                samples={hk.heartRateSamples}
+                workoutStartDate={hk.startDate}
+                workoutEndDate={hk.endDate}
               />
             </>
           )}

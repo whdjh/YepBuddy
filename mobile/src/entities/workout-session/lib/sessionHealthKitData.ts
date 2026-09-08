@@ -43,7 +43,7 @@ export interface WorkoutSessionMonthSummaryData {
 export interface WorkoutSessionDetailData {
   /** sessionId로 조회한 저장 운동 세션 */
   storedSession: StoredWorkoutSession | null
-  /** sessionId로 조회한 HealthKit 운동 상세 정보 */
+  /** 저장 세션의 UUID로 조회한 HealthKit 상세. UUID가 없으면 null */
   healthKitDetail: WorkoutHealthKitDetail | null
 }
 
@@ -107,10 +107,10 @@ export async function getWorkoutSessionDetailData(
     }
   }
 
-  const [storedSession, healthKitDetail] = await Promise.all([
-    getStoredWorkoutSession(sessionId),
-    getWorkoutDetail(sessionId),
-  ])
+  const storedSession = await getStoredWorkoutSession(sessionId)
+  const healthKitDetail = storedSession
+    ? await getWorkoutDetail(storedSession.healthKitWorkoutUUID).catch(() => null)
+    : null
 
   return { healthKitDetail, storedSession }
 }

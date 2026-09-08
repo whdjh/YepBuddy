@@ -42,7 +42,7 @@ YepBuddy(옙버디)는 운동 기록, 루틴 사이클, 운동 템포, 프로틴
 | 루틴·캘린더·알림 설정 | [08_settings.md](../docs/page/08_settings.md) | `src/app/settings.tsx`, `src/features/manage-settings/` |
 | 운동 장소 학습·도착 알림 | [09_workout_place_reminder.md](../docs/page/09_workout_place_reminder.md) | `src/entities/workout-session/lib/workoutPlaceArrivalReminder.ts`, `src/entities/workout-session/lib/workoutPlaceArrivalTask.ts` |
 
-프로틴 목록과 상세는 별도 화면 기능서가 아직 없다. 각각 [ProteinListScreen](../src/features/view-proteins/ui/ProteinListScreen.tsx), [ProteinDetailScreen](../src/features/view-protein-detail/ui/ProteinDetailScreen.tsx), [proteinApi](../src/entities/protein/api/proteinApi.ts)를 확인한다. 화면 동작을 바꾸면 `docs/page/`에 canonical 문서를 추가하고 [화면 목록](../docs/page/README.md)에 연결한다.
+프로틴 목록·상세·가격 차트의 화면 동작은 [10_protein.md](../docs/page/10_protein.md)를 따른다.
 
 ## 현재 기능 경계
 

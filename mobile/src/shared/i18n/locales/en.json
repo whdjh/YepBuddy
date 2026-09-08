@@ -9,6 +9,11 @@
     "more": "More",
     "confirm": "OK",
     "close": "Close",
+    "metricChart": {
+      "high": "High {{value}}",
+      "average": "Average {{value}}",
+      "low": "Low {{value}}"
+    },
     "daysShort": {
       "0": "Mon",
       "1": "Tue",
@@ -163,6 +168,9 @@
       "totalSets": "Sets",
       "avgHeartRate": "Avg Heart Rate",
       "heartRateChart": "Heart Rate",
+      "heartRateChartValue": "{{value}} BPM",
+      "heartRateChartStart": "Start {{time}}",
+      "heartRateChartEnd": "End {{time}}",
       "location": "Workout Location",
       "mapAttributionLabel": "Open OpenStreetMap copyright information",
       "statsTitle": "Workout Details",
@@ -341,6 +349,7 @@
       "priceUnit": "KRW",
       "pricePerGram": "{{value}} KRW/g",
       "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
+      "chartValue": "{{value}} KRW",
       "chartHigh": "High {{value}} KRW",
       "chartLow": "Low {{value}} KRW"
     },

@@ -227,6 +227,42 @@ View(border/radius)
 - `StatCard`는 글래스 카드만 사용합니다.
 - SwiftUI modifier가 필요한 값은 `useCardColors()`로 실제 색상을 꺼내 씁니다.
 
+### MetricChart
+
+`MetricChart`는 `{ x, y }` point를 받는 공용 선 그래프입니다. `PriceTrendChart`와 `HeartRateChart`가 같은 컴포넌트를 사용합니다.
+
+| Prop | 계약 |
+| --- | --- |
+| `points` | 읽기 전용 `{ x: number; y: number }[]`. 유한한 X/Y만 사용하고 X 순서로 안정 정렬. 같은 X의 별도 point는 유지 |
+| `formatXValue` | 선택된 point의 원본 X를 날짜·시각 등 표시 문구로 변환 |
+| `formatValue` | 단위까지 포함한 Y값 문자열 반환. 최고·평균·최저와 선택값에 같은 formatter 사용 |
+| `xDomain` | 선택적 `[시작, 종료]`. 유한한 값이며 시작 < 종료. 지정 시 구간 밖 point 제외, 실제 X 간격 보존 |
+| `showAverage` | 평균 문구와 평균 안내선 표시 여부. 기본값 `false`, 심박수에서만 사용 |
+| `startLabel`, `endLabel` | 양 끝에 표시할 도메인별 날짜/시각 문구 |
+| `accessibilityLabel` | 차트 이름. 공용 컴포넌트가 양 끝 라벨과 표시 통계를 더해 접근성 요약 생성 |
+
+공용 컴포넌트의 책임:
+
+- 유효 point가 2개 미만이면 카드 전체를 숨깁니다. 원본 point를 변경하거나 같은 X를 중복 제거하지 않습니다.
+- `GlassSurface`, 최고·평균·최저 계산과 ko/en 공통 문구, `CartesianChart`, 선·영역·가이드와 양 끝 라벨을 모두 소유합니다.
+- 가격과 심박에 동일한 accent 토큰 색상, 높이 160, 영역 채움과 최고·최저 가이드를 적용합니다. 스타일과 상호작용은 공용 컴포넌트 내부에서 결정합니다.
+- 차트 크기 측정은 `CartesianChart`가 처리하며, 측정된 좌표를 받는 `renderChart` 함수가 선·영역·가이드를 그립니다.
+- `showAverage`일 때 평균 문구를 표시합니다. 평균 가이드는 최저·최고에서 각각 범위의 15%보다 멀 때 표시하며, 최고=최저 가이드는 한 번만 그립니다. 가격 차트에는 평균 문구·안내선을 표시하지 않습니다.
+- 가이드 좌표는 Victory의 실제 `yScale`로 계산합니다. 축의 범위 조정과 데이터 선이 어긋나지 않게 합니다.
+- 통계는 같은 유효 point의 Y를 사용한 최고·산술평균·최저입니다. formatter를 호출하기 전에는 평균을 반올림하지 않습니다.
+- NativeWind 텍스트/간격 토큰, 카드 색상 토큰, light/dark 영역·가이드 투명도를 사용합니다. 통계 문구는 줄바꿈을 허용하며, 시작·종료 라벨은 부모의 `justify-between`으로 양 끝에 배치합니다.
+- 차트 영역을 누르면 실제 화면의 X/Y 좌표에서 가장 가까운 point를 선택합니다. 같은 X에 서로 다른 Y가 있어도 구분하며 선택 원과 세로선을 표시합니다.
+- 차트 위의 고정 영역은 점을 선택한 뒤 `formatXValue(x)`와 `formatValue(y)`를 표시합니다. 선택 전 안내 문구는 없으며, 손을 떼어도 선택값을 유지합니다.
+- VoiceOver·TalkBack에서는 `adjustable` 동작으로 이전·다음 point를 탐색하고 선택값을 확인합니다. 선택 상태와 접근성 처리는 호출부에 두지 않습니다.
+
+Adapter의 책임:
+
+- 프로틴은 가격 이력의 순서 X와 가격 Y를 만들고, X를 해당 날짜로 바꾸는 formatter와 원화 formatter·양 끝 날짜 라벨을 전달합니다.
+- 심박수는 entity에서 BPM을 검증한 샘플과 선택된 workout의 시작·종료 ISO 시각을 받아 X를 경과 시간 비율로 변환합니다. 도메인 `[0, 1]`, X를 `HH:mm:ss`로 바꾸는 formatter, BPM formatter와 ko/en 시작·종료 라벨을 전달합니다. iOS에서만 렌더링합니다.
+- HealthKit workout 선택과 운동 구간 필터는 네이티브 조회가, BPM 검증은 entity API가 담당합니다.
+
+현재 자동 검증은 `mobile/`에서 `bunx tsc --noEmit --pretty false`와 `bun run lint`로 수행합니다. light/dark·작은 화면·ko/en·VoiceOver 및 실제 HealthKit 연계 표시는 iPhone 실기기에서 별도로 확인합니다.
+
 ### RingProgress
 
 렌더링:
@@ -277,7 +313,7 @@ NativeWind CSS 변수를 실제 색상 문자열로 읽어옵니다. SwiftUI, Sk
 - `Card`
 - `GlassTextarea`
 - `Button`
-- `HeartRateChart`
+- `MetricChart`
 - `PriceTrendChart`
 
 ### useResolvedColorToken
@@ -418,6 +454,12 @@ useDebouncedEffect(
 
 - `SessionListScreen`
 
+### metricChart.ts
+
+`getMetricChartData(points, xDomain?)`는 유효 point와 안정 정렬, 최고·평균·최저, X/Y 범위와 평균 가이드 표시 여부를 계산합니다. 2개 미만 또는 잘못된 X 범위면 `null`을 반환합니다. 도메인 타입이나 HealthKit/가격 저장 형식을 참조하지 않습니다.
+
+Y축에는 값 범위의 10%씩 상하 여백을 둡니다. 모든 Y값이 같을 때의 축 범위 보정은 Victory가 처리합니다.
+
 ### skiaChartPaths.ts
 
 | Export | 용도 |
@@ -427,8 +469,7 @@ useDebouncedEffect(
 
 주요 사용처:
 
-- `HeartRateChart`
-- `PriceTrendChart`
+- `MetricChart`
 
 ### notificationPermissionRequest.tsx
 
