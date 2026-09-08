@@ -9,6 +9,7 @@ import type {
   WorkoutSessionEndResult,
 } from "../model/types"
 import { EMPTY_WORKOUT_LIVE_STATS } from "../model/types"
+import { normalizeWorkoutEndResult } from "../model/healthKitNormalization"
 import {
   normalizeWorkoutLiveStats,
   type WorkoutMetricProvider,
@@ -64,31 +65,6 @@ function fromStatus(
     status,
     updatedAt: new Date().toISOString(),
     errorCode: errorCode ?? null,
-  }
-}
-
-// 네이티브 end 응답 표준 payload 정규화
-function normalizeWorkoutEndResult(
-  result: NativeWorkoutEndResult | boolean,
-): WorkoutSessionEndResult {
-  if (typeof result === "boolean") {
-    // legacy boolean end 응답 호환
-    return {
-      averageHeartRate: null,
-      ended: result,
-      healthKitWorkoutUUID: null,
-    }
-  }
-
-  // 네이티브 end 결과 표준 payload 변환
-  return {
-    averageHeartRate:
-      typeof result.averageHeartRate === "number" &&
-      Number.isFinite(result.averageHeartRate)
-        ? Math.max(0, Math.round(result.averageHeartRate))
-        : null,
-    ended: result.ended,
-    healthKitWorkoutUUID: result.workoutUUID ?? null,
   }
 }
 

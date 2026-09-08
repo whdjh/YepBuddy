@@ -2,6 +2,7 @@ import { getTimestampMsFromIso } from "@/shared/lib/date"
 import { isValidCoordinates } from "@/shared/lib/geo"
 import { parseJsonOrNull } from "@/shared/lib/json"
 import { normalizeOptionalMetricCount } from "./metricNormalization"
+import { normalizeHealthKitWorkoutUUID } from "./healthKitNormalization"
 import {
   BODY_PART_DETAILS,
   type BodyPart,
@@ -179,11 +180,7 @@ export function parseStoredWorkoutSession(
     activeKcal: normalizeOptionalMetricCount(session.activeKcal),
     averageHeartRate: normalizeOptionalMetricCount(session.averageHeartRate),
     totalKcal: normalizeOptionalMetricCount(session.totalKcal),
-    healthKitWorkoutUUID:
-      typeof session.healthKitWorkoutUUID === "string" &&
-      session.healthKitWorkoutUUID.length > 0
-        ? session.healthKitWorkoutUUID
-        : null,
+    healthKitWorkoutUUID: normalizeHealthKitWorkoutUUID(session.healthKitWorkoutUUID),
     calendarEventId:
       typeof session.calendarEventId === "string" &&
       session.calendarEventId.length > 0
