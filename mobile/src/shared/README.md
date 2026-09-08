@@ -255,8 +255,8 @@ View(border/radius)
 Adapter의 책임:
 
 - 프로틴은 가격 이력의 순서 X, 가격 Y, ko/en 원화 formatter, 날짜 라벨과 accent를 전달합니다. 기존 높이 180, 최고·최저만 표시, 영역·가이드 없음, 0~1개 데이터 숨김을 유지합니다.
-- 심박수는 entity에서 정규화한 샘플과 선택된 workout의 시작·종료 ISO 시각을 받아 X를 경과 시간 비율로 변환합니다. 도메인 `[0, 1]`, 높이 160, BPM formatter, ko/en 시작·종료 라벨, heart token, 영역·가이드·평균 표시를 사용합니다. iOS에서만 렌더링합니다.
-- HealthKit workout 선택, sample UUID 중복 제거, 날짜/BPM 검증 같은 도메인 정규화는 공용 컴포넌트에 넣지 않습니다.
+- 심박수는 entity에서 BPM을 검증한 샘플과 선택된 workout의 시작·종료 ISO 시각을 받아 X를 경과 시간 비율로 변환합니다. 도메인 `[0, 1]`, 높이 160, BPM formatter, ko/en 시작·종료 라벨, heart token, 영역·가이드·평균 표시를 사용합니다. iOS에서만 렌더링합니다.
+- HealthKit workout 선택과 운동 구간 필터는 네이티브 조회가, BPM 검증은 entity API가 담당합니다.
 
 현재 자동 검증은 `mobile/`에서 `bunx tsc --noEmit --pretty false`와 `bun run lint`로 수행합니다. light/dark·작은 화면·ko/en·VoiceOver 및 실제 HealthKit 연계 표시는 iPhone 실기기에서 별도로 확인합니다.
 

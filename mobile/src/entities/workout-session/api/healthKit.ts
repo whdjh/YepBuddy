@@ -1,13 +1,9 @@
 import { NativeModules, Platform } from "react-native"
 import AsyncStorage from "@react-native-async-storage/async-storage"
-import AppleHealthKit, {
-  type HealthValue,
-  type HKWorkoutQueriedSampleType,
-} from "react-native-health"
-import { getIsoAfterHours, getTimeDistanceMs } from "@/shared/lib/date"
+import AppleHealthKit, { type HKWorkoutQueriedSampleType } from "react-native-health"
+import { normalizeHealthKitWorkoutUUID } from "../model/healthKitNormalization"
 import type {
   WorkoutHealthKitDetail,
-  WorkoutHeartRateSample,
   WorkoutHealthKitWorkout,
   WorkoutLiveStats,
   WorkoutSessionEndResult,
@@ -34,16 +30,8 @@ type HealthKitAccessState = "enabled" | "denied"
 let healthKitInitialized = false
 let healthKitAccessState: HealthKitAccessState | null | undefined
 
-interface NativeWorkoutDetail {
-  activeKcal?: number | null
-  averageHeartRate?: number | null
-  duration?: number | null
-  totalKcal?: number | null
-  workoutUUID?: string | null
-}
-
 interface NativeWorkoutSessionModule {
-  readWorkoutDetail?: (sessionId: string) => Promise<NativeWorkoutDetail | null>
+  readWorkoutDetail?: (workoutUUID: string) => Promise<WorkoutHealthKitDetail | null>
 }
 
 const nativeWorkoutSession =
@@ -173,57 +161,6 @@ function getLocalMonthBounds(year: number, month: number) {
   }
 }
 
-/** 지정한 운동 구간의 심박수 샘플을 읽어 앱 타입으로 정규화 */
-async function getHeartRateSamples(params: {
-  endDate: string
-  startDate: string
-}) {
-  if (!hasHealthKitMethod("getHeartRateSamples")) {
-    return []
-  }
-
-  return new Promise<WorkoutHeartRateSample[]>((resolve) => {
-    AppleHealthKit.getHeartRateSamples(
-      {
-        ascending: true,
-        endDate: params.endDate,
-        startDate: params.startDate,
-        unit: "bpm",
-      } as never,
-      (error: unknown, results?: HealthValue[]) => {
-        if (error) {
-          resolve([])
-          return
-        }
-
-        const heartRateSamples = (results ?? []).flatMap((sample) => {
-          if (!Number.isFinite(sample.value)) {
-            return []
-          }
-
-          return [
-            {
-              bpm: Math.round(sample.value),
-              endDate: sample.endDate,
-              startDate: sample.startDate,
-            },
-          ]
-        })
-        resolve(heartRateSamples)
-      },
-    )
-  })
-}
-
-/** 네이티브 WorkoutSession 상세 조회 */
-async function getNativeWorkoutDetail(sessionId: string) {
-  if (typeof nativeWorkoutSession?.readWorkoutDetail !== "function") {
-    return null
-  }
-
-  return nativeWorkoutSession.readWorkoutDetail(sessionId).catch(() => null)
-}
-
 /** HealthKit 네이티브 초기화/권한 요청을 실제로 실행하고 결과를 캐시 */
 async function authorizeHealthKit() {
   if (!isHealthKitAvailable() || healthKitInitialized) {
@@ -337,7 +274,7 @@ export async function endWorkoutSession(params: {
     }
   }
 
-  return new Promise<boolean>((resolve) => {
+  return new Promise<WorkoutSessionEndResult>((resolve) => {
     AppleHealthKit.saveWorkout(
       {
         startDate: params.startedAt,
@@ -345,13 +282,16 @@ export async function endWorkoutSession(params: {
         type: "TraditionalStrengthTraining",
         energyBurned: params.activeKcal || params.totalKcal || 0,
       } as never,
-      (error: unknown) => resolve(!error),
+      (error: unknown, workoutUUID: unknown) =>
+        resolve({
+          averageHeartRate: null,
+          ended: !error,
+          healthKitWorkoutUUID: error
+            ? null
+            : normalizeHealthKitWorkoutUUID(workoutUUID),
+        }),
     )
-  }).then((ended) => ({
-    averageHeartRate: null,
-    ended,
-    healthKitWorkoutUUID: null,
-  }))
+  })
 }
 
 /** 최근 심박 샘플을 읽어 라이브 운동 수치 형태로 정리 */
@@ -397,77 +337,37 @@ export function subscribeLiveWorkoutStats(
   return iphoneLiveWorkoutProvider.subscribe(listener)
 }
 
-/** sessionId 근처의 HealthKit workout 하나를 찾아 결과 화면용 상세로 변환 */
+/** 저장된 UUID로 workout 하나와 그에 연관된 심박 샘플만 조회 */
 export async function getWorkoutDetail(
-  sessionId: string,
+  healthKitWorkoutUUID: string | null,
 ): Promise<WorkoutHealthKitDetail | null> {
-  const ready = await ensureHealthKitReady()
-  if (!ready) {
+  const workoutUUID = normalizeHealthKitWorkoutUUID(healthKitWorkoutUUID)
+  if (
+    !workoutUUID ||
+    Platform.OS !== "ios" ||
+    typeof nativeWorkoutSession?.readWorkoutDetail !== "function"
+  ) {
     return null
   }
 
-  const startedAtMs = new Date(sessionId).getTime()
-  if (Number.isNaN(startedAtMs)) {
-    return null
-  }
+  const detail = await nativeWorkoutSession
+    .readWorkoutDetail(workoutUUID)
+    .catch(() => null)
+  if (!detail) return null
 
-  const workoutSamples = await getWorkoutSamples({
-    endDate: getIsoAfterHours(sessionId, 24),
-    startDate: sessionId,
-  })
-  const nativeDetail = await getNativeWorkoutDetail(sessionId)
+  // 평균과 차트 계산에서 사용할 유효 심박 값만 유지
+  const heartRateSamples = detail.heartRateSamples.filter(
+    ({ bpm }) => Number.isFinite(bpm) && bpm > 0,
+  )
+  // 샘플 평균 우선 사용, 샘플이 없는 경우 운동 요약 평균 사용
+  const averageHeartRate = heartRateSamples.length
+    ? Math.round(
+        heartRateSamples.reduce((sum, sample) => sum + sample.bpm, 0) /
+          heartRateSamples.length,
+      )
+    : detail.averageHeartRate
 
-  const workout = workoutSamples
-    .filter((sample) => Boolean(sample.start))
-    .sort(
-      (left, right) =>
-        getTimeDistanceMs(left.start, sessionId) -
-        getTimeDistanceMs(right.start, sessionId),
-    )[0]
-
-  if (!workout && !nativeDetail) {
-    return null
-  }
-
-  const heartRateSamples = workout
-    ? await getHeartRateSamples({
-        endDate: workout.end,
-        startDate: workout.start,
-      })
-    : []
-  const sampleAverageHeartRate =
-    heartRateSamples.length > 0
-      ? Math.round(
-          heartRateSamples.reduce((sum, item) => sum + item.bpm, 0) /
-            heartRateSamples.length,
-        )
-      : null
-
-  return {
-    activeKcal:
-      typeof nativeDetail?.activeKcal === "number"
-        ? Math.round(nativeDetail.activeKcal)
-        : typeof workout?.calories === "number"
-          ? Math.round(workout.calories)
-          : null,
-    averageHeartRate:
-      typeof nativeDetail?.averageHeartRate === "number"
-        ? Math.round(nativeDetail.averageHeartRate)
-        : sampleAverageHeartRate,
-    duration:
-      typeof nativeDetail?.duration === "number"
-        ? Math.round(nativeDetail.duration)
-        : typeof workout?.duration === "number"
-          ? Math.round(workout.duration)
-          : null,
-    heartRateSamples,
-    totalKcal:
-      typeof nativeDetail?.totalKcal === "number"
-        ? Math.round(nativeDetail.totalKcal)
-        : typeof workout?.calories === "number"
-          ? Math.round(workout.calories)
-          : null,
-  }
+  return { ...detail, heartRateSamples, averageHeartRate }
 }
 
 /** 특정 날짜의 workout 목록을 요약 카드에서 쓰기 쉬운 형태로 반환 */
