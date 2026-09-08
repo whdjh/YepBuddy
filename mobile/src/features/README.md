@@ -413,6 +413,7 @@ features/
 - `ProteinSaleNotificationToggle`은 프로틴 세일 알림 예약/해제를 관리한다.
 - `RoutineCycleToggle`은 `useRoutineCyclePlan`을 사용하고, `routineSetup=1` param이면 설정 sheet를 연다.
 - `RoutineCycleSettingsSheet`와 `RoutineSettingsEditors`가 루틴 사이클 split/cycle/body part 설정을 편집한다.
+- 루틴 세부 설정은 iOS 기본 page sheet의 아래로 끌어 닫기를 사용한다. 저장 중에는 스와이프와 일반 닫기를 막고, 취소 시 기존 draft 폐기·최초 루틴 활성화 취소 흐름을 따른다.
 
 주요 컴포넌트:
 
