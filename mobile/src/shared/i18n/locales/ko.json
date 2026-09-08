@@ -9,6 +9,11 @@
     "more": "더보기",
     "confirm": "확인",
     "close": "닫기",
+    "metricChart": {
+      "high": "최고 {{value}}",
+      "average": "평균 {{value}}",
+      "low": "최저 {{value}}"
+    },
     "daysShort": {
       "0": "월",
       "1": "화",
@@ -163,6 +168,9 @@
       "totalSets": "세트수",
       "avgHeartRate": "평균 심박수",
       "heartRateChart": "심박수",
+      "heartRateChartValue": "{{value}} BPM",
+      "heartRateChartStart": "시작 {{time}}",
+      "heartRateChartEnd": "종료 {{time}}",
       "location": "운동 위치",
       "mapAttributionLabel": "OpenStreetMap 저작권 정보 열기",
       "statsTitle": "운동 세부사항",
@@ -343,6 +351,7 @@
       "priceUnit": "원",
       "pricePerGram": "g당 {{value}}원",
       "subtitle": "{{volume}}g · {{category}} · {{flavor}}",
+      "chartValue": "{{value}}원",
       "chartHigh": "최고 {{value}}원",
       "chartLow": "최저 {{value}}원"
     },
