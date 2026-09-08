@@ -39,7 +39,7 @@ RCT_EXTERN_METHOD(consumeLiveActivityCommands:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(readLiveStats:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
-RCT_EXTERN_METHOD(readWorkoutDetail:(NSString *)sessionId
+RCT_EXTERN_METHOD(readWorkoutDetail:(NSString *)workoutUUID
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 

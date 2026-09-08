@@ -45,6 +45,10 @@ endLiveActivity
 consumeLiveActivityCommands
 ```
 
+`readWorkoutDetail(workoutUUID)`는 저장된 HealthKit UUID를 받는다. JS에서 저장 UUID가 없는 기록은 HealthKit 초기화·조회 없이 상세를 비운다. 네이티브는 `HKQuery.predicateForObject(with:)`로 그 workout만 조회하고 `predicateForObjects(from: workout)`와 strict 시작·종료 predicate를 AND로 묶어 연관 심박 샘플을 조회한다.
+
+상세 payload에는 `workoutUUID`, `startDate`, `endDate`, `heartRateSamples`와 기존 요약 metric이 포함된다. 샘플은 `uuid`, `bpm`, `startDate`, `endDate`를 가지며 시각은 밀리초를 보존하는 ISO 문자열이다. JS가 잘못된 샘플을 제거하고 UUID 중복 제거·안정 정렬·평균 계산을 수행한다. 심박 쿼리 실패는 빈 샘플 목록으로 처리해 선택된 workout 요약을 유지한다. 이전 바이너리의 상세 payload처럼 UUID·시작·종료가 없으면 JS는 상세를 비운다.
+
 ```text
 entities/workout-session JavaScript API
 
@@ -137,8 +141,8 @@ Workout session 플러그인을 수정한 뒤에는 가능한 범위에서 TypeS
 
 ```bash
 cd mobile
-npm run test:workout-session-plugin
-npm run test:live-activity-widget
+node scripts/check_workout_session_plugin.cjs
+node scripts/check_dynamic_island_widget.js
 ```
 
 이전 `YB` 모듈명 참조가 남아 있으면 안 된다.

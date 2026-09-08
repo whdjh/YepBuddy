@@ -160,7 +160,7 @@ final class LiveWorkoutSessionController: NSObject {
 
   /// 저장된 HealthKit workout 상세 조회
   func readWorkoutDetail(
-    sessionId: String,
+    workoutUUID: String,
     resolve: @escaping Resolve,
     reject: @escaping Reject
   ) {
@@ -169,27 +169,16 @@ final class LiveWorkoutSessionController: NSObject {
       return
     }
 
-    guard let startedAt = ISO8601DateFormatter().date(from: sessionId),
-      let endDate = Calendar.current.date(byAdding: .hour, value: 24, to: startedAt)
-    else {
+    guard let uuid = UUID(uuidString: workoutUUID) else {
       resolve(NSNull())
       return
     }
 
-    let predicate = HKQuery.predicateForSamples(
-      withStart: startedAt,
-      end: endDate,
-      options: [.strictStartDate]
-    )
-    let sortDescriptor = NSSortDescriptor(
-      key: HKSampleSortIdentifierStartDate,
-      ascending: true
-    )
     let query = HKSampleQuery(
       sampleType: HKObjectType.workoutType(),
-      predicate: predicate,
-      limit: HKObjectQueryNoLimit,
-      sortDescriptors: [sortDescriptor]
+      predicate: HKQuery.predicateForObject(with: uuid),
+      limit: 1,
+      sortDescriptors: nil
     ) { [weak self] _, samples, error in
       if let error {
         reject("workout_detail_query_failed", error.localizedDescription, error)
@@ -201,19 +190,60 @@ final class LiveWorkoutSessionController: NSObject {
         return
       }
 
-      let workout = (samples as? [HKWorkout])?
-        .filter { $0.startDate >= startedAt }
-        .min {
-          abs($0.startDate.timeIntervalSince(startedAt)) <
-            abs($1.startDate.timeIntervalSince(startedAt))
-        }
-
-      guard let workout else {
+      guard let workout = (samples as? [HKWorkout])?.first,
+        workout.endDate > workout.startDate
+      else {
         resolve(NSNull())
         return
       }
 
-      resolve(self.makeWorkoutDetailPayload(from: workout))
+      self.readHeartRateSamples(from: workout, resolve: resolve)
+    }
+
+    healthStore.execute(query)
+  }
+
+  /// 선택된 workout에 연관되고 전체 측정 구간이 운동 안에 포함된 심박 샘플 조회
+  private func readHeartRateSamples(from workout: HKWorkout, resolve: @escaping Resolve) {
+    let payload = makeWorkoutDetailPayload(from: workout)
+    guard let heartRateType = HKObjectType.quantityType(forIdentifier: .heartRate) else {
+      resolve(payload)
+      return
+    }
+
+    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+      HKQuery.predicateForObjects(from: workout),
+      HKQuery.predicateForSamples(
+        withStart: workout.startDate,
+        end: workout.endDate,
+        options: [.strictStartDate, .strictEndDate]
+      ),
+    ])
+    let query = HKSampleQuery(
+      sampleType: heartRateType,
+      predicate: predicate,
+      limit: HKObjectQueryNoLimit,
+      sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)]
+    ) { _, samples, error in
+      // 심박 읽기 거부/실패 시에도 선택된 workout 요약은 유지
+      guard error == nil else {
+        resolve(payload)
+        return
+      }
+
+      let formatter = ISO8601DateFormatter()
+      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+      let bpmUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
+      var detail = payload
+      detail["heartRateSamples"] = (samples as? [HKQuantitySample] ?? []).map { sample in
+        [
+          "uuid": sample.uuid.uuidString,
+          "bpm": sample.quantity.doubleValue(for: bpmUnit),
+          "startDate": formatter.string(from: sample.startDate),
+          "endDate": formatter.string(from: sample.endDate),
+        ] as [String: Any]
+      }
+      resolve(detail)
     }
 
     healthStore.execute(query)
@@ -313,6 +343,8 @@ final class LiveWorkoutSessionController: NSObject {
 
     let totalKcal = activeKcal.map { $0 + (basalKcal ?? 0) }
     let resolvedTotalKcal = totalKcal ?? activeKcal
+    let formatter = ISO8601DateFormatter()
+    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
 
     return [
       "activeKcal": activeKcal as Any? ?? NSNull(),
@@ -320,6 +352,9 @@ final class LiveWorkoutSessionController: NSObject {
       "duration": Int(round(workout.duration)),
       "totalKcal": resolvedTotalKcal as Any? ?? NSNull(),
       "workoutUUID": workout.uuid.uuidString,
+      "startDate": formatter.string(from: workout.startDate),
+      "endDate": formatter.string(from: workout.endDate),
+      "heartRateSamples": [],
     ]
   }
 
