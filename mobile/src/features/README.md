@@ -203,7 +203,7 @@ features/
 - OS 이벤트가 이미 없으면 로컬 삭제를 계속하고, 연결 실패나 권한/기타 오류가 있으면 사용자가 `앱 기록만 삭제`를 명시적으로 선택한 경우에만 계속한다.
 - iOS에서 선택된 HealthKit workout의 유효 심박 샘플이 2개 이상이면 `HeartRateChart`, 위치가 있으면 `LocationMap`을 렌더링한다. 조회 실패에도 로컬 세션과 수정·삭제 기능을 유지한다.
 - 결과 평균은 차트와 같은 유효 심박 샘플을 우선 사용하며, 샘플이 없을 때만 저장 평균·HealthKit 평균으로 보강한다.
-- `HeartRateChart`는 workout 시작~종료 시각으로 실제 시간 비율 point와 ko/en 라벨·BPM formatter·심박 토큰을 만들고 `shared/ui/MetricChart`에 전달한다. 차트 통계와 카드·축·Skia 렌더링은 공용 컴포넌트가 소유한다.
+- `HeartRateChart`는 workout 시작~종료 시각으로 실제 시간 비율 point를 만들고, X를 `HH:mm:ss`로 바꾸는 formatter와 ko/en 라벨·BPM formatter를 `shared/ui/MetricChart`에 전달한다. 차트 통계·스타일·렌더링·점 선택·접근성 탐색은 공용 컴포넌트가 소유한다.
 
 편집 경계:
 
@@ -328,7 +328,7 @@ features/
 
 ### `view-proteins`
 
-프로틴 목록 화면이다. `app/(tabs)/protein.tsx`에서 `ProteinListScreen`으로 진입한다.
+프로틴 목록 화면이다. `app/(tabs)/protein.tsx`에서 `ProteinListScreen`으로 진입한다. 화면 계약은 [프로틴 기능서](../../docs/page/10_protein.md)를 따른다.
 
 주요 흐름:
 
@@ -372,7 +372,8 @@ features/
 - 상품, 가격 히스토리, 맛 정보를 함께 조회한다.
 - `buildProteinDetail`로 상세 model을 조립한다.
 - 가격/단위/특징/가격 추이를 렌더링한다.
-- 구매 URL은 `getSafeWebUrl`로 검증하고, 유효할 때만 `openWebUrl`로 연다.
+- `PriceTrendChart`는 날짜·가격 표시 입력을 만들고, 심박 차트와 동일한 스타일·점 선택 동작은 `MetricChart`가 처리한다.
+- 구매 버튼은 비활성 상태로 표시한다.
 - loading/error/not found 상태를 화면 안에서 처리한다.
 
 주요 컴포넌트:
@@ -393,7 +394,6 @@ features/
 
 - `Badge`, `Button`, `IconButton`, `Card`
 - `useCardColors`
-- `getSafeWebUrl`, `openWebUrl`
 
 주요 side effect:
 

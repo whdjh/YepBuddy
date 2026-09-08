@@ -207,7 +207,9 @@ Feature 사용처:
 - `features/view-proteins`: 상품 목록과 최신 가격을 조회하고 `mergeProteinListItems`로 리스트 모델 생성, `ProteinCard`와 disclosure 렌더링
 - `features/view-protein-detail`: 단건 상품, 가격 히스토리, 맛 정보를 조회하고 `buildProteinDetail`로 상세 모델 생성, `PriceTrendChart`와 disclosure 렌더링
 
-구매 링크 열기는 `features/view-protein-detail`에서 `shared/lib/legalLinks`의 `getSafeWebUrl`, `openWebUrl`로 처리한다. `protein` entity 내부에서는 React Native의 URL 열기 API를 직접 호출하지 않는다.
+`PriceTrendChart`는 가격 이력을 순서 X·가격 Y로 변환하고 날짜·원화 formatter와 라벨만 `MetricChart`에 전달한다. 색상·높이·채움·최고최저 가이드와 점 선택 동작은 공용 컴포넌트가 심박 차트와 동일하게 처리하며, 가격 평균은 표시하지 않는다. 화면 계약은 [프로틴 기능서](../../docs/page/10_protein.md)를 따른다.
+
+현재 상세 화면의 구매 버튼은 비활성 상태다. `protein` entity 내부에서는 React Native의 URL 열기 API를 직접 호출하지 않는다.
 
 ## Shared API 사용
 
@@ -222,7 +224,7 @@ Protein이 사용하는 shared API:
 - `shared/hooks/useCardColors`: SwiftUI 기반 카드/차트 색상 토큰
 - `shared/hooks/useResolvedColorToken`, `shared/lib/designTokens`: NativeWind/CSS 변수와 primitive fallback 색상 해석
 - `shared/ui/Card`: 프로틴 카드
-- `shared/ui/MetricChart`: 가격 차트의 통계·카드·선 렌더링
+- `shared/ui/MetricChart`: 가격 차트의 통계·카드·선 렌더링과 점 선택·접근성 탐색
 
 `shared`에는 화면 흐름이나 특정 도메인 저장소 규칙을 올리지 않는다. 예를 들어 `sessionMetrics`와 `bodyPartSet`은 순수 함수지만 운동 도메인 의미가 강하므로 `workout-session`에 둔다.
 

@@ -1,7 +1,7 @@
 import { NativeTabs } from "expo-router/unstable-native-tabs"
 import { WorkoutNavigationGuard } from "@/features/do-workout/ui/WorkoutNavigationGuard"
 
-const PROTEIN_TAB_ENABLED = false
+const PROTEIN_TAB_ENABLED = true
 
 export default function TabLayout() {
   return (

@@ -23,6 +23,7 @@
 | 알림 | `07_notification.md` | `07_notification.html` |
 | 설정 | `08_settings.md` | `08_settings.html` |
 | 운동 장소 도착 알림 | `09_workout_place_reminder.md` | `09_workout_place_reminder.html` |
+| 프로틴 목록·상세 | [10_protein.md](10_protein.md) | 미제공 |
 
 ## 갱신 규칙
 
